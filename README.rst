@@ -17,7 +17,7 @@ FeedHQ is a simple, lightweight web-based feed reader. Main features:
 
 * Handles HTTP status codes nicely (permanent redirects, gone, not-modified…)
 
-* Hides images by default (and therefore filters ads and thracking stuff)
+* Hides images by default (and therefore filters ads and tracking stuff)
 
 * Multiple user support
 
