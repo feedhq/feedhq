@@ -90,8 +90,10 @@ class Feed(models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=255)
     url = models.URLField(_('URL'), verify_exists=False)
-    category = models.ForeignKey(Category, verbose_name=_('Category'),
-                                 related_name='feeds')
+    category = models.ForeignKey(
+        Category, verbose_name=_('Category'), related_name='feeds',
+        help_text=_('<a href="/category/add/">Add a category</a>'),
+    )
     # The next 2 are RSS/ATOM attributes
     title = models.CharField(_('Title'), max_length=255)
     link = models.URLField(_('Link'), verify_exists=False)
@@ -152,7 +154,7 @@ def update_on_creation(sender, instance, created, **kwargs):
     if created and not getattr(instance, "skip_post_save", False):
         try:
             FeedUpdater(instance.url).update()
-        except:
+        except Exception:
             pass
 models.signals.post_save.connect(update_on_creation, sender=Feed)
 

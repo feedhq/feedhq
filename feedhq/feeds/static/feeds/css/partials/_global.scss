@@ -238,6 +238,12 @@ form {
 
 #entries {
 	margin: 0.5em 0;
+
+	.empty {
+		padding: 7em 1em 8em 1em;
+		background: darken(white, 5%);
+		border-radius: 5px;
+	}
 }
 
 .entry {
@@ -274,7 +280,7 @@ form {
 	text-overflow: ellipsis;
 }
 
-#entry {
+#entry, .help {
 	> h2 {
 		font-size: 1.5em;
 		line-height: 1.2em;
@@ -325,6 +331,7 @@ form {
 
 		ul {
 			list-style: disc;
+			margin: 0.5em 0;
 
 			ul {
 				list-style: circle;

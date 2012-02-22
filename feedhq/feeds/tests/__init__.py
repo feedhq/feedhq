@@ -61,6 +61,26 @@ def fake_update(url):
     updater.update()
 
 
+class BaseTests(TestCase):
+    """Tests that do not require specific setup"""
+    def test_welcome_page(self):
+        self.user = User.objects.create_user('testuser',
+                                             'foo@example.com',
+                                             'pass')
+        self.client.login(username='testuser', password='pass')
+        url = reverse('feeds:home')
+        response = self.client.get(url)
+        self.assertContains(response, 'Getting started')
+        cat = self.user.categories.create(name='Foo', slug='foo')
+
+        feed = Feed(name='yo', url='http://example.com/feed', category=cat)
+        feed.skip_post_save = True
+        feed.save()
+
+        response = self.client.get(url)
+        self.assertNotContains(response, 'Getting started')
+
+
 class TestFeeds(TestCase):
 
     def setUp(self):

@@ -100,6 +100,10 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
             'unread_url': unread_url,
             'base_url': base_url,
     }
+    if entries.paginator.count == 0 and Feed.objects.filter(
+        category__in=request.user.categories.all()
+    ).count() == 0:
+        context['noob'] = True
     return render(request, 'feeds/feed_list.html', context)
 
 

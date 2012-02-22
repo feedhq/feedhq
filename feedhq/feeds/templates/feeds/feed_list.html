@@ -3,28 +3,41 @@
 {% block title %}{% if unread_count %}({{ unread_count }}) {% endif %}
 	{% if feed %}{{ feed.name }}{% else %}
 		{% if category %}{{ category.name }}{% else %}
-			{% if query %}Search: {{ query }}{% else %}{{ block.super }}
-{% endif %}{% endif %}{% endif %}{% endblock %}
+			{{ block.super }}
+{% endif %}{% endif %}{% endblock %}
 
 {% block content %}
-	<div class="figures">
-		<div class="count">
-			{{ entries.start_index }} - {{ entries.end_index }} of {{ entries.paginator.count }}{% if only_unread %} unread{% endif %} entries{% if not only_unread and unread_count %} ({{ unread_count }} unread){% endif %}.
-			{% if only_unread %}<a href="{{ all_url }}">Show all</a>
-			{% else %}<a href="{{ unread_url }}">Show only unread</a>{% endif %}
+	{% if noob %}
+		<div class="help"><div class="content">
+			<h2>{% trans "Getting started" %}</h2>
+			<p>{% trans "Hi! Looks like you're new here. Here are a couple of things you can do to get started with FeedHQ:" %}</p>
+			<ul>
+				<li>{% trans "Create a category:" %} <a href="{% url "feeds:add_category" %}">{% trans "BAM" %}</a></li>
+				<li>{% trans "Add a feed:" %} <a href="{% url "feeds:add_feed" %}">{% trans "BAM" %}</a></li>
+				<li>{% trans "Got an OPML dump? Import it!" %} <a href="{% url "feeds:import_feeds" %}">{% trans "BAM" %}</a></li>
+			</ul>
+			<p>{% trans "Now look closely. These three vital features can be accessed using the three buttons on the top bar. Got it? Good. This page will self-destruct as soon as you add your first feed." %}</p>
+		</div></div>
+	{% else %}
+		<div class="figures">
+			<div class="count">
+				{{ entries.start_index }} - {{ entries.end_index }} of {{ entries.paginator.count }}{% if only_unread %} unread{% endif %} entries{% if not only_unread and unread_count %} ({{ unread_count }} unread){% endif %}.
+				{% if only_unread %}<a href="{{ all_url }}">Show all</a>
+				{% else %}<a href="{{ unread_url }}">Show only unread</a>{% endif %}
+			</div>
+			<div class="pagination">{% include "feeds/paginator.html" %}</div>
 		</div>
-		<div class="pagination">{% include "feeds/paginator.html" %}</div>
-	</div>
 
-	<ul id="entries">
-		{% for entry in entries.object_list %}
-			{% include "feeds/entry_include.html" %}
-		{% empty %}
-			<li class="empty" >{% trans "Hooray, nothing to read!" %}</li>
-		{% endfor %}
-	</ul>
+		<ul id="entries">
+			{% for entry in entries.object_list %}
+				{% include "feeds/entry_include.html" %}
+			{% empty %}
+				<li class="empty" >{% trans "Hooray, nothing to read!" %}</li>
+			{% endfor %}
+		</ul>
 
-	<div class="figures bottom">
-		<div class="pagination">{% include "feeds/paginator.html" %}</div>
-	</div>
+		<div class="figures bottom">
+			<div class="pagination">{% include "feeds/paginator.html" %}</div>
+		</div>
+	{% endif %}
 {% endblock %}
