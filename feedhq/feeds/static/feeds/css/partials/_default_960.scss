@@ -11,7 +11,7 @@
 }
 
 .figures {
-	@include cols(12);
+	@include clearfix;
 	margin: 0;
 	padding: 5px 0;
 
