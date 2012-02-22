@@ -1,0 +1,78 @@
+{% extends "feeds/feed_list.html" %}
+{% load staticfiles %}
+
+{% block title %}{{ object.title|striptags|safe }}{% endblock %}
+
+{% block content %}
+	<div class="figures">
+		<div class="back">
+			<a href="{{ back_url }}">⇠ {% trans "Back" %}</a>
+		</div>
+		<div class="pagination">
+			{% if previous %}<a href="{{ previous }}">← {% trans "Previous" %}</a>{% endif %}
+			{% if next %}<a href="{{ next }}">{% trans "Next" %} →</a>{% endif %}
+		</div>
+	</div>
+	<div id="entry">
+		<h2>{% if object.title %}{{ object.title|safe }}{% else %}({% trans "No title" %}){% endif %}
+			<a href="{% url "feeds:feed" object.feed.pk %}" class="cat {{ object.feed.category.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}">✓</a>
+			<a href="{% url "feeds:category" object.feed.category.slug %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}">✓</a>
+		</h2>
+		<div class="date">{{ object.date|date }} - <a{% if object.feed.favicon %} style="background-image: url('{{ object.feed.favicon.url }}'); padding-left: 20px;"{% endif %} href="{{ object.get_link }}">{{ object.link_domain }}</a></div>
+		<div class="actions">
+			{% if has_img and not img_safe and not object.feed.img_safe %}
+				<form method="post" action="{% url "feeds:item" object.id %}">
+					{% csrf_token %}
+					<input type="hidden" name="action" value="images">
+					<input type="submit" value="{% trans "Show images" %}">
+				</form>
+			{% endif %}
+			{% if img_safe and not object.feed.img_safe %}
+				<form method="post" action="{% url "feeds:item" object.id %}">
+					{% csrf_token %}
+					<input type="hidden" name="action" value="images_always">
+					<input type="submit" value="{% trans "Always show images for this feed" %}">
+				</form>
+			{% endif %}
+			{% if object.feed.img_safe %}
+				<form method="post" action="{% url "feeds:item" object.id %}">
+					{% csrf_token %}
+					<input type="hidden" name="action" value="images_never">
+					<input type="submit" value="{% trans "Hide images for this feed" %}">
+				</form>
+			{% endif %}
+			<form method="post" action="{% url "feeds:item" object.id %}">
+				{% csrf_token %}
+				<input type="hidden" name="action" value="unread" />
+				<input type="submit" value="Unread" />
+			</form>
+		</div>
+		<div class="content">
+			{% if img_safe or object.feed.img_safe %}
+				{{ object.subtitle|removetags:"script applet embed object meta onload onunload link style div span frameset frame iframe font form label input textarea"|safe }}
+			{% else %}
+				{{ object.subtitle|removetags:"script applet embed object meta onload onunload link style div span frameset frame iframe img font form label input textarea"|safe }}
+			{% endif %}
+		</div>
+	</div>
+	<div class="figures">
+		<div class="back">
+			<a href="{{ back_url }}">⇠ {% trans "Back" %}</a>
+		</div>
+		<div class="pagination">
+			{% if previous %}<a href="{{ previous }}">← {% trans "Previous" %}</a>{% endif %}
+			{% if next %}<a href="{{ next }}">{% trans "Next" %} →</a>{% endif %}
+		</div>
+	</div>
+{% endblock %}
+
+{% block extrabody %}
+	<script src="{% static "feeds/js/highlight.min.js" %}"></script>
+	<script src="{% static "feeds/js/jquery.min.js" %}"></script>
+	<script>
+		hljs.initHighlightingOnLoad();
+		$('pre').each(function(index, element) {
+			hljs.highlightBlock(element, '    ', false)
+		})
+	</script>
+{% endblock %}

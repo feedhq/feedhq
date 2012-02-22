@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Confirm deletion" %}{% endblock %}
+
+{% block content %}
+	<h2>{% trans "Confirm deletion" %}</h2>
+	<form method="post" action="{% url "feeds:delete_feed" object.id %}">
+		<p>{% blocktrans %}You are about to delete the feed: <em>{{ object }}</em>. Are you sure?{% endblocktrans %}</p>
+		<ul>
+			<li>{% trans "There is no undo." %}</li>
+			<li>{% blocktrans count counter=entry_count %}{{ entry_count }} entry will be deleted.{% plural %}{{ entry_count }} entries will be deleted.{% endblocktrans %}</li>
+		</ul>
+		{% include "form.html" %}
+		<div class="submit">
+			<input type="submit" value="{% trans "Delete" %}">
+			<a href="{% url "feeds:feed" object.id %}">{% trans "Cancel"%}</a>
+		</div>
+	</form>
+{% endblock %}

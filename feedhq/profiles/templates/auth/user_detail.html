@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Profile" %}{% endblock %}
+
+{% block content %}
+	<h1>{% trans "Your profile" %}</h1>
+	<h2>{% trans "Stats" %}</h2>
+
+	<ul>
+		<li>{% blocktrans count counter=categories %}{{ counter }} category{% plural %}{{ counter }} categories{% endblocktrans %}</li>
+		<li>{% blocktrans count counter=feeds %}{{ counter }}feed{% plural %}{{ counter }} feeds{% endblocktrans %}</li>
+		<li>{% blocktrans count counter=entries %}{{ counter }}entry{% plural %}{{ counter }} entries{% endblocktrans %}</li>
+	</ul>
+
+	<h2>{% trans "Change your password" %}</h2>
+
+	<form method="post" action="{% url "profile" %}" class="no">
+		{% include "form.html" %}
+		<div class="submit">
+			<input type="submit" value="{% trans "Change password" %}">
+		</div>
+	</form>
+{% endblock %}

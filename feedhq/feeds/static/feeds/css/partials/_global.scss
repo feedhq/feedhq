@@ -1,0 +1,378 @@
+@include sticky-footer(70px);
+
+$red: #ff0000;
+$dark_red: #cc0000;
+$pale_green: #64992c;
+$green: #006633;
+$army_green: #636330;
+$pale_blue: #6694e3;
+$blue: #206cff;
+$dark_blue: #0000cc;
+$orange: #ec7000;
+$dark_orange: #b36d00;
+$black: #101010;
+$gray: #505050;
+
+$text: #222;
+
+em, i {
+	font-style: italic;
+}
+
+strong, b {
+	font-weight: bold;
+}
+
+.cat, .edit {
+	color: white;
+	padding: 2px 4px;
+	font-size: $em - 4px;
+	white-space: nowrap;
+	border-radius: 5px;
+	text-decoration: inherit;
+
+	&.red {
+		background: $red;
+	}
+
+	&.dark-red {
+		background: $dark_red;
+	}
+
+	&.pale-green {
+		background: $pale_green;
+	}
+
+	&.green {
+		background: $green;
+	}
+
+	&.army-green {
+		background: $army_green;
+	}
+
+	&.pale-blue {
+		background: $pale_blue;
+	}
+
+	&.blue {
+		background: $blue;
+	}
+
+	&.dark-blue {
+		background: $dark_blue;
+	}
+
+	&.orange {
+		background: $orange;
+	}
+
+	&.dark-orange {
+		background: $dark_orange;
+	}
+
+	&.black {
+		background: $black;
+	}
+
+	&.gray {
+		background: $gray;
+	}
+}
+
+body {
+	font: 20px/1.3em Palatino, Goergia, serif;
+	-webkit-text-adjust: 100%;
+	color: $text;
+}
+
+a {
+	color: #000;
+}
+
+input, select {
+	font-size: 1rem;
+}
+
+#header > div {
+	@include clearfix;
+	padding: 0.5em 0;
+	border-bottom: 1px solid #444;
+
+	h1 {
+		font-weight: bold;
+
+		a {
+			color: inherit;
+			text-decoration: none;
+
+			&:first-child {
+				margin-right: 10px;
+			}
+
+			&.add {
+				background: lighten($text, 75%);
+				padding: 0 5px;
+				border-radius: 3px;
+
+				&:hover {
+					background: black;
+					color: white;
+				}
+			}
+		}
+	}
+}
+
+#navigation {
+	text-align: right;
+	
+	li {
+		display: inline-block;
+		margin-right: 5px;
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+}
+
+#content {
+	h1 {
+		font-size: 1.4em;
+	}
+	h2 {
+		font-size: 1.3em;
+	}
+
+	h3 {
+		font-size: 1.2em;
+	}
+
+	h4 {
+		font-size: 1.1em;
+	}
+
+	h5 {
+		text-transform: uppercase;
+	}
+
+	h6 {
+		font-weight: bold;
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		line-height: 2rem;
+		margin: 0.5em 0;
+	}
+}
+
+.no label {
+	font-weight: bold;
+}
+
+#footer > div {
+	border-top: 1px solid #444;
+	padding: 0.5em 0;
+	margin-top: 0.5em;
+	color: lighten($text, 20%);
+}
+
+form {
+	.field {
+		padding: 5px 0;
+	}
+	.title {
+		text-align: right;
+		h6 {
+			margin: 0 !important;
+		}
+	}
+
+	.input {
+		input, select {
+			width: 100%;
+		}
+	}
+
+	.helptext {
+		font-size: 0.8em;
+		color: lighten($text, 30%);
+	}
+}
+
+.errorlist {
+	color: lighten(red, 10%);
+}
+
+.input .errorlist {
+	font-size: 0.9em;
+}
+
+.back a {
+	text-decoration: none;
+}
+
+.pagination {
+	text-align: right;
+
+	a, span {
+		padding: 0 4px;
+		margin: 0 2px;
+
+		&:first-child {
+			margin-left: 0;
+		}
+	}
+
+	a {
+		background: lighten($text, 75%);
+		border-radius: 3px;
+		text-decoration: none;
+
+		&:hover {
+			background: $text;
+			color: white;
+		}
+	}
+}
+
+#entries {
+	margin: 0.5em 0;
+}
+
+.entry {
+	padding: 5px 0;
+	a {
+		text-decoration: none;
+		color: lighten(black, 20%);
+	}
+
+	&.new a {
+		color: black;
+		font-weight: bold;
+	}
+
+	.title {
+		background-repeat: no-repeat;
+		background-position: left 6px;
+		background-size: 16px;
+
+		span {
+			display: inline;
+			margin-left: 24px;
+		}
+	}
+
+	.date {
+		text-align: right;
+	}
+}
+
+.ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#entry {
+	> h2 {
+		font-size: 1.5em;
+		line-height: 1.2em;
+		padding: 0.25em 0;
+		border-bottom: 1px solid #ddd;
+
+		.edit, .edit_cat {
+			display: none;
+		}
+
+		&:hover {
+			.cat {
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
+				margin-right: 1px;
+			}
+
+			.edit, .edit_cat {
+				display: inline;
+			}
+
+			.edit {
+				border-radius: 5px;
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+			}
+		}
+	}
+
+	.content {
+		line-height: 1.5em;
+
+		strong, b {
+			font-weight: bold;
+		}
+
+		em, i {
+			font-style: italic;
+		}
+
+		h2 {
+			border: none;
+		}
+
+		p {
+			padding: 0.5em 0;
+		}
+
+		ul {
+			list-style: disc;
+
+			ul {
+				list-style: circle;
+				margin-left: 1em;
+			}
+		}
+
+		code {
+			border: 1px solid lighten($text, 75%);
+			border-radius: 3px;
+			padding: 2px 3px;
+		}
+
+		pre, code {
+			font: 0.8em Inconsolata, Monaco, monospace;
+		}
+
+		pre code {
+			border: none;
+			font-size: 1em;
+		}
+	}
+
+	.date {
+		color: #777;
+
+		a {
+			background-repeat: no-repeat;
+			background-size: 16px 16px;
+			background-position: left center;
+		}
+	}
+
+	.actions {
+		text-align: right;
+
+		form {
+			margin: 0;
+			display: inline-block;
+		}
+
+		input {
+			font-size: 0.8em;
+		}
+	}
+
+	.date, .actions {
+		margin-bottom: 1em;
+		font-size: 0.8em;
+	}
+}

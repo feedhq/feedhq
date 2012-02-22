@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/atom10full.xsl"?><?xml-stylesheet type="text/css" media="screen" href="http://feeds.simonwillison.net/~d/styles/itemcontent.css"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-gb"><title>Simon Willison's Weblog</title><link href="http://simonwillison.net/" rel="alternate" /><id>http://simonwillison.net/</id><updated>2010-03-12T09:28:21Z</updated><author><name>Simon Willison</name></author><atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/atom+xml" href="http://feeds.simonwillison.net/swn-everything" /><feedburner:info xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" uri="swn-everything" /><entry><title>RE2: a principled approach to regular expression matching
+</title><link href="http://simonwillison.net/2010/Mar/12/re2/" rel="alternate" /><updated>2010-03-12T09:28:21Z</updated><id>http://simonwillison.net/2010/Mar/12/re2/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://google-opensource.blogspot.com/2010/03/re2-principled-approach-to-regular.html"&gt;RE2: a principled approach to regular expression matching&lt;/a&gt;. Google have open sourced RE2, the C++ regular expression library they developed for Google Code Search, Sawzall, Bigtable and other internal projects. Unlike PCRE it avoids the potential for exponential run time and unbounded stack usage and guarantees that searches complete in linear time, mainly by dropping support for back references.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="cplusplus" /><category term="google" /><category term="opensource" /><category term="pcre" /><category term="re2" /><category term="regex" /><category term="russcox" /></entry><entry><title>Cache Machine: Automatic caching for your Django models
+</title><link href="http://simonwillison.net/2010/Mar/11/cachemachine/" rel="alternate" /><updated>2010-03-11T19:35:32Z</updated><id>http://simonwillison.net/2010/Mar/11/cachemachine/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://jbalogh.me/2010/02/09/cache-machine/"&gt;Cache Machine: Automatic caching for your Django models&lt;/a&gt;. This is the third new ORM caching layer for Django I’ve seen in the past month! Cache Machine was developed for zamboni, the port of addons.mozilla.org to Django. Caching is enabled using a model mixin class (to hook up some post_delete hooks) and a custom caching manager. Invalidation works by maintaining a “flush list” of dependent cache entries for each object—this is currently stored in memcached and hence has potential race conditions, but a comment in the source code suggests that this could be solved by moving to redis.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="cachemachine" /><category term="caching" /><category term="django" /><category term="memcached" /><category term="mozilla" /><category term="orm" /><category term="ormcaching" /><category term="python" /><category term="redis" /></entry><entry><title>Automate EC2 Instance Setup with user-data Scripts
+</title><link href="http://simonwillison.net/2010/Mar/11/ec2/" rel="alternate" /><updated>2010-03-11T12:31:50Z</updated><id>http://simonwillison.net/2010/Mar/11/ec2/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://alestic.com/2009/06/ec2-user-data-scripts"&gt;Automate EC2 Instance Setup with user-data Scripts&lt;/a&gt; (&lt;a href="http://blog.ianbicking.org/2010/03/10/configuration-management-push-vs-pull/comment-page-1/#comment-155587" title="Paul Smith"&gt;via&lt;/a&gt;). I knew about EC2’s user-data feature—what I didn’t know is that the Alestic and Canonical images are configured so that if the user-data starts with #! the instance will automatically execute it as a shell script as soon as it boots up (after networking has been configured).&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="deployment" /><category term="ec2" /><category term="sysadmin" /><category term="userdata" /></entry><entry><title>grammar.coffee
+</title><link href="http://simonwillison.net/2010/Mar/8/coffeescript/" rel="alternate" /><updated>2010-03-08T19:27:13Z</updated><id>http://simonwillison.net/2010/Mar/8/coffeescript/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://jashkenas.github.com/coffee-script/documentation/docs/grammar.html"&gt;grammar.coffee&lt;/a&gt; (&lt;a href="http://news.ycombinator.com/item?id=1175164" title="Hacker News"&gt;via&lt;/a&gt;). The annotated grammar for CoffeeScript, a new language that compiles to JavaScript developed by DocumentCloud’s Jeremy Ashkenas. The linked page is generated using Jeremy’s Docco tool for literate programming, also written in CoffeeScript. CoffeeScript itself is implemented in CoffeeScript, using a bootstrap compiler originally written in Ruby.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="coffeescript" /><category term="compilers" /><category term="docco" /><category term="documentcloud" /><category term="javascript" /><category term="jeremyashkenas" /><category term="literateprogramming" /><category term="programming" /><category term="ruby" /><category term="selfhosting" /></entry><entry><title>Scott and Scurvy
+</title><link href="http://simonwillison.net/2010/Mar/8/scott/" rel="alternate" /><updated>2010-03-08T18:15:10Z</updated><id>http://simonwillison.net/2010/Mar/8/scott/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://idlewords.com/2010/03/scott_and_scurvy.htm"&gt;Scott and Scurvy&lt;/a&gt;. Did you know that Scott’s 1911 expedition to the south pole was plagued by scurvy, despite the British navy having discovered an effective cure way back in the 18th century? A fascinating tale of how scientific advances can lead to  surprising regressions.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="maciejceglowski" /><category term="science" /><category term="scurvy" /></entry><entry><title>Announcing django-cachebot
+</title><link href="http://simonwillison.net/2010/Mar/6/david/" rel="alternate" /><updated>2010-03-06T12:48:39Z</updated><id>http://simonwillison.net/2010/Mar/6/david/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://blog.davidziegler.net/post/429237463/announcing-django-cachebot"&gt;Announcing django-cachebot&lt;/a&gt;. The ORM caching space around Django is heating up. django-cachebot is used in production at mingle.com and takes a more low level approach to cache invalidation than Johnny Cache, enabling you to specifically mark the querysets you wish to cache and providing some advanced options for cache invalidation. Unfortunately it currently relies on a patch to Django core to enable its own manager.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="cachebot" /><category term="caching" /><category term="django" /><category term="mingle" /><category term="orm" /><category term="ormcaching" /></entry><entry><title>How To Be A Good Participant On A Panel: Disagree
+</title><link href="http://simonwillison.net/2010/Mar/5/disagree/" rel="alternate" /><updated>2010-03-05T09:00:14Z</updated><id>http://simonwillison.net/2010/Mar/5/disagree/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://parand.com/say/index.php/2010/03/04/how-to-be-a-good-participant-on-a-panel-disagree/"&gt;How To Be A Good Participant On A Panel: Disagree&lt;/a&gt;. When I’m on a panel, I always try to have lunch or dinner with the other panelists beforehand to figure out in advance what points we disagree on.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="panels" /><category term="speaking" /></entry><entry><title>Geospatial Indexing in MongoDB
+</title><link href="http://simonwillison.net/2010/Mar/2/geospatial/" rel="alternate" /><updated>2010-03-02T20:12:09Z</updated><id>http://simonwillison.net/2010/Mar/2/geospatial/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://www.mongodb.org/display/DOCS/Geospatial+Indexing"&gt;Geospatial Indexing in MongoDB&lt;/a&gt; (&lt;a href="http://groups.google.com/group/mongodb-user/browse_thread/thread/48f6c7defd08e880" title="MongoDB 1.3.3 Released"&gt;via&lt;/a&gt;). New in version 1.3.3. Handles “order by distance from” queries using a geohash approach under the hood, automatically searching nearby grid squares until the correct number of results have been gathered. Bounding box search is planned for a future release.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="geohash" /><category term="geospatial" /><category term="gis" /><category term="mongodb" /></entry><entry><title>Is johnny-cache for you?
+</title><link href="http://simonwillison.net/2010/Mar/2/johnny/" rel="alternate" /><updated>2010-03-02T11:44:08Z</updated><id>http://simonwillison.net/2010/Mar/2/johnny/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://jmoiron.net/blog/is-johnny-cache-for-you/"&gt;Is johnny-cache for you?&lt;/a&gt;. “Using Johnny is really adopting a particular caching strategy. This strategy isn’t always a win; it can impact performance negatively”—but for a high percentage of Django sites there’s a very good chance it will be a net bonus.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="caching" /><category term="django" /><category term="johnnycache" /><category term="performance" /><category term="python" /></entry><entry><title>Some People Can't Read URLs
+</title><link href="http://simonwillison.net/2010/Mar/2/bewildering/" rel="alternate" /><updated>2010-03-02T10:16:09Z</updated><id>http://simonwillison.net/2010/Mar/2/bewildering/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://jonoscript.wordpress.com/2010/02/18/some-people-cant-read-urls/"&gt;Some People Can’t Read URLs&lt;/a&gt;. Commentary on the recent “facebook login” incident from Jono at Mozilla Labs. I’d guess that most people can’t read URLs, and it worries me more than any other aspect of today’s web. If you want to stay safe from phishing and other forms of online fraud you need at least a basic understanding of a bewildering array of technologies—URLs, paths, domains, subdomains, ports, DNS, SSL as well as fundamental concepts like browsers, web sites and web servers. Misunderstand any of those concepts and you’ll be an easy target for even the most basic phishing attempts. It almost makes me uncomfortable encouraging regular people to use the web because I know they’ll be at massive risk to online fraud.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="facebook" /><category term="phishing" /><category term="security" /><category term="urls" /></entry><entry><title>Running Processes
+</title><link href="http://simonwillison.net/2010/Mar/2/running/" rel="alternate" /><updated>2010-03-02T09:55:18Z</updated><id>http://simonwillison.net/2010/Mar/2/running/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://dustin.github.com/2010/02/28/running-processes.html"&gt;Running Processes&lt;/a&gt;. I’ve been searching for a good solution to this problem (“run this program, and restart it if it falls over”) for years. I’m currently using god which works pretty well, but according to this article I should be learning upstart instead. It never ceases to amaze me how difficult this is, and how obtuse the tools are.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="god" /><category term="linux" /><category term="processes" /><category term="ubuntu" /><category term="unix" /><category term="upstart" /></entry><entry><title>A quote from Jason L. Baptiste
+</title><link href="http://simonwillison.net/2010/Mar/2/ipad/" rel="alternate" /><updated>2010-03-02T09:36:32Z</updated><id>http://simonwillison.net/2010/Mar/2/ipad/</id><summary type="html">
+
+
+
+&lt;div class="quote segment"&gt;&lt;blockquote cite="http://news.ycombinator.com/item?id=1160248"&gt;&lt;p&gt;I’m not worried about guys like us. There will always be machines for us (powerful, complex, etc.). Why? Because if for some magical reason there wasn’t all of a sudden, we’re the type that would just make one.&lt;/p&gt;&lt;/blockquote&gt;&lt;p class="cite"&gt; - &lt;a href="http://news.ycombinator.com/item?id=1160248"&gt;Jason L. Baptiste&lt;/a&gt;&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+</summary><category term="ipad" /></entry><entry><title>Internet Explorer: Global Variables, and Stack Overflows
+</title><link href="http://simonwillison.net/2010/Mar/2/recursion/" rel="alternate" /><updated>2010-03-02T09:21:26Z</updated><id>http://simonwillison.net/2010/Mar/2/recursion/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://cappuccino.org/discuss/2010/03/01/internet-explorer-global-variables-and-stack-overflows/"&gt;Internet Explorer: Global Variables, and Stack Overflows&lt;/a&gt;. An extremely subtle IE bug—if your recursive JavaScript function is attached directly to the window (global) object, IE won’t let you call it recursively more than 12 times.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="bugs" /><category term="ie" /><category term="internetexplorer" /><category term="javascript" /><category term="recursion" /></entry><entry><title>GeoPlanet Explorer
+</title><link href="http://simonwillison.net/2010/Mar/2/geoplanet/" rel="alternate" /><updated>2010-03-02T08:14:30Z</updated><id>http://simonwillison.net/2010/Mar/2/geoplanet/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://isithackday.com/geoplanet-explorer/"&gt;GeoPlanet Explorer&lt;/a&gt;. Chris Heilmann’s YQL powered explorer for the invaluable Yahoo! GeoPlanet / WhereOnEarth dataset. Every API deserves an explorer of some sort.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="apis" /><category term="christianheilmann" /><category term="geoplanet" /><category term="yahoo" /><category term="yql" /></entry><entry><title>jmoiron.net: Johnny Cache
+</title><link href="http://simonwillison.net/2010/Mar/1/jmoironnet/" rel="alternate" /><updated>2010-03-01T11:48:54Z</updated><id>http://simonwillison.net/2010/Mar/1/jmoironnet/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://django.jmoiron.net/blog/johnny-cache/"&gt;jmoiron.net: Johnny Cache&lt;/a&gt;. The blog entry announcing Johnny Cache (“a drop-in caching library/framework for Django that will cache all of your querysets forever in a consistent and safe manner”) to the world.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="caching" /><category term="django" /><category term="johnnycache" /><category term="python" /><category term="querysets" /></entry><entry><title>Notes from a production MongoDB deployment
+</title><link href="http://simonwillison.net/2010/Feb/28/mongodb/" rel="alternate" /><updated>2010-02-28T23:05:24Z</updated><id>http://simonwillison.net/2010/Feb/28/mongodb/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://blog.boxedice.com/2010/02/28/notes-from-a-production-mongodb-deployment/"&gt;Notes from a production MongoDB deployment&lt;/a&gt;. Notes from running MongoDB for 8 months in production, with 664 million documents spread across 72 GB master and slave servers located in two different data centers.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="mongodb" /><category term="scaling" /><category term="sysadmin" /></entry><entry><title>Node.js, redis, and resque
+</title><link href="http://simonwillison.net/2010/Feb/28/paul/" rel="alternate" /><updated>2010-02-28T23:02:23Z</updated><id>http://simonwillison.net/2010/Feb/28/paul/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://www.pgrs.net/2010/2/28/node-js-redis-and-resque"&gt;Node.js, redis, and resque&lt;/a&gt; (&lt;a href="http://news.ycombinator.com/item?id=1157280" title="Hacker News | Node.js, redis, and resque"&gt;via&lt;/a&gt;). Paul Gross has been experimenting with Node.js proxies for allowing web applications to be upgraded without missing any requests. Here he places all incoming HTTP requests in a redis queue, then has his backend Rails servers consume requests from the queue and push the responses back on to a queue for Node to deliver. When the backend application is upgraded, requests remain in the queue and users see a few seconds of delay before their request is handled. It’s not production ready yet (POST requests aren’t handled, for example) but it’s a very interesting approach.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="highavailability" /><category term="http" /><category term="javascript" /><category term="node" /><category term="nodejs" /><category term="rails" /><category term="redis" /></entry><entry><title>Johnny Cache
+</title><link href="http://simonwillison.net/2010/Feb/28/johnny/" rel="alternate" /><updated>2010-02-28T22:55:15Z</updated><id>http://simonwillison.net/2010/Feb/28/johnny/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://packages.python.org/johnny-cache/"&gt;Johnny Cache&lt;/a&gt;. Clever twist on ORM-level caching for Django. Johnny Cache (great name) monkey-patches Django’s QuerySet classes and caches the result of every single SELECT query in memcached with an infinite expiry time. The cache key includes a “generation” ID for each dependent database table, and the generation is changed every single time a table is updated. For apps with infrequent writes, this strategy should work really well—but if a popular table is being updated constantly the cache will be all but useless. Impressively, the system is transaction-aware—cache entries created during a transaction are held in local memory and only pushed to memcached should the transaction complete successfully.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="caching" /><category term="databases" /><category term="django" /><category term="memcached" /><category term="orm" /><category term="ormcaching" /><category term="performance" /><category term="python" /></entry><entry><title>Unit Testing Achievements
+</title><link href="http://simonwillison.net/2010/Feb/28/achievements/" rel="alternate" /><updated>2010-02-28T15:56:29Z</updated><id>http://simonwillison.net/2010/Feb/28/achievements/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://exogen.github.com/nose-achievements/"&gt;Unit Testing Achievements&lt;/a&gt;. A plugin for Python’s nose test runner that adds achievements—“Night Shift: Make a failing suite pass between 12am and 5am.”&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="nose" /><category term="nosetest" /><category term="python" /><category term="testing" /><category term="unittests" /></entry><entry><title>ClearMaps: A Mapping Framework for Data Visualization
+</title><link href="http://simonwillison.net/2010/Feb/28/clearmaps/" rel="alternate" /><updated>2010-02-28T15:52:04Z</updated><id>http://simonwillison.net/2010/Feb/28/clearmaps/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://sunlightlabs.com/blog/2010/clearmaps-mapping-framework/"&gt;ClearMaps: A Mapping Framework for Data Visualization&lt;/a&gt;. An open source library for map visualisations using ActionScript, with an Adobe AIR based encoding tool for translating data from shapefiles in to vector data suitable for use with the library.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="clearmaps" /><category term="flash" /><category term="mapping" /><category term="visualisations" /></entry><entry><title>kriszyp's node-promise
+</title><link href="http://simonwillison.net/2010/Feb/28/kriszyps/" rel="alternate" /><updated>2010-02-28T15:50:50Z</updated><id>http://simonwillison.net/2010/Feb/28/kriszyps/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://github.com/kriszyp/node-promise"&gt;kriszyp’s node-promise&lt;/a&gt;. Another elegant approach to managing asynchronous flows in Node, including running things both in parallel and serial.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="callbacks" /><category term="javascript" /><category term="node" /><category term="nodejs" /><category term="promise" /></entry><entry><title>Django Advent: Scaling Django
+</title><link href="http://simonwillison.net/2010/Feb/26/django/" rel="alternate" /><updated>2010-02-26T19:22:47Z</updated><id>http://simonwillison.net/2010/Feb/26/django/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://djangoadvent.com/1.2/scaling-django/"&gt;Django Advent: Scaling Django&lt;/a&gt;. Mike Malone’s advice on scaling Django applications, including taking advantage of new features in 1.2.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="django" /><category term="mikemalone" /><category term="scaling" /></entry><entry><title>PiCloud
+</title><link href="http://simonwillison.net/2010/Feb/26/picloud/" rel="alternate" /><updated>2010-02-26T18:25:41Z</updated><id>http://simonwillison.net/2010/Feb/26/picloud/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://www.picloud.com/"&gt;PiCloud&lt;/a&gt;. An interesting twist on cloud computing for Python. “import cloud; cloud.call(my_function, arguments)” serialises my_function and its arguments, pushes it up to one of their EC2 servers and hands you back a job ID which you can poll (or block on) for a response. They suggest using it for long running tasks such as web crawling or image processing.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="cloud" /><category term="cloudcomputing" /><category term="picloud" /><category term="python" /></entry><entry><title>Internet Explorer Cookie Internals (FAQ)
+</title><link href="http://simonwillison.net/2010/Feb/26/cachebusting/" rel="alternate" /><updated>2010-02-26T12:25:24Z</updated><id>http://simonwillison.net/2010/Feb/26/cachebusting/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://blogs.msdn.com/ieinternals/archive/2009/08/20/WinINET-IE-Cookie-Internals-FAQ.aspx"&gt;Internet Explorer Cookie Internals (FAQ)&lt;/a&gt;. Grr... IE 6, 7 and 8 don’t support the max-age cookie argument, forcing you to use an explicit expiry date instead. This appears to affect the cache busting cookie pattern, where you set a cookie to expire in 30 seconds for any user who posts content and use the presence of that cookie to skip caches and/or send their queries to a master instead of slave database. If you have to use expires, users with incorrect system clocks may get inconsistent results. Anyone know of a workaround?&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="cachebusting" /><category term="caching" /><category term="cookies" /><category term="ie" /></entry><entry><title>Using Bash's History Effectively
+</title><link href="http://simonwillison.net/2010/Feb/25/bash/" rel="alternate" /><updated>2010-02-25T12:21:09Z</updated><id>http://simonwillison.net/2010/Feb/25/bash/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://www.talug.org/events/20030709/cmdline_history.html"&gt;Using Bash’s History Effectively&lt;/a&gt;. The HISTIGNORE environment variable is particularly useful, allowing you to suppress certain commands by specifying a pattern. This article has a tip for causing a command to be omitted from the history if you prefix it with a space.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="bash" /><category term="commandline" /></entry><entry><title>Hg Init
+</title><link href="http://simonwillison.net/2010/Feb/25/hg/" rel="alternate" /><updated>2010-02-25T10:31:37Z</updated><id>http://simonwillison.net/2010/Feb/25/hg/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://hginit.com/"&gt;Hg Init&lt;/a&gt;. Joel Spolsky’s guide to Mercurial. If you’re still using a non-distributed version control system like Subversion, this is a great introduction to the new world order.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="distributedvcs" /><category term="joelspolsky" /><category term="mercurial" /><category term="subversion" /></entry><entry><title>"Do" it fast!
+</title><link href="http://simonwillison.net/2010/Feb/22/do/" rel="alternate" /><updated>2010-02-22T19:02:27Z</updated><id>http://simonwillison.net/2010/Feb/22/do/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://howtonode.org/do-it-fast"&gt;“Do” it fast!&lt;/a&gt;. Tim Caswell’s Do library has been upgraded for compatibility with Node v0.1.30, and now has a clever Do.convert() method which wraps Node’s low-level APIs with the Do libraries “continuable” abstraction.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="do" /><category term="javascript" /><category term="node" /><category term="nodejs" /><category term="timcaswell" /></entry><entry><title>node-v0.1.30
+</title><link href="http://simonwillison.net/2010/Feb/22/node/" rel="alternate" /><updated>2010-02-22T19:00:47Z</updated><id>http://simonwillison.net/2010/Feb/22/node/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://groups.google.com/group/nodejs/browse_thread/thread/e6cc6f04cd0ddf14"&gt;node-v0.1.30&lt;/a&gt; (&lt;a href="http://howtonode.org/do-it-fast" title="howtonode.org"&gt;via&lt;/a&gt;). A very significant new release of Node.js: the Twisted/Dojo-style Promise abstraction has been removed entirely, causing backwards incompatible changes to a bunch of core APIs. This means the pseudo-blocking Promise.wait() method is gone too, making it even harder to accidentally block your event loop. Instead, user-level libraries are encouraged to add Promise-style abstractions. I’m pleased to see Node sticking to the low-level stuff.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="async" /><category term="dojo" /><category term="javascript" /><category term="node" /><category term="nodejs" /><category term="promise" /><category term="twisted" /></entry><entry><title>Ryan Tomayko on Github's development process
+</title><link href="http://simonwillison.net/2010/Feb/22/rcorg/" rel="alternate" /><updated>2010-02-22T09:18:12Z</updated><id>http://simonwillison.net/2010/Feb/22/rcorg/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://rc3.org/2010/02/20/extreme-agility/"&gt;Ryan Tomayko on Github’s development process&lt;/a&gt;. In the comments—a fascinating insight in to how GitHub’s “developers work on whatever is most interesting to them” process manages to achieve really good results.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="agile" /><category term="github" /><category term="process" /><category term="ryantomayko" /></entry><entry><title>jacobian's django-deployment-workshop
+</title><link href="http://simonwillison.net/2010/Feb/19/jacobians/" rel="alternate" /><updated>2010-02-19T14:28:35Z</updated><id>http://simonwillison.net/2010/Feb/19/jacobians/</id><summary type="html">
+
+&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://github.com/jacobian/django-deployment-workshop"&gt;jacobian’s django-deployment-workshop&lt;/a&gt;. Notes and resources from Jacob’s 3 hour Django deployment workshop at PyCon, including example configuration files for Apache2 + mod_wsgi, nginx, PostgreSQL and pgpool.&lt;/p&gt;
+
+&lt;/div&gt;
+
+
+
+
+</summary><category term="apache" /><category term="deployment" /><category term="django" /><category term="jacobkaplanmoss" /><category term="modwsgi" /><category term="nginx" /><category term="pgpool" /><category term="postgresql" /><category term="pycon" /><category term="python" /><category term="sysadmin" /></entry></feed>

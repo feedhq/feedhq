@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>The Django community aggregator</title><link>http://www.djangoproject.com/community/</link><description>Aggregated feeds from the Django community.</description><language>en-us</language><lastBuildDate>Fri, 12 Mar 2010 09:24:40 -0000</lastBuildDate><item><title>Dominik Szopa: Announcing django-moderation</title><link>http://dominno.pl/2010/03/11/announcing-django-moderation/</link><description>&lt;p&gt;django-moderation is reusable application for Django framework, that allows to
+   moderate any model objects.
+
+&lt;/p&gt;
+&lt;p&gt;Code can be found at &lt;a href="http://github.com/dominno/django-moderation"&gt;http://github.com/dominno/django-moderation&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Possible use cases:&lt;/strong&gt;
+&lt;/p&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;
+     User creates his profile, profile is not visible on site.
+       It will be visible on site when moderator approves it.
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     User change his profile, old profile data is visible on site.
+       New data will be visible on site when moderator approves it. 
+ &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Features:&lt;/strong&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+ &lt;li&gt;
+     configurable admin integration(data changed in admin can be visible on 
+       site when moderator approves it)
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     moderation queue in admin
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     html differences of changes between versions of objects
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     configurable email notifications
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     custom model form that allows to edit changed data of object
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     100% PEP8 correct code
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     test coverage &amp;gt; 80% 
+ &lt;/li&gt;
+
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Requirements&lt;/strong&gt;
+&lt;/p&gt;
+&lt;p&gt;python &amp;gt;= 2.4
+&lt;/p&gt;
+&lt;p&gt;django &amp;gt;= 1.1
+
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Installation&lt;/strong&gt;
+&lt;/p&gt;
+&lt;p&gt;Download source code from http://github.com/dominno/django-moderation and run installation script:
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;$&amp;gt; python setup.py install
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Configuration&lt;/strong&gt;
+&lt;/p&gt;
+&lt;ol&gt;
+ &lt;li&gt;&lt;p&gt;Add to your INSTALLED_APPS in your settings.py:
+
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;moderation&lt;/code&gt;
+&lt;/p&gt;
+
+ &lt;/li&gt;
+
+ &lt;li&gt;&lt;p&gt;Run command &lt;code&gt;manage.py syncdb&lt;/code&gt;
+
+&lt;/p&gt;
+
+ &lt;/li&gt;
+
+ &lt;li&gt;&lt;p&gt;Register Models with moderation
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.db&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;models&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;moderation&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;YourModel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;models&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Model&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;pass&lt;/span&gt;
+
+
+&lt;span class="n"&gt;moderation&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+
+ &lt;/li&gt;
+
+ &lt;li&gt;&lt;p&gt;Register admin class with your Model
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;admin&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;moderation.admin&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;ModerationAdmin&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;YourModelAdmin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ModerationAdmin&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;&amp;quot;&amp;quot;&amp;quot;Admin settings go here.&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+
+
+&lt;span class="n"&gt;admin&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;site&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;YourModelAdmin&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+
+ &lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If you want to disable integration of moderation in admin,
+   add admin_intergration_enabled = False to your admin class:
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;YourModelAdmin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;ModerationAdmin&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;admin_intergration_enabled&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;False&lt;/span&gt;
+
+
+&lt;span class="n"&gt;admin&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;site&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;YourModelAdmin&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;How django-moderation works&lt;/strong&gt;
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt; When you change existing object or create new one, it will not be publicly
+    available until moderator approves it. It will be stored in ModeratedObject model.
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="n"&gt;your_model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;description&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'test'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;save&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pk&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;pk&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;Traceback&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;most&lt;/span&gt; &lt;span class="n"&gt;recent&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;last&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+&lt;span class="n"&gt;DoesNotExist&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;YourModel&lt;/span&gt; &lt;span class="n"&gt;matching&lt;/span&gt; &lt;span class="n"&gt;query&lt;/span&gt; &lt;span class="n"&gt;does&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;exist&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;When you will approve object, then it will be publicly available.
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;moderated_object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;approve&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;moderatated_by&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                   &lt;span class="n"&gt;reason&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'Reason for approve'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pk&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;YourModel&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;You can access changed object by calling changed_object on moderated_object:
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;moderated_object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;changed_object&lt;/span&gt;
+
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;YourModel&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is deserialized version of object that was changed.
+&lt;/p&gt;
+&lt;p&gt;Now when you will change an object, old version of it will be available publicly,
+   new version will be saved in moderated_object
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;description&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;'New description'&lt;/span&gt;
+
+&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;save&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="n"&gt;your_model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pk&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__dict__&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;'id'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'description'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;'test'&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+
+
+&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;moderated_object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;changed_object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__dict__&lt;/span&gt;
+
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;'id'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'description'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;'New description'&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+
+
+&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;moderated_object&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;approve&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;moderatated_by&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                   &lt;span class="n"&gt;reason&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'Reason for approve'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="n"&gt;your_model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;objects&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pk&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mf"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;your_model&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__dict__&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;'id'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'description'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;'New description'&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Email notifications&lt;/strong&gt;
+&lt;/p&gt;
+&lt;p&gt;By default when user change object that is under moderation,
+   e-mail notification is send to moderator. It will inform him
+   that object was changed and need to be moderated.
+&lt;/p&gt;
+&lt;p&gt;When moderator approves or reject object changes then e-mail
+   notification is send to user that changed this object. It will
+   inform user if his changes were accepted or rejected and inform him
+   why it was rejected or approved.
+
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;How to overwrite email notification templates&lt;/strong&gt;
+&lt;/p&gt;
+&lt;p&gt;E-mail notifications use following templates:
+&lt;/p&gt;
+&lt;ul&gt;
+ &lt;li&gt;
+     moderation/notification_subject_moderator.txt
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     moderation/notification_message_moderator.txt
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     moderation/notification_subject_user.txt
+ &lt;/li&gt;
+
+ &lt;li&gt;
+     moderation/notification_message_user.txt
+ &lt;/li&gt;
+
+&lt;/ul&gt;
+&lt;p&gt;Default context:
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;content_type&lt;/code&gt; - content type object of moderated object
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;moderated_object&lt;/code&gt; - ModeratedObject instance
+
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;site&lt;/code&gt; - current Site instance
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;How to pass extra context to email notification templates&lt;/strong&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If you want to pass extra context to email notification methods
+   you new need to create new class that subclass BaseModerationNotification class.
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;CustomModerationNotification&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseModerationNotification&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;inform_moderator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                     &lt;span class="n"&gt;subject_template&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'moderation/notification_subject_moderator.txt'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                     &lt;span class="n"&gt;message_template&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'moderation/notification_message_moderator.txt'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                     &lt;span class="n"&gt;extra_context&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;'''Send notification to moderator'''&lt;/span&gt;
+        &lt;span class="n"&gt;extra_context&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;'test'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s"&gt;'test'&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;CustomModerationNotification&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;inform_moderator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;subject_template&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                                                   &lt;span class="n"&gt;message_template&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                                                   &lt;span class="n"&gt;extra_context&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;inform_user&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                    &lt;span class="n"&gt;subject_template&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'moderation/notification_subject_user.txt'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                    &lt;span class="n"&gt;message_template&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'moderation/notification_message_user.txt'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                    &lt;span class="n"&gt;extra_context&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="sd"&gt;'''Send notification to user when object is approved or rejected'''&lt;/span&gt;
+        &lt;span class="n"&gt;extra_context&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;'test'&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="s"&gt;'test'&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;CustomModerationNotification&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;inform_user&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                                              &lt;span class="n"&gt;subject_template&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                                              &lt;span class="n"&gt;message_template&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                                              &lt;span class="n"&gt;extra_context&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Next register it with moderation as notification_class:
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="n"&gt;moderation&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;YourModel&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;notification_class&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;CustomModerationNotification&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Signals&lt;/strong&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;moderation.signals.pre_moderation&lt;/code&gt; - signal send before object is approved or rejected
+
+&lt;/p&gt;
+&lt;p&gt;Arguments sent with this signal:
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sender&lt;/code&gt; - The model class.
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;instance&lt;/code&gt; - Instance of model class that is moderated
+
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;status&lt;/code&gt; - Moderation status, 0 - rejected, 1 - approved
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;moderation.signals.post_moderation&lt;/code&gt; - signal send after object is approved or rejected
+&lt;/p&gt;
+
+&lt;p&gt;Arguments sent with this signal:
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sender&lt;/code&gt; - The model class.
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;instance&lt;/code&gt; - Instance of model class that is moderated
+
+&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;status&lt;/code&gt; - Moderation status, 0 - rejected, 1 - approved
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Forms&lt;/strong&gt;
+&lt;/p&gt;
+
+&lt;p&gt;When creating ModelForms for models that are under moderation use
+   BaseModeratedObjectForm class as ModelForm class. Thanks to that form will initialized 
+   with data from changed_object.
+&lt;/p&gt;
+&lt;div class="codehilite"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;moderation.forms&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;BaseModeratedObjectForm&lt;/span&gt;
+
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;ModeratedObjectForm&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BaseModeratedObjectForm&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;MyModel&lt;/span&gt;
+
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Any comments ? Feedback ? Feature requests ?
+&lt;/p&gt;</description><guid>http://dominno.pl/2010/03/11/announcing-django-moderation/</guid></item><item><title>Caktus Consulting Group: Decoupled Django Apps and the Beauty of Generic Relations</title><link>http://www.caktusgroup.com/blog/2010/03/11/decoupled-django-apps-and-the-beauty-of-generic-relations/</link><description>Like just about everyone else, we&amp;#8217;ve written our own suite of tools to help with building complex content management systems in Django here at Caktus.  We reviewed a number of the existing CMSes out there, but in almost every case the navigation and page structure were so tightly coupled the system broke down when [...]</description><guid>http://www.caktusgroup.com/blog/2010/03/11/decoupled-django-apps-and-the-beauty-of-generic-relations/</guid></item><item><title>Simon Willison: Cache Machine: Automatic caching for your Django models</title><link>http://simonwillison.net/2010/Mar/11/cachemachine/</link><description>&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://jbalogh.me/2010/02/09/cache-machine/"&gt;Cache Machine: Automatic caching for your Django models&lt;/a&gt;. This is the third new ORM caching layer for Django I’ve seen in the past month! Cache Machine was developed for zamboni, the port of addons.mozilla.org to Django. Caching is enabled using a model mixin class (to hook up some post_delete hooks) and a custom caching manager. Invalidation works by maintaining a “flush list” of dependent cache entries for each object—this is currently stored in memcached and hence has potential race conditions, but a comment in the source code suggests that this could be solved by moving to redis.&lt;/p&gt;
+
+&lt;/div&gt;</description><guid>http://simonwillison.net/2010/Mar/11/cachemachine/</guid></item><item><title>Josh VanderLinden: Python And Execution Context</title><link>http://www.codekoala.com/blog/2010/python-and-execution-context/</link><description>I recently found myself in a situation where knowing the execution context of a function became necessary.  It took me several hours to learn about this functionality, despite many cleverly-crafted Google searches.  So, being the generous person I am, I want to share my findings.
+&lt;br /&gt;My particular use case required that a function behave differently depending on whether it was called in an exec call.  Specifics beyond that are not...</description><guid>http://www.codekoala.com/blog/2010/python-and-execution-context/</guid></item><item><title>Peter Bengtsson: Speed test between django_mongokit and postgresql_psycopg2</title><link>http://www.peterbe.com/plog/speed-test-between-django_mongokit-and-postgresql_psycopg2</link><description>&lt;p&gt;Following on from yesterday's blog about &lt;a href="http://www.peterbe.com/plog/how-and-why-to-use-django-mongokit"&gt;How and why to use django-mongokit&lt;/a&gt; I extended the exampleproject which is inside the &lt;a href="http://github.com/peterbe/django-mongokit"&gt;django-mongokit&lt;/a&gt; project with another app called &lt;code&gt;exampleapp_sql&lt;/code&gt; which does the same thing as the &lt;code&gt;exampleapp&lt;/code&gt; but does it with SQL instead. Then I added a very simple &lt;a href="http://github.com/peterbe/django-mongokit/blob/master/exampleproject/benchmarker/views.py"&gt;benchmarker app&lt;/a&gt; in the same project and wrote three functions:&lt;/p&gt;
+
+
+&lt;ol&gt;
+&lt;li&gt; One to create 10/100/500/1000 instances of my class&lt;/li&gt;
+&lt;li&gt; One to edit one field of all 10/100/500/1000 instances&lt;/li&gt;
+&lt;li&gt; One to delete each of the 10/100/500/1000 instances&lt;/li&gt;
+
+&lt;/ol&gt;&lt;/p&gt;&lt;br /&gt;[&lt;a href="http://www.peterbe.com/plog/speed-test-between-django_mongokit-and-postgresql_psycopg2"&gt;325 more words&lt;/a&gt;]</description><guid>http://www.peterbe.com/plog/speed-test-between-django_mongokit-and-postgresql_psycopg2</guid></item><item><title>Arne Brodowski: Einladung zur Django-UserGroup Hamburg am 23. März</title><link>http://www.arnebrodowski.de/blog/einladung-zur-django-usergroup-hamburg-am-23-maerz.html</link><description>&lt;p&gt;Das nächste Treffen der Django-UserGroup Hamburg findet am Dienstag, den
+
+&lt;strong&gt;23.03.2010 um 19:30&lt;/strong&gt; statt. Wie bei den letzten Malen treffen wir uns wieder
+in den Räumen der &lt;strong&gt;CoreMedia AG in der Ludwig-Erhard-Straße 18&lt;/strong&gt; in
+20459 Hamburg (Anfahrtsbeschreibung auf
+&lt;a href="http://maps.google.de/maps?f=q&amp;source=s_q&amp;hl=de&amp;geocode=&amp;q=CoreMedia+AG,+Ludwig-Erhard-Str.+18,+Hamburg&amp;sll=51.151786,10.415039&amp;sspn=16.6798,32.739258&amp;ie=UTF8&amp;z=16"&gt;Google Maps&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;Bitte am Eingang bei CoreMedia AG klingeln, in den 3. Stock fahren und oben
+am Empfang nach der Django-UserGroup fragen.&lt;/p&gt;
+&lt;p&gt;Da wir in den Räumlichkeiten einen Beamer zur Verfügung haben hat jeder
+Teilnehmer die Möglichkeit einen kurzen Vortrag (Format: &lt;a href="http://en.wikipedia.org/wiki/Lightning_Talk"&gt;Lightning Talks&lt;/a&gt; oder etwas länger)
+zu halten. Die meisten Vorträge ergeben sich erfahrungsgemäß vor Ort.&lt;/p&gt;
+&lt;p&gt;Eingeladen ist wie immer jeder der Interesse hat sich mit anderen
+Djangonauten auszutauschen. Eine Anmeldung ist nicht erforderlich.&lt;/p&gt;
+&lt;p&gt;Weitere Informationen über die UserGroup gibt es in unserem Git Repository
+unter &lt;a href="http://www.dughh.de"&gt;www.dughh.de&lt;/a&gt; und im &lt;a href="http://djangode.pbworks.com/Django-UserGroup+Hamburg"&gt;Wiki des Deutschen Django-Vereins&lt;/a&gt;.&lt;/p&gt;</description><guid>http://www.arnebrodowski.de/blog/einladung-zur-django-usergroup-hamburg-am-23-maerz.html</guid></item><item><title>Caktus Consulting Group: Django and Hudson CI (Day 1)</title><link>http://www.caktusgroup.com/blog/2010/03/08/django-and-hudson-ci-day-1/</link><description>We&amp;#8217;re always looking for new tools to make our development environment more robust here at Caktus. We write a lot of tests to ensure proper functionality as new features land and bug fixes are added to our projects. The next step is to integrate with a continuous integration system to automate the process and regularly [...]</description><guid>http://www.caktusgroup.com/blog/2010/03/08/django-and-hudson-ci-day-1/</guid></item><item><title>Peter Bengtsson: How and why to use django-mongokit (aka. Django to MongoDB)</title><link>http://www.peterbe.com/plog/how-and-why-to-use-django-mongokit</link><description>&lt;p&gt;&lt;a href="http://www.peterbe.com/plog/how-and-why-to-use-django-mongokit/mongo2django.png"&gt;&lt;img src="http://www.peterbe.com/plog/how-and-why-to-use-django-mongokit/display-thumbnail/mongo2django.png" alt="How and why to use django-mongokit" class="floatright" border="1" /&gt;&lt;/a&gt;
+Here I'm going to explain how to combine
+
+&lt;a href="http://www.djangoproject.com/"&gt;Django&lt;/a&gt; and
+&lt;a href="http://www.mongodb.org/display/DOCS/Home"&gt;MongoDB&lt;/a&gt; using
+&lt;a href="http://bitbucket.org/namlook/mongokit/wiki/Home"&gt;MongoKit&lt;/a&gt; and
+&lt;a href="http://github.com/peterbe/django-mongokit"&gt;django-mongokit&lt;/a&gt;. &lt;/p&gt;
+
+&lt;p&gt;MongoDB is a document store built for high speed and high concurrency
+with a very good redundancy story. It's an alternative to relational
+databases (e.g. MySQL) that is what Django is tightly coupled with in
+it's ORM (Object Relation Mapping) and what it's called now is ODM
+(Object Document Mapping) in lack of a better acronym. That's where
+MongoKit comes in. It's written in Python and it connects to the
+MongoDB database using a library called
+&lt;a href="http://api.mongodb.org/python/1.4%2B/index.html"&gt;pymongo&lt;/a&gt; and it turns
+data from the MongoDB and turns it into instances of classes you have
+defined. MongoKit has nothing to do with Django. That's where
+django-mongokit comes in. Written by yours truly.&lt;/p&gt;&lt;br /&gt;[&lt;a href="http://www.peterbe.com/plog/how-and-why-to-use-django-mongokit"&gt;1551 more words&lt;/a&gt;]</description><guid>http://www.peterbe.com/plog/how-and-why-to-use-django-mongokit</guid></item><item><title>Andriy Drozdyuk: Debugging production Django deployment</title><link>http://drozdyuk.blogspot.com/2010/03/debugging-production-django-deployment.html</link><description>Deploying Django is a process that can drive one bananas. There are &lt;a href="http://docs.djangoproject.com/en/dev/howto/deployment/"&gt;a lot of things&lt;/a&gt; to setup to go from your development environment to the production. Aside from the regular hassles - there come special little buggers that can really make you mad. If you ever had problems with 500.html pages, url configurations or import errors - you know what I mean.&lt;br /&gt;
+
+&lt;br /&gt;
+However it doesn't all have to be that bad. There are quite a few steps you can take early on to minimize the pain. If you do get into trouble - there are some things you can do to debug out of it.&lt;br /&gt;
+&lt;br /&gt;
+&lt;a name="more"&gt;&lt;/a&gt;&lt;br /&gt;
+&lt;b&gt;Preventative Measures&lt;/b&gt;&lt;br /&gt;
+
+&lt;br /&gt;
+&lt;ol&gt;&lt;li&gt;Deploy early&lt;br /&gt;
+If you want to avoid the hassle of debugging 100 things at once, deploy your project as soon as possible. By "as soon as possible" I mean right after you create it - when there are no models, views and funky url settings!&lt;/li&gt;
+&lt;li&gt;Commit often&lt;br /&gt;
+You are of course using &lt;a href="http://git-scm.com/"&gt;source control&lt;/a&gt; for your project, correct? By&amp;nbsp;committing often you allow for greater granularity of your project. In a way you "isolate" bugs in a particular commit. This makes finding them later on particularly easy.&lt;/li&gt;
+
+&lt;li&gt;Deploy often&lt;br /&gt;
+Same as #1 - the only way to make sure it works - is to put it out into the wild!&lt;/li&gt;
+&lt;li&gt;Separate production from development.&lt;br /&gt;
+You should have something like this in your settings.py file:&lt;br /&gt;
+if socket.gethostname() == 'server40.online.com':&lt;br /&gt;
+&amp;nbsp;&amp;nbsp; &amp;nbsp; DEBUG = False&lt;br /&gt;
+else:&lt;br /&gt;
+
+&amp;nbsp;&amp;nbsp; &amp;nbsp; DEBUG = True&lt;br /&gt;
+and feed all your other settings (i.e. database, media, etc) from this variable. This will make for painless deployment.&lt;/li&gt;
+&lt;li&gt;Use dynamic path names&lt;br /&gt;
+Don't just hardcode "C:\Documents" or "/home/user/app" in your settings. Don't be lazy. This is how we do it:&lt;br /&gt;
+&lt;br /&gt;
+import os&lt;br /&gt;
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))&lt;br /&gt;
+
+&lt;br /&gt;
+and then go crazy for all the other path veriables:&lt;br /&gt;
+MEDIA_ROOT = os.path.join(SITE_ROOT, 'core/media')&lt;br /&gt;
+TEMPLATE_DIRS = ( os.path.join(SITE_ROOT, 'core/templates') )&lt;br /&gt;
+and so on...&lt;/li&gt;
+&lt;li&gt;Checkout source code into production&lt;br /&gt;
+Don't just copy your code to production server with FTP or SCP! Install revision control like &lt;a href="http://git-scm.com/"&gt;git&lt;/a&gt; or &lt;a href="http://mercurial.selenic.com/"&gt;mercurial&lt;/a&gt; on the server, so you can hack away at the code without being afraid of messing things up, and more importantly - not loosing your important "tweaks" that you can only do in production.&lt;/li&gt;
+
+&lt;/ol&gt;&lt;div&gt;&lt;b&gt;Debugging the Deployed&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;ol&gt;&lt;li&gt;Check your path and full-qualify the import names&lt;br /&gt;
+Make sure you python path is correct. Sometimes the modules you can see in your development - are invisible in production.&lt;br /&gt;
+If your project structure is something like this:&lt;br /&gt;
+/project&lt;br /&gt;
+---/app&lt;br /&gt;
+------- views.py&lt;br /&gt;
+and you are importing your views in your urls.py files like so:&lt;br /&gt;
+from app import views&lt;br /&gt;
+than you might get a wierd handler500 error that makes no sense at all.&lt;br /&gt;
+Either reference your modules with full qualified names, i.e. "project.app.views" or put the path to your app directory into your path: "/home/user/blah/project/app".&lt;/li&gt;
+
+&lt;li&gt;Back up - test - roll forward&lt;br /&gt;
+Sometimes you can't tell if the bug is from your latest update. Because production can keep some code in memory - one often fails to notice a bug until it is more than one update later.&lt;br /&gt;
+Your first order of business should be to find the bug exactly. Figure out which "commit" added that bug into the system.&lt;br /&gt;
+For this you must follow these steps:&lt;br /&gt;
+a) Roll back to some point in the code where it worked&lt;br /&gt;
+b) Restart your server, services etc... Make sure it works.&lt;br /&gt;
+c) Roll forward to the newer revision&lt;br /&gt;
+d) Restart. If everything still works - go to c).&lt;br /&gt;
+e) If stuff is broken Roll back to some point before a).&lt;br /&gt;
+Essentially you are doing a "binary" search on your commit history to isolate the bug. If you are using git &amp;nbsp;- you can automate this process with &lt;a href="http://www.kernel.org/pub/software/scm/git/docs/git-bisect.html"&gt;git-bisect&lt;/a&gt;.&lt;br /&gt;
+Once you find the offending commit - roll your code to the revision before it, and start by copying by hand the code from the offending revisions.&lt;br /&gt;
+Hopefully because you kept your commits small, it should not be a lot!&lt;/li&gt;
+
+&lt;li&gt;90% it's urls and imports&lt;br /&gt;
+Most likely you screwed up your imports or urls. Check them over.&lt;/li&gt;
+&lt;li&gt;The other 10% it's your 500.html and 404.html&lt;br /&gt;
+Did you create your 500.html and 404.html pages in your templates directory? The production environment won't work without them.&lt;/li&gt;
+&lt;li&gt;User postgresql_psycopg2 and not postgresql&lt;br /&gt;
+This is more of a tip than debugging technique, but one often confuses the two. The new psycopg is termed psycopg2 and so we must use postgresql_psycopg2 for our database engine setting.&lt;/li&gt;
+
+&lt;li&gt;Set DEBUG to True on production&lt;br /&gt;
+Just below your logic which determines your DEBUG variable, overwrite it temporarily with true.&lt;br /&gt;
+if blah..&lt;br /&gt;
+&amp;nbsp;&amp;nbsp; DEBUG = True&lt;br /&gt;
+else:&lt;br /&gt;
+&amp;nbsp;&amp;nbsp; DEBUG = False&lt;br /&gt;
+DEBUG = True # Overwrite temporarily&lt;br /&gt;
+
+&lt;br /&gt;
+This is a real hack, but it can temporarily give you some great insight into the problem.&lt;/li&gt;
+&lt;/ol&gt;&lt;div&gt;&lt;b&gt;Conclusion&lt;/b&gt;&lt;/div&gt;&lt;div&gt;In the end if you try to keep the "production" on your mind from the start, you deployment should be not a problem. Because one does not deploy very often, one tends to forget all the mistakes that were made previously. This makes it really&amp;nbsp;challenging&amp;nbsp;to get it "right" every time. Some time is spent going over the error logs and figuring out the same problems. However we cannot solve this. It will always be like so.&lt;br /&gt;
+The best thing you can do is prepare for this process ahead of time - and once there, have effective ways of dealing with it.&lt;/div&gt;&lt;/div&gt;&lt;div class="blogger-post-footer"&gt;&lt;img width="1" height="1" src="https://blogger.googleusercontent.com/tracker/7446841198555618766-1799279649732304257?l=drozdyuk.blogspot.com" alt="" /&gt;&lt;/div&gt;</description><guid>http://drozdyuk.blogspot.com/2010/03/debugging-production-django-deployment.html</guid></item><item><title>Simon Willison: Announcing django-cachebot</title><link>http://simonwillison.net/2010/Mar/6/david/</link><description>&lt;div class="blogmark segment"&gt;&lt;p&gt;&lt;a href="http://blog.davidziegler.net/post/429237463/announcing-django-cachebot"&gt;Announcing django-cachebot&lt;/a&gt;. The ORM caching space around Django is heating up. django-cachebot is used in production at mingle.com and takes a more low level approach to cache invalidation than Johnny Cache, enabling you to specifically mark the querysets you wish to cache and providing some advanced options for cache invalidation. Unfortunately it currently relies on a patch to Django core to enable its own manager.&lt;/p&gt;
+
+&lt;/div&gt;</description><guid>http://simonwillison.net/2010/Mar/6/david/</guid></item></channel></rss>

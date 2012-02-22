@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Add a category" %}{% endblock %}
+
+{% block content %}
+	<h2>{% trans "Add a category" %}</h2>
+	<form method="post" action="{% url "feeds:add_category" %}">
+		{% include "form.html" %}
+		<div class="submit">
+			<input type="submit" value="{% trans "Add category" %}">
+			<a href="{% url "feeds:home" %}">{% trans "Cancel" %}</a>
+		</div>
+	</form>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% spaceless %}
+	{% if entries.has_previous %}
+		{% ifequal entries.previous_page_number 1 %}
+			<a href="{{ base_url }}">{{ entries.previous_page_number }}</a>
+		{% else %}
+			<a href="{{ base_url }}">1</a>
+			{% ifnotequal entries.previous_page_number 2 %}
+				{% ifequal entries.previous_page_number 3 %}
+					<a href="{{ base_url }}2/">2</a>
+				{% else %}
+					<span>…</span>
+				{% endifequal %}
+			{% endifnotequal %}
+			<a href="{{ base_url }}{{ entries.previous_page_number }}/">{{ entries.previous_page_number }}</a>
+		{% endifequal %}
+	{% endif %}
+
+	<span>{{ entries.number }}</span>
+
+	{% if entries.has_next %}
+		{% ifnotequal entries.next_page_number entries.paginator.num_pages %}
+			{% ifequal entries.next_page_number|add:"1" entries.paginator.num_pages %}
+				<a href="{{ base_url }}{{ entries.next_page_number }}/">{{ entries.next_page_number }}</a>
+			{% else %}
+				<a href="{{ base_url }}{{ entries.next_page_number }}/">{{ entries.next_page_number }}</a>
+				{% ifequal entries.next_page_number entries.paginator.num_pages|add:"-2" %}
+					<a href="{{ base_url }}{{ entries.paginator.num_pages|add:"-1" }}/">{{ entries.paginator.num_pages|add:"-1" }}</a>
+				{% else %}
+					<span>…</span>
+				{% endifequal %}
+			{% endifequal %}
+		{% endifnotequal %}
+		<a href="{{ base_url }}{{ entries.paginator.num_pages }}/">{{ entries.paginator.num_pages }}</a>
+	{% endif %}
+{% endspaceless %}

@@ -1,0 +1,5 @@
+*.sqlite
+*.pyc
+feedhq/media
+feedhq/settings.py
+.sass-cache

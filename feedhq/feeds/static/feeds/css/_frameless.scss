@@ -1,0 +1,53 @@
+/*
+	Simplified Frameless by @idangazit
+	Based on Frameless by Joni Korpi <http://framelessgrid.com/>
+	Licensed under CC0 <http://creativecommons.org/publicdomain/zero/1.0/>
+
+	https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-browser-Polyfills
+	http://selectivizr.com/
+*/
+
+$font-size: 20; // Your base font-size in pixels
+$em: $font-size; // Shorthand for outputting ems
+
+$column: $font-size * 3; // The column-width of your grid in pixels
+$gutter: $font-size * 1; // The gutter-width of your grid in pixels
+
+$gutter-em: ($gutter / $em) * 1em; // The gutter-width in ems.
+
+
+@function column-width($cols:1) {
+	@return ($cols * ($column + $gutter) - $gutter) * 1px;
+}
+
+
+@mixin cols($cols:1, $padleft:0, $padright:0, $manageMargins:true) {
+	float: left;
+	width: column-width($cols);
+	margin-right: $gutter-em / 2;
+	margin-left: $gutter-em / 2 ;
+	@if $padleft > 0 {
+		padding-left: column-width($padleft);
+	}
+	@if $padright > 0 {
+		padding-right: column-width($padright);
+	}
+	@if $manageMargins {
+		&:first-child {
+			margin-left: 0;
+		}
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+}
+
+
+@mixin grid($cols:12, $pad:1) {
+	@include clearfix;
+	width: column-width($cols);
+	padding-left: $pad * $gutter-em;
+	padding-right: $pad * $gutter-em;
+	margin-left: auto;
+	margin-right: auto;
+}

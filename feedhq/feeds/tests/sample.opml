@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<opml version="1.0">
+  <head>
+    <dateCreated>31-Aug-2010</dateCreated>
+  </head>
+  <body>
+		<outline title="rss.slashdot.org" type="rss" xmlUrl="feeds/tests/atom10.xml"/>
+		<outline title="www.theserverside.com" type="rss" xmlUrl="feeds/tests/rss20.xml"/>
+  </body>
+</opml>

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Import data" %}{% endblock %}
+
+{% block content %}
+	<h2>{% trans "Import data from an OPML file" %}</h2>
+	<form enctype="multipart/form-data" method="post" action="{% url "feeds:import_feeds" %}">
+		{% include "form.html" %}
+		<div class="submit">
+			<input type="submit" value="{% trans "Import" %}">
+			<a href="{% url "feeds:home" %}">{% trans "Cancel" %}</a>
+		</div>
+	</form>
+{% endblock %}
