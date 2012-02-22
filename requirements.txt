@@ -1,5 +1,5 @@
 Django==1.4b1
-PIL==1.1.7
+PIL==1.1.6
 certifi==0.0.8
 chardet==1.0.1
 django-appconf==0.4.1
