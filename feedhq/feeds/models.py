@@ -4,6 +4,7 @@ import urlparse
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from django_push.subscriber.signals import updated
@@ -142,7 +143,7 @@ class Feed(models.Model):
 
         if del_after == 'never':
             return None
-        return datetime.datetime.now() - TIMEDELTAS[del_after]
+        return timezone.now() - TIMEDELTAS[del_after]
 
     def update_unread_count(self):
         self.unread_count = self.entries.filter(read=False).count()
