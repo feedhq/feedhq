@@ -3,5 +3,5 @@
 		<span class="cat {{ entry.feed.category.color }}">{{ entry.feed }}</span>
 		<a href="{% url "feeds:item" entry.id %}">{% if entry.title %}{{ entry.title|safe }}{% else %}(No title){% endif %}</a>
 	</div>
-	<div class="date">{{ entry.date|date }}</div>
+	<div class="date">{{ entry.date|timezone:user.timezone|date }}</div>
 </li>
