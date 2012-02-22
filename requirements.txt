@@ -1,5 +1,7 @@
 Django==1.4b1
 PIL==1.1.7
+certifi==0.0.8
+chardet==1.0.1
 django-appconf==0.4.1
 django-floppyforms==0.4.7
 django-push==0.4
@@ -10,4 +12,5 @@ lxml==2.3.3
 opml==0.5
 psycopg2==2.4.1
 pytz==2011n
+requests==0.10.4
 wsgiref==0.1.2
