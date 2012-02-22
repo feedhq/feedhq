@@ -2,11 +2,9 @@ Django==1.4b1
 PIL==1.1.6
 certifi==0.0.8
 chardet==1.0.1
-django-appconf==0.4.1
 django-floppyforms==0.4.7
 django-push==0.4
 django-ratelimit-backend==0.1
-django-staticfiles==1.1.2
 feedparser==4.1
 lxml==2.3.3
 opml==0.5
