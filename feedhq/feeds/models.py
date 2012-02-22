@@ -3,6 +3,7 @@ import urlparse
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from django_push.subscriber.signals import updated
@@ -81,9 +82,8 @@ class Category(models.Model):
         ordering = ('order', 'name', 'id')
         verbose_name_plural = 'categories'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('feeds:category', [self.slug])
+        return reverse('feeds:category', args=[self.slug])
 
 
 class Feed(models.Model):
@@ -124,9 +124,8 @@ class Feed(models.Model):
     class Meta:
         ordering = ('name',)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('feeds:feed', [self.id])
+        return reverse('feeds:feed', args=[self.id])
 
     def favicon_img(self):
         if not self.favicon:
@@ -186,9 +185,8 @@ class Entry(models.Model):
         ordering = ('-date', 'title')
         verbose_name_plural = 'entries'
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('feeds:item', [self.id])
+        return reverse('feeds:item', args=[self.id])
 
     def get_link(self):
         if self.permalink:
