@@ -81,7 +81,7 @@ INSTALLED_APPS = (
 )
 
 LOGIN_URL = reverse_lazy('login')
-LOGIN_REDIRECT_URL = reverse_lazy('home')
+LOGIN_REDIRECT_URL = reverse_lazy('feeds:home')
 
 DATE_FORMAT = 'M j, H:i'
 
