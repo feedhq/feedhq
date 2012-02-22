@@ -25,6 +25,8 @@ FeedHQ is a simple, lightweight web-based feed reader. Main features:
 
 * `OPML import`_
 
+* Syntax highlighting, awesome for reading tech blogs
+
 .. _PubSubHubbub: http://code.google.com/p/pubsubhubbub/
 
 .. _OPML import: http://www.opml.org/
