@@ -336,17 +336,16 @@ def import_feeds(request):
         form = OPMLImportForm(request.POST, request.FILES)
         if form.is_valid():
             # get the list of existing feeds
-            existing_feeds = [f.url for f in Feed.objects.all()]
+            existing_feeds = [f.url for f in Feed.objects.filter(
+                category__in=request.user.categories.all(),
+            )]
             # try to get the "Unclassified" field, create it if needed
-            try:
-                category = Category.objects.get(name='Imported',
-                                                user=request.user)
-            except Category.DoesNotExist:
-                category = Category(name='Imported', user=request.user,
-                                    slug='imported')
-                category.save()
+            category, created = request.user.categories.get_or_create(
+                slug='imported', defaults={'name': _('Imported')},
+            )
 
             entries = opml.parse(request.FILES['file'])
+            imported = 0
             for entry in entries:
                 if (hasattr(entry, 'xmlUrl') and
                     not entry.xmlUrl in existing_feeds):
@@ -354,10 +353,11 @@ def import_feeds(request):
                             category=category)
                     setattr(feed, "skip_post_save", True)
                     feed.save()
+                    imported += 1
 
             messages.success(
                 request,
-                _('%(num)s feeds have been imported' % {'num': len(entries)}),
+                _('%(num)s feeds have been imported' % {'num': imported}),
             )
             return redirect('feeds:home')
 

@@ -448,8 +448,14 @@ class TestFeeds(TestCase):
 
         with open(os.path.join(ROOT, 'sample.opml'), 'r') as opml_file:
             data = {'file': opml_file}
-            response = self.client.post(url, data)
-        self.assertEquals(response.status_code, 302)
-        response = self.client.get(response['Location'])
+            response = self.client.post(url, data, follow=True)
+        self.assertEquals(len(response.redirect_chain), 1)
         self.assertContains(response, '2 feeds have been imported')
         self.assertEquals(Category.objects.filter(name='Imported').count(), 1)
+
+        # Re-import
+        with open(os.path.join(ROOT, 'sample.opml'), 'r') as opml_file:
+            data = {'file': opml_file}
+            response = self.client.post(url, data, follow=True)
+        self.assertEquals(len(response.redirect_chain), 1)
+        self.assertContains(response, '0 feeds have been imported')
