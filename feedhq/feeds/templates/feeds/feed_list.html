@@ -22,9 +22,9 @@
 		<div class="figures">
 			<div class="count">
 				{% if only_unread %}
-					{% blocktrans with start=entries.start_index end=entries.end_index count counter=entries.paginator.count %}{{ start }} - {{ end }} of {{ count }} unread entry.{% plural %}{{ start }} - {{ end }} of {{ count }} unread entries.{% endblocktrans %}
+					{% blocktrans with start=entries.start_index end=entries.end_index count counter=entries.paginator.count %}{{ start }} - {{ end }} of {{ counter }} unread entry.{% plural %}{{ start }} - {{ end }} of {{ counter }} unread entries.{% endblocktrans %}
 				{% else %}
-					{% blocktrans with start=entries.start_index end=entries.end_index count counter=entries.paginator.count %}{{ start }} - {{ end }} of {{ count }} entry{% plural %}{{ start }} - {{ end }} of {{ count }} entries{% endblocktrans %}{% if unread_count %}{% blocktrans count counter=unread_count %} ({{ unread_count }} unread){% plural %} ({{ unread_count }} unread){% endblocktrans %}{% endif %}.
+					{% blocktrans with start=entries.start_index end=entries.end_index count counter=entries.paginator.count %}{{ start }} - {{ end }} of {{ counter }} entry{% plural %}{{ start }} - {{ end }} of {{ counter }} entries{% endblocktrans %}{% if unread_count %}{% blocktrans count counter=unread_count %} ({{ unread_count }} unread){% plural %} ({{ unread_count }} unread){% endblocktrans %}{% endif %}.
 				{% endif %}
 				{% if only_unread %}
 					<a href="{{ all_url }}">{% trans "Show all" %}</a>
