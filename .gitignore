@@ -5,3 +5,4 @@ feedhq/settings.py
 .sass-cache
 dist
 feedhq.egg-info
+artwork
