@@ -21,9 +21,16 @@
 	{% else %}
 		<div class="figures">
 			<div class="count">
-				{{ entries.start_index }} - {{ entries.end_index }} of {{ entries.paginator.count }}{% if only_unread %} unread{% endif %} entries{% if not only_unread and unread_count %} ({{ unread_count }} unread){% endif %}.
-				{% if only_unread %}<a href="{{ all_url }}">Show all</a>
-				{% else %}<a href="{{ unread_url }}">Show only unread</a>{% endif %}
+				{% if only_unread %}
+					{% blocktrans with start=entries.start_index end=entries.end_index count counter=entries.paginator.count %}{{ start }} - {{ end }} of {{ count }} unread entry.{% plural %}{{ start }} - {{ end }} of {{ count }} unread entries.{% endblocktrans %}
+				{% else %}
+					{% blocktrans with start=entries.start_index end=entries.end_index count counter=entries.paginator.count %}{{ start }} - {{ end }} of {{ count }} entry{% plural %}{{ start }} - {{ end }} of {{ count }} entries{% endblocktrans %}{% if unread_count %}{% blocktrans count counter=unread_count %} ({{ unread_count }} unread){% plural %} ({{ unread_count }} unread){% endblocktrans %}{% endif %}.
+				{% endif %}
+				{% if only_unread %}
+					<a href="{{ all_url }}">{% trans "Show all" %}</a>
+				{% else %}
+					<a href="{{ unread_url }}">{% trans "Show only unread" %}</a>
+				{% endif %}
 			</div>
 			<div class="pagination">{% include "feeds/paginator.html" %}</div>
 		</div>

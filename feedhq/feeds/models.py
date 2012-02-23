@@ -100,7 +100,7 @@ class Feed(models.Model):
     link = models.URLField(_('Link'), verify_exists=False)
     # Mute a feed when we don't want the updates to show up in the timeline
     muted = models.BooleanField(_('Muted'), default=False,
-                                help_text=('Check this if you want to stop '
+                                help_text=_('Check this if you want to stop '
                                            'checking updates for this feed'))
     etag = models.CharField(_('Etag'), max_length=255, null=True, blank=True)
     modified = models.CharField(_('Modified'), max_length=255, null=True,

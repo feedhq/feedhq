@@ -44,7 +44,7 @@
 			<form method="post" action="{% url "feeds:item" object.id %}">
 				{% csrf_token %}
 				<input type="hidden" name="action" value="unread" />
-				<input type="submit" value="Unread" />
+				<input type="submit" value="{% trans "Unread" %}" />
 			</form>
 		</div>
 		<div class="content">
