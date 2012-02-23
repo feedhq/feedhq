@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<opml version="1.0">
+  <head>
+    <title>Liferea Feed List Export</title>
+  </head>
+  <body>
+      <outline title="&lt;Glazblog/&gt;" text="&lt;Glazblog/&gt;" description="&lt;Glazblog/&gt;" type="rss" xmlUrl="http://www.glazman.org/weblog/dotclear/index.php?feed/rss2" htmlUrl=""/>
+      <outline title="Accessibilit&#xE9; num&#xE9;rique, CSS et standards du web - Fairytells - Commentaires" text="Accessibilit&#xE9; num&#xE9;rique, CSS et standards du web - Fairytells - Commentaires" description="Accessibilit&#xE9; num&#xE9;rique, CSS et standards du web - Fairytells - Commentaires" type="rss" xmlUrl="http://www.fairytells.net/rss.php?type=co" htmlUrl=""/>
+      <outline title="Accessibilit&#xE9;Web" text="Accessibilit&#xE9;Web" description="Accessibilit&#xE9;Web" type="rss" xmlUrl="http://accessibiliteweb.com/spip.php?page=rss&amp;id_rubrique=3" htmlUrl=""/>
+      <outline title="Alsacreations.com - Actualit&#xE9;s" text="Alsacreations.com - Actualit&#xE9;s" description="Alsacreations.com - Actualit&#xE9;s" type="rss" xmlUrl="http://www.alsacreations.com/rss/actualites.xml" htmlUrl=""/>
+      <outline title="hardware" text="hardware" description="hardware" type="folder">
+        <outline title="Le Journal du Mac" text="Le Journal du Mac" description="Le Journal du Mac" type="rss" xmlUrl="http://feeds.feedburner.com/LeJournalDuMac" htmlUrl=""/>
+      </outline>
+      <outline title="django" text="django" description="django" type="folder">
+        <outline title="djangosnippets.org: Latest snippets" text="djangosnippets.org: Latest snippets" description="djangosnippets.org: Latest snippets" type="pie" xmlUrl="http://www.djangosnippets.org/feeds/latest/" htmlUrl=""/>
+        <outline title="The Django community aggregator" text="The Django community aggregator" description="The Django community aggregator" type="rss" xmlUrl="http://www.djangoproject.com/rss/community/" htmlUrl=""/>
+        <outline title="The Django weblog" text="The Django weblog" description="The Django weblog" type="rss" xmlUrl="http://www.djangoproject.com/rss/weblog/" htmlUrl=""/>
+        <outline title="Plan&#xE8;te Django-fr" text="Plan&#xE8;te Django-fr" description="Plan&#xE8;te Django-fr" type="pie" xmlUrl="http://www.django-fr.org/planete/atom/" htmlUrl=""/>
+        <outline title="Django foo" text="Django foo" description="Django foo" type="rss" xmlUrl="http://www.djangofoo.com/feed" htmlUrl="http://www.djangofoo.com"/>
+        <outline title="JeffCroft.com: Latest blog entries" text="JeffCroft.com: Latest blog entries" description="JeffCroft.com: Latest blog entries" type="rss" xmlUrl="http://jeffcroft.com/feeds/blog/" htmlUrl="http://jeffcroft.com/"/>
+      </outline>
+      <outline title="snippet" text="snippet" description="snippet" type="folder">
+        <outline title="Latest snippets" text="Latest snippets" description="Latest snippets" type="pie" xmlUrl="http://snippets.prendreuncafe.com/rss/list" htmlUrl=""/>
+      </outline>
+      <outline title="architecture" text="architecture" description="architecture" type="folder">
+        <outline title="A Daily Dose of Architecture" text="A Daily Dose of Architecture" description="A Daily Dose of Architecture" type="pie" xmlUrl="http://archidose.blogspot.com/feeds/posts/default" htmlUrl=""/>
+        <outline title="anArchitecture" text="anArchitecture" description="anArchitecture" type="pie" xmlUrl="http://feeds.feedburner.com/Anarchitecture" htmlUrl=""/>
+        <outline title="Home Design Find" text="Home Design Find" description="Home Design Find" type="rss" xmlUrl="http://feeds.feedburner.com/Homedesignfind" htmlUrl=""/>
+        <outline title="INHABITAT" text="INHABITAT" description="INHABITAT" type="rss" xmlUrl="http://feeds.feedburner.com/Inhabitat" htmlUrl=""/>
+        <outline title="Interactive Architecture dot Org" text="Interactive Architecture dot Org" description="Interactive Architecture dot Org" type="rss" xmlUrl="http://feeds.feedburner.com/InteractiveArchitectureDotOrg" htmlUrl=""/>
+      </outline>
+      <outline title="photography" text="photography" description="photography" type="folder">
+        <outline title="Joe McNally's Blog" text="Joe McNally's Blog" description="Joe McNally's Blog" type="rss" xmlUrl="http://feeds.feedburner.com/joemcnally" htmlUrl=""/>
+        <outline title="Laurence Kim Photographer" text="Laurence Kim Photographer" description="Laurence Kim Photographer" type="rss" xmlUrl="http://laurencekim.com/feed/" htmlUrl=""/>
+        <outline title="VirusPhoto - [articles] Tutoriaux sur la retouche photo" text="VirusPhoto - [articles] Tutoriaux sur la retouche photo" description="VirusPhoto - [articles] Tutoriaux sur la retouche photo" type="rss" xmlUrl="http://www.virusphoto.com/external.php?type=RSS2&amp;forumids=23" htmlUrl=""/>
+      </outline>
+  </body>
+</opml>

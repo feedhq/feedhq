@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 from django.views.generic import create_update
 
@@ -329,6 +330,32 @@ def item(request, entry_id):
     return render(request, 'feeds/entry_detail.html', context)
 
 
+def save_outline(user, category, outline, existing):
+    count = 0
+    if hasattr(outline, 'type') and outline.type == 'folder':
+        slug = slugify(outline.title)
+        cat, created = user.categories.get_or_create(
+            slug=slug, defaults={'name': outline.title},
+        )
+        for entry in outline._outlines:
+            count += save_outline(user, cat, entry, existing)
+
+    for entry in outline:
+        count += save_outline(user, category, entry, existing)
+
+    if (hasattr(outline, 'type') and
+        outline.type == 'rss' and
+        hasattr(outline, 'xmlUrl')):
+        if outline.xmlUrl not in existing:
+            existing.add(outline.xmlUrl)
+            feed = Feed(category=category, url=outline.xmlUrl,
+                        name=outline.title)
+            setattr(feed, "skip_post_save", True)
+            feed.save()
+            count += 1
+    return count
+
+
 @login_required
 def import_feeds(request):
     """Import feeds from an OPML source"""
@@ -336,24 +363,17 @@ def import_feeds(request):
         form = OPMLImportForm(request.POST, request.FILES)
         if form.is_valid():
             # get the list of existing feeds
-            existing_feeds = [f.url for f in Feed.objects.filter(
+            existing_feeds = set([f.url for f in Feed.objects.filter(
                 category__in=request.user.categories.all(),
-            )]
+            )])
             # try to get the "Unclassified" field, create it if needed
             category, created = request.user.categories.get_or_create(
                 slug='imported', defaults={'name': _('Imported')},
             )
 
             entries = opml.parse(request.FILES['file'])
-            imported = 0
-            for entry in entries:
-                if (hasattr(entry, 'xmlUrl') and
-                    not entry.xmlUrl in existing_feeds):
-                    feed = Feed(name=entry.title, url=entry.xmlUrl,
-                            category=category)
-                    setattr(feed, "skip_post_save", True)
-                    feed.save()
-                    imported += 1
+            imported = save_outline(request.user, category, entries,
+                                    existing_feeds)
 
             messages.success(
                 request,
