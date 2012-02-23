@@ -1,7 +1,6 @@
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
-from django.utils.translation import ugettext as _
 from django.views import generic
 
 from .forms import ChangePasswordForm, ProfileForm
