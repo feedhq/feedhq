@@ -1,14 +1,13 @@
 import datetime
+import feedparser
 import logging
+import lxml.html
 import pytz
 import requests
 import socket
 import time
 import urllib2
 import urlparse
-
-import feedparser
-USER_AGENT = 'FeedHQ/dev +http://bitbucket.org/bruno/feedhq'
 
 from django.conf import settings
 from django.core.files.base import ContentFile
@@ -17,12 +16,10 @@ from django.utils import timezone
 
 from django_push.subscriber.models import Subscription
 
+from .. import __version__
 
-try:
-    import lxml.html
-    HAS_LXML = True
-except ImportError:
-    HAS_LXML = False
+
+USER_AGENT = 'FeedHQ/%s +https://github.org/brutasse/feedhq' % __version__
 
 logger = logging.getLogger('feedupdater')
 
@@ -117,10 +114,9 @@ class FeedUpdater(object):
             if 'summary' in entry:
                 parsed_entry.subtitle = entry.summary
 
-            if HAS_LXML:
-                parsed_entry.subtitle = self.clean_content(
-                    parsed_entry.subtitle,
-                )
+            parsed_entry.subtitle = self.clean_content(
+                parsed_entry.subtitle,
+            )
 
             parsed_entry.link = entry.link
 
@@ -243,7 +239,7 @@ class FeedUpdater(object):
             feed.update_unread_count()
 
     def grab_favicons(self):
-        if settings.TESTS or not HAS_LXML:
+        if settings.TESTS:
             return
 
         if all((f.favicon for f in self.feeds)):
