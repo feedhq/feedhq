@@ -113,10 +113,10 @@ class TestFeeds(TestCase):
         cat_from_db = Category.objects.get(pk=cat.id)
 
         # __unicode__
-        self.assertEquals('%s' % cat_from_db, 'New Cat')
+        self.assertEqual('%s' % cat_from_db, 'New Cat')
 
         # get_absolute_url()
-        self.assertEquals('/category/new-cat/', cat_from_db.get_absolute_url())
+        self.assertEqual('/category/new-cat/', cat_from_db.get_absolute_url())
 
     def test_feed_model(self):
         """Behaviour of the ``Feed`` model"""
@@ -129,21 +129,21 @@ class TestFeeds(TestCase):
         feed_from_db = Feed.objects.get(pk=feed.id)
 
         # __unicode__
-        self.assertEquals('%s' % feed_from_db, 'RSS test')
+        self.assertEqual('%s' % feed_from_db, 'RSS test')
 
         # get_absolute_url()
-        self.assertEquals('/feed/%s/' % feed.id, feed.get_absolute_url())
+        self.assertEqual('/feed/%s/' % feed.id, feed.get_absolute_url())
 
         # update()
         fake_update(feed.url)
         feed = Feed.objects.get(pk=feed.id)
-        self.assertEquals(feed.title, 'Sample Feed')
-        self.assertEquals(feed.link, 'http://example.org/')
-        self.assertEquals(feed.entries.count(), 1)
-        self.assertEquals(feed.entries.all()[0].title, 'First item title')
+        self.assertEqual(feed.title, 'Sample Feed')
+        self.assertEqual(feed.link, 'http://example.org/')
+        self.assertEqual(feed.entries.count(), 1)
+        self.assertEqual(feed.entries.all()[0].title, 'First item title')
         # Testing the use of etags/modified headers
         fake_update(feed.url)
-        self.assertEquals(feed.entries.count(), 1)
+        self.assertEqual(feed.entries.count(), 1)
 
         # remove_old_entries won't run if delete_after is never
         self.cat.delete_after = 'never'
@@ -156,13 +156,13 @@ class TestFeeds(TestCase):
         entry = Entry.objects.get(title=title)
 
         # __unicode__
-        self.assertEquals('%s' % entry, title)
+        self.assertEqual('%s' % entry, title)
 
         # get_link()
-        self.assertEquals(entry.get_link(), entry.link)
+        self.assertEqual(entry.get_link(), entry.link)
         # Setting permalink
         entry.permalink = 'http://example.com/some-url'
-        self.assertEquals(entry.get_link(), entry.permalink)
+        self.assertEqual(entry.get_link(), entry.permalink)
 
     def test_permanent_redirects(self):
         """Updating the feed if there's a permanent redirect"""
@@ -171,7 +171,7 @@ class TestFeeds(TestCase):
         feed.save()
         fake_update(feed.url)
         feed = Feed.objects.get(pk=feed.id)
-        self.assertEquals(feed.url, 'atom10.xml')
+        self.assertEqual(feed.url, 'atom10.xml')
 
     def test_gone(self):
         """Muting the feed if the status code is 410"""
@@ -197,24 +197,24 @@ class TestFeeds(TestCase):
         feed2 = Feed.objects.get(pk=feed1.id)
         count2 = feed2.entries.count()
 
-        self.assertEquals(count1, count2)
+        self.assertEqual(count1, count2)
 
     def test_no_status(self):
         self.feed.url = 'no-status.xml'
         self.feed.save()
         fake_update(self.feed.url)
-        self.assertEquals(Entry.objects.count(), 0)
+        self.assertEqual(Entry.objects.count(), 0)
 
     def test_no_link(self):
         self.feed.url = 'rss20.xml'
         self.feed.save()
         fake_update(self.feed.url)
-        self.assertEquals(Entry.objects.count(), 1)
+        self.assertEqual(Entry.objects.count(), 1)
 
         self.feed.url = 'no-link.xml'
         self.feed.save()
         fake_update(self.feed.url)
-        self.assertEquals(Entry.objects.count(), 1)
+        self.assertEqual(Entry.objects.count(), 1)
 
     def test_multiple_objects(self):
         """Duplicates are removed at the next update"""
@@ -224,9 +224,9 @@ class TestFeeds(TestCase):
         entry.save()
         entry.id = None
         entry.save()
-        self.assertEquals(self.feed.entries.count(), 32)
+        self.assertEqual(self.feed.entries.count(), 32)
         fake_update(self.feed.url)
-        self.assertEquals(self.feed.entries.count(), 30)
+        self.assertEqual(self.feed.entries.count(), 30)
 
     def test_screenscraping(self):
         self.feed.screenscraping = 'bob'
@@ -238,7 +238,7 @@ class TestFeeds(TestCase):
         self.feed.url = 'future.xml'
         self.feed.save()
         fake_update(self.feed.url)
-        self.assertEquals(self.feed.entries.count(), 1)
+        self.assertEqual(self.feed.entries.count(), 1)
 
     def test_entry_model_behaviour(self):
         """Behaviour of the `Entry` model"""
@@ -247,10 +247,10 @@ class TestFeeds(TestCase):
         entry.save()
 
         # __unicode__
-        self.assertEquals('%s' % entry, 'My title')
+        self.assertEqual('%s' % entry, 'My title')
 
         # get_absolute_url()
-        self.assertEquals('/entries/%s/' % entry.id, entry.get_absolute_url())
+        self.assertEqual('/entries/%s/' % entry.id, entry.get_absolute_url())
 
     ### Views ###
     def test_homepage(self):
@@ -293,7 +293,7 @@ class TestFeeds(TestCase):
     def test_add_category(self):
         url = reverse('feeds:add_category')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         bad_data = {'name': ''}
         response = self.client.post(url, bad_data)
@@ -301,27 +301,27 @@ class TestFeeds(TestCase):
 
         data = {'name': 'New Name', 'color': 'red', 'delete_after': '1day'}
         response = self.client.post(url, data)
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue('/category/new-name/' in response['Location'])
 
         # Adding a category with the same name. The slug will be different
         response = self.client.post(url, data)
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue('/category/new-name-/' in response['Location'])
 
         # Now we add a category named 'add', which is a conflicting URL
         data = {'name': 'Add', 'color': 'red', 'delete_after': '1day'}
         response = self.client.post(url, data)
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue('/category/add-/' in response['Location'])
 
     def test_delete_category(self):
         url = reverse('feeds:delete_category', args=['cat'])
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         response = self.client.post(url, {})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
 
     def test_edit_category(self):
         url = reverse('feeds:edit_category', args=['cat'])
@@ -345,7 +345,7 @@ class TestFeeds(TestCase):
         data = {'name': 'Bobby', 'url': 'http://example.com/feed.xml',
                 'category': self.cat.id}
         response = self.client.post(url, data)
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue('/category/cat/' in response['Location'])
 
     def test_edit_feed(self):
@@ -361,7 +361,7 @@ class TestFeeds(TestCase):
                 'url': 'http://example.com/newfeed.xml',
                 'category': self.cat.id}
         response = self.client.post(url, data, follow=True)
-        self.assertEquals(len(response.redirect_chain), 1)
+        self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, 'New Name has been successfully updated')
 
         # Now overrides
@@ -378,7 +378,7 @@ class TestFeeds(TestCase):
         self.assertContains(response, 'New Name has been successfully updated')
         feed = Feed.objects.get(pk=self.feed.id)
         self.assertFalse(feed.override)
-        self.assertEquals(feed.delete_after, '')
+        self.assertEqual(feed.delete_after, '')
 
     def test_delete_feed(self):
         url = reverse('feeds:delete_feed', args=[self.feed.id])
@@ -387,7 +387,7 @@ class TestFeeds(TestCase):
         self.assertContains(response, self.feed.name)
 
         response = self.client.post(url, {})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         # Redirects to home so useless to test
 
     def test_invalid_page(self):
@@ -398,7 +398,7 @@ class TestFeeds(TestCase):
         self.assertContains(response, '<a href="/">1</a>')
 
     def _test_entry(self, from_url):
-        self.assertEquals(self.client.get(from_url).status_code, 200)
+        self.assertEqual(self.client.get(from_url).status_code, 200)
 
         url = reverse('feeds:item', args=[30])
         response = self.client.get(url)
@@ -444,20 +444,20 @@ class TestFeeds(TestCase):
     def test_opml_import(self):
         url = reverse('feeds:import_feeds')
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
         with open(os.path.join(ROOT, 'sample.opml'), 'r') as opml_file:
             data = {'file': opml_file}
             response = self.client.post(url, data, follow=True)
-        self.assertEquals(len(response.redirect_chain), 1)
+        self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, '2 feeds have been imported')
-        self.assertEquals(Category.objects.filter(name='Imported').count(), 1)
+        self.assertEqual(Category.objects.filter(name='Imported').count(), 1)
 
         # Re-import
         with open(os.path.join(ROOT, 'sample.opml'), 'r') as opml_file:
             data = {'file': opml_file}
             response = self.client.post(url, data, follow=True)
-        self.assertEquals(len(response.redirect_chain), 1)
+        self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, '0 feeds have been imported')
 
     def test_categories_in_opml(self):
