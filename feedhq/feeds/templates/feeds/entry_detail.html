@@ -74,5 +74,13 @@
 		$('pre').each(function(index, element) {
 			hljs.highlightBlock(element, '    ', false)
 		})
+		$(document).keydown(function(e) {{% if next %}
+			if (e.keyCode == 39) {
+				window.location.href = '{{ next }}';
+			}{% endif %}{% if previous %}
+			if (e.keyCode == 37) {
+				window.location.href = '{{ previous }}';
+			}{% endif %}
+		});
 	</script>
 {% endblock %}
