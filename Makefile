@@ -4,7 +4,7 @@ test_settings = --settings=$(proj).test_settings
 
 
 test:
-	django-admin.py test feeds $(test_settings) --failfast --noinput
+	django-admin.py test profiles feeds $(test_settings) --failfast --noinput
 
 run:
 	foreman start
