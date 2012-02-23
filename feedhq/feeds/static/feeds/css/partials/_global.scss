@@ -111,14 +111,26 @@ input, select {
 			}
 
 			&.add {
-				background: lighten($text, 75%);
-				padding: 0 5px;
-				border-radius: 3px;
+				display: inline-block;
+				width: 25px;
+				height: 25px;
+				background-color: lighten($text, 70%);
 
 				&:hover {
-					background: black;
-					color: white;
+					background-color: lighten($text, 60%);
 				}
+			}
+
+			&.category {
+				background-image: url('../img/icon-category.png');
+			}
+
+			&.feed {
+				background-image: url('../img/icon-rss.png');
+			}
+
+			&.import {
+				background-image: url('../img/icon-import.png');
 			}
 		}
 	}

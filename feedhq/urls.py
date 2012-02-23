@@ -10,7 +10,7 @@ admin.autodiscover()
 robots = lambda _: HttpResponse('User-agent: *\nDisallow:\n',
                                 mimetype='text/plain')
 favicon = lambda _: HttpResponsePermanentRedirect(
-    '%sfeeds/img/user.png' % settings.STATIC_URL
+    '%sfeeds/img/icon-rss.png' % settings.STATIC_URL
 )
 
 urlpatterns = patterns('',
