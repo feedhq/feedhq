@@ -84,9 +84,11 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
     if only_unread:
         entries = entries.filter(read=False)
         base_url = unread_url
-        entries = paginate(entries, page=page, force_count=unread_count)
+        entries = paginate(entries, page=page, force_count=unread_count,
+                           nb_items=request.user.entries_per_page)
     else:
-        entries = paginate(entries, page=page)
+        entries = paginate(entries, page=page,
+                           nb_items=request.user.entries_per_page)
 
     request.session['back_url'] = request.get_full_path()
     context = {

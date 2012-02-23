@@ -10,7 +10,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['timezone']
+        fields = ['timezone', 'entries_per_page']
 
 
 class ChangePasswordForm(forms.Form):

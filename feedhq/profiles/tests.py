@@ -47,6 +47,7 @@ class ProfilesTest(TestCase):
         data = {
             'action': 'profile',
             'timezone': 'Foo/Bar',
+            'entries_per_page': 25,
         }
         response = self.client.post(url, data)
         self.assertFormError(
@@ -59,3 +60,15 @@ class ProfilesTest(TestCase):
         response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertEqual(User.objects.get().timezone, 'Europe/Paris')
+
+        data['entries_per_page'] = 12
+        response = self.client.post(url, data)
+        self.assertFormError(
+            response, 'profile_form', 'entries_per_page', (
+                'Select a valid choice. 12 is not one of the '
+                'available choices.'),
+        )
+        data['entries_per_page'] = 50
+        response = self.client.post(url, data, follow=True)
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(User.objects.get().entries_per_page, 50)
