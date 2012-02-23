@@ -1,9 +1,22 @@
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 import floppyforms as forms
 
 
+class ProfileForm(forms.ModelForm):
+    success_message = _('Your profile was updated successfully')
+    action = forms.CharField(widget=forms.HiddenInput, initial='profile')
+
+    class Meta:
+        model = User
+        fields = ['timezone']
+
+
 class ChangePasswordForm(forms.Form):
+    success_message = _('Your password was changed successfully')
+
+    action = forms.CharField(widget=forms.HiddenInput, initial='password')
     current_password = forms.CharField(label=_('Current password'),
                                        widget=forms.PasswordInput)
     new_password = forms.CharField(label=_('New password'),
@@ -12,7 +25,7 @@ class ChangePasswordForm(forms.Form):
                                     widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
+        self.user = kwargs.pop('instance')
         super(ChangePasswordForm, self).__init__(*args, **kwargs)
 
     def clean_current_password(self):

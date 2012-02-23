@@ -20,14 +20,15 @@ class ProfilesTest(TestCase):
         self.assertContains(response, 'Change your password')
 
         data = {
+            'action': 'password',
             'current_password': 'lol',
             'new_password': 'foo',
             'new_password2': 'bar',
         }
         response = self.client.post(url, data)
-        self.assertFormError(response, 'form', 'current_password',
+        self.assertFormError(response, 'password_form', 'current_password',
                              'Incorrect password')
-        self.assertFormError(response, 'form', 'new_password2',
+        self.assertFormError(response, 'password_form', 'new_password2',
                              "The two passwords didn't match")
 
         data['current_password'] = 'pass'
@@ -36,3 +37,25 @@ class ProfilesTest(TestCase):
         response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, 'Your password was changed')
+
+    def test_change_profile(self):
+        url = reverse('profile')
+        response = self.client.get(url)
+        self.assertContains(response, 'Edit your profile')
+        self.assertContains(response,
+                            '<option value="UTC" selected="selected">')
+        data = {
+            'action': 'profile',
+            'timezone': 'Foo/Bar',
+        }
+        response = self.client.post(url, data)
+        self.assertFormError(
+            response, 'profile_form', 'timezone', (
+                'Select a valid choice. Foo/Bar is not one of the '
+                'available choices.'),
+        )
+
+        data['timezone'] = 'Europe/Paris'
+        response = self.client.post(url, data, follow=True)
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(User.objects.get().timezone, 'Europe/Paris')
