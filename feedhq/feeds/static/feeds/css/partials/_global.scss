@@ -78,6 +78,16 @@ strong, b {
 	&.gray {
 		background: $gray;
 	}
+
+	&.left {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+		border-right: 1px solid white;
+	}
+	&.right {
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
 }
 
 body {
