@@ -94,3 +94,10 @@ form {
 		margin-left: 0.75em;
 	}
 }
+
+.col {
+	@include cols(4);
+	&.first {
+		margin-left: 0;
+	}
+}

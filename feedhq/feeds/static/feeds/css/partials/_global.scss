@@ -131,6 +131,10 @@ input, select {
 				}
 			}
 
+			&.dashboard {
+				background-image: url('../img/icon-dashboard.png');
+			}
+
 			&.category {
 				background-image: url('../img/icon-category.png');
 			}
@@ -403,5 +407,35 @@ form {
 	.date, .actions {
 		margin-bottom: 1em;
 		font-size: 0.8em;
+	}
+}
+
+.col {
+	.new {
+		font-weight: bold;
+	}
+
+	li {
+		padding: 3px 0;
+		background-repeat: no-repeat;
+		background-position: left 6px;
+		background-size: 16px;
+		a:first-child {
+			padding-left: 20px;
+		}
+	}
+
+	a {
+		text-decoration: inherit;
+
+		&.unread {
+			padding: 0 5px;
+			border-radius: 3px;
+			background: darken(white, 10%);
+
+			&:hover {
+				background: darken(white, 20%);
+			}
+		}
 	}
 }

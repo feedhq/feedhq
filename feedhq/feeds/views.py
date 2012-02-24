@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse
+from django.db.models import Sum
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 from django.views.generic import create_update
@@ -388,3 +389,28 @@ def import_feeds(request):
         'form': form,
     }
     return render(request, 'feeds/import_feeds.html', context)
+
+@login_required
+def dashboard(request):
+    categories = Category.objects.prefetch_related(
+        'feeds',
+    ).filter(user=request.user).annotate(
+        unread_count=Sum('feeds__unread_count'),
+    )
+
+    total = sum((len(c.feeds.all()) for c in categories))
+    col_size = total / 3
+    col_1 = None
+    col_2 = None
+    done = 0
+    for index, cat in enumerate(categories):
+        done += len(cat.feeds.all())
+        if col_1 is None and done > col_size:
+            col_1 = index + 1
+        if col_2 is None and done > 2 * col_size:
+            col_2 = index + 1
+    context = {
+        'categories': categories,
+        'breaks': [col_1, col_2],
+    }
+    return render(request, 'feeds/dashboard.html', context)

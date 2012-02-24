@@ -10,6 +10,8 @@ urlpatterns = patterns('',
     url(r'^unread/(?P<page>\d+)/$', views.feed_list,
         {'only_unread': True}, name='unread'),
 
+    url(r'^dashboard/$', views.dashboard, name='dashboard'),
+
     url(r'^import/$', views.import_feeds, name='import_feeds'),
 
     # Categories

@@ -483,3 +483,8 @@ class TestFeeds(TestCase):
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, '15 feeds have been imported')
         self.assertEqual(self.user.categories.count(), 7)
+
+    def test_dashboard(self):
+        url = reverse('feeds:dashboard')
+        response = self.client.get(url)
+        self.assertContains(response, 'Dashboard')
