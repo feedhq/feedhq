@@ -434,12 +434,24 @@ class TestFeeds(TestCase):
         response = self.client.get(url)
         self.assertNotContains(response, 'Next →')
 
-    def _test_img(self):
-        url = reverse('feeds:item', args=[2])
+    def test_img(self):
+        entry = Entry.objects.create(
+            feed=self.feed,
+            title="Random title",
+            subtitle='<img src="/favicon.png">',
+            permalink='http://example.com',
+            date=timezone.now(),
+            user=self.user,
+        )
+        url = reverse('feeds:item', args=[entry.pk])
         response = self.client.get(url)
-        self.assertContains(response, 'This entry has images in it')
+        self.assertContains(response, 'Show images')
         response = self.client.post(url, {'action': 'images'})
-        self.assertNotContains(response, 'This entry has images in it')
+        self.assertContains(response, 'Always show images')
+        response = self.client.post(url, {'action': 'images_always'})
+        self.assertContains(response, 'Hide images')
+        response = self.client.post(url, {'action': 'images_never'})
+        self.assertNotContains(response, 'Hide images')
 
     def test_opml_import(self):
         url = reverse('feeds:import_feeds')
