@@ -1,0 +1,7 @@
+[main]
+host = https://www.transifex.net
+
+[feedhq.web-interface]
+file_filter = feedhq/locale/<lang>/LC_MESSAGES/django.po
+source_file = feedhq/locale/en/LC_MESSAGES/django.po
+source_lang = en
