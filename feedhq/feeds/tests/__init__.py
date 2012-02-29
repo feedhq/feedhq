@@ -46,6 +46,8 @@ class FakeFeedParser(object):
             future_date = list(time.localtime())
             # Adding a year...
             future_date[0] = future_date[0] + 1
+            if future_date[1] == 2 and future_date[2] == 29:
+                future_date[2] = 28  # Fuck leap years
             parsed.entries[0].updated_parsed = future_date
 
         if url.endswith('no-status.xml'):
