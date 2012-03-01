@@ -75,6 +75,7 @@ INSTALLED_APPS = (
 
     'django_push.subscriber',
     'floppyforms',
+    'raven.contrib.django',
 
     'feedhq.feeds',
     'feedhq.profiles',
@@ -103,10 +104,14 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.handlers.SentryHandler',
+        }
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['mail_admins', 'sentry'],
             'level': 'ERROR',
             'propagate': True,
         },
