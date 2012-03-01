@@ -7,6 +7,8 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect
 from ratelimitbackend import admin
 admin.autodiscover()
 
+from .profiles.models import User, DjangoUser
+
 robots = lambda _: HttpResponse('User-agent: *\nDisallow:\n',
                                 mimetype='text/plain')
 favicon = lambda _: HttpResponsePermanentRedirect(
