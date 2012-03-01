@@ -95,32 +95,28 @@ LOGGING = {
         },
     },
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'sentry': {
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'class': 'raven.contrib.django.handlers.SentryHandler',
         }
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins', 'sentry'],
+            'handlers': ['console'],
             'level': 'ERROR',
             'propagate': True,
         },
         'feedupdater': {
-            'handlers': ['console'],
+            'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
         },
         'ratelimitbackend': {
-            'handlers': ['console'],
+            'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
         },
     },
