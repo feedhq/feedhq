@@ -1,5 +1,6 @@
 include README.rst requirements.txt LICENSE
 recursive-include feedhq/templates *
+recursive-include feedhq/locale *
 recursive-include feedhq/feeds/static *
 recursive-include feedhq/feeds/templates *
 recursive-include feedhq/feeds/tests *

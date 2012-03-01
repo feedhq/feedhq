@@ -54,6 +54,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -79,6 +80,10 @@ INSTALLED_APPS = (
 
     'feedhq.feeds',
     'feedhq.profiles',
+)
+
+LOCALE_PATHS = (
+    os.path.join(HERE, 'locale'),
 )
 
 LOGIN_URL = reverse_lazy('login')
