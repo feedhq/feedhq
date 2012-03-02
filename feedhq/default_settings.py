@@ -118,7 +118,7 @@ LOGGING = {
         },
         'feedupdater': {
             'handlers': ['console', 'sentry'],
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
         'ratelimitbackend': {
             'handlers': ['console', 'sentry'],
