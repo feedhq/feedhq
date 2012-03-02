@@ -65,7 +65,8 @@ class FeedUpdater(object):
             parsed_feed = self.feedparser.parse(feed.url)
 
         if not 'status' in parsed_feed:
-            logger.info("No status in parsed feed")
+            logger.info("No status in parsed feed, %s: %s" % (feed.pk,
+                                                              feed.url))
             self.entries = []
             return
 
@@ -73,13 +74,13 @@ class FeedUpdater(object):
             self.updated['url'] = parsed_feed.href
 
         if parsed_feed.status == 410:  # Gone
-            logger.info("Feed gone")
+            logger.info("Feed gone, %s: %s" % (feed.pk, feed.url))
             self.updated['muted'] = True
             self.entries = []
             return
 
         if parsed_feed.status == 304:  # Not modified
-            logger.info("Feed not modified")
+            logger.debug("Feed not modified, %s" % feed.url)
             self.entries = []
             return
 
