@@ -1,0 +1,574 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-03-03 14:45+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: feeds/models.py:15
+msgid "Red"
+msgstr ""
+
+#: feeds/models.py:16
+msgid "Dark Red"
+msgstr ""
+
+#: feeds/models.py:17
+msgid "Pale Green"
+msgstr ""
+
+#: feeds/models.py:18
+msgid "Green"
+msgstr ""
+
+#: feeds/models.py:19
+msgid "Army Green"
+msgstr ""
+
+#: feeds/models.py:20
+msgid "Pale Blue"
+msgstr ""
+
+#: feeds/models.py:21
+msgid "Blue"
+msgstr ""
+
+#: feeds/models.py:22
+msgid "Dark Blue"
+msgstr ""
+
+#: feeds/models.py:23
+msgid "Orange"
+msgstr ""
+
+#: feeds/models.py:24
+msgid "Dark Orange"
+msgstr ""
+
+#: feeds/models.py:25
+msgid "Black"
+msgstr ""
+
+#: feeds/models.py:26
+msgid "Gray"
+msgstr ""
+
+#: feeds/models.py:31
+msgid "One day"
+msgstr ""
+
+#: feeds/models.py:32
+msgid "Two days"
+msgstr ""
+
+#: feeds/models.py:33
+msgid "One week"
+msgstr ""
+
+#: feeds/models.py:34
+msgid "One month"
+msgstr ""
+
+#: feeds/models.py:35
+msgid "One year"
+msgstr ""
+
+#: feeds/models.py:36
+msgid "Never"
+msgstr ""
+
+#: feeds/models.py:59 feeds/models.py:92
+msgid "Name"
+msgstr ""
+
+#: feeds/models.py:60
+msgid "Slug"
+msgstr ""
+
+#: feeds/models.py:61 feeds/models.py:178
+msgid "User"
+msgstr ""
+
+#: feeds/models.py:67
+msgid "Color"
+msgstr ""
+
+#: feeds/models.py:72 feeds/models.py:114
+msgid "Delete after"
+msgstr ""
+
+#: feeds/models.py:73
+msgid ""
+"Period of time after which entries are deleted, whether they've been read or "
+"not."
+msgstr ""
+
+#: feeds/models.py:93 feeds/models.py:170
+msgid "URL"
+msgstr ""
+
+#: feeds/models.py:95
+msgid "Category"
+msgstr ""
+
+#: feeds/models.py:96
+msgid "<a href=\"/category/add/\">Add a category</a>"
+msgstr ""
+
+#: feeds/models.py:99 feeds/models.py:168
+msgid "Title"
+msgstr ""
+
+#: feeds/models.py:100
+msgid "Link"
+msgstr ""
+
+#: feeds/models.py:102
+msgid "Muted"
+msgstr ""
+
+#: feeds/models.py:103
+msgid "Check this if you want to stop checking updates for this feed"
+msgstr ""
+
+#: feeds/models.py:105
+msgid "Etag"
+msgstr ""
+
+#: feeds/models.py:106
+msgid "Modified"
+msgstr ""
+
+#: feeds/models.py:110
+msgid "Override Category settings"
+msgstr ""
+
+#: feeds/models.py:111
+msgid "Check this box if you want to override the category settings below."
+msgstr ""
+
+#: feeds/models.py:116
+msgid "Unread count"
+msgstr ""
+
+#: feeds/models.py:117
+msgid "Favicon"
+msgstr ""
+
+#: feeds/models.py:118
+msgid "No favicon"
+msgstr ""
+
+#: feeds/models.py:119
+msgid "Display images by default"
+msgstr ""
+
+#: feeds/models.py:166
+msgid "Feed"
+msgstr ""
+
+#: feeds/models.py:169
+msgid "Abstract"
+msgstr ""
+
+#: feeds/models.py:173
+msgid "Permalink"
+msgstr ""
+
+#: feeds/models.py:175
+msgid "Date"
+msgstr ""
+
+#: feeds/models.py:181
+msgid "Read"
+msgstr ""
+
+#: feeds/views.py:148
+#, python-format
+msgid "%(category)s has been successfully updated"
+msgstr ""
+
+#: feeds/views.py:184
+#, python-format
+msgid "%(feed)s has been successfully added"
+msgstr ""
+
+#: feeds/views.py:212
+#, python-format
+msgid "%(feed)s has been successfully updated"
+msgstr ""
+
+#: feeds/views.py:374
+msgid "Imported"
+msgstr ""
+
+#: feeds/views.py:383
+#, python-format
+msgid "%(num)s feeds have been imported"
+msgstr ""
+
+#: feeds/templates/feeds/category_confirm_delete.html:3
+#: feeds/templates/feeds/category_confirm_delete.html:6
+#: feeds/templates/feeds/feed_confirm_delete.html:3
+#: feeds/templates/feeds/feed_confirm_delete.html:6
+msgid "Confirm deletion"
+msgstr ""
+
+#: feeds/templates/feeds/category_confirm_delete.html:8
+#, python-format
+msgid ""
+"You are about to delete the category: <em>%(object)s</em>. Are you sure?"
+msgstr ""
+
+#: feeds/templates/feeds/category_confirm_delete.html:10
+msgid "There is no undo"
+msgstr ""
+
+#: feeds/templates/feeds/category_confirm_delete.html:11
+#, python-format
+msgid "%(feed_count)s feed will be deleted."
+msgid_plural "%(feed_count)s feeds will be deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: feeds/templates/feeds/category_confirm_delete.html:12
+#: feeds/templates/feeds/feed_confirm_delete.html:11
+#, python-format
+msgid "%(entry_count)s entry will be deleted."
+msgid_plural "%(entry_count)s entries will be deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: feeds/templates/feeds/category_confirm_delete.html:16
+#: feeds/templates/feeds/feed_confirm_delete.html:15
+msgid "Delete"
+msgstr ""
+
+#: feeds/templates/feeds/category_confirm_delete.html:17
+#: feeds/templates/feeds/category_form.html:11
+#: feeds/templates/feeds/feed_confirm_delete.html:16
+#: feeds/templates/feeds/feed_form.html:11
+#: feeds/templates/feeds/import_feeds.html:11
+#: templates/registration/login.html:12
+msgid "Cancel"
+msgstr ""
+
+#: feeds/templates/feeds/category_form.html:3
+#: feeds/templates/feeds/category_form.html:6 templates/base.html:18
+msgid "Add a category"
+msgstr ""
+
+#: feeds/templates/feeds/category_form.html:10
+msgid "Add category"
+msgstr ""
+
+#: feeds/templates/feeds/dashboard.html:3
+#: feeds/templates/feeds/dashboard.html:6 templates/base.html:17
+msgid "Dashboard"
+msgstr ""
+
+#: feeds/templates/feeds/edit_category.html:3
+#: feeds/templates/feeds/edit_feed.html:3
+#: feeds/templates/feeds/edit_feed.html:6
+#, python-format
+msgid "Edit %(name)s"
+msgstr ""
+
+#: feeds/templates/feeds/edit_category.html:10
+#: feeds/templates/feeds/edit_feed.html:10
+msgid "Save changes"
+msgstr ""
+
+#: feeds/templates/feeds/edit_category.html:11
+msgid "Delete this category"
+msgstr ""
+
+#: feeds/templates/feeds/edit_feed.html:11
+msgid "Delete this feed"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:9
+#: feeds/templates/feeds/entry_detail.html:60
+msgid "Back"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:12
+#: feeds/templates/feeds/entry_detail.html:63
+msgid "Previous"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:13
+#: feeds/templates/feeds/entry_detail.html:64
+msgid "Next"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:17
+msgid "No title"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:18
+msgid "Edit this feed"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:19
+msgid "Edit this category"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:27
+msgid "Show images"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:34
+msgid "Always show images for this feed"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:41
+msgid "Hide images for this feed"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:47
+msgid "Unread"
+msgstr ""
+
+#: feeds/templates/feeds/feed_confirm_delete.html:8
+#, python-format
+msgid "You are about to delete the feed: <em>%(object)s</em>. Are you sure?"
+msgstr ""
+
+#: feeds/templates/feeds/feed_confirm_delete.html:10
+msgid "There is no undo."
+msgstr ""
+
+#: feeds/templates/feeds/feed_form.html:3
+#: feeds/templates/feeds/feed_form.html:6 templates/base.html:19
+msgid "Add a feed"
+msgstr ""
+
+#: feeds/templates/feeds/feed_form.html:10
+msgid "Add feed"
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:12
+msgid "Getting started"
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:13
+msgid ""
+"Hi! Looks like you're new here. Here are a couple of things you can do to "
+"get started with FeedHQ:"
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:15
+msgid "Create a category:"
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:15
+#: feeds/templates/feeds/feed_list.html:16
+#: feeds/templates/feeds/feed_list.html:17
+msgid "BAM"
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:16
+msgid "Add a feed:"
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:17
+msgid "Got an OPML dump? Import it!"
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:19
+msgid ""
+"Now look closely. These three vital features can be accessed using the three "
+"buttons on the top bar. Got it? Good. This page will self-destruct as soon "
+"as you add your first feed."
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:31
+#, python-format
+msgid "%(start)s - %(end)s of %(counter)s unread entry."
+msgid_plural "%(start)s - %(end)s of %(counter)s unread entries."
+msgstr[0] ""
+msgstr[1] ""
+
+#: feeds/templates/feeds/feed_list.html:33
+#, python-format
+msgid "%(start)s - %(end)s of %(counter)s entry"
+msgid_plural "%(start)s - %(end)s of %(counter)s entries"
+msgstr[0] ""
+msgstr[1] ""
+
+#: feeds/templates/feeds/feed_list.html:33
+#, python-format
+msgid " (%(unread_count)s unread)"
+msgid_plural " (%(unread_count)s unread)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: feeds/templates/feeds/feed_list.html:36
+msgid "Show all"
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:38
+msgid "Show only unread"
+msgstr ""
+
+#: feeds/templates/feeds/feed_list.html:48
+msgid "Hooray, nothing to read!"
+msgstr ""
+
+#: feeds/templates/feeds/import_feeds.html:3
+msgid "Import data"
+msgstr ""
+
+#: feeds/templates/feeds/import_feeds.html:6
+msgid "Import data from an OPML file"
+msgstr ""
+
+#: feeds/templates/feeds/import_feeds.html:10
+msgid "Import"
+msgstr ""
+
+#: profiles/forms.py:8
+msgid "Your profile was updated successfully"
+msgstr ""
+
+#: profiles/forms.py:17
+msgid "Your password was changed successfully"
+msgstr ""
+
+#: profiles/forms.py:20
+msgid "Current password"
+msgstr ""
+
+#: profiles/forms.py:22
+msgid "New password"
+msgstr ""
+
+#: profiles/forms.py:24
+msgid "New password (confirm)"
+msgstr ""
+
+#: profiles/forms.py:34
+msgid "Incorrect password"
+msgstr ""
+
+#: profiles/forms.py:40
+msgid "The two passwords didn't match"
+msgstr ""
+
+#: profiles/models.py:22
+msgid "Time zone"
+msgstr ""
+
+#: profiles/models.py:24
+msgid "Entries per page"
+msgstr ""
+
+#: profiles/templates/auth/user_detail.html:3
+msgid "Profile"
+msgstr ""
+
+#: profiles/templates/auth/user_detail.html:6
+msgid "Your profile"
+msgstr ""
+
+#: profiles/templates/auth/user_detail.html:7
+msgid "Stats"
+msgstr ""
+
+#: profiles/templates/auth/user_detail.html:10
+#, python-format
+msgid "%(counter)s category"
+msgid_plural "%(counter)s categories"
+msgstr[0] ""
+msgstr[1] ""
+
+#: profiles/templates/auth/user_detail.html:11
+#, python-format
+msgid "%(counter)s feed"
+msgid_plural "%(counter)s feeds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: profiles/templates/auth/user_detail.html:12
+#, python-format
+msgid "%(counter)s entry"
+msgid_plural "%(counter)s entries"
+msgstr[0] ""
+msgstr[1] ""
+
+#: profiles/templates/auth/user_detail.html:15
+msgid "Edit your profile"
+msgstr ""
+
+#: profiles/templates/auth/user_detail.html:22
+msgid "Update profile"
+msgstr ""
+
+#: profiles/templates/auth/user_detail.html:26
+msgid "Change your password"
+msgstr ""
+
+#: profiles/templates/auth/user_detail.html:33
+msgid "Change password"
+msgstr ""
+
+#: templates/404.html:5
+msgid "404 - Page not found"
+msgstr ""
+
+#: templates/500.html:5
+msgid "500 - Server error"
+msgstr ""
+
+#: templates/base.html:4
+msgid "Home"
+msgstr ""
+
+#: templates/base.html:20
+msgid "Import feeds"
+msgstr ""
+
+#: templates/base.html:26 templates/registration/login.html:3
+#: templates/registration/login.html:11
+msgid "Sign in"
+msgstr ""
+
+#: templates/base.html:28
+msgid "yo"
+msgstr ""
+
+#: templates/base.html:29
+msgid "Logout"
+msgstr ""
+
+#: templates/base.html:51
+msgid "a <a href=\"http://djangoproject.com\">Django</a> joint"
+msgstr ""
+
+#: templates/form.html:3
+msgid "Please correct the errors below and submit the form again."
+msgstr ""
+
+#: templates/registration/logged_out.html:6
+msgid "Logged out"
+msgstr ""
+
+#: templates/registration/logged_out.html:9
+#, python-format
+msgid ""
+"You have been logged out, see you soon! Do you want to <a href="
+"\"%(login_url)s\">login</a> again?"
+msgstr ""
