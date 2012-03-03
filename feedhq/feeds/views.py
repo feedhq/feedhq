@@ -243,6 +243,7 @@ def item(request, entry_id):
     entry = get_object_or_404(qs, pk=entry_id)
     if not entry.read:
         Entry.objects.filter(pk=entry.pk).update(read=True)
+        entry.feed.update_unread_count()
 
     back_url = request.session.get('back_url',
                                    default=entry.feed.get_absolute_url())
@@ -309,6 +310,7 @@ def item(request, entry_id):
                 img_safe = True
             elif action == 'unread':
                 Entry.objects.filter(pk=entry.pk).update(read=False)
+                entry.feed.update_unread_count()
                 return redirect(back_url)
             elif action == 'images_always':
                 Feed.objects.filter(pk=entry.feed.pk).update(img_safe=True)

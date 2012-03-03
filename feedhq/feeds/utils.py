@@ -205,6 +205,7 @@ class FeedUpdater(object):
                 db_entry.feed = feed
                 db_entry.user = feed.category.user
                 db_entry.save()
+                feed.update_unread_count()
 
     def clean_content(self, content):
         page = lxml.html.fromstring('<div>%s</div>' % content)

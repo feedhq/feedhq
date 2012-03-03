@@ -147,7 +147,9 @@ class Feed(models.Model):
 
     def update_unread_count(self):
         self.unread_count = self.entries.filter(read=False).count()
-        self.save()
+        Feed.objects.filter(pk=self.pk).update(
+            unread_count=self.unread_count,
+        )
 
 
 def update_on_creation(sender, instance, created, **kwargs):
@@ -196,11 +198,6 @@ class Entry(models.Model):
 
     def link_domain(self):
         return urlparse.urlparse(self.get_link()).netloc
-
-
-def update_unread_count(sender, instance, created, **kwargs):
-    instance.feed.update_unread_count()
-models.signals.post_save.connect(update_unread_count, sender=Entry)
 
 
 def pubsubhubbub_update(notification, **kwargs):
