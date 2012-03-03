@@ -1,6 +1,8 @@
 import sys
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
+from raven import Client
 
 from ...models import Feed
 from ...utils import FeedUpdater
@@ -37,19 +39,8 @@ class Command(BaseCommand):
                 updater.update()
             except Exception:  # We don't know what to expect, and anyway
                                # we're reporting the exception
-                from django.conf import settings
-                if settings.DEBUG:
+                if settings.DEBUG or not hasattr(settings, 'SENTRY_DSN'):
                     raise
                 else:
-                    self.handle_exception(sys.exc_info(), url)
-
-    def handle_exception(self, exc_info, url):
-        from django.core.mail import mail_admins
-        import traceback
-
-        # Building a human-readable traceback
-        traceback_str = 'Feed was: %s\n\n' % url
-        traceback_str += '\n'.join(traceback.format_exception(*(exc_info)))
-
-        subject = 'Error updating feeds'
-        mail_admins(subject, traceback_str, fail_silently=True)
+                    client = Client(dsn=settings.SENTRY_DSN)
+                    client.captureException()
