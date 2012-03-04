@@ -310,41 +310,49 @@ form {
 	text-overflow: ellipsis;
 }
 
+.edit, .edit_cat {
+	display: none;
+}
+
+.edit {
+	background-image: url('../img/Pencil-white.png') !important;
+	background-repeat: no-repeat !important;
+	background-position: center center !important;
+}
+
+.count .edit {
+	display: inline;
+	border-radius: 0;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-right: 1px solid white;
+}
+
+#entry > h2:hover {
+	.cat {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+		margin-right: 1px;
+	}
+
+	.edit, .edit_cat {
+		display: inline;
+		width: 20px;
+	}
+
+	.edit {
+		border-radius: 5px;
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+}
+
 #entry, .help {
 	> h2 {
 		font-size: 1.5em;
 		line-height: 1.2em;
 		padding: 0.25em 0;
 		border-bottom: 1px solid #ddd;
-
-		.edit, .edit_cat {
-			display: none;
-		}
-
-		.edit {
-			background-image: url('../img/Pencil-white.png');
-			background-repeat: no-repeat;
-			background-position: center center;
-		}
-
-		&:hover {
-			.cat {
-				border-top-right-radius: 0;
-				border-bottom-right-radius: 0;
-				margin-right: 1px;
-			}
-
-			.edit, .edit_cat {
-				display: inline;
-				width: 20px;
-			}
-
-			.edit {
-				border-radius: 5px;
-				border-top-left-radius: 0;
-				border-bottom-left-radius: 0;
-			}
-		}
 	}
 
 	.content {

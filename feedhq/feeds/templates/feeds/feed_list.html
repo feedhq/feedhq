@@ -22,10 +22,12 @@
 		<div class="figures">
 			<div class="count">{% spaceless %}
 				{% if category %}
-					<a class="cat {{ category.color }}{% if feed %} left{% endif %}" href="{% url "feeds:category" category.slug %}">{{ category }}</a>
+					<a class="cat {{ category.color }} left" href="{% url "feeds:category" category.slug %}">{{ category }}</a>
+					<a class="edit {{ category.color }} cat" href="{% url "feeds:edit_category" category.slug %}">&nbsp;&nbsp;&nbsp;</a>
 				{% endif %}
 				{% if feed %}
-					<a class="cat {{ feed.category.color }} right" href="{% url "feeds:feed" feed.pk %}">{{ feed }}</a>
+					<a class="cat {{ feed.category.color }} left" href="{% url "feeds:feed" feed.pk %}">{{ feed }}</a>
+					<a class="edit {{ feed.category.color }} cat right" href="{% url "feeds:edit_feed" feed.pk %}">&nbsp;&nbsp;&nbsp;</a>
 				{% endif %}{% endspaceless %}
 				{% if only_unread %}
 					{% blocktrans with start=entries.start_index end=entries.end_index count counter=entries.paginator.count %}{{ start }} - {{ end }} of {{ counter }} unread entry.{% plural %}{{ start }} - {{ end }} of {{ counter }} unread entries.{% endblocktrans %}
