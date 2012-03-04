@@ -24,7 +24,8 @@ strong, b {
 }
 
 .cat, .edit {
-	color: white;
+	color: white !important;
+	font-weight: normal !important;
 	padding: 2px 4px;
 	font-size: $em - 4px;
 	white-space: nowrap;
