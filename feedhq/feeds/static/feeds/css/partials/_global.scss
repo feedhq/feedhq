@@ -321,6 +321,12 @@ form {
 			display: none;
 		}
 
+		.edit {
+			background-image: url('../img/Pencil-white.png');
+			background-repeat: no-repeat;
+			background-position: center center;
+		}
+
 		&:hover {
 			.cat {
 				border-top-right-radius: 0;
@@ -330,6 +336,7 @@ form {
 
 			.edit, .edit_cat {
 				display: inline;
+				width: 20px;
 			}
 
 			.edit {

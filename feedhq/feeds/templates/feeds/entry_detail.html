@@ -15,8 +15,8 @@
 	</div>
 	<div id="entry">
 		<h2>{% if object.title %}{{ object.title|safe }}{% else %}({% trans "No title" %}){% endif %}
-			<a href="{% url "feeds:feed" object.feed.pk %}" class="cat {{ object.feed.category.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}">✓</a>
-			<a href="{% url "feeds:category" object.feed.category.slug %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}">✓</a>
+			<a href="{% url "feeds:feed" object.feed.pk %}" class="cat {{ object.feed.category.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}">&nbsp;&nbsp;&nbsp;</a>
+			<a href="{% url "feeds:category" object.feed.category.slug %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}">&nbsp;&nbsp;&nbsp;</a>
 		</h2>
 		<div class="date">{{ object.date|timezone:user.timezone|date }} - <a{% if object.feed.favicon %} style="background-image: url('{{ object.feed.favicon.url }}'); padding-left: 20px;"{% endif %} href="{{ object.get_link }}">{{ object.link_domain }}</a></div>
 		<div class="actions">
