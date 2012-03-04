@@ -121,30 +121,33 @@ input, select {
 			}
 
 			&.add {
-				display: inline-block;
-				width: 25px;
-				height: 25px;
-				background-color: lighten($text, 70%);
+				font-size: 0.6em;
+				font-weight: normal;
+				padding-left: 14px;
+				margin-right: 5px;
+				background-repeat: no-repeat;
+				background-position: 0 3px;
+				color: lighten($text, 20%);
 
 				&:hover {
-					background-color: lighten($text, 60%);
+					color: lighten($text, 10%);
 				}
 			}
 
 			&.dashboard {
-				background-image: url('../img/icon-dashboard.png');
+				background-image: url('../img/Dashboard.png');
 			}
 
 			&.category {
-				background-image: url('../img/icon-category.png');
+				background-image: url('../img/Tag.png');
 			}
 
 			&.feed {
-				background-image: url('../img/icon-rss.png');
+				background-image: url('../img/RSS.png');
 			}
 
 			&.import {
-				background-image: url('../img/icon-import.png');
+				background-image: url('../img/Download.png');
 			}
 		}
 	}
