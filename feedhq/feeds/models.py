@@ -202,7 +202,7 @@ class Entry(models.Model):
 
 def pubsubhubbub_update(notification, **kwargs):
     parsed = notification
-    from feeds.utils import FeedUpdater
+    from .utils import FeedUpdater
     url = None
     for link in parsed.feed.links:
         if link['rel'] == 'self':
