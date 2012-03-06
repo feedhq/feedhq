@@ -24,6 +24,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class FeedAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'unread_count', 'favicon_img')
+    search_fields = ('name', 'title', 'url')
 
 
 class EntryAdmin(admin.ModelAdmin):
