@@ -411,7 +411,8 @@ class TestFeeds(TestCase):
     def _test_entry(self, from_url):
         self.assertEqual(self.client.get(from_url).status_code, 200)
 
-        url = reverse('feeds:item', args=[30])
+        e = Entry.objects.get(title="jacobian's django-deployment-workshop")
+        url = reverse('feeds:item', args=[e.pk])
         response = self.client.get(url)
         self.assertContains(response, "jacobian's django-deployment-workshop")
         self.assertContains(response, '<a href="%s">⇠ Back</a>' % from_url)
