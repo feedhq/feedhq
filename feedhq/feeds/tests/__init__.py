@@ -175,6 +175,15 @@ class TestFeeds(TestCase):
         feed = Feed.objects.get(pk=feed.id)
         self.assertEqual(feed.url, 'atom10.xml')
 
+    def test_content_handling(self):
+        """The content section overrides the subtitle section"""
+        feed = Feed(name='Content', category=self.cat,
+                    url='atom10.xml')
+        feed.save()
+        fake_update(feed.url)
+        entry = Entry.objects.get()
+        self.assertTrue('Watch out for <span> nasty tricks' in entry.subtitle)
+
     def test_gone(self):
         """Muting the feed if the status code is 410"""
         feed = Feed(name='Gone', category=self.cat, url='gone.xml')

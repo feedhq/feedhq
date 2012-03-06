@@ -114,6 +114,11 @@ class FeedUpdater(object):
                 parsed_entry.subtitle = entry.description
             if 'summary' in entry:
                 parsed_entry.subtitle = entry.summary
+            if 'content' in entry:  # this overrides the summary
+                if entry.content:
+                    parsed_entry.subtitle = ''
+                    for content in entry.content:
+                        parsed_entry.subtitle += content.value
 
             parsed_entry.subtitle = self.clean_content(
                 parsed_entry.subtitle,
