@@ -216,6 +216,19 @@ class TestFeeds(TestCase):
         fake_update(self.feed.url)
         self.assertEqual(Entry.objects.count(), 0)
 
+    def test_auto_mute_feed(self):
+        """Auto-muting feeds with no status for too long"""
+        self.feed.url = 'no-status.xml'
+        self.feed.save()
+        fake_update(self.feed.url)
+        self.assertEqual(Entry.objects.count(), 0)
+        self.assertEqual(Feed.objects.get(url=self.feed.url).failed_attempts, 1)
+        for i in range(20):
+            fake_update(self.feed.url)
+        feed = Feed.objects.get(url=self.feed.url)
+        self.assertEqual(feed.failed_attempts, 20)
+        self.assertTrue(feed.muted)
+
     def test_no_link(self):
         self.feed.url = 'rss20.xml'
         self.feed.save()

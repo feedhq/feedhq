@@ -118,6 +118,8 @@ class Feed(models.Model):
     no_favicon = models.BooleanField(_('No favicon'), default=False)
     img_safe = models.BooleanField(_('Display images by default'),
                                    default=False)
+    failed_attempts = models.IntegerField(_('Failed fetching attempts'),
+                                          default=0)
 
     def __unicode__(self):
         return u'%s' % self.name

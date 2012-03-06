@@ -12,6 +12,7 @@ import urlparse
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import transaction
+from django.db.models import F
 from django.utils import timezone
 
 from django_push.subscriber.models import Subscription
@@ -67,8 +68,14 @@ class FeedUpdater(object):
         if not 'status' in parsed_feed:
             logger.info("No status in parsed feed, %s: %s" % (feed.pk,
                                                               feed.url))
+            if feed.failed_attempts >= 20:
+                self.feeds.update(muted=True)
+            self.feeds.filter(url=feed.url).update(
+                failed_attempts=F('failed_attempts') + 1
+            )
             self.entries = []
             return
+        self.feeds.update(failed_attempts=0)
 
         if parsed_feed.status == 301:  # permanent redirect
             self.updated['url'] = parsed_feed.href
@@ -222,10 +229,7 @@ class FeedUpdater(object):
         return lxml.etree.tostring(page)
 
     def handle_updated(self):
-        for feed in self.feeds:
-            for key, value in self.updated.items():
-                setattr(feed, key, value)
-            feed.save()
+        self.feeds.update(**self.updated)
 
     def remove_old_stuff(self):
         """
@@ -258,10 +262,7 @@ class FeedUpdater(object):
                     fav = f.favicon
                     continue
 
-            for f in self.feeds:
-                if not f.favicon:
-                    f.favicon = fav
-                    f.save()
+            self.feeds.update(favicon=fav)
             return
 
         if self.feeds[0].no_favicon == True:
@@ -291,19 +292,11 @@ class FeedUpdater(object):
             return
 
         icon_file = ContentFile(icon_content)
-        for f in self.feeds:
+        for f in self.feeds:  # FIXME select_for_update
             f.favicon.save('favicons/%s.ico' % f.pk, icon_file)
 
     def fetch_or_no_favicon(self, url):
         try:
             return urllib2.urlopen(url).read()
-        except urllib2.HTTPError:
-            for f in self.feeds:
-                f.no_favicon = True
-                f.save()
-            return
-        except urllib2.URLError:
-            for f in self.feeds:
-                f.no_favicon = True
-                f.save()
-            return
+        except (urllib2.HTTPError, urllib2.URLError):
+            self.feeds.update(no_favicon=True)
