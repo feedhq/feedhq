@@ -148,7 +148,7 @@ class FeedUpdater(object):
             subscriptions = [Subscription.objects.subscribe(topic_url,
                                                             hub=hub_url)]
 
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        tomorrow = timezone.now() + datetime.timedelta(days=1)
         for subscription in subscriptions:
             if subscription.lease_expiration is None:
                 continue
