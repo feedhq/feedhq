@@ -91,12 +91,12 @@ class FeedUpdater(object):
             self.entries = []
             return
 
-        if 'link' in parsed_feed.feed \
-                and not feed.link == parsed_feed.feed.link:
+        if ('link' in parsed_feed.feed and
+            not feed.link == parsed_feed.feed.link):
             self.updated['link'] = parsed_feed.feed.link
 
-        if 'title' in parsed_feed.feed \
-                and not feed.title == parsed_feed.feed.title:
+        if ('title' in parsed_feed.feed and
+            not feed.title == parsed_feed.feed.title):
             self.updated['title'] = parsed_feed.feed.title
 
         if 'etag' in parsed_feed:
@@ -222,8 +222,8 @@ class FeedUpdater(object):
     def clean_content(self, content):
         page = lxml.html.fromstring('<div>%s</div>' % content)
         for element in page.iter('img'):
-            if 'width="1"' in lxml.etree.tostring(element) \
-                    or 'width="0"' in lxml.etree.tostring(element):
+            if ('width="1"' in lxml.etree.tostring(element) or
+                'width="0"' in lxml.etree.tostring(element)):
                 # Tracking image -- deleting
                 element.drop_tree()
         return lxml.etree.tostring(page)

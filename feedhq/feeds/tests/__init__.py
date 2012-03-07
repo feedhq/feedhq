@@ -26,14 +26,14 @@ class FakeFeedParser(object):
         url = os.path.join(ROOT, url)
         parsed = feedparser.parse(url)
         # Adding some HTTP sugar
-        parsed.status = 200
-        parsed.modified = time.localtime()
-        parsed.etag = str(random.random())
+        parsed['status'] = 200
+        parsed['modified'] = time.localtime()
+        parsed['etag'] = str(random.random())
 
         # Force some parameters here...
         if url.endswith('permanent.xml'):
             parsed.status = 301
-            parsed.url = 'atom10.xml'
+            parsed.href = 'atom10.xml'
 
         if url.endswith('gone.xml'):
             parsed.status = 410
@@ -51,7 +51,12 @@ class FakeFeedParser(object):
             parsed.entries[0].updated_parsed = future_date
 
         if url.endswith('no-status.xml'):
-            del parsed['status']
+            parsed = {
+                'feed': {},
+                'bozo': 1,
+                'bozo_exception': "Name or service not known",
+                'entries': [],
+            }
 
         if url.endswith('no-link.xml'):
             parsed.entries[0]['link'] = None
