@@ -66,9 +66,11 @@ class FeedUpdater(object):
             parsed_feed = self.feedparser.parse(feed.url)
 
         if not 'status' in parsed_feed:
-            logger.info("No status in parsed feed, %s: %s" % (feed.pk,
-                                                              feed.url))
+            logger.debug("No status in parsed feed, %s: %s" % (feed.pk,
+                                                               feed.url))
             if feed.failed_attempts >= 20:
+                logger.info("Feed failed 20 times, muting %s: %s" % (feed.pk,
+                                                                     feed.url))
                 self.feeds.update(muted=True)
             self.feeds.filter(url=feed.url).update(
                 failed_attempts=F('failed_attempts') + 1
