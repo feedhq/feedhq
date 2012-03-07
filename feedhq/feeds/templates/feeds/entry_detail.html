@@ -31,7 +31,8 @@
 				<form method="post" action="{% url "feeds:item" object.id %}">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="images_always">
-					<input type="submit" value="{% trans "Always show images for this feed" %}">
+					<input type="submit" value="{% blocktrans %}Always show images
+for this feed{% endblocktrans %}">
 				</form>
 			{% endif %}
 			{% if object.feed.img_safe %}
