@@ -55,6 +55,7 @@ for this feed{% endblocktrans %}">
 				{{ object.subtitle|removetags:"script applet embed object meta onload onunload link style div span frameset frame iframe img font form label input textarea"|safe }}
 			{% endif %}
 		</div>
+		<div class="date">{{ object.date|timezone:user.timezone|date }} - <a{% if object.feed.favicon %} style="background-image: url('{{ object.feed.favicon.url }}'); padding-left: 20px;"{% endif %} href="{{ object.get_link }}">{{ object.link_domain }}</a></div>
 	</div>
 	<div class="figures">
 		<div class="back">
