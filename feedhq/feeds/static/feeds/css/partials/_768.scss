@@ -1,2 +1,45 @@
 @media only screen and (min-width: 768px) and (max-width: 991px) {
+	#header {
+		@include grid(9);
+
+		h1 {
+			@include cols(6);
+		}
+
+		#navigation {
+			@include cols(3);
+		}
+	}
+
+	#footer, #content, #categories, #options {
+		@include grid(9);
+	}
+
+	.figures {
+		&.bottom {
+			padding-left: column-width(6) + $em;
+		}
+
+		.count, .back {
+			@include cols(6);
+			white-space: inherit;
+		}
+	}
+
+	form {
+		margin: 0 column-width(0.5) + $gutter;
+		margin-top: 3em;
+	}
+
+	.entry {
+		.title {
+			@include cols(7);
+			width: column-width(7) - 20; // favicon
+		}
+	}
+
+	.col {
+		@include cols(4.5);
+		margin-left: 0;
+	}
 }
