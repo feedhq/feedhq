@@ -39,6 +39,12 @@
 				{% else %}
 					<a href="{{ unread_url }}">{% trans "Show only unread" %}</a>
 				{% endif %}
+				{% if form %}
+					<form method="post" action="{{ action }}">
+						{% include "form.html" %}
+						<input type="submit" value="{% trans "Mark all as read" %}">
+					</form>
+				{% endif %}
 			</div>
 			<div class="pagination">{% include "feeds/paginator.html" %}</div>
 		</div>

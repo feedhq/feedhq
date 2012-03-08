@@ -11,7 +11,7 @@ from django.views.generic import create_update
 
 from ..decorators import login_required
 from .models import Category, Feed, Entry
-from .forms import CategoryForm, FeedForm, OPMLImportForm, ActionForm
+from .forms import CategoryForm, FeedForm, OPMLImportForm, ActionForm, ReadForm
 
 """
 Each view displays a list of entries, with a level of filtering:
@@ -78,6 +78,15 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
         unread_url = reverse('feeds:unread')
 
     entries = entries.select_related('feed', 'feed__category')
+
+    if request.method == "POST":
+        form = ReadForm(data=request.POST)
+        if form.is_valid():
+            count = entries.update(read=True)
+            messages.success(request,
+                             _('%s entries have been marked as read' % count))
+            return redirect(all_url)
+
     unread_count = entries.filter(read=False).count()
 
     # base_url is a variable that helps the paginator a lot. The drawback is
@@ -104,6 +113,9 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
             'unread_url': unread_url,
             'base_url': base_url,
     }
+    if unread_count:
+        context['form'] = ReadForm()
+        context['action'] = request.get_full_path()
     if entries.paginator.count == 0 and Feed.objects.filter(
         category__in=request.user.categories.all()
     ).count() == 0:

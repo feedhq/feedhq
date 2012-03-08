@@ -535,3 +535,18 @@ class TestFeeds(TestCase):
             response,
             '<a class="unread" title="Unread entries" href="/unread/">30</a>'
         )
+
+    def test_mark_as_read(self):
+        url = reverse('feeds:unread')
+        response = self.client.get(url)
+        self.assertNotContains(response, 'Mark all as read')
+
+        fake_update(self.feed.url)
+
+        response = self.client.get(url)
+        self.assertContains(response, 'Mark all as read')
+
+        data = {'action': 'read'}
+        response = self.client.post(url, data, follow=True)
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertContains(response, '30 entries have been marked as read')

@@ -42,3 +42,9 @@ class ActionForm(forms.Form):
         ('images_always', 'images_always'),
         ('images_never', 'images_never'),
     ))
+
+
+class ReadForm(forms.Form):
+    action = forms.ChoiceField(choices=(
+        ('read', 'read'),
+    ), widget=forms.HiddenInput, initial='read')

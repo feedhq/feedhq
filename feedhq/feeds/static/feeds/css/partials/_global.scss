@@ -333,12 +333,21 @@ form {
 	background-position: center center !important;
 }
 
-.count .edit {
-	display: inline;
-	border-radius: 0;
-	border-top-right-radius: 5px;
-	border-bottom-right-radius: 5px;
-	border-right: 1px solid white;
+.count {
+	.edit {
+		display: inline;
+		border-radius: 0;
+		border-top-right-radius: 5px;
+		border-bottom-right-radius: 5px;
+		border-right: 1px solid white;
+	}
+
+	white-space: nowrap;
+
+	form {
+		display: inline-block;
+		margin: 0;
+	}
 }
 
 #entry > h2:hover {

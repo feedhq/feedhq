@@ -25,14 +25,14 @@ h2 {
 	padding: 5px 0;
 
 	&.bottom {
-		padding-left: column-width(8) + $em;
+		padding-left: column-width(9) + $em;
 	}
 
 	.count, .back {
-		@include cols(8);
+		@include cols(9);
 	}
 	.pagination {
-		@include cols(4);
+		@include cols(3);
 	}
 }
 
