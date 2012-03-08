@@ -14,7 +14,7 @@
 					<h1>
 						<a href="{% url "feeds:home" %}">FeedHQ</a>
 						{% if user.is_authenticated %}
-							<a class="unread" title="{% trans "Unread entries" %}" href="{% url "feeds:unread" %}">{% if entries.paginator %}{{ entries.paginator.count }}{% else %}{{ user.entries.unread }}{% endif %}</a>
+							<a class="unread" title="{% trans "Unread entries" %}" href="{% url "feeds:unread" %}">{{ user.entries.unread }}</a>
 							<a href="{% url "feeds:dashboard" %}" class="add dashboard" title="{% trans "Dashboard" %}">{% trans "Dashboard" %}</a>
 							<a href="{% url "feeds:add_category" %}" class="add category" title="{% trans "Add a category" %}">{% trans "Add category" %}</a>
 							<a href="{% url "feeds:add_feed" %}" class="add feed" title="{% trans "Add a feed" %}">{% trans "Add feed" %}</a>
