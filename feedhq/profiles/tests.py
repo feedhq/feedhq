@@ -2,11 +2,13 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
+from ..feeds.models import Category
+
 
 class ProfilesTest(TestCase):
     def setUp(self):
-        user = User.objects.create_user('test', 'test@example.com', 'pass')
-        self.client.login(username=user.username, password='pass')
+        self.user = User.objects.create_user('test', 'test@example.com', 'pass')
+        self.client.login(username=self.user.username, password='pass')
 
     def test_profile(self):
         url = reverse('profile')
@@ -72,3 +74,16 @@ class ProfilesTest(TestCase):
         response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertEqual(User.objects.get().entries_per_page, 50)
+
+    def test_opml_export(self):
+        url = reverse('export')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('attachment' in response['Content-Disposition'])
+        self.assertEqual(len(response.content), 126)  # No feed yet
+
+        cat = self.user.categories.create(name='Test', slug='test')
+        feed = cat.feeds.create(name='Test Feed',
+                                url='http://example.com/test.atom')
+        response = self.client.get(url)
+        self.assertContains(response, 'xmlUrl="http://example.com/test.atom"')

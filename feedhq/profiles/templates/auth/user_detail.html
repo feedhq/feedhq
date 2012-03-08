@@ -12,6 +12,9 @@
 		<li>{% blocktrans count counter=entries %}{{ counter }} entry{% plural %}{{ counter }} entries{% endblocktrans %}</li>
 	</ul>
 
+	<h2>{% trans "Export" %}</h2>
+	<p><a href="{% url "export" %}">{% trans "Export your feeds as OPML" %}</a></p>
+
 	<h2>{% trans "Edit your profile" %}</h2>
 
 	<form method="post" action="{% url "profile" %}" class="no">

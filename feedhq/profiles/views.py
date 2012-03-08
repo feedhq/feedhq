@@ -1,6 +1,7 @@
+from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views import generic
 
 from .forms import ChangePasswordForm, ProfileForm
@@ -56,3 +57,14 @@ class ProfileView(generic.FormView):
         messages.success(self.request, form.success_message)
         return redirect(reverse('profile'))
 profile = login_required(ProfileView.as_view())
+
+
+@login_required
+def export(request):
+    """OPML export"""
+    response = render(request, 'profiles/opml_export.opml',
+                      {'categories': request.user.categories.all()})
+    response['Content-Disposition'] = 'attachment; filename=feedhq-export.opml'
+    ctype = 'text/xml; charset=%s' % settings.DEFAULT_CONTENT_TYPE
+    response['Content-Type'] = ctype
+    return response
