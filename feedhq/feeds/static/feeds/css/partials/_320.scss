@@ -1,2 +1,79 @@
 @media only screen and (max-width: 767px) {
+	#header {
+		@include grid(4);
+
+		h1, #navigation {
+			@include cols(4);
+			margin: 0;
+		}
+
+		#navigation {
+			font-size: 0.8em;
+		}
+	}
+
+	#footer, #content, #categories, #options {
+		@include grid(4);
+	}
+
+	.figures {
+		&.bottom {
+			padding-left: 0;
+		}
+
+		.count, .back {
+			width: 100%;
+			margin: 0;
+			white-space: inherit;
+		}
+
+		.back {
+			@include cols(1);
+			white-space: nowrap;
+		}
+
+		.pagination {
+			float: right;
+		}
+	}
+
+	form {
+		margin: 0;
+		margin-top: 1em;
+
+		.field, .title, .input, .submit {
+			width: 100%;
+			margin: 0;
+			text-align: left;
+		}
+
+		.input input[type="checkbox"] {
+			width: auto;
+		}
+	}
+
+	.entry {
+		.title {
+			width: column-width(4) - 20;
+			white-space: inherit;
+		}
+
+		.date {
+			margin: 0;
+			width: 100%;
+			font-size: 0.8em;
+			text-align: right;
+			border-bottom: 1px solid lighten($text, 75%);
+		}
+	}
+
+	#entry {
+		width: 100%;
+		padding: 0;
+
+		.actions, .content {
+			width: 100%;
+			margin: 0;
+		}
+	}
 }
