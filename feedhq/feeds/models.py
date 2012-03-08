@@ -163,6 +163,11 @@ def update_on_creation(sender, instance, created, **kwargs):
 models.signals.post_save.connect(update_on_creation, sender=Feed)
 
 
+class EntryManager(models.Manager):
+    def unread(self):
+        return self.filter(read=False).count()
+
+
 class Entry(models.Model):
     """An entry is a cached feed item"""
     feed = models.ForeignKey(Feed, verbose_name=_('Feed'),
@@ -181,6 +186,8 @@ class Entry(models.Model):
                              related_name='entries')
     # Mark something as read or unread
     read = models.BooleanField(_('Read'), default=False, db_index=True)
+
+    objects = EntryManager()
 
     def __unicode__(self):
         return u'%s' % self.title

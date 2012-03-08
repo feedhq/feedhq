@@ -117,8 +117,20 @@ input, select {
 			color: inherit;
 			text-decoration: none;
 
-			&:first-child {
+			&.unread {
 				margin-right: 10px;
+				font-size: 0.8em;
+				line-height: 1em;
+				padding: 2px 5px 5px 5px;
+				background: lighten($text, 75%);
+				color: lighten($text, 25%);
+				display: inline-block;
+				border-radius: 5px;
+
+				&:hover {
+					background: $text;
+					color: white;
+				}
 			}
 
 			&.add {

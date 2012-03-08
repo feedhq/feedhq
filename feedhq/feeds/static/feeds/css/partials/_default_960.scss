@@ -1,8 +1,12 @@
 #header {
 	@include grid(12);
 
-	h1, #navigation {
-		@include cols(6);
+	h1 {
+		@include cols(7);
+	}
+
+	#navigation {
+		@include cols(5);
 	}
 }
 

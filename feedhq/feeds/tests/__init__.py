@@ -518,3 +518,20 @@ class TestFeeds(TestCase):
         url = reverse('feeds:dashboard')
         response = self.client.get(url)
         self.assertContains(response, 'Dashboard')
+
+    def test_unread_count(self):
+        """Unread feed count everywhere"""
+        url = reverse('profile')
+        response = self.client.get(url)
+        self.assertContains(
+            response,
+            '<a class="unread" title="Unread entries" href="/unread/">0</a>'
+        )
+
+        fake_update(self.feed.url)
+
+        response = self.client.get(url)
+        self.assertContains(
+            response,
+            '<a class="unread" title="Unread entries" href="/unread/">30</a>'
+        )
