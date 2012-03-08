@@ -68,6 +68,7 @@ form {
 
 	.title {
 		@include cols(10);
+		width: column-width(10) - 20; // space for favicon
 	}
 
 	.cat {
