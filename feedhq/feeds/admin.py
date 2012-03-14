@@ -31,10 +31,16 @@ class EntryAdmin(admin.ModelAdmin):
     list_display = ('title', 'date', 'user')
 
 
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('topic', 'hub', 'verified', 'lease_expiration')
+    list_filter = ('verified', 'hub')
+    search_fields = ('topic', 'hub')
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Feed, FeedAdmin)
 admin.site.register(Entry, EntryAdmin)
-admin.site.register(Subscription)
+admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(User)
 admin.site.register(Group)
 admin.site.register(Site)
