@@ -163,6 +163,15 @@ input, select {
 				background-image: url('../img/Download.png');
 			}
 		}
+
+		#add-menu {
+			list-style: none;
+			display: inline;
+
+			ul, li {
+				display: inline;
+			}
+		}
 	}
 }
 

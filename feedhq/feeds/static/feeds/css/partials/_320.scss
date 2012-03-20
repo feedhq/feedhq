@@ -2,6 +2,7 @@
 	#header {
 		@include grid(4);
 		padding: 0;
+		position: relative;
 
 		h1, #navigation {
 			@include cols(4);
@@ -10,6 +11,41 @@
 
 		#navigation {
 			font-size: 0.8em;
+			position: absolute;
+			top: 10px;
+			right: 0;
+
+			background: lighten($text, 75%) url('../img/Settings.png') no-repeat 5px 5px;
+			&:hover {
+				background: $text url('../img/Settings-white.png') no-repeat 5px 5px;
+			}
+		}
+
+		#add-menu {
+			background: lighten($text, 75%) url('../img/Dropdown.png') no-repeat 5px 5px;
+			margin-right: 25px;
+
+			&:hover {
+				background: $text url('../img/Dropdown-white.png') no-repeat 5px 5px;
+			}
+		}
+
+		#add-menu, #navigation {
+			display: block !important;
+			float: right;
+			margin-top: 5px;
+			width: 20px;
+			height: 20px;
+			border-radius: 5px;
+
+			&:hover, &.active {
+				background-color: $text;
+				color: white;
+			}
+
+			li {
+				display: none !important;
+			}
 		}
 	}
 

@@ -84,5 +84,13 @@ for this feed{% endblocktrans %}">
 				window.location.href = '{{ previous }}';
 			}{% endif %}
 		});
+
+		// TODO sekizai this, move to base.html
+		$('#add-menu, #navigation').click(function() {
+			var mobile = $(this).find('li').css('display') == 'none' || $(this).attr('class') == 'active';
+			if (mobile) {
+				// tooltip
+			}
+		});
 	</script>
 {% endblock %}
