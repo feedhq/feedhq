@@ -78,4 +78,10 @@
 			margin: 0;
 		}
 	}
+
+	.content {
+		pre, img {
+			overflow: auto;
+		}
+	}
 }
