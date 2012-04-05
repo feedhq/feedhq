@@ -1,4 +1,5 @@
 django-debug-toolbar==0.9.4
+mock==0.8.0
 py==1.4.6
 pyinotify==0.9.3
 tox==1.3

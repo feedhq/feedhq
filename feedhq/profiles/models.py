@@ -17,12 +17,28 @@ ENTRIES_PER_PAGE = (
 )
 
 
+
 class User(models.Model):
+    NONE = ''
+    READABILITY = 'readability'
+    READITLATER = 'readitlater'
+    INSTAPAPER = 'instapaper'
+    READ_LATER_SERVICES = (
+        (NONE, _('None')),
+        (READABILITY, u'Readability'),
+        (READITLATER, u'Read it later'),
+        (INSTAPAPER, u'Instapaper'),
+    )
+
     username = models.CharField(max_length=75, unique=True)
     timezone = models.CharField(_('Time zone'), max_length=75,
                                 choices=TIMEZONES, default='UTC')
     entries_per_page = models.IntegerField(_('Entries per page'), default=25,
                                            choices=ENTRIES_PER_PAGE)
+    read_later = models.CharField(_('Read later service'), blank=True,
+                                  choices=READ_LATER_SERVICES, max_length=50)
+    read_later_credentials = models.TextField(_('Read later credentials'),
+                                              blank=True)
 
     class Meta:
         abstract = True

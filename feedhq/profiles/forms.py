@@ -1,3 +1,10 @@
+import json
+import oauth2 as oauth
+import requests
+import urllib
+import urlparse
+
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
@@ -43,3 +50,82 @@ class ChangePasswordForm(forms.Form):
     def save(self):
         self.user.set_password(self.cleaned_data['new_password'])
         self.user.save()
+
+
+class ServiceForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        self.service = kwargs.pop('service')
+        super(ServiceForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        getattr(self, 'check_%s' % self.service)()
+        return self.cleaned_data
+
+    def save(self):
+        self.user.read_later = '' if self.service == 'none' else self.service
+        self.user.save()
+
+    def check_none(self):
+        self.user.read_later_credentials = ''
+
+
+class CredentialsForm(ServiceForm):
+    """A form that checks an external service using Basic Auth on a URL"""
+    username = forms.CharField(label=_('Username'))
+    password = forms.CharField(label=_('Password'), widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        super(CredentialsForm, self).__init__(*args, **kwargs)
+        if self.service == 'instapaper':
+            self.fields['username'].help_text = _('Your Instapaper username '
+                                                  'is an email address.')
+
+    def check_readitlater(self):
+        """Checks that the readitlater credentials are valid"""
+        data = self.cleaned_data
+        data['apikey'] = settings.API_KEYS['readitlater']
+        response = requests.get('https://readitlaterlist.com/v2/auth',
+                                params=data)
+        if response.status_code != 200:
+            raise forms.ValidationError(
+                _('Unable to verify your readitlaterlist credentials. Please '
+                  'double-check and try again.')
+            )
+        self.user.read_later_credentials = json.dumps(self.cleaned_data)
+
+    def check_instapaper(self):
+        """Get an OAuth token using xAuth from Instapaper"""
+        self.check_xauth(
+            settings.INSTAPAPER['CONSUMER_KEY'],
+            settings.INSTAPAPER['CONSUMER_SECRET'],
+            'https://www.instapaper.com/api/1/oauth/access_token',
+        )
+
+    def check_readability(self):
+        """Get an OAuth token using the Readability API"""
+        self.check_xauth(
+            settings.READABILITY['CONSUMER_KEY'],
+            settings.READABILITY['CONSUMER_SECRET'],
+            'https://www.readability.com/api/rest/v1/oauth/access_token/',
+        )
+
+    def check_xauth(self, key, secret, token_url):
+        """Check a generic xAuth provider"""
+        consumer = oauth.Consumer(key, secret)
+        client = oauth.Client(consumer)
+        client.set_signature_method(oauth.SignatureMethod_HMAC_SHA1())
+        params = {
+            'x_auth_username': self.cleaned_data['username'],
+            'x_auth_password': self.cleaned_data['password'],
+            'x_auth_mode': 'client_auth',
+        }
+        response, token = client.request(token_url, method='POST',
+                                         body=urllib.urlencode(params))
+        if response.status != 200:
+            raise forms.ValidationError(
+                _("Unable to verify your %s credentials. Please double-check "
+                  "and try again") % self.service,
+            )
+        request_token = dict(urlparse.parse_qsl(token))
+        self.user.read_later_credentials = json.dumps(request_token)

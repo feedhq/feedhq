@@ -26,6 +26,16 @@
 		</div>
 	</form>
 
+	<h2>{% trans "Read later" %}</h2>
+	<p>{% trans "Your current read-it-later service is:" %} <strong>{{ user.get_read_later_display }}</strong></p>
+	<p>
+		{% trans "Select the service you want for reading list management." %}
+		<a href="{% url "services" "readability" %}">Readability</a>,
+		<a href="{% url "services" "readitlater" %}">Read It Later</a>,
+		<a href="{% url "services" "instapaper" %}">Instapaper</a>{% if user.read_later %},
+		<a href="{% url "services" "none" %}">None</a>{% endif %}
+	</p>
+
 	<h2>{% trans "Change your password" %}</h2>
 
 	<form method="post" action="{% url "profile" %}" class="no">

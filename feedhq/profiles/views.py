@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.shortcuts import redirect, render
+from django.utils.translation import ugettext as _
 from django.views import generic
 
-from .forms import ChangePasswordForm, ProfileForm
+from .forms import (ChangePasswordForm, ProfileForm, CredentialsForm,
+                    ServiceForm)
 from ..decorators import login_required
 from ..feeds.models import Feed
 
@@ -68,3 +70,43 @@ def export(request):
     ctype = 'text/xml; charset=%s' % settings.DEFAULT_CONTENT_TYPE
     response['Content-Type'] = ctype
     return response
+
+
+class ServiceView(generic.FormView):
+    FORMS = {
+        'readability': CredentialsForm,
+        'readitlater': CredentialsForm,
+        'instapaper': CredentialsForm,
+        'none': ServiceForm,
+    }
+    success_url = reverse_lazy('profile')
+
+    def get_template_names(self):
+        return ['profiles/services/%s.html' % self.kwargs['service']]
+
+    def get_form_kwargs(self):
+        kwargs = super(ServiceView, self).get_form_kwargs()
+        kwargs.update({
+            'user': self.request.user,
+            'service': self.kwargs['service'],
+        })
+        return kwargs
+
+    def get_form_class(self):
+        return self.FORMS[self.kwargs['service']]
+
+    def form_valid(self, form):
+        form.save()
+        if form.user.read_later:
+            messages.success(
+                self.request,
+                _('You have successfully added %s as your reading list '
+                  'service') % form.user.get_read_later_display(),
+            )
+        else:
+            messages.success(
+                self.request,
+                _('You have successfully disabled reading list integration'),
+            )
+        return super(ServiceView, self).form_valid(form)
+services = login_required(ServiceView.as_view())

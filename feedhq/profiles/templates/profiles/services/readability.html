@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Readability settings" %}{% endblock %}
+
+{% block content %}
+	<h1>{% trans "Readability settings" %}</h1>
+
+	<p>{% trans "Please enter your Readability credentials. Note that Readability uses xAuth so we won't store your raw credentials but exchange them for a toekn that you can revoke at any time." %}</p>
+
+	<form method="post" action="{% url "services" "readability" %}" class="no">
+		{% include "form.html" %}
+		<div class="submit">
+			<input type="submit" value="{% trans "Check credentials" %}">
+			<a href="{% url "profile" %}">{% trans "Cancel" %}</a>
+		</div>
+	</form>
+{% endblock %}

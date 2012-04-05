@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Instapaper settings" %}{% endblock %}
+
+{% block content %}
+	<h1>{% trans "Instapaper settings" %}</h1>
+
+	<p>{% trans "Please enter your Instapaper credentials. Note that Instapaper uses xAuth so we won't store your raw credentials but exchange them for a token that you can revoke at any time." %}</p>
+
+	<form method="post" action="{% url "services" "instapaper" %}" class="no">
+		{% include "form.html" %}
+		<div class="submit">
+			<input type="submit" value="{% trans "Check credentials" %}">
+			<a href="{% url "profile" %}">{% trans "Cancel" %}</a>
+		</div>
+	</form>
+{% endblock %}

@@ -79,6 +79,19 @@ Create ``feedhq/settings.py`` and put the minimal stuff in it::
     EMAIL_HOST = 'mail.your_domain.com'
     EMAIL_SUBJECT_PREFIX = '[FeedHQ] '
 
+For Readability and Instapaper support, you'll need a couple of additional
+settings::
+
+    INSTAPAPER = {
+        'CONSUMER_KEY': 'yay isntappaper',
+        'CONSUMER_SECRET': 'secret',
+    }
+
+    READABILITY = {
+        'CONSUMER_KEY': 'yay readability',
+        'CONSUMER_SECRET': 'othersecret',
+    }
+
 Then deploy the Django app using the recipe that fits your installation (with
 mod_wsgi or mod_fcgi). More documentation on the `Django deployment guide`_.
 
