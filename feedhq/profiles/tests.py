@@ -117,7 +117,7 @@ class ProfilesTest(TestCase):
         get.assert_called_with(
             'https://readitlaterlist.com/v2/auth',
             params={'username': u'example',
-                    'apikey': '68ag5e52p8e4fac4c0T6dh9Q5fAdpb1f',
+                    'apikey': 'test read it later API key',
                     'password': u'samplepassword'},
         )
 

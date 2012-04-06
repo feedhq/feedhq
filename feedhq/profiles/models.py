@@ -17,7 +17,6 @@ ENTRIES_PER_PAGE = (
 )
 
 
-
 class User(models.Model):
     NONE = ''
     READABILITY = 'readability'
