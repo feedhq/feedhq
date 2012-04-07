@@ -92,4 +92,43 @@ for this feed{% endblocktrans %}">
 </script>
 {% endaddtoblock %}
 
+{% addtoblock "js" %}
+<script>
+	$(function() {
+		if ($('#content').css('overflow') != 'hidden') {
+			return;
+		}
+		var imgs = $('.content img');
+		var count = imgs.length;
+		imgs.each(function() {
+			var image = $(this);
+			var content_width = $('.content').width();
+			image.load(function() {
+				if (this.clientWidth <= 1 && this.clientHeight <= 1) {
+					$(this).remove();
+				} else {
+					if (this.clientWidth > content_width) {
+						$(this).wrap('<div class="overflow">');
+					}
+				}
+			});
+			if (!--count && window.devicePixelRatio) {
+				if (window.devicePixelRatio > 1) {
+					$('.content img').click(function() {
+						var img = $(this);
+						if (img.hasClass('ratio')) {
+							img.removeAttr('width');
+							img.removeClass('ratio');
+						} else {
+							img.addClass('ratio');
+							img.attr("width", this.clientWidth / window.devicePixelRatio);
+						}
+					});
+				}
+			}
+		});
+	});
+</script>
+{% endaddtoblock %}
+
 {% endblock %}

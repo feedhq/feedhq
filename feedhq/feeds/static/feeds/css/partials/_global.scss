@@ -240,6 +240,10 @@ input, select {
 		line-height: 2rem;
 		margin: 0.75em 0 0.25em 0;
 	}
+
+	.overflow {
+		overflow: auto;
+	}
 }
 
 .no label {
