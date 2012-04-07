@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Bruno Renié <bruno@renie.fr>, 2012.
 #   <buburno@gmail.com>, 2012.
@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FeedHQ\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-03 14:45+0100\n"
-"PO-Revision-Date: 2012-02-29 20:24+0000\n"
+"POT-Creation-Date: 2012-04-07 12:20+0200\n"
+"PO-Revision-Date: 2012-04-07 10:30+0000\n"
 "Last-Translator: brutasse <buburno@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 
 #: feeds/models.py:15
@@ -99,7 +99,7 @@ msgstr "Nom"
 msgid "Slug"
 msgstr "Slug"
 
-#: feeds/models.py:61 feeds/models.py:178
+#: feeds/models.py:61 feeds/models.py:185
 msgid "User"
 msgstr "Utilisateur"
 
@@ -113,13 +113,11 @@ msgstr "Supprimer après"
 
 #: feeds/models.py:73
 msgid ""
-"Period of time after which entries are deleted, whether they've been read or "
-"not."
-msgstr ""
-"Durée après laquelle les articles sont supprimés, qu'ils aient été lus ou "
-"non."
+"Period of time after which entries are deleted, whether they've been read or"
+" not."
+msgstr "Durée après laquelle les articles sont supprimés, qu'ils aient été lus ou non."
 
-#: feeds/models.py:93 feeds/models.py:170
+#: feeds/models.py:93 feeds/models.py:177
 msgid "URL"
 msgstr "URL"
 
@@ -131,7 +129,7 @@ msgstr "Catégorie"
 msgid "<a href=\"/category/add/\">Add a category</a>"
 msgstr "<a href=\"/category/add/\">Ajouter une catégorie</a>"
 
-#: feeds/models.py:99 feeds/models.py:168
+#: feeds/models.py:99 feeds/models.py:175
 msgid "Title"
 msgstr "Titre"
 
@@ -145,9 +143,7 @@ msgstr "Pause"
 
 #: feeds/models.py:103
 msgid "Check this if you want to stop checking updates for this feed"
-msgstr ""
-"Cochez cette case si vous voulez arrêter de charger les mises à jour pour ce "
-"fil"
+msgstr "Cochez cette case si vous voulez arrêter de charger les mises à jour pour ce fil"
 
 #: feeds/models.py:105
 msgid "Etag"
@@ -163,9 +159,7 @@ msgstr "Écraser les préférences de la catégorie"
 
 #: feeds/models.py:111
 msgid "Check this box if you want to override the category settings below."
-msgstr ""
-"Cochez cette case si vous voulez écraser ci-dessous les préférences de la "
-"catégorie."
+msgstr "Cochez cette case si vous voulez écraser ci-dessous les préférences de la catégorie."
 
 #: feeds/models.py:116
 msgid "Unread count"
@@ -183,46 +177,55 @@ msgstr "Pas de favicon"
 msgid "Display images by default"
 msgstr "Afficher les images par défaut"
 
-#: feeds/models.py:166
+#: feeds/models.py:121
+msgid "Failed fetching attempts"
+msgstr "Tentatives de mise à jour échouées"
+
+#: feeds/models.py:173
 msgid "Feed"
 msgstr "Fil"
 
-#: feeds/models.py:169
+#: feeds/models.py:176
 msgid "Abstract"
 msgstr "Résumé"
 
-#: feeds/models.py:173
+#: feeds/models.py:180
 msgid "Permalink"
 msgstr "Lien permanent"
 
-#: feeds/models.py:175
+#: feeds/models.py:182
 msgid "Date"
 msgstr "Date"
 
-#: feeds/models.py:181
+#: feeds/models.py:188
 msgid "Read"
 msgstr "Lu"
 
-#: feeds/views.py:148
+#: feeds/views.py:87
+#, python-format
+msgid "%s entries have been marked as read"
+msgstr "%s articles ont été marqués comme lus"
+
+#: feeds/views.py:160
 #, python-format
 msgid "%(category)s has been successfully updated"
 msgstr "%(category)s a été mis à jour"
 
-#: feeds/views.py:184
+#: feeds/views.py:196
 #, python-format
 msgid "%(feed)s has been successfully added"
 msgstr "%(feed)s a été ajouté"
 
-#: feeds/views.py:212
+#: feeds/views.py:224
 #, python-format
 msgid "%(feed)s has been successfully updated"
 msgstr "%(feed)s a été mis à jour"
 
-#: feeds/views.py:374
+#: feeds/views.py:386
 msgid "Imported"
 msgstr "Importé"
 
-#: feeds/views.py:383
+#: feeds/views.py:395
 #, python-format
 msgid "%(num)s feeds have been imported"
 msgstr "%(num)s fils ont été importés"
@@ -238,9 +241,7 @@ msgstr "Confirmer la suppression"
 #, python-format
 msgid ""
 "You are about to delete the category: <em>%(object)s</em>. Are you sure?"
-msgstr ""
-"Vous êtes sur le point de supprimer la catégorie&nbsp;: <em>%(object)s</em>. "
-"Êtes-vous sûr&nbsp;?"
+msgstr "Vous êtes sur le point de supprimer la catégorie&nbsp;: <em>%(object)s</em>. Êtes-vous sûr&nbsp;?"
 
 #: feeds/templates/feeds/category_confirm_delete.html:10
 msgid "There is no undo"
@@ -271,21 +272,25 @@ msgstr "Supprimer"
 #: feeds/templates/feeds/feed_confirm_delete.html:16
 #: feeds/templates/feeds/feed_form.html:11
 #: feeds/templates/feeds/import_feeds.html:11
+#: profiles/templates/profiles/services/instapaper.html:14
+#: profiles/templates/profiles/services/none.html:12
+#: profiles/templates/profiles/services/readability.html:14
+#: profiles/templates/profiles/services/readitlater.html:12
 #: templates/registration/login.html:12
 msgid "Cancel"
 msgstr "Annuler"
 
 #: feeds/templates/feeds/category_form.html:3
-#: feeds/templates/feeds/category_form.html:6 templates/base.html:18
+#: feeds/templates/feeds/category_form.html:6 templates/base.html:22
 msgid "Add a category"
 msgstr "Ajouter une catégorie"
 
-#: feeds/templates/feeds/category_form.html:10
+#: feeds/templates/feeds/category_form.html:10 templates/base.html:22
 msgid "Add category"
 msgstr "Ajouter une catégorie"
 
 #: feeds/templates/feeds/dashboard.html:3
-#: feeds/templates/feeds/dashboard.html:6 templates/base.html:17
+#: feeds/templates/feeds/dashboard.html:6 templates/base.html:21
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
@@ -310,17 +315,17 @@ msgid "Delete this feed"
 msgstr "Supprimer ce fil"
 
 #: feeds/templates/feeds/entry_detail.html:9
-#: feeds/templates/feeds/entry_detail.html:60
+#: feeds/templates/feeds/entry_detail.html:62
 msgid "Back"
 msgstr "Retour"
 
 #: feeds/templates/feeds/entry_detail.html:12
-#: feeds/templates/feeds/entry_detail.html:63
+#: feeds/templates/feeds/entry_detail.html:65
 msgid "Previous"
 msgstr "Précédent"
 
 #: feeds/templates/feeds/entry_detail.html:13
-#: feeds/templates/feeds/entry_detail.html:64
+#: feeds/templates/feeds/entry_detail.html:66
 msgid "Next"
 msgstr "Suivant"
 
@@ -341,34 +346,34 @@ msgid "Show images"
 msgstr "Afficher les images"
 
 #: feeds/templates/feeds/entry_detail.html:34
-msgid "Always show images for this feed"
+msgid ""
+"Always show images\n"
+"for this feed"
 msgstr "Toujours afficher les images pour ce fil"
 
-#: feeds/templates/feeds/entry_detail.html:41
+#: feeds/templates/feeds/entry_detail.html:42
 msgid "Hide images for this feed"
 msgstr "Cacher les images pour ce fil"
 
-#: feeds/templates/feeds/entry_detail.html:47
+#: feeds/templates/feeds/entry_detail.html:48
 msgid "Unread"
 msgstr "Non lus"
 
 #: feeds/templates/feeds/feed_confirm_delete.html:8
 #, python-format
 msgid "You are about to delete the feed: <em>%(object)s</em>. Are you sure?"
-msgstr ""
-"Vous êtes sur le point de supprimer le fil&nbsp: <em>%(object)s</em>. Êtes-"
-"vous sûr&nbsp;?"
+msgstr "Vous êtes sur le point de supprimer le fil&nbsp: <em>%(object)s</em>. Êtes-vous sûr&nbsp;?"
 
 #: feeds/templates/feeds/feed_confirm_delete.html:10
 msgid "There is no undo."
 msgstr "Il ne sera pas possible de revenir en arrière."
 
 #: feeds/templates/feeds/feed_form.html:3
-#: feeds/templates/feeds/feed_form.html:6 templates/base.html:19
+#: feeds/templates/feeds/feed_form.html:6 templates/base.html:23
 msgid "Add a feed"
 msgstr "Ajouter un fil"
 
-#: feeds/templates/feeds/feed_form.html:10
+#: feeds/templates/feeds/feed_form.html:10 templates/base.html:23
 msgid "Add feed"
 msgstr "Ajouter un fil"
 
@@ -380,9 +385,7 @@ msgstr "Prise en main"
 msgid ""
 "Hi! Looks like you're new here. Here are a couple of things you can do to "
 "get started with FeedHQ:"
-msgstr ""
-"Bonjour&nbsp;! On dirait que vous êtes nouveau ici. Voici quelques actions "
-"que vous pouvez entreprendre pour démarrer avec FeedHQ&nbsp;:"
+msgstr "Bonjour&nbsp;! On dirait que vous êtes nouveau ici. Voici quelques actions que vous pouvez entreprendre pour démarrer avec FeedHQ&nbsp;:"
 
 #: feeds/templates/feeds/feed_list.html:15
 msgid "Create a category:"
@@ -404,44 +407,45 @@ msgstr "Vous avez une sauvegarde OPML&nbsp;? Importez-la&nbsp;!"
 
 #: feeds/templates/feeds/feed_list.html:19
 msgid ""
-"Now look closely. These three vital features can be accessed using the three "
-"buttons on the top bar. Got it? Good. This page will self-destruct as soon "
+"Now look closely. These three vital features can be accessed using the three"
+" buttons on the top bar. Got it? Good. This page will self-destruct as soon "
 "as you add your first feed."
-msgstr ""
-"Maintenant regardez bien. Vous pouvez accéder à ces trois fonctions vitales "
-"via les trois boutons dans la barre supérieure. Vu&nbsp;? Bien. Cette page "
-"s'auto-détruira dès que vous aurez ajouté votre premier fil."
+msgstr "Maintenant regardez bien. Vous pouvez accéder à ces trois fonctions vitales via les trois boutons dans la barre supérieure. Vu&nbsp;? Bien. Cette page s'auto-détruira dès que vous aurez ajouté votre premier fil."
 
-#: feeds/templates/feeds/feed_list.html:31
+#: feeds/templates/feeds/feed_list.html:33
 #, python-format
 msgid "%(start)s - %(end)s of %(counter)s unread entry."
 msgid_plural "%(start)s - %(end)s of %(counter)s unread entries."
 msgstr[0] "%(start)s - %(end)s sur %(counter)s article non lu."
 msgstr[1] "%(start)s - %(end)s sur %(counter)s articles non lus."
 
-#: feeds/templates/feeds/feed_list.html:33
+#: feeds/templates/feeds/feed_list.html:35
 #, python-format
 msgid "%(start)s - %(end)s of %(counter)s entry"
 msgid_plural "%(start)s - %(end)s of %(counter)s entries"
 msgstr[0] "%(start)s - %(end)s sur %(counter)s article"
 msgstr[1] "%(start)s - %(end)s sur %(counter)s articles"
 
-#: feeds/templates/feeds/feed_list.html:33
+#: feeds/templates/feeds/feed_list.html:35
 #, python-format
 msgid " (%(unread_count)s unread)"
 msgid_plural " (%(unread_count)s unread)"
 msgstr[0] " (%(unread_count)s non lu)"
 msgstr[1] " (%(unread_count)s non lus)"
 
-#: feeds/templates/feeds/feed_list.html:36
+#: feeds/templates/feeds/feed_list.html:38
 msgid "Show all"
 msgstr "Tout afficher"
 
-#: feeds/templates/feeds/feed_list.html:38
+#: feeds/templates/feeds/feed_list.html:40
 msgid "Show only unread"
 msgstr "Afficher seulement les articles non lus"
 
-#: feeds/templates/feeds/feed_list.html:48
+#: feeds/templates/feeds/feed_list.html:45
+msgid "Mark all as read"
+msgstr "Marquer tous comme lus"
+
+#: feeds/templates/feeds/feed_list.html:56
 msgid "Hooray, nothing to read!"
 msgstr "Youpi, rien à lire&nbsp;!"
 
@@ -453,45 +457,90 @@ msgstr "Importer des données"
 msgid "Import data from an OPML file"
 msgstr "Importer des données depuis un fichier OPML"
 
-#: feeds/templates/feeds/import_feeds.html:10
+#: feeds/templates/feeds/import_feeds.html:10 templates/base.html:24
 msgid "Import"
 msgstr "Importer"
 
-#: profiles/forms.py:8
+#: profiles/forms.py:15
 msgid "Your profile was updated successfully"
 msgstr "Votre mot de passe a été changé"
 
-#: profiles/forms.py:17
+#: profiles/forms.py:24
 msgid "Your password was changed successfully"
 msgstr "Votre mot de passe a été changé"
 
-#: profiles/forms.py:20
+#: profiles/forms.py:27
 msgid "Current password"
 msgstr "Mot de passe actuel"
 
-#: profiles/forms.py:22
+#: profiles/forms.py:29
 msgid "New password"
 msgstr "Nouveau mot de passe"
 
-#: profiles/forms.py:24
+#: profiles/forms.py:31
 msgid "New password (confirm)"
 msgstr "Nouveau mot de passe (confirmer)"
 
-#: profiles/forms.py:34
+#: profiles/forms.py:41
 msgid "Incorrect password"
 msgstr "Mot de passe incorrect"
 
-#: profiles/forms.py:40
+#: profiles/forms.py:47
 msgid "The two passwords didn't match"
 msgstr "Les deux mots de passe ne sont pas les même"
 
-#: profiles/models.py:22
+#: profiles/forms.py:75
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: profiles/forms.py:76
+msgid "Password"
+msgstr "Mot de passe"
+
+#: profiles/forms.py:81
+msgid "Your Instapaper username is an email address."
+msgstr "Votre nom d'utilisateur Instapaper est une adresse email."
+
+#: profiles/forms.py:92
+msgid ""
+"Unable to verify your readitlaterlist credentials. Please double-check and "
+"try again."
+msgstr "Impossible de vérifier vos identifiants pour readitlaterlist. Merci de vérifier leur exactitude et réessayer."
+
+#: profiles/forms.py:127
+#, python-format
+msgid ""
+"Unable to verify your %s credentials. Please double-check and try again"
+msgstr "Impossible de vérifier vos identifiants %s. Merci de vérifier et réessayer."
+
+#: profiles/models.py:26
+msgid "None"
+msgstr "Aucun"
+
+#: profiles/models.py:33
 msgid "Time zone"
 msgstr "Fuseau horaire"
 
-#: profiles/models.py:24
+#: profiles/models.py:35
 msgid "Entries per page"
 msgstr "Articles par page"
+
+#: profiles/models.py:37
+msgid "Read later service"
+msgstr "Service de liste de lecture"
+
+#: profiles/models.py:39
+msgid "Read later credentials"
+msgstr "Identifiants pour la liste de lecture"
+
+#: profiles/views.py:103
+#, python-format
+msgid "You have successfully added %s as your reading list service"
+msgstr "%s a bien été sélectionné pour gérer votre liste de lecture"
+
+#: profiles/views.py:109
+msgid "You have successfully disabled reading list integration"
+msgstr "Vous avez bien désactivé la gestion de liste de lecture"
 
 #: profiles/templates/auth/user_detail.html:3
 msgid "Profile"
@@ -527,26 +576,101 @@ msgstr[0] "%(counter)s article"
 msgstr[1] "%(counter)s articles"
 
 #: profiles/templates/auth/user_detail.html:15
+msgid "Export"
+msgstr "Export"
+
+#: profiles/templates/auth/user_detail.html:16
+msgid "Export your feeds as OPML"
+msgstr "Exportez vos fils au format OPML"
+
+#: profiles/templates/auth/user_detail.html:18
 msgid "Edit your profile"
 msgstr "Modifier votre profil"
 
-#: profiles/templates/auth/user_detail.html:22
+#: profiles/templates/auth/user_detail.html:25
 msgid "Update profile"
 msgstr "Mettre à jour votre profil"
 
-#: profiles/templates/auth/user_detail.html:26
+#: profiles/templates/auth/user_detail.html:29
+msgid "Read later"
+msgstr "Lire plus tard"
+
+#: profiles/templates/auth/user_detail.html:30
+msgid "Your current read-it-later service is:"
+msgstr "Votre service de liste de lecture actuel est :"
+
+#: profiles/templates/auth/user_detail.html:32
+msgid "Select the service you want for reading list management."
+msgstr "Sélectionnez le service que vous utilisez pour gérer votre liste de lecture."
+
+#: profiles/templates/auth/user_detail.html:39
 msgid "Change your password"
 msgstr "Changer de mot de passe"
 
-#: profiles/templates/auth/user_detail.html:33
+#: profiles/templates/auth/user_detail.html:46
 msgid "Change password"
 msgstr "Changer de mot de passe"
 
-#: templates/404.html:5
+#: profiles/templates/profiles/services/instapaper.html:3
+#: profiles/templates/profiles/services/instapaper.html:6
+msgid "Instapaper settings"
+msgstr "Configuration d'Instapaper"
+
+#: profiles/templates/profiles/services/instapaper.html:8
+msgid ""
+"Please enter your Instapaper credentials. Note that Instapaper uses xAuth so"
+" we won't store your raw credentials but exchange them for a token that you "
+"can revoke at any time."
+msgstr "Merci d'entrer vos identifiants Instapaper. Instapaper utilise xAuth, nous ne stockons pas vos identifiants en clair mais les échangeons contre un jeton que vous pouvez révoquer quand vous voulez."
+
+#: profiles/templates/profiles/services/instapaper.html:13
+#: profiles/templates/profiles/services/readability.html:13
+#: profiles/templates/profiles/services/readitlater.html:11
+msgid "Check credentials"
+msgstr "Vérifier les identifiants"
+
+#: profiles/templates/profiles/services/none.html:3
+#: profiles/templates/profiles/services/none.html:6
+msgid "Disable read later settings"
+msgstr "Désactiver la gestion de liste de lecture"
+
+#: profiles/templates/profiles/services/none.html:7
+msgid ""
+"You are about to disable your current read later service. This will remove "
+"your credentials from the FeedHQ server and you won't be able to add items "
+"to your reading list from FeedHQ anymore."
+msgstr "Vous êtes sur le point de désactiver la gestion de liste de lecture. Cela aura pour effet de supprimer votre jeton d'accès des serveurs de FeedHQ et vous ne pourrez plus ajouter d'articles à votre liste de lecture depuis FeedHQ."
+
+#: profiles/templates/profiles/services/none.html:8
+msgid "Are you sure you want to proceed?"
+msgstr "Êtes-vous sûr de vouloir continuer ?"
+
+#: profiles/templates/profiles/services/none.html:11
+msgid "Yes"
+msgstr "Oui"
+
+#: profiles/templates/profiles/services/readability.html:3
+#: profiles/templates/profiles/services/readability.html:6
+msgid "Readability settings"
+msgstr "Configuration de Readability"
+
+#: profiles/templates/profiles/services/readability.html:8
+msgid ""
+"Please enter your Readability credentials. Note that Readability uses xAuth "
+"so we won't store your raw credentials but exchange them for a toekn that "
+"you can revoke at any time."
+msgstr "Merci d'entrer vos identifiants Readability. Readability utilise xAuth, nous ne stockons pas vos identifiants en clair mais les échangeons contre un jeton que vous pouvez révoquer quand vous voulez."
+
+#: profiles/templates/profiles/services/readitlater.html:3
+#: profiles/templates/profiles/services/readitlater.html:6
+msgid "Read It Later settings"
+msgstr "Configuration de Read It Later"
+
+#: templates/404.html:6
 msgid "404 - Page not found"
 msgstr "404 - Page non trouvée"
 
-#: templates/500.html:5
+#: templates/500.html:6
 msgid "500 - Server error"
 msgstr "500 - Erreur du serveur"
 
@@ -554,24 +678,28 @@ msgstr "500 - Erreur du serveur"
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/base.html:20
+#: templates/base.html:18
+msgid "Unread entries"
+msgstr "Articles non lus"
+
+#: templates/base.html:24
 msgid "Import feeds"
 msgstr "Importer des fils"
 
-#: templates/base.html:26 templates/registration/login.html:3
+#: templates/base.html:32 templates/registration/login.html:3
 #: templates/registration/login.html:11
 msgid "Sign in"
 msgstr "Connexion"
 
-#: templates/base.html:28
+#: templates/base.html:34
 msgid "yo"
 msgstr "yo"
 
-#: templates/base.html:29
+#: templates/base.html:35
 msgid "Logout"
 msgstr "Déconnexion"
 
-#: templates/base.html:51
+#: templates/base.html:56
 msgid "a <a href=\"http://djangoproject.com\">Django</a> joint"
 msgstr "c'est <a href=\"http://djangoproject.com\">Django</a>-propulsé"
 
@@ -586,8 +714,6 @@ msgstr "Déconnecté"
 #: templates/registration/logged_out.html:9
 #, python-format
 msgid ""
-"You have been logged out, see you soon! Do you want to <a href="
-"\"%(login_url)s\">login</a> again?"
-msgstr ""
-"Vous avez été déconnecté, à bientôt&nbsp;! Est-ce que vous voulez vous <a "
-"href=\"%(login_url)s\">connecter</a> de nouveau&nbsp;?"
+"You have been logged out, see you soon! Do you want to <a "
+"href=\"%(login_url)s\">login</a> again?"
+msgstr "Vous avez été déconnecté, à bientôt&nbsp;! Est-ce que vous voulez vous <a href=\"%(login_url)s\">connecter</a> de nouveau&nbsp;?"
