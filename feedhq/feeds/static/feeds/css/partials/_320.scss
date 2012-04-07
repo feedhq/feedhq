@@ -89,8 +89,13 @@
 			text-align: left;
 		}
 
-		.input input[type="checkbox"] {
-			width: auto;
+		.input input {
+			&[type="text"], &[type="password"] {
+				width: 94%;
+			}
+			&[type="checkbox"] {
+				width: auto;
+			}
 		}
 	}
 
