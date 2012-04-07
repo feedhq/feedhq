@@ -82,7 +82,15 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
     if request.method == "POST":
         form = ReadForm(data=request.POST)
         if form.is_valid():
-            count = entries.update(read=True)
+            count = entries.filter(read=False).count()
+            entries.update(read=True)
+            if feed is not None:
+                feeds = Feed.objects.filter(pk=feed.pk)
+            elif category is not None:
+                feeds = category.feeds.all()
+            else:
+                feeds = Feed.objects.filter(category__user=user)
+            feeds.update(unread_count=0)
             messages.success(request,
                              _('%s entries have been marked as read' % count))
             return redirect(all_url)
