@@ -361,6 +361,11 @@ h2 .cat {
 		display: inline;
 		border-radius: 0;
 		border-right: 1px solid white;
+
+		&.cat {
+			opacity: 1 !important;
+			margin-right: 5px;
+		}
 	}
 
 	white-space: nowrap;
