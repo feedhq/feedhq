@@ -2,10 +2,12 @@ Django==1.4
 PIL==1.1.6
 certifi==0.0.8
 chardet==1.0.1
+django-classy-tags==0.3.4.1
 django-floppyforms==0.4.7
 django-push==0.4
 django-ratelimit-backend==0.1
 django-redis-cache==0.9.2
+django-sekizai==0.5
 feedparser==5.1.1
 httplib2==0.7.4
 lxml==2.3.3

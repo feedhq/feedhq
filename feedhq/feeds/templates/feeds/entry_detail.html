@@ -1,5 +1,5 @@
 {% extends "feeds/feed_list.html" %}
-{% load staticfiles %}
+{% load staticfiles sekizai_tags %}
 
 {% block title %}{{ object.title|striptags|safe }}{% endblock %}
 
@@ -66,31 +66,30 @@ for this feed{% endblocktrans %}">
 			{% if next %}<a href="{{ next }}">{% trans "Next" %} →</a>{% endif %}
 		</div>
 	</div>
-{% endblock %}
 
-{% block extrabody %}
-	<script src="{% static "feeds/js/highlight.min.js" %}"></script>
-	<script src="{% static "feeds/js/jquery.min.js" %}"></script>
-	<script>
-		hljs.initHighlightingOnLoad();
-		$('pre').each(function(index, element) {
-			hljs.highlightBlock(element, '    ', false)
-		})
-		$(document).keydown(function(e) {{% if next %}
-			if (e.keyCode == 39) {
-				window.location.href = '{{ next }}';
-			}{% endif %}{% if previous %}
-			if (e.keyCode == 37) {
-				window.location.href = '{{ previous }}';
-			}{% endif %}
-		});
+{% addtoblock "js" %}
+<script src="{% static "feeds/js/jquery.min.js" %}"></script>
+{% endaddtoblock %}
 
-		// TODO sekizai this, move to base.html
-		$('#add-menu, #navigation').click(function() {
-			var mobile = $(this).find('li').css('display') == 'none' || $(this).attr('class') == 'active';
-			if (mobile) {
-				// tooltip
-			}
-		});
-	</script>
+{% addtoblock "js" %}
+<script src="{% static "feeds/js/highlight.min.js" %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script>
+	hljs.initHighlightingOnLoad();
+	$('pre').each(function(index, element) {
+		hljs.highlightBlock(element, '    ', false)
+	})
+	$(document).keydown(function(e) {{% if next %}
+		if (e.keyCode == 39) {
+			window.location.href = '{{ next }}';
+		}{% endif %}{% if previous %}
+		if (e.keyCode == 37) {
+			window.location.href = '{{ previous }}';
+		}{% endif %}
+	});
+</script>
+{% endaddtoblock %}
+
 {% endblock %}

@@ -1,4 +1,4 @@
-{% load staticfiles %}<!DOCTYPE html>
+{% load staticfiles sekizai_tags %}<!DOCTYPE html>
 <html xml:lang="en" lang="en">
 	<head>
 		<title>{% block title %}{% trans "Home" %}{% endblock %} &mdash; FeedHQ</title>
@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="shortcut icon" href="{% static "feeds/img/icon-rss.png" %}">
 		<link rel="stylesheet" type="text/css" href="{% static "feeds/css/screen.css" %}">
-		{% block extrahead %}{% endblock %}
+		{% render_block "css" %}
 	</head>
 	<body id="{% block bodyid %}default{% endblock %}">
 		<div id="root">
@@ -56,6 +56,61 @@
 				<a href="https://github.com/brutasse/feedhq">FeedHQ</a> - {% blocktrans %}a <a href="http://djangoproject.com">Django</a> joint{% endblocktrans %} - &copy; 2009-{% now "Y" %} Bruno Renié
 			</div>
 		</div>
-		{% block extrabody %}{% endblock %}
+{% render_block "js" %}
+
+{% addtoblock "js" %}
+<script src="{% static "feeds/js/jquery.min.js" %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script src="{% static "feeds/js/bootstrap-tooltip.js" %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script src="{% static "feeds/js/bootstrap-popover.js" %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+	$('#add-menu, #navigation').popover({
+		trigger: "manual",
+		content: function() {
+			return $(this).find('ul').html();
+		},
+		placement: "bottom",
+	});
+
+	$('#add-menu, #navigation').click(function() {
+		var mobile = $(this).find('li').css('display') == 'none' || $(this).attr('class') == 'active';
+		if (!mobile) {
+			return;
+		}
+
+		var id = $(this).attr('id'), hide;
+		if (id == 'navigation') {
+			hide = 'add-menu';
+		} else {
+			hide = 'navigation';
+		}
+		$('#' + hide).popover('hide');
+		$('#' + hide).removeClass('active');
+		$(this).popover('toggle');
+		$(this).toggleClass('active');
+		var pop = $('.popover');
+		if (pop) {
+			var header = $('#header');
+			var top = pop.position().top;
+			pop.removeAttr('style');
+
+			pop.css('display', 'block');
+			pop.css("width", header.width() / 2 + 'px');
+
+			var right = (window.innerWidth - header.width()) / 2;
+			pop.css("right", right + 'px');
+			pop.css("top", top + 'px');
+		}
+	});
+</script>
+{% endaddtoblock %}
 	</body>
 </html>

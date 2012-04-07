@@ -16,7 +16,7 @@
 			right: 0;
 
 			background: lighten($text, 75%) url('../img/Settings.png') no-repeat 5px 5px;
-			&:hover {
+			&:hover, &.active {
 				background: $text url('../img/Settings-white.png') no-repeat 5px 5px;
 			}
 		}
@@ -25,7 +25,7 @@
 			background: lighten($text, 75%) url('../img/Dropdown.png') no-repeat 5px 5px;
 			margin-right: 25px;
 
-			&:hover {
+			&:hover, &.active {
 				background: $text url('../img/Dropdown-white.png') no-repeat 5px 5px;
 			}
 		}
@@ -33,7 +33,7 @@
 		#add-menu, #navigation {
 			display: block !important;
 			float: right;
-			margin-top: 5px;
+			margin-top: 3px;
 			width: 20px;
 			height: 20px;
 			border-radius: 5px;
@@ -63,6 +63,10 @@
 			width: 100%;
 			margin: 0;
 			white-space: inherit;
+
+			input {
+				font-size: 0.8rem;
+			}
 		}
 
 		.back {

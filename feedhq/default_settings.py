@@ -48,6 +48,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.contrib.messages.context_processors.messages',
+    'sekizai.context_processors.sekizai',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -77,6 +78,7 @@ INSTALLED_APPS = (
     'django_push.subscriber',
     'floppyforms',
     'raven.contrib.django',
+    'sekizai',
 
     'feedhq.feeds',
     'feedhq.profiles',

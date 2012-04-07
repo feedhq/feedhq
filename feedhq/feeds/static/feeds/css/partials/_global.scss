@@ -187,6 +187,31 @@ input, select {
 	}
 }
 
+.popover {
+	position: absolute;
+	background: white;
+
+	&.bottom {
+		margin-top: 5px;
+		left: auto;
+	}
+}
+
+.popover-inner {
+	padding: 3px;
+	background: $text;
+	border-radius: 6px;
+}
+
+.popover-content {
+	background: white;
+	border-radius: 3px;
+	padding: 5px;
+	li {
+		list-style: none;
+	}
+}
+
 #content {
 	h1 {
 		font-size: 1.4em;
