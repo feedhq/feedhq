@@ -162,12 +162,11 @@ class FeedUpdater(object):
             subscriptions = [Subscription.objects.subscribe(topic_url,
                                                             hub=hub_url)]
 
-        tomorrow = timezone.now() + datetime.timedelta(days=1)
         for subscription in subscriptions:
             if subscription.lease_expiration is None:
                 continue
 
-            if subscription.lease_expiration < tomorrow:
+            if subscription.lease_expiration < timezone.now():
                 logger.info("Renewing lease for %s: %s" % (topic_url, hub_url))
                 try:
                     subscription = Subscription.objects.subscribe(
