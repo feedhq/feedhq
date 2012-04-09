@@ -1,10 +1,10 @@
 import json
-import urllib
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
+from httplib2 import Response
 from mock import patch
 
 
@@ -149,10 +149,9 @@ class ProfilesTest(TestCase):
     @patch("oauth2.Client")
     def test_valid_oauth_credentials(self, Client):
         client = Client.return_value
-        class Response(object):
-            status = 200
+
         client.request.return_value = [
-            Response(),
+            Response({}),
             "oauth_token=aabbccdd&oauth_token_secret=efgh1234"
         ]
 
@@ -185,9 +184,8 @@ class ProfilesTest(TestCase):
     @patch("oauth2.Client")
     def test_invalid_oauth_credentials(self, Client):
         client = Client.return_value
-        class Response(object):
-            status = 401
-        client.request.return_value = [Response(), "xAuth error"]
+        client.request.return_value = [Response({'status': 401}),
+                                       "xAuth error"]
 
         url = reverse("services", args=['instapaper'])
         data = {

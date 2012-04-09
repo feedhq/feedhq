@@ -1,7 +1,11 @@
 import datetime
+import json
+import oauth2 as oauth
+import urllib
 import urlparse
 
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils import timezone
@@ -186,6 +190,9 @@ class Entry(models.Model):
                              related_name='entries')
     # Mark something as read or unread
     read = models.BooleanField(_('Read'), default=False, db_index=True)
+    # Read later: store the URL
+    read_later_url = models.URLField(_('Read later URL'), verify_exists=False,
+                                 max_length=400, blank=True)
 
     objects = EntryManager()
 
@@ -207,6 +214,52 @@ class Entry(models.Model):
 
     def link_domain(self):
         return urlparse.urlparse(self.get_link()).netloc
+
+    def read_later_domain(self):
+        return urlparse.urlparse(self.read_later_url).netloc.replace('www.', '')
+
+    def read_later(self):
+        """Adds this item to the user's read list"""
+        user = self.user
+        if not user.read_later:
+            return
+        getattr(self, 'add_to_%s' % self.user.read_later)()
+
+    def add_to_readitlater(self):
+        pass
+
+    def add_to_readability(self):
+        url = 'https://www.readability.com/api/rest/v1/bookmarks'
+        client = self.oauth_client('readability')
+        params = {'url': self.get_link()}
+        response, data = client.request(url, method='POST',
+                                        body=urllib.urlencode(params))
+        response, data = client.request(response['location'], method='GET')
+        url = 'https://www.readability.com/articles/%s'
+        self.read_later_url = url % json.loads(data)['article']['id']
+        self.save()
+
+    def add_to_instapaper(self):
+        url = 'https://www.instapaper.com/api/1/bookmarks/add'
+        client = self.oauth_client('instapaper')
+        params = {'url': self.get_link()}
+        response, data = client.request(url, method='POST',
+                                        body=urllib.urlencode(params))
+        url = 'https://www.instapaper.com/read/%s'
+        url = url % json.loads(data)[0]['bookmark_id']
+        self.read_later_url = url
+        self.save()
+
+    def oauth_client(self, service):
+        service_settings = getattr(settings, service.upper())
+        consumer = oauth.Consumer(service_settings['CONSUMER_KEY'],
+                                  service_settings['CONSUMER_SECRET'])
+        creds = json.loads(self.user.read_later_credentials)
+        token = oauth.Token(key=creds['oauth_token'],
+                            secret=creds['oauth_token_secret'])
+        client = oauth.Client(consumer, token)
+        client.set_signature_method(oauth.SignatureMethod_HMAC_SHA1())
+        return client
 
 
 def pubsubhubbub_update(notification, **kwargs):

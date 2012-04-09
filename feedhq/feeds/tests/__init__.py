@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 import feedparser
+import json
 import os
 import random
 import time
+
+from httplib2 import Response
+from mock import patch
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -12,7 +16,7 @@ from django.utils import timezone
 from ..models import Category, Feed, Entry
 from ..utils import FeedUpdater
 
-feedparser.USER_AGENT = 'FeedHQ/dev +http://bitbucket.org/bruno/feedhq'
+feedparser.USER_AGENT = 'FeedHQ/dev +https://github.com/brutasse/feedhq'
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -89,7 +93,6 @@ class BaseTests(TestCase):
 
 
 class TestFeeds(TestCase):
-
     def setUp(self):
         """Main stuff we need for testing the app - this is mainly for signed
         in users."""
@@ -550,3 +553,60 @@ class TestFeeds(TestCase):
         response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, '30 entries have been marked as read')
+
+    @patch('oauth2.Client')
+    def test_add_to_readability(self, Client):
+        client = Client.return_value
+        r = Response({
+            'status': 202,
+            'reason': 'Accepted',
+            'location': '/api/rest/v1/bookmarks/119',
+            'x-article-location': '/api/rest/v1/articles/xj28dwkx',
+        })
+        client.request.return_value = [r, json.dumps({'article': {'id': 'foo'}})]
+        self.user.read_later = 'readability'
+        self.user.read_later_credentials = json.dumps({'oauth_token': 'token', 'oauth_token_secret': 'token secret'})
+        self.user.save()
+
+        fake_update(self.feed.url)
+        entry_pk = Entry.objects.all()[0].pk
+        url = reverse('feeds:item', args=[entry_pk])
+        response = self.client.get(url)
+        self.assertContains(response, "Add to Readability")
+
+        data = {'action': 'read_later'}
+        response = self.client.post(url, data)
+        client.request.assert_called_with('/api/rest/v1/bookmarks/119',
+                                          method='GET')
+        self.assertEqual(Entry.objects.get(pk=entry_pk).read_later_url,
+                         'https://www.readability.com/articles/foo')
+        response = self.client.get(url)
+        self.assertNotContains(response, "Add to Instapaper")
+
+    @patch('oauth2.Client')
+    def test_add_to_instapaper(self, Client):
+        client = Client.return_value
+        r = Response({'status': 200})
+        client.request.return_value = [
+            r,
+            json.dumps([{'type': 'bookmark', 'bookmark_id': 12345,
+                         'title': 'Some bookmark',
+                         'url': 'http://example.com/some-bookmark'}])
+        ]
+        fake_update(self.feed.url)
+        self.user.read_later = 'instapaper'
+        self.user.read_later_credentials = json.dumps({'oauth_token': 'token', 'oauth_token_secret': 'token secret'})
+        self.user.save()
+
+        entry_pk = Entry.objects.all()[0].pk
+        url = reverse('feeds:item', args=[entry_pk])
+        response = self.client.get(url)
+        self.assertContains(response, "Add to Instapaper")
+
+        data = {'action': 'read_later'}
+        response = self.client.post(url, data)
+        client.request.assert_called_with('https://www.instapaper.com/api/1/bookmarks/add', body='url=http%3A%2F%2Fsimonwillison.net%2F2010%2FMar%2F12%2Fre2%2F', method='POST')
+        self.assertEqual(Entry.objects.get(pk=entry_pk).read_later_url,
+                         'https://www.instapaper.com/read/12345')
+        response = self.client.get(url)
+        self.assertNotContains(response, "Add to Instapaper")

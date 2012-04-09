@@ -338,6 +338,12 @@ def item(request, entry_id):
             elif action == 'images_never':
                 Feed.objects.filter(pk=entry.feed.pk).update(img_safe=False)
                 entry.feed.img_safe = False
+            elif action == 'read_later':
+                entry.read_later()
+                messages.success(
+                    request,
+                    _('Article successfully added to your reading list'),
+                )
 
     context = {
         'category': entry.feed.category,
@@ -411,6 +417,7 @@ def import_feeds(request):
         'form': form,
     }
     return render(request, 'feeds/import_feeds.html', context)
+
 
 @login_required
 def dashboard(request):

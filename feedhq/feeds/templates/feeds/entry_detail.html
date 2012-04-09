@@ -18,7 +18,7 @@
 			<a href="{% url "feeds:feed" object.feed.pk %}" class="cat {{ object.feed.category.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}">&nbsp;&nbsp;&nbsp;</a>
 			<a href="{% url "feeds:category" object.feed.category.slug %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}">&nbsp;&nbsp;&nbsp;</a>
 		</h2>
-		<div class="date">{{ object.date|timezone:user.timezone|date }} - <a{% if object.feed.favicon %} style="background-image: url('{{ object.feed.favicon.url }}'); padding-left: 20px;"{% endif %} href="{{ object.get_link }}">{{ object.link_domain }}</a></div>
+		{% include "feeds/entry_links.html" %}
 		<div class="actions">
 			{% if has_img and not img_safe and not object.feed.img_safe %}
 				<form method="post" action="{% url "feeds:item" object.id %}">
@@ -44,9 +44,16 @@ for this feed{% endblocktrans %}">
 			{% endif %}
 			<form method="post" action="{% url "feeds:item" object.id %}">
 				{% csrf_token %}
-				<input type="hidden" name="action" value="unread" />
-				<input type="submit" value="{% trans "Unread" %}" />
+				<input type="hidden" name="action" value="unread">
+				<input type="submit" value="{% trans "Unread" %}">
 			</form>
+			{% if not object.read_later_url and user.read_later %}
+				<form method="post" action="{% url "feeds:item" object.id %}">
+					{% csrf_token %}
+					<input type="hidden" name="action" value="read_later">
+					<input type="submit" value="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}">
+				</form>
+			{% endif %}
 		</div>
 		<div class="content">
 			{% if img_safe or object.feed.img_safe %}
@@ -55,7 +62,7 @@ for this feed{% endblocktrans %}">
 				{{ object.subtitle|removetags:"script applet embed object meta onload onunload link style div span frameset frame iframe img font form label input textarea"|safe }}
 			{% endif %}
 		</div>
-		<div class="date">{{ object.date|timezone:user.timezone|date }} - <a{% if object.feed.favicon %} style="background-image: url('{{ object.feed.favicon.url }}'); padding-left: 20px;"{% endif %} href="{{ object.get_link }}">{{ object.link_domain }}</a></div>
+		{% include "feeds/entry_links.html" %}
 	</div>
 	<div class="figures">
 		<div class="back">
@@ -75,7 +82,7 @@ for this feed{% endblocktrans %}">
 <script src="{% static "feeds/js/highlight.min.js" %}"></script>
 {% endaddtoblock %}
 
-{% addtoblock "js" %}
+{% addtoblock "js" %}
 <script>
 	hljs.initHighlightingOnLoad();
 	$('pre').each(function(index, element) {

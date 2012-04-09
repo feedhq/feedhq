@@ -41,6 +41,7 @@ class ActionForm(forms.Form):
         ('unread', 'unread'),
         ('images_always', 'images_always'),
         ('images_never', 'images_never'),
+        ('read_later', 'read_later'),
     ))
 
 
