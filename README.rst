@@ -11,7 +11,10 @@ FeedHQ is a simple, lightweight web-based feed reader. Main features:
 
 * Built with readability in mind
 
-* Mobile-friendly
+* Mobile-friendly, retina-ready
+
+* Reading list management with Instapaper, Readability or Read It Later
+  support
 
 * Filter out already read entries
 

@@ -610,3 +610,28 @@ class TestFeeds(TestCase):
                          'https://www.instapaper.com/read/12345')
         response = self.client.get(url)
         self.assertNotContains(response, "Add to Instapaper")
+
+    @patch('requests.post')
+    def test_add_to_readitlaterlist(self, post):
+        data = {'action': 'read_later'}
+        self.user.read_later = 'readitlater'
+        self.user.read_later_credentials = json.dumps({'username': 'foo',
+                                                       'password': 'bar'})
+        self.user.save()
+        fake_update(self.feed.url)
+
+        url = reverse('feeds:item', args=[Entry.objects.all()[0].pk])
+        response = self.client.get(url)
+        self.assertContains(response, 'Add to Read it later')
+        response = self.client.post(url, data)
+        # Read it Later doesn't provide the article URL so we can't display a
+        # useful link
+        self.assertContains(response, "added to your reading list")
+        post.assert_called_with(
+            'https://readitlaterlist.com/v2/add',
+            data={u'username': u'foo',
+                  'url': u'http://simonwillison.net/2010/Mar/12/re2/',
+                  'apikey': 'test read it later API key',
+                  u'password': u'bar',
+                  'title': u'RE2: a principled approach to regular expression matching'},
+        )

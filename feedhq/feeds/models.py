@@ -3,6 +3,7 @@ import json
 import oauth2 as oauth
 import urllib
 import urlparse
+import requests
 
 from django.db import models
 from django.conf import settings
@@ -226,7 +227,15 @@ class Entry(models.Model):
         getattr(self, 'add_to_%s' % self.user.read_later)()
 
     def add_to_readitlater(self):
-        pass
+        url = 'https://readitlaterlist.com/v2/add'
+        data = json.loads(self.user.read_later_credentials)
+        data.update({
+            'apikey': settings.API_KEYS['readitlater'],
+            'url': self.get_link(),
+            'title': self.title,
+        })
+        # The readitlater API doesn't return anything back
+        requests.post(url, data=data)
 
     def add_to_readability(self):
         url = 'https://www.readability.com/api/rest/v1/bookmarks'
