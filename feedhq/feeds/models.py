@@ -107,7 +107,7 @@ class Feed(models.Model):
     muted = models.BooleanField(_('Muted'), default=False,
                                 help_text=_('Check this if you want to stop '
                                            'checking updates for this feed'))
-    etag = models.CharField(_('Etag'), max_length=255, null=True, blank=True)
+    etag = models.CharField(_('Etag'), max_length=1023, null=True, blank=True)
     modified = models.CharField(_('Modified'), max_length=255, null=True,
                                 blank=True)
 
