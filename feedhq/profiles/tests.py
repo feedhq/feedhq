@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.models import User
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -222,3 +223,43 @@ class ProfilesTest(TestCase):
         user = User.objects.get(pk=self.user.pk)
         self.assertEqual(user.read_later, '')
         self.assertEqual(user.read_later_credentials, '')
+
+
+class LoggedOutTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('test', 'test@example.com',
+                                             'pass')
+
+    def test_recover_email(self):
+        url = reverse('recover')
+        response = self.client.get(url)
+        self.assertContains(response, 'Password recovery')
+
+        data = {'email': 'foo@foo.com'}
+        response = self.client.post(url, data)
+        self.assertContains(response, "This account doesn&#39;t exist")
+        self.assertEqual(len(mail.outbox), 0)
+
+        data = {'email': 'test@example.com'}
+        response = self.client.post(url, data)
+        self.assertContains(response, "An email has just been sent to")
+        self.assertEqual(len(mail.outbox), 1)
+        url = mail.outbox[0].body.split('example.com')[2].split('\n')[0]
+        response = self.client.get(url)
+        self.assertContains(response, 'Password reset')
+
+        data = {'password1': 'foo',
+                'password2': 'bar'}
+        response = self.client.post(url, data)
+        self.assertContains(response, "Please enter the same password twice")
+
+        data['password2'] = 'foo'
+        response = self.client.post(url, data, follow=True)
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertContains(response,
+                            "Your password has successfully been reset")
+
+        url = reverse('reset', args=['trololol'])
+        response = self.client.get(url)
+        self.assertContains(response, 'Sorry,')
+        self.assertNotContains(response, '<form')

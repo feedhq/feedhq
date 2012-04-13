@@ -1,12 +1,14 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.core import signing
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.translation import ugettext as _
 from django.views import generic
 
 from .forms import (ChangePasswordForm, ProfileForm, CredentialsForm,
-                    ServiceForm)
+                    ServiceForm, PasswordRecoveryForm, PasswordResetForm)
 from ..decorators import login_required
 from ..feeds.models import Feed
 
@@ -110,3 +112,63 @@ class ServiceView(generic.FormView):
             )
         return super(ServiceView, self).form_valid(form)
 services = login_required(ServiceView.as_view())
+
+
+class Recover(generic.FormView):
+    form_class = PasswordRecoveryForm
+    template_name = 'profiles/recovery_form.html'
+
+    def form_valid(self, form):
+        form.save()
+        context = {'email': form.cleaned_data['email']}
+        return self.render_to_response(self.get_context_data(**context))
+recover = Recover.as_view()
+
+
+class Reset(generic.FormView):
+    form_class = PasswordResetForm
+    template_name = 'profiles/password_reset_form.html'
+    success_url = reverse_lazy('recover_done')
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+        two_days = 3600 * 48
+        try:
+            username = signing.loads(kwargs['key'], max_age=two_days,
+                                     salt="recover")
+        except signing.BadSignature:
+            return self.invalid()
+
+        self.user = get_object_or_404(User, username=username)
+        return super(Reset, self).dispatch(request, *args, **kwargs)
+
+    def invalid(self):
+        return self.render_to_response(self.get_context_data(invalid=True))
+
+    def get_context_data(self, **kwargs):
+        ctx = super(Reset, self).get_context_data(**kwargs)
+        if 'invalid' not in ctx:
+            ctx.update({
+                'email': self.user.email,
+                'key': self.kwargs['key'],
+            })
+        return ctx
+
+    def get_form_kwargs(self):
+        kwargs = super(Reset, self).get_form_kwargs()
+        kwargs.update({
+            'user': self.user,
+        })
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super(Reset, self).form_valid(form)
+reset = Reset.as_view()
+
+
+class RecoverDone(generic.TemplateView):
+    template_name = 'profiles/password_recovery_done.html'
+recover_done = RecoverDone.as_view()

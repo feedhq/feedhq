@@ -2,6 +2,8 @@ from settings import *
 
 TESTS = True
 
+EMAIL_HOST = 'dummy'
+
 API_KEYS = {
     'readitlater': 'test read it later API key',
 }
