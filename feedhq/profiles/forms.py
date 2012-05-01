@@ -6,10 +6,6 @@ import urlparse
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
-from django.core import signing
-from django.core.mail import send_mail
-from django.template import loader
 from django.utils.translation import ugettext_lazy as _
 
 import floppyforms as forms
@@ -133,58 +129,3 @@ class CredentialsForm(ServiceForm):
             )
         request_token = dict(urlparse.parse_qsl(token))
         self.user.read_later_credentials = json.dumps(request_token)
-
-
-def send_recovery_email(user):
-    value = signing.dumps(user.username, salt='recover')
-    site = Site.objects.get_current()
-    context = {
-        'site': site,
-        'user': user,
-        'value': value,
-    }
-    body = loader.render_to_string('profiles/recover_email.txt', context)
-    send_mail(_('Password recovery on %s') % site.domain, body,
-              settings.DEFAULT_FROM_EMAIL, [user.email])
-
-
-class PasswordRecoveryForm(forms.Form):
-    email = forms.CharField()
-
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        try:
-            self.user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            raise forms.ValidationError(
-                _("This account doesn't exist. Make sure the email is "
-                  "spelled correctly, note that it's case-sensitive."),
-            )
-        return email
-
-    def save(self):
-        send_recovery_email(self.user)
-
-
-class PasswordResetForm(forms.Form):
-    password1 = forms.CharField(label=_('New password'),
-                               widget=forms.PasswordInput)
-    password2 = forms.CharField(label=_('New password (confirm)'),
-                                widget=forms.PasswordInput)
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        super(PasswordResetForm, self).__init__(*args, **kwargs)
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get('password1', '')
-        password2 = self.cleaned_data['password2']
-        if password1 != password2:
-            raise forms.ValidationError(_("Please enter the same password "
-                                          "twice. The two passwords didn't "
-                                          "match."))
-        return password2
-
-    def save(self):
-        self.user.set_password(self.cleaned_data['password2'])
-        self.user.save()

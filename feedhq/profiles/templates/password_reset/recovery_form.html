@@ -3,17 +3,18 @@
 {% block title %}{% trans "Password recovery" %}{% endblock %}
 
 {% block content %}
-	<h2>{% trans "Password recovery" %}</h2>
 	{% if form %}
-
+		<h2>{% trans "Password recovery" %}</h2>
 		<p>{% trans "Please enter your email address, we'll send you a link to reset your password." %}</p>
-		<form method="post" action="{% url "recover" %}">
+		<form method="post" action="{{ url }}">
 			{% include "form.html" %}
 			<div class="submit">
-				<input type="submit" value="{% trans "Recover my password" %}">
-				<a href="{% url "login" %}">{% trans "Want to login instead?" %}</a>
+				<input type="submit" value="Recover my password">
+				<a href="/login/">Want to login instead?</a>
 			</div>
-	</form>{% else %}
+		</form>
+	{% else %}
+		<h2>{% trans "Check your email" %}</h2>
 		<p>{% blocktrans %}An email has just been sent to <strong>{{ email }}</strong>. Use the link in it to set a new password.{% endblocktrans %}</p>
 	{% endif %}
 {% endblock %}

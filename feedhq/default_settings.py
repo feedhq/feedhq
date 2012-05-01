@@ -83,6 +83,8 @@ INSTALLED_APPS = (
 
     'feedhq.feeds',
     'feedhq.profiles',
+
+    'password_reset',
 )
 
 LOCALE_PATHS = (
