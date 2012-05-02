@@ -31,7 +31,8 @@ STATIC_ROOT = os.path.join(HERE, 'static')
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStorage'
+STATICFILES_STORAGE = ('django.contrib.staticfiles.storage.'
+                       'CachedStaticFilesStorage')
 
 AUTHENTICATION_BACKENDS = (
     'ratelimitbackend.backends.RateLimitModelBackend',

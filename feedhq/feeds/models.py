@@ -217,7 +217,8 @@ class Entry(models.Model):
         return urlparse.urlparse(self.get_link()).netloc
 
     def read_later_domain(self):
-        return urlparse.urlparse(self.read_later_url).netloc.replace('www.', '')
+        netloc = urlparse.urlparse(self.read_later_url).netloc
+        return netloc.replace('www.', '')
 
     def read_later(self):
         """Adds this item to the user's read list"""

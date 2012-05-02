@@ -230,7 +230,8 @@ class TestFeeds(TestCase):
         self.feed.save()
         fake_update(self.feed.url)
         self.assertEqual(Entry.objects.count(), 0)
-        self.assertEqual(Feed.objects.get(url=self.feed.url).failed_attempts, 1)
+        feed = Feed.objects.get(url=self.feed.url)
+        self.assertEqual(feed.failed_attempts, 1)
         for i in range(20):
             fake_update(self.feed.url)
         feed = Feed.objects.get(url=self.feed.url)
@@ -310,10 +311,9 @@ class TestFeeds(TestCase):
         url = reverse('feeds:feed', args=[self.feed.id])
         response = self.client.get(url)
 
-        self.assertContains(
-            response,
-            '<a href="%sunread/">Show only unread</a>' % self.feed.get_absolute_url(),
-        )
+        expected = '<a href="%sunread/">Show only unread</a>'
+        expected = expected % self.feed.get_absolute_url()
+        self.assertContains(response, expected)
 
     def test_only_unread(self):
         url = reverse('feeds:unread_category', args=['cat'])
@@ -563,9 +563,13 @@ class TestFeeds(TestCase):
             'location': '/api/rest/v1/bookmarks/119',
             'x-article-location': '/api/rest/v1/articles/xj28dwkx',
         })
-        client.request.return_value = [r, json.dumps({'article': {'id': 'foo'}})]
+        value = json.dumps({'article': {'id': 'foo'}})
+        client.request.return_value = [r, value]
         self.user.read_later = 'readability'
-        self.user.read_later_credentials = json.dumps({'oauth_token': 'token', 'oauth_token_secret': 'token secret'})
+        self.user.read_later_credentials = json.dumps({
+            'oauth_token': 'token',
+            'oauth_token_secret': 'token secret',
+        })
         self.user.save()
 
         fake_update(self.feed.url)
@@ -595,7 +599,10 @@ class TestFeeds(TestCase):
         ]
         fake_update(self.feed.url)
         self.user.read_later = 'instapaper'
-        self.user.read_later_credentials = json.dumps({'oauth_token': 'token', 'oauth_token_secret': 'token secret'})
+        self.user.read_later_credentials = json.dumps({
+            'oauth_token': 'token',
+            'oauth_token_secret': 'token secret',
+        })
         self.user.save()
 
         entry_pk = Entry.objects.all()[0].pk
@@ -605,7 +612,12 @@ class TestFeeds(TestCase):
 
         data = {'action': 'read_later'}
         response = self.client.post(url, data)
-        client.request.assert_called_with('https://www.instapaper.com/api/1/bookmarks/add', body='url=http%3A%2F%2Fsimonwillison.net%2F2010%2FMar%2F12%2Fre2%2F', method='POST')
+        body = 'url=http%3A%2F%2Fsimonwillison.net%2F2010%2FMar%2F12%2Fre2%2F'
+        client.request.assert_called_with(
+            'https://www.instapaper.com/api/1/bookmarks/add',
+            body=body,
+            method='POST',
+        )
         self.assertEqual(Entry.objects.get(pk=entry_pk).read_later_url,
                          'https://www.instapaper.com/read/12345')
         response = self.client.get(url)
@@ -633,5 +645,6 @@ class TestFeeds(TestCase):
                   'url': u'http://simonwillison.net/2010/Mar/12/re2/',
                   'apikey': 'test read it later API key',
                   u'password': u'bar',
-                  'title': u'RE2: a principled approach to regular expression matching'},
+                  'title': (u'RE2: a principled approach to regular '
+                            u'expression matching')},
         )
