@@ -1,7 +1,6 @@
 import json
 
 from django.contrib.auth.models import User
-from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -223,3 +222,16 @@ class ProfilesTest(TestCase):
         user = User.objects.get(pk=self.user.pk)
         self.assertEqual(user.read_later, '')
         self.assertEqual(user.read_later_credentials, '')
+
+    def test_delete_account(self):
+        self.assertEqual(User.objects.count(), 1)
+        url = reverse('destroy_account')
+        response = self.client.get(url)
+        self.assertContains(response, 'Delete your account')
+
+        response = self.client.post(url, {'password': 'test'})
+        self.assertContains(response, 'The password you entered was incorrect')
+
+        response = self.client.post(url, {'password': 'pass'}, follow=True)
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertContains(response, "Good bye")

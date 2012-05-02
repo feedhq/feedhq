@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Delete your account" %}{% endblock %}
+
+{% block content %}
+	<h2>{% trans "Delete your account" %}</h2>
+	<p>{% trans "You are about to delete your account. This can <strong>not</strong> be undone and will have immediate effect. Are you sure you want to do this?" %}</p>
+	<form method="post" action="{% url "destroy_account" %}">
+		{% include "form.html" %}
+		<div class="submit">
+			<input type="submit" value="{% trans "Delete my account now" %}">
+			<a href="{% url "profile" %}">{% trans "Cancel" %}</a>
+		</div>
+	</form>
+{% endblock %}

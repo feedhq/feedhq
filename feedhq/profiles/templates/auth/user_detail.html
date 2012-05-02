@@ -46,4 +46,8 @@
 			<input type="submit" value="{% trans "Change password" %}">
 		</div>
 	</form>
+
+	<h2>{% trans "Danger zone" %}</h2>
+	{% url "destroy_account" as destroy_url %}
+	<p>{% blocktrans %}If you don't want to use FeedHQ anymore, you can <a href="{{ destroy_url }}">delete your account</a>.{% endblocktrans %}</p>
 {% endblock %}

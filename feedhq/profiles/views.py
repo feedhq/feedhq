@@ -8,7 +8,7 @@ from django.views import generic
 from password_reset import views
 
 from .forms import (ChangePasswordForm, ProfileForm, CredentialsForm,
-                    ServiceForm)
+                    ServiceForm, DeleteAccountForm)
 from ..decorators import login_required
 from ..feeds.models import Feed
 
@@ -117,3 +117,24 @@ services = login_required(ServiceView.as_view())
 class Recover(views.Recover):
     search_fields = ['email']
 recover = Recover.as_view()
+
+
+class Destroy(generic.FormView):
+    success_url = reverse_lazy('destroy_done')
+    form_class = DeleteAccountForm
+    template_name = 'auth/user_confirm_delete.html'
+
+    def get_form_kwargs(self):
+        kwargs = super(Destroy, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return redirect(self.get_success_url())
+destroy = login_required(Destroy.as_view())
+
+
+class DestroyDone(generic.TemplateView):
+    template_name = 'profiles/account_delete_done.html'
+destroy_done = DestroyDone.as_view()

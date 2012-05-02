@@ -129,3 +129,27 @@ class CredentialsForm(ServiceForm):
             )
         request_token = dict(urlparse.parse_qsl(token))
         self.user.read_later_credentials = json.dumps(request_token)
+
+
+class DeleteAccountForm(forms.Form):
+    password = forms.CharField(
+        widget=forms.PasswordInput,
+        label=_('Password'),
+        help_text=_('Please enter your password to confirm your ownership '
+                    'of this account.')
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(DeleteAccountForm, self).__init__(*args, **kwargs)
+
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        correct = self.user.check_password(password)
+        if not correct:
+            raise forms.ValidationError(_('The password you entered was '
+                                          'incorrect.'))
+        return password
+
+    def save(self):
+        self.user.delete()
