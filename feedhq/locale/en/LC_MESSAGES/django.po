@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-07 12:20+0200\n"
+"POT-Creation-Date: 2012-05-02 06:22-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,213 +17,221 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: feeds/models.py:15
+#: feeds/models.py:20
 msgid "Red"
 msgstr ""
 
-#: feeds/models.py:16
+#: feeds/models.py:21
 msgid "Dark Red"
 msgstr ""
 
-#: feeds/models.py:17
+#: feeds/models.py:22
 msgid "Pale Green"
 msgstr ""
 
-#: feeds/models.py:18
+#: feeds/models.py:23
 msgid "Green"
 msgstr ""
 
-#: feeds/models.py:19
+#: feeds/models.py:24
 msgid "Army Green"
 msgstr ""
 
-#: feeds/models.py:20
+#: feeds/models.py:25
 msgid "Pale Blue"
 msgstr ""
 
-#: feeds/models.py:21
+#: feeds/models.py:26
 msgid "Blue"
 msgstr ""
 
-#: feeds/models.py:22
+#: feeds/models.py:27
 msgid "Dark Blue"
 msgstr ""
 
-#: feeds/models.py:23
+#: feeds/models.py:28
 msgid "Orange"
 msgstr ""
 
-#: feeds/models.py:24
+#: feeds/models.py:29
 msgid "Dark Orange"
 msgstr ""
 
-#: feeds/models.py:25
+#: feeds/models.py:30
 msgid "Black"
 msgstr ""
 
-#: feeds/models.py:26
+#: feeds/models.py:31
 msgid "Gray"
 msgstr ""
 
-#: feeds/models.py:31
+#: feeds/models.py:36
 msgid "One day"
 msgstr ""
 
-#: feeds/models.py:32
+#: feeds/models.py:37
 msgid "Two days"
 msgstr ""
 
-#: feeds/models.py:33
+#: feeds/models.py:38
 msgid "One week"
 msgstr ""
 
-#: feeds/models.py:34
+#: feeds/models.py:39
 msgid "One month"
 msgstr ""
 
-#: feeds/models.py:35
+#: feeds/models.py:40
 msgid "One year"
 msgstr ""
 
-#: feeds/models.py:36
+#: feeds/models.py:41
 msgid "Never"
 msgstr ""
 
-#: feeds/models.py:59 feeds/models.py:92
+#: feeds/models.py:64 feeds/models.py:97
 msgid "Name"
 msgstr ""
 
-#: feeds/models.py:60
+#: feeds/models.py:65
 msgid "Slug"
 msgstr ""
 
-#: feeds/models.py:61 feeds/models.py:185
+#: feeds/models.py:66 feeds/models.py:190
 msgid "User"
 msgstr ""
 
-#: feeds/models.py:67
+#: feeds/models.py:72
 msgid "Color"
 msgstr ""
 
-#: feeds/models.py:72 feeds/models.py:114
+#: feeds/models.py:77 feeds/models.py:119
 msgid "Delete after"
 msgstr ""
 
-#: feeds/models.py:73
+#: feeds/models.py:78
 msgid ""
 "Period of time after which entries are deleted, whether they've been read or "
 "not."
 msgstr ""
 
-#: feeds/models.py:93 feeds/models.py:177
+#: feeds/models.py:98 feeds/models.py:182
 msgid "URL"
 msgstr ""
 
-#: feeds/models.py:95
+#: feeds/models.py:100
 msgid "Category"
 msgstr ""
 
-#: feeds/models.py:96
+#: feeds/models.py:101
 msgid "<a href=\"/category/add/\">Add a category</a>"
 msgstr ""
 
-#: feeds/models.py:99 feeds/models.py:175
+#: feeds/models.py:104 feeds/models.py:180
 msgid "Title"
 msgstr ""
 
-#: feeds/models.py:100
+#: feeds/models.py:105
 msgid "Link"
 msgstr ""
 
-#: feeds/models.py:102
+#: feeds/models.py:107
 msgid "Muted"
 msgstr ""
 
-#: feeds/models.py:103
+#: feeds/models.py:108
 msgid "Check this if you want to stop checking updates for this feed"
 msgstr ""
 
-#: feeds/models.py:105
+#: feeds/models.py:110
 msgid "Etag"
 msgstr ""
 
-#: feeds/models.py:106
+#: feeds/models.py:111
 msgid "Modified"
 msgstr ""
 
-#: feeds/models.py:110
+#: feeds/models.py:115
 msgid "Override Category settings"
 msgstr ""
 
-#: feeds/models.py:111
+#: feeds/models.py:116
 msgid "Check this box if you want to override the category settings below."
 msgstr ""
 
-#: feeds/models.py:116
+#: feeds/models.py:121
 msgid "Unread count"
 msgstr ""
 
-#: feeds/models.py:117
+#: feeds/models.py:122
 msgid "Favicon"
 msgstr ""
 
-#: feeds/models.py:118
+#: feeds/models.py:123
 msgid "No favicon"
 msgstr ""
 
-#: feeds/models.py:119
+#: feeds/models.py:124
 msgid "Display images by default"
 msgstr ""
 
-#: feeds/models.py:121
+#: feeds/models.py:126
 msgid "Failed fetching attempts"
 msgstr ""
 
-#: feeds/models.py:173
+#: feeds/models.py:178
 msgid "Feed"
 msgstr ""
 
-#: feeds/models.py:176
+#: feeds/models.py:181
 msgid "Abstract"
 msgstr ""
 
-#: feeds/models.py:180
+#: feeds/models.py:185
 msgid "Permalink"
 msgstr ""
 
-#: feeds/models.py:182
+#: feeds/models.py:187
 msgid "Date"
 msgstr ""
 
-#: feeds/models.py:188
+#: feeds/models.py:193
 msgid "Read"
 msgstr ""
 
-#: feeds/views.py:87
+#: feeds/models.py:195
+msgid "Read later URL"
+msgstr ""
+
+#: feeds/views.py:95
 #, python-format
 msgid "%s entries have been marked as read"
 msgstr ""
 
-#: feeds/views.py:160
+#: feeds/views.py:168
 #, python-format
 msgid "%(category)s has been successfully updated"
 msgstr ""
 
-#: feeds/views.py:196
+#: feeds/views.py:204
 #, python-format
 msgid "%(feed)s has been successfully added"
 msgstr ""
 
-#: feeds/views.py:224
+#: feeds/views.py:232
 #, python-format
 msgid "%(feed)s has been successfully updated"
 msgstr ""
 
-#: feeds/views.py:386
+#: feeds/views.py:345
+msgid "Article successfully added to your reading list"
+msgstr ""
+
+#: feeds/views.py:400
 msgid "Imported"
 msgstr ""
 
-#: feeds/views.py:395
+#: feeds/views.py:409
 #, python-format
 msgid "%(num)s feeds have been imported"
 msgstr ""
@@ -270,11 +278,11 @@ msgstr ""
 #: feeds/templates/feeds/feed_confirm_delete.html:16
 #: feeds/templates/feeds/feed_form.html:11
 #: feeds/templates/feeds/import_feeds.html:11
+#: profiles/templates/auth/user_confirm_delete.html:13
 #: profiles/templates/profiles/services/instapaper.html:14
 #: profiles/templates/profiles/services/none.html:12
 #: profiles/templates/profiles/services/readability.html:14
 #: profiles/templates/profiles/services/readitlater.html:12
-#: templates/registration/login.html:12
 msgid "Cancel"
 msgstr ""
 
@@ -313,17 +321,17 @@ msgid "Delete this feed"
 msgstr ""
 
 #: feeds/templates/feeds/entry_detail.html:9
-#: feeds/templates/feeds/entry_detail.html:62
+#: feeds/templates/feeds/entry_detail.html:69
 msgid "Back"
 msgstr ""
 
 #: feeds/templates/feeds/entry_detail.html:12
-#: feeds/templates/feeds/entry_detail.html:65
+#: feeds/templates/feeds/entry_detail.html:72
 msgid "Previous"
 msgstr ""
 
 #: feeds/templates/feeds/entry_detail.html:13
-#: feeds/templates/feeds/entry_detail.html:66
+#: feeds/templates/feeds/entry_detail.html:73
 msgid "Next"
 msgstr ""
 
@@ -355,6 +363,11 @@ msgstr ""
 
 #: feeds/templates/feeds/entry_detail.html:48
 msgid "Unread"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:54
+#, python-format
+msgid "Add to %(read_later)s"
 msgstr ""
 
 #: feeds/templates/feeds/feed_confirm_delete.html:8
@@ -491,7 +504,7 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: profiles/forms.py:76
+#: profiles/forms.py:76 profiles/forms.py:137
 msgid "Password"
 msgstr ""
 
@@ -508,6 +521,14 @@ msgstr ""
 #: profiles/forms.py:127
 #, python-format
 msgid "Unable to verify your %s credentials. Please double-check and try again"
+msgstr ""
+
+#: profiles/forms.py:138
+msgid "Please enter your password to confirm your ownership of this account."
+msgstr ""
+
+#: profiles/forms.py:150
+msgid "The password you entered was incorrect."
 msgstr ""
 
 #: profiles/models.py:26
@@ -530,13 +551,35 @@ msgstr ""
 msgid "Read later credentials"
 msgstr ""
 
-#: profiles/views.py:103
+#: profiles/views.py:105
 #, python-format
 msgid "You have successfully added %s as your reading list service"
 msgstr ""
 
-#: profiles/views.py:109
+#: profiles/views.py:111
 msgid "You have successfully disabled reading list integration"
+msgstr ""
+
+#: profiles/templates/auth/user_confirm_delete.html:3
+#: profiles/templates/auth/user_confirm_delete.html:6
+msgid "Delete your account"
+msgstr ""
+
+#: profiles/templates/auth/user_confirm_delete.html:7
+msgid ""
+"You are about to delete your account. This can <strong>not</strong> be "
+"undone and will have immediate effect. Are you sure you want to do this?"
+msgstr ""
+
+#: profiles/templates/auth/user_confirm_delete.html:8
+#, python-format
+msgid ""
+"Before you go, you might be interested in a <a href=\"%(dump_url)s\">backup "
+"of your data</a>."
+msgstr ""
+
+#: profiles/templates/auth/user_confirm_delete.html:12
+msgid "Delete my account now"
 msgstr ""
 
 #: profiles/templates/auth/user_detail.html:3
@@ -606,6 +649,90 @@ msgstr ""
 
 #: profiles/templates/auth/user_detail.html:46
 msgid "Change password"
+msgstr ""
+
+#: profiles/templates/auth/user_detail.html:50
+msgid "Danger zone"
+msgstr ""
+
+#: profiles/templates/auth/user_detail.html:52
+#, python-format
+msgid ""
+"If you don't want to use FeedHQ anymore, you can <a href=\"%(destroy_url)s"
+"\">delete your account</a>."
+msgstr ""
+
+#: profiles/templates/password_reset/recovery_done.html:3
+#: profiles/templates/password_reset/recovery_done.html:6
+msgid "Password reset successful"
+msgstr ""
+
+#: profiles/templates/password_reset/recovery_done.html:7
+#, python-format
+msgid ""
+"Your password has successfully been reset. You can use your new password "
+"right now on the <a href=\"%(login_url)s\">login page</a>."
+msgstr ""
+
+#: profiles/templates/password_reset/recovery_form.html:3
+#: profiles/templates/password_reset/recovery_form.html:7
+msgid "Password recovery"
+msgstr ""
+
+#: profiles/templates/password_reset/recovery_form.html:8
+msgid ""
+"Please enter your email address, we'll send you a link to reset your "
+"password."
+msgstr ""
+
+#: profiles/templates/password_reset/recovery_form.html:17
+msgid "Check your email"
+msgstr ""
+
+#: profiles/templates/password_reset/recovery_form.html:18
+#, python-format
+msgid ""
+"An email has just been sent to <strong>%(email)s</strong>. Use the link in "
+"it to set a new password."
+msgstr ""
+
+#: profiles/templates/password_reset/reset.html:3
+#: profiles/templates/password_reset/reset.html:7
+msgid "Invalid link"
+msgstr ""
+
+#: profiles/templates/password_reset/reset.html:3
+#: profiles/templates/password_reset/reset.html:10
+msgid "Choose your new password"
+msgstr ""
+
+#: profiles/templates/password_reset/reset.html:8
+#, python-format
+msgid ""
+"Sorry, this password reset link is invalid. You can still <a href="
+"\"%(recovery_url)s\">request a new one</a>."
+msgstr ""
+
+#: profiles/templates/password_reset/reset.html:11
+#, python-format
+msgid "Hi, <strong>%(username)s</strong>. Please choose your new password."
+msgstr ""
+
+#: profiles/templates/password_reset/reset.html:15
+msgid "Reset my password"
+msgstr ""
+
+#: profiles/templates/profiles/account_delete_done.html:3
+msgid "Good bye"
+msgstr ""
+
+#: profiles/templates/profiles/account_delete_done.html:6
+msgid "Good bye!"
+msgstr ""
+
+#: profiles/templates/profiles/account_delete_done.html:8
+msgid ""
+"We hope you enjoyed using FeedHQ. Your account has successfully been deleted."
 msgstr ""
 
 #: profiles/templates/profiles/services/instapaper.html:3
@@ -713,4 +840,8 @@ msgstr ""
 msgid ""
 "You have been logged out, see you soon! Do you want to <a href="
 "\"%(login_url)s\">login</a> again?"
+msgstr ""
+
+#: templates/registration/login.html:12
+msgid "Forgot your password?"
 msgstr ""
