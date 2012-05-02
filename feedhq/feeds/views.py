@@ -225,10 +225,7 @@ def edit_feed(request, feed):
                 user=request.user)
 
         if form.is_valid():
-            instance = form.save(commit=False)
-            if not instance.override:
-                instance.delete_after = ''
-            instance.save()
+            instance = form.save()
             messages.success(request, _('%(feed)s has been successfully '
                                         'updated') % {'feed': feed})
             return redirect(reverse('feeds:feed', args=[instance.pk]))

@@ -110,14 +110,6 @@ class Feed(models.Model):
     etag = models.CharField(_('Etag'), max_length=1023, null=True, blank=True)
     modified = models.CharField(_('Modified'), max_length=255, null=True,
                                 blank=True)
-
-    override = models.BooleanField(
-        _('Override Category settings'), default=False,
-        help_text=_('Check this box if you want to override the category'
-                    ' settings below.'),
-    )
-    delete_after = models.CharField(_('Delete after'), max_length=50,
-                                    choices=DURATIONS, default='', blank=True)
     unread_count = models.PositiveIntegerField(_('Unread count'), default=0)
     favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True)
     no_favicon = models.BooleanField(_('No favicon'), default=False)
@@ -143,10 +135,7 @@ class Feed(models.Model):
 
     def get_treshold(self):
         """Returns the date after which the entries can be ignored / deleted"""
-        if self.delete_after:
-            del_after = self.delete_after
-        else:
-            del_after = self.category.delete_after
+        del_after = self.category.delete_after
 
         if del_after == 'never':
             return None

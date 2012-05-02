@@ -107,8 +107,7 @@ class TestFeeds(TestCase):
         self.cat = cat
 
         # ... and a feed.
-        feed = Feed(name='Test Feed', category=self.cat, url='sw-all.xml',
-                    delete_after='never')
+        feed = Feed(name='Test Feed', category=self.cat, url='sw-all.xml')
         feed.save()
         self.feed = feed
 
@@ -395,22 +394,6 @@ class TestFeeds(TestCase):
         response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, 'New Name has been successfully updated')
-
-        # Now overrides
-        data['override'] = True
-        data['delete_after'] = '1day'
-        response = self.client.post(url, data, follow=True)
-        self.assertContains(response, 'New Name has been successfully updated')
-        feed = Feed.objects.get(pk=self.feed.id)
-        self.assertTrue(feed.override)
-
-        # Disabling overrides
-        data['override'] = False
-        response = self.client.post(url, data, follow=True)
-        self.assertContains(response, 'New Name has been successfully updated')
-        feed = Feed.objects.get(pk=self.feed.id)
-        self.assertFalse(feed.override)
-        self.assertEqual(feed.delete_after, '')
 
     def test_delete_feed(self):
         url = reverse('feeds:delete_feed', args=[self.feed.id])

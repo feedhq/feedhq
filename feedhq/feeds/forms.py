@@ -27,8 +27,7 @@ class CategoryForm(forms.ModelForm):
 class FeedForm(forms.ModelForm):
     class Meta:
         model = Feed
-        fields = ('name', 'url', 'category', 'muted', 'override',
-                  'delete_after')
+        fields = ('name', 'url', 'category', 'muted')
 
 
 class OPMLImportForm(forms.Form):
