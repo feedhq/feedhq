@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FeedHQ\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-02 06:22-0500\n"
-"PO-Revision-Date: 2012-05-02 11:35+0000\n"
+"POT-Creation-Date: 2012-05-02 06:46-0500\n"
+"PO-Revision-Date: 2012-05-02 11:45+0000\n"
 "Last-Translator: brutasse <buburno@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -365,7 +365,7 @@ msgstr "Cacher les images pour ce fil"
 
 #: feeds/templates/feeds/entry_detail.html:48
 msgid "Unread"
-msgstr "Non lus"
+msgstr "Marquer comme non lu"
 
 #: feeds/templates/feeds/entry_detail.html:54
 #, python-format
@@ -534,7 +534,7 @@ msgstr "Entrez votre mot de passe pour confirmer votre identité."
 msgid "The password you entered was incorrect."
 msgstr "Le mot de passe est incorrect."
 
-#: profiles/models.py:26
+#: profiles/models.py:26 profiles/templates/auth/user_detail.html:36
 msgid "None"
 msgstr "Aucun"
 
