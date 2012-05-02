@@ -5,6 +5,7 @@
 {% block content %}
 	<h2>{% trans "Delete your account" %}</h2>
 	<p>{% trans "You are about to delete your account. This can <strong>not</strong> be undone and will have immediate effect. Are you sure you want to do this?" %}</p>
+	<p>{% url "export" as dump_url %}{% blocktrans %}Before you go, you might be interested in a <a href="{{ dump_url }}">backup of your data</a>.{% endblocktrans %}</p>
 	<form method="post" action="{% url "destroy_account" %}">
 		{% include "form.html" %}
 		<div class="submit">
