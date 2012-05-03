@@ -144,6 +144,7 @@ for this feed{% endblocktrans %}">
 							img.removeClass('ratio');
 						} else {
 							img.addClass('ratio');
+							img.removeAttr('height');
 							img.attr("width", this.clientWidth / window.devicePixelRatio);
 						}
 					});
