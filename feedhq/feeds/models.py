@@ -95,14 +95,14 @@ class Category(models.Model):
 class Feed(models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=255)
-    url = models.URLField(_('URL'), verify_exists=False)
+    url = models.URLField(_('URL'), verify_exists=False, max_length=1023)
     category = models.ForeignKey(
         Category, verbose_name=_('Category'), related_name='feeds',
         help_text=_('<a href="/category/add/">Add a category</a>'),
     )
     # The next 2 are RSS/ATOM attributes
     title = models.CharField(_('Title'), max_length=255)
-    link = models.URLField(_('Link'), verify_exists=False)
+    link = models.URLField(_('Link'), verify_exists=False, max_length=1023)
     # Mute a feed when we don't want the updates to show up in the timeline
     muted = models.BooleanField(_('Muted'), default=False,
                                 help_text=_('Check this if you want to stop '
@@ -168,11 +168,11 @@ class Entry(models.Model):
                              related_name='entries')
     title = models.CharField(_('Title'), max_length=255)
     subtitle = models.TextField(_('Abstract'))
-    link = models.URLField(_('URL'), verify_exists=False, max_length=400)
+    link = models.URLField(_('URL'), verify_exists=False, max_length=1023)
     # We also have a permalink for feed proxies (like FeedBurner). If the link
     # points to feedburner, the redirection (=real feed link) is put here
     permalink = models.URLField(_('Permalink'), verify_exists=False,
-                                max_length=400, blank=True)
+                                max_length=1023, blank=True)
     date = models.DateTimeField(_('Date'), db_index=True)
     # The User FK is redundant but this may be better for performance and if
     # want to allow user input.
@@ -182,7 +182,7 @@ class Entry(models.Model):
     read = models.BooleanField(_('Read'), default=False, db_index=True)
     # Read later: store the URL
     read_later_url = models.URLField(_('Read later URL'), verify_exists=False,
-                                 max_length=400, blank=True)
+                                 max_length=1023, blank=True)
 
     objects = EntryManager()
 
