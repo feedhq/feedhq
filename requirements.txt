@@ -4,7 +4,7 @@ certifi==0.0.8
 chardet==1.0.1
 django-classy-tags==0.3.4.1
 django-floppyforms==0.4.7
-django-password-reset==0.1
+django-password-reset==0.2
 django-push==0.4
 django-ratelimit-backend==0.1
 django-redis-cache==0.9.2
