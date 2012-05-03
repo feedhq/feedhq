@@ -7,8 +7,10 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect
 from ratelimitbackend import admin
 admin.autodiscover()
 
-from .profiles.forms import AuthForm
+# This patches User and needs to be done early
 from .profiles.models import User, DjangoUser
+
+from .profiles.forms import AuthForm
 
 robots = lambda _: HttpResponse('User-agent: *\nDisallow:\n',
                                 mimetype='text/plain')
