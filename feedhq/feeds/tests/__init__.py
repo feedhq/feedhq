@@ -351,8 +351,10 @@ class TestFeeds(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+        self.assertEqual(Category.objects.count(), 1)
         response = self.client.post(url, {})
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(Category.objects.count(), 0)
 
     def test_edit_category(self):
         url = reverse('feeds:edit_category', args=['cat'])
@@ -401,8 +403,10 @@ class TestFeeds(TestCase):
         self.assertContains(response, 'Delete')
         self.assertContains(response, self.feed.name)
 
+        self.assertEqual(Feed.objects.count(), 1)
         response = self.client.post(url, {})
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(Feed.objects.count(), 0)
         # Redirects to home so useless to test
 
     def test_invalid_page(self):

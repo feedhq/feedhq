@@ -3,11 +3,11 @@ import opml
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Sum
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
-from django.views.generic import create_update
+from django.views import generic
 
 from ..decorators import login_required
 from .models import Category, Feed, Entry
@@ -178,17 +178,22 @@ def edit_category(request, slug):
     return render(request, 'feeds/edit_category.html', context)
 
 
-@login_required
-def delete_category(request, slug):
-    """Delete the specified category"""
-    cat = get_object_or_404(Category, slug=slug, user=request.user)
-    url = reverse('feeds:home')
-    feed_count = cat.feeds.count()
-    entry_count = Entry.objects.filter(feed__category=cat).count()
-    return create_update.delete_object(
-        request, Category, object_id=cat.id, post_delete_redirect=url,
-        extra_context={'entry_count': entry_count, 'feed_count': feed_count},
-    )
+class DeleteCategory(generic.DeleteView):
+    success_url = reverse_lazy('feeds:home')
+
+    def get_object(self):
+        return get_object_or_404(self.request.user.categories,
+                                 slug=self.kwargs['slug'])
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({
+            'entry_count': Entry.objects.filter(
+                feed__category=self.object,
+            ).count(),
+            'feed_count': self.object.feeds.count(),
+        })
+        return super(DeleteCategory, self).get_context_data(**kwargs)
+delete_category = login_required(DeleteCategory.as_view())
 
 
 @login_required
@@ -242,14 +247,18 @@ def edit_feed(request, feed):
     return render(request, 'feeds/edit_feed.html', context)
 
 
-@login_required
-def delete_feed(request, feed):
-    feed = get_object_or_404(Feed, pk=feed, category__user=request.user)
-    url = reverse('feeds:home')
-    return create_update.delete_object(
-        request, Feed, object_id=feed.id, post_delete_redirect=url,
-        extra_context={'entry_count': feed.entries.count()},
-    )
+class DeleteFeed(generic.DeleteView):
+    success_url = reverse_lazy('feeds:home')
+
+    def get_object(self):
+        return get_object_or_404(Feed,
+                                 pk=self.kwargs['feed'],
+                                 category__user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        kwargs['entry_count'] = self.object.entries.count()
+        return super(DeleteFeed, self).get_context_data(**kwargs)
+delete_feed = login_required(DeleteFeed.as_view())
 
 
 @login_required
