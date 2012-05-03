@@ -1,3 +1,6 @@
+import warnings
+warnings.simplefilter('always')
+
 from settings import *
 
 TESTS = True

@@ -111,7 +111,7 @@ account, you can crawl for updates::
 Set up a cron job to update your feeds on a regular basis, every hour is fine,
 more can be quite aggressive::
 
-    59 * * * * /path/to/env/django-admin.py updatefeeds --settings=feedhq.settings
+    @daily * * * * /path/to/env/django-admin.py updatefeeds --settings=feedhq.settings
 
 Development
 -----------
