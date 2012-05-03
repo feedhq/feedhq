@@ -111,12 +111,19 @@ for this feed{% endblocktrans %}">
 			var alt = img.attr('alt');
 			var a = img.closest('a');
 			if (alt) {
-				var legend = escape(alt);
+				var legend = alt;
 			} else {
 				var legend = a.attr('href');
 			}
-			var new_content = img.parent().html() + '<p class="legend"><a href="' + a.attr('href') + '">' + escape(alt) + '</a></p>';
-			a.replaceWith(new_content);
+			var newa = $('<a href="' + a.attr('href') + '"></a>');
+			newa.text(legend);
+			var new_content = img.parent().html() + '<p class="legend">' + newa.clone().wrap('<p>').parent().html() + '</p>';
+
+			if (newa.attr('href').indexOf('http://feedads.g.doubleclick.net') != 0) {
+				a.replaceWith(new_content);
+			} else {
+				img.remove();
+			}
 		});
 
 		var imgs = $('.content img');

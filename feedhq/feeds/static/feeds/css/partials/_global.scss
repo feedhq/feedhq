@@ -19,7 +19,7 @@ em, i {
 	font-style: italic;
 }
 
-strong, b {
+strong, b {
 	font-weight: bold;
 }
 
@@ -354,6 +354,12 @@ form {
 	.date {
 		text-align: right;
 	}
+
+}
+
+.legend, .legend a {
+	padding: 0 !important;
+	color: lighten($text, 20%);
 }
 
 .ellipsis {
