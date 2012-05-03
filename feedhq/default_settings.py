@@ -35,7 +35,7 @@ STATICFILES_STORAGE = ('django.contrib.staticfiles.storage.'
                        'CachedStaticFilesStorage')
 
 AUTHENTICATION_BACKENDS = (
-    'ratelimitbackend.backends.RateLimitModelBackend',
+    'feedhq.backends.RateLimitMultiBackend',
 )
 
 TEMPLATE_LOADERS = (

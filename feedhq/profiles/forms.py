@@ -10,6 +10,14 @@ from django.utils.translation import ugettext_lazy as _
 
 import floppyforms as forms
 
+from ratelimitbackend.forms import AuthenticationForm
+
+
+class AuthForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super(AuthForm, self).__init__(*args, **kwargs)
+        self.fields['username'].label = _('Username or Email')
+
 
 class ProfileForm(forms.ModelForm):
     success_message = _('Your profile was updated successfully')

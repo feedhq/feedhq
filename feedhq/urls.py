@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect
 from ratelimitbackend import admin
 admin.autodiscover()
 
+from .profiles.forms import AuthForm
 from .profiles.models import User, DjangoUser
 
 robots = lambda _: HttpResponse('User-agent: *\nDisallow:\n',
@@ -25,7 +26,7 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('ratelimitbackend.views',
-    url(r'^login/$', 'login', name='login'),
+    url(r'^login/$', 'login', {'authentication_form': AuthForm}, name='login'),
 )
 
 urlpatterns += patterns('django.contrib.auth.views',

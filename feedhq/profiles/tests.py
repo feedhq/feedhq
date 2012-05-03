@@ -235,3 +235,21 @@ class ProfilesTest(TestCase):
         response = self.client.post(url, {'password': 'pass'}, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, "Good bye")
+
+    def test_login_via_username_or_email(self):
+        self.client.logout()
+        url = reverse('login')
+
+        response = self.client.get(url)
+        self.assertContains(response, 'Username or Email')
+
+        data = {'username': 'test', 'password': 'pass'}
+        response = self.client.post(url, data)
+        self.assertRedirects(response, '/')
+
+        self.client.logout()
+        response = self.client.get(url)
+
+        data = {'username': 'test@example.com', 'password': 'pass'}
+        response = self.client.post(url, data)
+        self.assertRedirects(response, '/')
