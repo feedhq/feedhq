@@ -105,6 +105,20 @@ for this feed{% endblocktrans %}">
 		if ($('#content').css('overflow') != 'hidden') {
 			return;
 		}
+
+		$('.content a img').each(function() {
+			var img = $(this);
+			var alt = img.attr('alt');
+			var a = img.closest('a');
+			if (alt) {
+				var legend = escape(alt);
+			} else {
+				var legend = a.attr('href');
+			}
+			var new_content = img.parent().html() + '<p class="legend"><a href="' + a.attr('href') + '">' + escape(alt) + '</a></p>';
+			a.replaceWith(new_content);
+		});
+
 		var imgs = $('.content img');
 		var count = imgs.length;
 		imgs.each(function() {
@@ -119,6 +133,8 @@ for this feed{% endblocktrans %}">
 					}
 				}
 			});
+
+
 			if (!--count && window.devicePixelRatio) {
 				if (window.devicePixelRatio > 1) {
 					$('.content img').click(function() {
