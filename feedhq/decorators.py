@@ -4,6 +4,8 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 
 from ratelimitbackend.views import login
 
+from .profiles.forms import AuthForm
+
 
 def login_required(view_callable):
     def check_login(request, *args, **kwargs):
@@ -19,6 +21,7 @@ def login_required(view_callable):
                 REDIRECT_FIELD_NAME: request.get_full_path(),
                 'from_decorator': True,
             },
+            'authentication_form': AuthForm,
         }
         return login(request, **login_kwargs)
     return wraps(view_callable)(check_login)

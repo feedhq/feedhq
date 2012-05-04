@@ -253,3 +253,7 @@ class ProfilesTest(TestCase):
         data = {'username': 'test@example.com', 'password': 'pass'}
         response = self.client.post(url, data)
         self.assertRedirects(response, '/')
+
+        self.client.logout()
+        response = self.client.get(reverse('feeds:unread'))
+        self.assertContains(response, 'Username or Email')
