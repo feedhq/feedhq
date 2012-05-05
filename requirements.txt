@@ -16,7 +16,7 @@ oauth2==1.5.211
 oauthlib==0.1.2
 opml==0.5
 psycopg2==2.4.5
-pycryto==2.5
+pycrypto==2.5
 pytz==2012c
 raven==1.7.5
 redis==2.4.12
