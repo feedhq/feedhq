@@ -103,8 +103,9 @@ class FeedUpdater(object):
 
         if 'etag' in parsed_feed:
             self.updated['etag'] = parsed_feed.etag
-        if 'modified' in parsed_feed:
-            self.updated['modified'] = '%s' % time.mktime(parsed_feed.modified)
+        if 'modified_parsed' in parsed_feed:
+            timed = time.mktime(parsed_feed.modified_parsed)
+            self.updated['modified'] = '%s' % timed
 
         if 'links' in parsed_feed.feed:
             for link in parsed_feed.feed.links:
