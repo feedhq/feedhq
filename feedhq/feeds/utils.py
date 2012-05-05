@@ -135,6 +135,11 @@ class FeedUpdater(object):
             )
 
             parsed_entry.link = entry.link
+            if 'guid' in entry:
+                netloc = urlparse.urlparse(entry.guid).netloc
+                if netloc == urlparse.urlparse(parsed_feed.feed.link).netloc:
+                    # Use guid as URL
+                    parsed_entry.link = entry.guid
 
             if not parsed_entry.id:
                 # Update some fields only if the entry is a new one
