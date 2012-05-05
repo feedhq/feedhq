@@ -136,18 +136,12 @@ class FeedUpdater(object):
             if 'guid' in entry:
                 netloc = urlparse.urlparse(entry.guid).netloc
                 if netloc == urlparse.urlparse(parsed_feed.feed.link).netloc:
-                    # Use guid as URL
-                    parsed_entry.link = entry.guid
+                    parsed_entry.guid = entry.guid
 
             if not parsed_entry.id:
                 # Update some fields only if the entry is a new one
                 parsed_entry.date = self.get_date(entry)
 
-            if (entry.link and 'feedproxy.google.com' in parsed_entry.link and
-                not parsed_entry.permalink):
-                # Handling the FeedBurner redirection on behalf of the user
-                response = requests.head(entry.link)
-                parsed_entry.permalink = response.headers['Location']
             self.entries.append(parsed_entry)
 
     def handle_hub(self, topic_url, hub_url):
@@ -203,9 +197,9 @@ class FeedUpdater(object):
     @transaction.commit_on_success
     def add_entries_to_feeds(self):
         from .models import Entry
-        for feed in self.feeds:
-            treshold = feed.get_treshold()
-            for entry in self.entries:
+        for entry in self.entries:
+            for feed in self.feeds:
+                treshold = feed.get_treshold()
                 if treshold is not None and entry.date < treshold:
                     # Skipping, it's too old
                     continue
@@ -224,6 +218,32 @@ class FeedUpdater(object):
                     db_entry = multiple[0]
                     for e in multiple[1:]:
                         e.delete()
+
+                if db_entry.permalink:
+                    entry.permalink = db_entry.permalink
+                else:
+                    if entry.permalink:
+                        db_entry.permalink = entry.permalink
+                    elif not settings.TESTS:
+                        # Try to use guid if possible
+                        if hasattr(entry, 'guid'):
+                            response = requests.head(entry.guid,
+                                                     allow_redirects=True)
+                            if response.status_code == 200:
+                                resolved = response.url or ''
+                                db_entry.permalink = entry.permalink = resolved
+
+                        if (db_entry.link and
+                            'feedproxy.google.com' in db_entry.link):
+                            # Handling the FeedBurner redirection on
+                            # behalf of the user
+                            response = requests.head(db_entry.link,
+                                                     allow_redirects=True)
+                            resolved = response.url or ''
+                            db_entry.permalink = entry.permalink = resolved
+
+                if not db_entry.permalink:
+                    db_entry.permalink = entry.permalink = entry.link
 
                 db_entry.feed = feed
                 db_entry.user = feed.category.user
