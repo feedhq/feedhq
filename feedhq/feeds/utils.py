@@ -140,8 +140,7 @@ class FeedUpdater(object):
                 # Update some fields only if the entry is a new one
                 parsed_entry.date = self.get_date(entry)
 
-            if (entry.link and
-                'feedproxy.google.com' in entry.link and
+            if (entry.link and 'feedproxy.google.com' in parsed_entry.link and
                 not parsed_entry.permalink):
                 # Handling the FeedBurner redirection on behalf of the user
                 response = requests.head(entry.link)
@@ -178,17 +177,24 @@ class FeedUpdater(object):
                     pass
 
     def get_date(self, entry):
-        if 'updated_parsed' in entry and entry.updated_parsed is not None:
+        if 'published_parsed' in entry and entry.published_parsed is not None:
+            field = entry.published_parsed
+        elif 'updated_parsed' in entry and entry.updated_parsed is not None:
+            field = entry.updated_parsed
+        else:
+            field = None
+
+        if field is None:
+            entry_date = timezone.now()
+        else:
             entry_date = timezone.make_aware(
-                datetime.datetime(*entry.updated_parsed[:6]),
+                datetime.datetime(*field[:6]),
                 pytz.utc,
             )
             # Sometimes entries are published in the future. If they're
             # published, it's probably safe to adjust the date.
             if entry_date > timezone.now():
                 entry_date = timezone.now()
-        else:
-            entry_date = timezone.now()
         return entry_date
 
     @transaction.commit_on_success
