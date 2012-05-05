@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from ..models import Category, Feed, Entry
+from ..models import Category, Feed, Entry, Favicon
 from ..utils import FeedUpdater
 
 feedparser.USER_AGENT = 'FeedHQ/dev +https://github.com/brutasse/feedhq'
@@ -635,3 +635,15 @@ class TestFeeds(TestCase):
                   'title': (u'RE2: a principled approach to regular '
                             u'expression matching')},
         )
+
+
+class FaviconTests(TestCase):
+    @patch("requests.get")
+    def test_declared_favicon(self, get):
+        class Response:
+            status_code = 200
+            content = 'some content'
+            headers = {'foo': 'bar'}
+        get.return_value = Response()
+        Favicon.objects.update_favicon('http://example.com/')
+        get.assert_called_with('http://example.com/favicon.ico')

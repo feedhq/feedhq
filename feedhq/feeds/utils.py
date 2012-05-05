@@ -10,7 +10,6 @@ import urllib2
 import urlparse
 
 from django.conf import settings
-from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
@@ -42,7 +41,6 @@ class FeedUpdater(object):
         self.handle_updated()
         self.remove_old_stuff()
         self.update_counts()
-        self.grab_favicons()
 
     def get_feeds(self):
         if self.feeds is None:
@@ -261,55 +259,3 @@ class FeedUpdater(object):
     def update_counts(self):
         for feed in self.feeds:
             feed.update_unread_count()
-
-    def grab_favicons(self):
-        if settings.TESTS:
-            return
-
-        if all((f.favicon for f in self.feeds)):
-            return
-
-        if any((f.favicon for f in self.feeds)):
-            for f in self.feeds:
-                if f.favicon:
-                    fav = f.favicon
-                    continue
-
-            self.feeds.update(favicon=fav)
-            return
-
-        if self.feeds[0].no_favicon == True:
-            return
-
-        if not self.feeds[0].link:
-            return
-
-        page = self.fetch_or_no_favicon(self.feeds[0].link)
-        if page is None:
-            return
-
-        icon_path = lxml.html.fromstring(page.lower()).xpath(
-            '//link[@rel="icon" or @rel="shortcut icon"]/@href')
-
-        if not icon_path:
-            if self.feeds[0].no_favicon:
-                return
-            url = urlparse.urlparse(self.feeds[0].link)
-            icon_path = ['%s://%s/favicon.ico' % (url.scheme, url.netloc)]
-
-        if not icon_path[0].startswith('http'):
-            icon_path[0] = self.feeds[0].link + icon_path[0]
-
-        icon_content = self.fetch_or_no_favicon(icon_path[0])
-        if icon_content is None:
-            return
-
-        icon_file = ContentFile(icon_content)
-        for f in self.feeds:  # FIXME select_for_update
-            f.favicon.save('favicons/%s.ico' % f.pk, icon_file)
-
-    def fetch_or_no_favicon(self, url):
-        try:
-            return urllib2.urlopen(url).read()
-        except (urllib2.HTTPError, urllib2.URLError):
-            self.feeds.update(no_favicon=True)

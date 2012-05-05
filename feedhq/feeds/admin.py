@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.sites.models import Site
 from django_push.subscriber.models import Subscription
 
-from .models import Category, Feed, Entry
+from .models import Category, Feed, Entry, Favicon
 
 
 class FeedInline(admin.TabularInline):
@@ -37,9 +37,14 @@ class SubscriptionAdmin(admin.ModelAdmin):
     search_fields = ('topic', 'hub')
 
 
+class FaviconAdmin(admin.ModelAdmin):
+    list_display = ('url', 'favicon_img')
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Feed, FeedAdmin)
 admin.site.register(Entry, EntryAdmin)
+admin.site.register(Favicon, FaviconAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(User)
 admin.site.register(Group)

@@ -1,5 +1,6 @@
 import datetime
 import json
+import lxml
 import oauth2 as oauth
 import urllib
 import urlparse
@@ -8,6 +9,7 @@ import requests
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -15,6 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 
 from .utils import FeedUpdater
+from ..storage import OverwritingStorage
 
 COLORS = (
         ('red', _('Red')),
@@ -111,7 +114,8 @@ class Feed(models.Model):
     modified = models.CharField(_('Modified'), max_length=255, null=True,
                                 blank=True)
     unread_count = models.PositiveIntegerField(_('Unread count'), default=0)
-    favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True)
+    favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True,
+                                storage=OverwritingStorage())
     no_favicon = models.BooleanField(_('No favicon'), default=False)
     img_safe = models.BooleanField(_('Display images by default'),
                                    default=False)
@@ -290,3 +294,66 @@ def pubsubhubbub_update(notification, **kwargs):
     updater.entries = entries
     updater.add_entries_to_feeds()
 updated.connect(pubsubhubbub_update)
+
+
+def upload_favicon(instance, filename):
+    netloc = urlparse.urlparse(instance.url).netloc
+    return 'favicons/%s.png' % netloc
+
+
+class FaviconManager(models.Manager):
+    def update_favicon(self, link, force_update=False):
+        parsed = list(urlparse.urlparse(link))
+        favicon, created = self.get_or_create(url=link)
+        if favicon.favicon and not force_update:
+            return favicon
+
+        try:
+            page = requests.get(link).content
+        except requests.RequestException:
+            return favicon
+        if not page:
+            return favicon
+
+        icon_path = lxml.html.fromstring(page.lower()).xpath(
+            '//link[@rel="icon" or @rel="shortcut icon"]/@href'
+        )
+
+        if not icon_path:
+            parsed[2] = '/favicon.ico'  # 'path' element
+            icon_path = [urlparse.urlunparse(parsed)]
+        if not icon_path[0].startswith('http'):
+            parsed[2] = icon_path[0]
+            icon_path = [urlparse.urlunparse(parsed)]
+        try:
+            response = requests.get(icon_path[0])
+        except requests.RequestException:
+            return favicon
+        if response.status_code != 200:
+            return favicon
+        if ('content-type' not in response.headers or
+            not response.headers['content-type'].startswith('image/')):
+            return favicon
+
+        icon_file = ContentFile(response.content)
+        favicon.favicon.save(upload_favicon(favicon, ''), icon_file)
+
+        feeds = Feed.objects.filter(link=link)
+        for feed in feeds:
+            feed.favicon.save(upload_favicon(favicon, ''), icon_file)
+        feeds.update(no_favicon=False)
+        return favicon
+
+
+class Favicon(models.Model):
+    url = models.URLField(_('Domain URL'), db_index=True)
+    favicon = models.FileField(upload_to=upload_favicon, blank=True,
+                               storage=OverwritingStorage())
+
+    objects = FaviconManager()
+
+    def favicon_img(self):
+        if not self.favicon:
+            return '(None)'
+        return '<img src="%s">' % self.favicon.url
+    favicon_img.allow_tags = True
