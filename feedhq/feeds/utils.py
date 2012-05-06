@@ -134,8 +134,10 @@ class FeedUpdater(object):
 
             parsed_entry.link = entry.link
             if 'guid' in entry:
-                netloc = urlparse.urlparse(entry.guid).netloc
-                if netloc == urlparse.urlparse(parsed_feed.feed.link).netloc:
+                parsed_guid = urlparse.urlparse(entry.guid)
+                parsed_link = urlparse.urlparse(parsed_feed.feed.link)
+                if (parsed_guid.scheme in ('http', 'https') and
+                    parsed_guid.netloc == parsed_link.netloc):
                     parsed_entry.guid = entry.guid
 
             if not parsed_entry.id:
