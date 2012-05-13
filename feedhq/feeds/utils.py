@@ -114,7 +114,7 @@ class FeedUpdater(object):
         for entry in parsed_feed.entries:
             if not 'link' in entry:
                 continue
-            title = entry.title
+            title = entry.title if 'title' in entry else '(No title)'
             if len(title) > 255:
                 title = title[:252] + '...'
             parsed_entry = Entry(title=title)
