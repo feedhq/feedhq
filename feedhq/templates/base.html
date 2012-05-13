@@ -52,9 +52,7 @@
 			<div id="root_footer"></div>
 		</div>
 		<div id="footer">
-			<div>
-				<a href="https://github.com/brutasse/feedhq">FeedHQ</a> - {% blocktrans %}a <a href="http://djangoproject.com">Django</a> joint{% endblocktrans %} - &copy; 2009-{% now "Y" %} Bruno Renié
-			</div>
+			<div>{% include "footer.html" %}</div>
 		</div>
 {% render_block "js" %}
 
