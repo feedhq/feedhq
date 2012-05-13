@@ -229,11 +229,15 @@ class FeedUpdater(object):
                     elif not settings.TESTS:
                         # Try to use guid if possible
                         if hasattr(entry, 'guid'):
-                            response = requests.head(entry.guid,
-                                                     allow_redirects=True)
-                            if response.status_code == 200:
-                                resolved = response.url or ''
-                                db_entry.permalink = entry.permalink = resolved
+                            try:
+                                response = requests.head(entry.guid,
+                                                         allow_redirects=True)
+                            except requests.ConnectionError:
+                                pass
+                            else:
+                                if response.status_code == 200:
+                                    resolved = response.url or ''
+                                    db_entry.permalink = entry.permalink = resolved
 
                         if (db_entry.link and
                             'feedproxy.google.com' in db_entry.link):
