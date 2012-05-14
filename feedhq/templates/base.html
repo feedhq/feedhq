@@ -70,43 +70,45 @@
 
 {% addtoblock "js" %}
 <script type="text/javascript">
-	$('#add-menu, #navigation').popover({
-		trigger: "manual",
-		content: function() {
-			return $(this).find('ul').html();
-		},
-		placement: "bottom",
-	});
+	$(function() {
+		$('#add-menu, #navigation').popover({
+			trigger: "manual",
+			content: function() {
+				return $(this).find('ul').html();
+			},
+			placement: "bottom",
+		});
 
-	$('#add-menu, #navigation').click(function() {
-		var mobile = $(this).find('li').css('display') == 'none' || $(this).attr('class') == 'active';
-		if (!mobile) {
-			return;
-		}
+		$('#add-menu, #navigation').click(function() {
+			var mobile = $(this).find('li').css('display') == 'none' || $(this).attr('class') == 'active';
+			if (!mobile) {
+				return;
+			}
 
-		var id = $(this).attr('id'), hide;
-		if (id == 'navigation') {
-			hide = 'add-menu';
-		} else {
-			hide = 'navigation';
-		}
-		$('#' + hide).popover('hide');
-		$('#' + hide).removeClass('active');
-		$(this).popover('toggle');
-		$(this).toggleClass('active');
-		var pop = $('.popover');
-		if (pop) {
-			var header = $('#header');
-			var top = pop.position().top;
-			pop.removeAttr('style');
+			var id = $(this).attr('id'), hide;
+			if (id == 'navigation') {
+				hide = 'add-menu';
+			} else {
+				hide = 'navigation';
+			}
+			$('#' + hide).popover('hide');
+			$('#' + hide).removeClass('active');
+			$(this).popover('toggle');
+			$(this).toggleClass('active');
+			var pop = $('.popover');
+			if (pop) {
+				var header = $('#header');
+				var top = pop.position().top;
+				pop.removeAttr('style');
 
-			pop.css('display', 'block');
-			pop.css("width", header.width() / 2 + 'px');
+				pop.css('display', 'block');
+				pop.css("width", header.width() / 2 + 'px');
 
-			var right = (window.innerWidth - header.width()) / 2;
-			pop.css("right", right + 'px');
-			pop.css("top", top + 'px');
-		}
+				var right = (window.innerWidth - header.width()) / 2;
+				pop.css("right", right + 'px');
+				pop.css("top", top + 'px');
+			}
+		});
 	});
 </script>
 {% endaddtoblock %}
