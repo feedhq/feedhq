@@ -20,6 +20,8 @@ from .. import __version__
 
 
 USER_AGENT = 'FeedHQ/%s +https://github.org/feedhq/feedhq' % __version__
+LINK_CHECKER = USER_AGENT + (' (link checker) - https://github.com/feedhq/'
+                             'feedhq/wiki/User-Agent')
 
 logger = logging.getLogger('feedupdater')
 
@@ -229,8 +231,10 @@ class FeedUpdater(object):
                     elif not settings.TESTS:
                         # Try to use guid if possible
                         if hasattr(entry, 'guid'):
+                            ua = {'User-Agent': LINK_CHECKER}
                             try:
                                 response = requests.head(entry.guid,
+                                                         headers=ua,
                                                          allow_redirects=True)
                             except requests.ConnectionError:
                                 pass
