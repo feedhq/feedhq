@@ -17,6 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 
 from .utils import FeedUpdater
+from .. import __version__
 from ..storage import OverwritingStorage
 
 COLORS = (
@@ -302,14 +303,20 @@ def upload_favicon(instance, filename):
 
 
 class FaviconManager(models.Manager):
+    USER_AGENT = ('FeedHQ/%s +https://github.com/feedhq/feedhq (favicon '
+                  'fetcher) - https://github.com/feedhq/feedhq/wiki/'
+                  'User-Agent' % __version__)
+
     def update_favicon(self, link, force_update=False):
         parsed = list(urlparse.urlparse(link))
         favicon, created = self.get_or_create(url=link)
         if favicon.favicon and not force_update:
             return favicon
 
+        ua = {'User-Agent': self.USER_AGENT}
+
         try:
-            page = requests.get(link).content
+            page = requests.get(link, headers=ua).content
         except requests.RequestException:
             return favicon
         if not page:
@@ -326,7 +333,7 @@ class FaviconManager(models.Manager):
             parsed[2] = icon_path[0]
             icon_path = [urlparse.urlunparse(parsed)]
         try:
-            response = requests.get(icon_path[0])
+            response = requests.get(icon_path[0], headers=ua)
         except requests.RequestException:
             return favicon
         if response.status_code != 200:
