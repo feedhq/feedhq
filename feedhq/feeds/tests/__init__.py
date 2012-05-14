@@ -16,7 +16,7 @@ from django.utils import timezone
 from ..models import Category, Feed, Entry, Favicon
 from ..utils import FeedUpdater
 
-feedparser.USER_AGENT = 'FeedHQ/dev +https://github.com/brutasse/feedhq'
+feedparser.USER_AGENT = 'FeedHQ/dev +https://github.com/feedhq/feedhq'
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 

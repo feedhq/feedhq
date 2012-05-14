@@ -19,7 +19,7 @@ from django_push.subscriber.models import Subscription
 from .. import __version__
 
 
-USER_AGENT = 'FeedHQ/%s +https://github.org/brutasse/feedhq' % __version__
+USER_AGENT = 'FeedHQ/%s +https://github.org/feedhq/feedhq' % __version__
 
 logger = logging.getLogger('feedupdater')
 
@@ -32,7 +32,7 @@ class FeedUpdater(object):
         self.updated = {}
         self.feeds = None
         feedparser.USER_AGENT = USER_AGENT
-        feedparser.USER_AGENT += agent
+        feedparser.USER_AGENT += agent + ' - https://github.com/feedhq/feedhq/wiki/User-Agent'
 
     def update(self):
         self.get_feeds()
