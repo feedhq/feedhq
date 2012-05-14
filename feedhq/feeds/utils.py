@@ -239,19 +239,6 @@ class FeedUpdater(object):
                                     resolved = response.url or ''
                                     db_entry.permalink = entry.permalink = resolved
 
-                        if (db_entry.link and
-                            'feedproxy.google.com' in db_entry.link):
-                            # Handling the FeedBurner redirection on
-                            # behalf of the user
-                            try:
-                                response = requests.head(db_entry.link,
-                                                         allow_redirects=True)
-                            except requests.ConnectionError:
-                                pass
-                            else:
-                                resolved = response.url or ''
-                                db_entry.permalink = entry.permalink = resolved
-
                 if not db_entry.permalink:
                     db_entry.permalink = entry.permalink = entry.link
 
