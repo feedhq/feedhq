@@ -6,7 +6,6 @@ install:
   - pip install -q -r requirements.txt --use-mirrors
   - pip install -q -r requirements-dev.txt --use-mirrors
   - pip install -q -e . --use-mirrors
-  - echo "from default_settings import *  # noqa" > feedhq/settings.py
 before_script:
   - flake8 feedhq
 script:

@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from ... import __version__
 from ..models import Category, Feed, Entry, Favicon
 from ..utils import FeedUpdater
 
@@ -648,6 +649,8 @@ class FaviconTests(TestCase):
         Favicon.objects.update_favicon('http://example.com/')
         get.assert_called_with(
             'http://example.com/favicon.ico',
-            headers={'User-Agent': ('FeedHQ/0.1.66 +https://github.com/feedhq'
-                                    '/feedhq (favicon fetcher) - https://gith'
-                                    'ub.com/feedhq/feedhq/wiki/User-Agent')})
+            headers={'User-Agent': (
+                'FeedHQ/%s +https://github.com/feedhq/feedhq (favicon fetcher)'
+                ' - https://github.com/feedhq/feedhq/wiki/User-'
+                'Agent' % __version__)
+            })

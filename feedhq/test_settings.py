@@ -1,7 +1,7 @@
 import warnings
 warnings.simplefilter('always')
 
-from settings import *  # noqa
+from default_settings import *  # noqa
 
 DATABASES = {
     'default': {
@@ -13,10 +13,17 @@ DATABASES = {
 
 TESTS = True
 
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 EMAIL_HOST = 'dummy'
 
 API_KEYS = {
     'readitlater': 'test read it later API key',
+}
+
+INSTAPAPER = READABILITY = {
+    'CONSUMER_KEY': 'consumer key',
+    'CONSUMER_SECRET': 'consumer secret',
 }
 
 # Silencing log calls
