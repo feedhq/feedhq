@@ -13,7 +13,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from ... import __version__
 from ..models import Category, Feed, Entry, Favicon
 from ..utils import FeedUpdater
 

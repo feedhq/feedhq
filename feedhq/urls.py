@@ -8,7 +8,7 @@ from ratelimitbackend import admin
 admin.autodiscover()
 
 # This patches User and needs to be done early
-from .profiles.models import User, DjangoUser
+from .profiles.models import User, DjangoUser  # noqa
 
 from .profiles.forms import AuthForm
 

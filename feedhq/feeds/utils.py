@@ -33,8 +33,8 @@ class FeedUpdater(object):
         self.feedparser = feedparser
         self.updated = {}
         self.feeds = None
-        feedparser.USER_AGENT = USER_AGENT
-        feedparser.USER_AGENT += agent + ' - https://github.com/feedhq/feedhq/wiki/User-Agent'
+        feedparser.USER_AGENT = (USER_AGENT + agent + ' - https://github.com/f'
+                                 'eedhq/feedhq/wiki/User-Agent')
 
     def update(self):
         self.get_feeds()
@@ -241,7 +241,8 @@ class FeedUpdater(object):
                             else:
                                 if response.status_code == 200:
                                     resolved = response.url or ''
-                                    db_entry.permalink = entry.permalink = resolved
+                                    db_entry.permalink = resolved
+                                    entry.permalink = resolved
 
                 if not db_entry.permalink:
                     db_entry.permalink = entry.permalink = entry.link
