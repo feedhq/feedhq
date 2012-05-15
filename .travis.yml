@@ -8,6 +8,6 @@ install:
   - pip install -q -e . --use-mirrors
 before_script:
   - flake8 feedhq
-  - createdb -U postgres
 script:
+  - createdb -U postgres
   - make test
