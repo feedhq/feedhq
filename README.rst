@@ -1,6 +1,8 @@
 FeedHQ
 ======
 
+.. image:: https://secure.travis-ci.org/feedhq/feedhq.png
+
 FeedHQ is a simple, lightweight web-based feed reader. Main features:
 
 * RSS and ATOM support
