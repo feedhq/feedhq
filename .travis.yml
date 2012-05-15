@@ -9,5 +9,5 @@ install:
 before_script:
   - flake8 feedhq
 script:
-  - createdb -U postgres
+  - psql -c 'CREATE DATABASE feedhq;' -U postgres
   - make test
