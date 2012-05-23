@@ -57,6 +57,18 @@
 {% render_block "js" %}
 
 {% addtoblock "js" %}
+<script type="text/javascript">
+  window.addEventListener("load", function() {
+    setTimeout(function() {
+      if (window.pageYOffset === 0) {
+        window.scrollTo(0, 1);
+      }
+    }, 0);
+  });
+</script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
 <script src="{% static "feeds/js/jquery.min.js" %}"></script>
 {% endaddtoblock %}
 
