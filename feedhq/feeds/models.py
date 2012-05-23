@@ -156,7 +156,7 @@ class Feed(models.Model):
 def update_on_creation(sender, instance, created, **kwargs):
     if created and not getattr(instance, "skip_post_save", False):
         try:
-            FeedUpdater(instance.url).update()
+            FeedUpdater(instance.url).update(use_etags=False)
         except Exception:
             pass
 models.signals.post_save.connect(update_on_creation, sender=Feed)

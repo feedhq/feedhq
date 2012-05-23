@@ -36,9 +36,9 @@ class FeedUpdater(object):
         feedparser.USER_AGENT = (USER_AGENT + agent + ' - https://github.com/f'
                                  'eedhq/feedhq/wiki/User-Agent')
 
-    def update(self):
+    def update(self, use_etags=True):
         self.get_feeds()
-        self.get_entries()
+        self.get_entries(use_etags)
         self.add_entries_to_feeds()
         self.handle_updated()
         self.remove_old_stuff()
@@ -49,7 +49,7 @@ class FeedUpdater(object):
             from .models import Feed
             self.feeds = Feed.objects.filter(url=self.url, muted=False)
 
-    def get_entries(self):
+    def get_entries(self, use_etags=True):
         """Populates self.entries and self.updated
         self.entries: a list of Entry objects, parsed from self.url
         self.updated: a dict of values to push to self.feeds
@@ -58,7 +58,7 @@ class FeedUpdater(object):
         socket.setdefaulttimeout(5)  # aggressive but otherwise
                                      # it can take ages
         feed = self.feeds[0]
-        if feed.modified:
+        if use_etags and feed.modified:
             modified = time.localtime(float(feed.modified))
             parsed_feed = self.feedparser.parse(feed.url, etag=feed.etag,
                                                 modified=modified)
