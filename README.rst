@@ -47,7 +47,7 @@ Installation
 
 Getting the code::
 
-    git clone git@github.com:brutasse/feedhq.git
+    git clone git@github.com:feedhq/feedhq.git
     cd feedhq
     virtualenv -p python2 env
     source env/bin/activate
