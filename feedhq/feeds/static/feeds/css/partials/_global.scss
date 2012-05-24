@@ -23,6 +23,13 @@ strong, b {
 	font-weight: bold;
 }
 
+sup {
+	vertical-align: top;
+	position: relative;
+	top: -0.3em;
+	font-size: 0.8em;
+}
+
 .cat, .edit {
 	color: white !important;
 	font-weight: normal !important;
