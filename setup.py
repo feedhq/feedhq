@@ -18,7 +18,7 @@ setup(
     author_email='bruno@renie.fr',
     packages=find_packages(),
     include_package_data=True,
-    url='https://github.com/brutasse/feedhq',
+    url='https://github.com/feedhq/feedhq',
     license='BSD',
     description='FeedHQ is a web-based feed reader',
     long_description=long_description,
