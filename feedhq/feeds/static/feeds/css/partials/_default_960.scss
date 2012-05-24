@@ -8,6 +8,11 @@
 	#navigation {
 		@include cols(5);
 	}
+	#navigation, #add-menu {
+		& > span {
+			display: none;
+		}
+	}
 }
 
 #footer, #content, #categories, #options {

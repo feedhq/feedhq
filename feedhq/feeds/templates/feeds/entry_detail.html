@@ -15,8 +15,8 @@
 	</div>
 	<div id="entry">
 		<h2>{% if object.title %}{{ object.title|safe }}{% else %}({% trans "No title" %}){% endif %}
-			<a href="{% url "feeds:feed" object.feed.pk %}" class="cat {{ object.feed.category.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}">&nbsp;&nbsp;&nbsp;</a>
-			<a href="{% url "feeds:category" object.feed.category.slug %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}">&nbsp;&nbsp;&nbsp;</a>
+			<a href="{% url "feeds:feed" object.feed.pk %}" class="cat {{ object.feed.category.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}"><span class="icon pen"></span></a>
+			<a href="{% url "feeds:category" object.feed.category.slug %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}"><span class="icon pen"></span></a>
 		</h2>
 		{% include "feeds/entry_links.html" %}
 		<div class="actions">

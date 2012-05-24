@@ -15,18 +15,36 @@
 			top: 10px;
 			right: 0;
 
-			background: lighten($text, 75%) url('../img/Settings.png') no-repeat 5px 5px;
+
+			background: lighten($text, 75%);
+			& > span {
+				display: inline;
+				position: absolute;
+				top: -3px;
+				right: 2px;
+			}
+
 			&:hover, &.active {
-				background: $text url('../img/Settings-white.png') no-repeat 5px 5px;
+				background: $text;
+				color: white;
 			}
 		}
 
 		#add-menu {
-			background: lighten($text, 75%) url('../img/Dropdown.png') no-repeat 5px 5px;
+			position: relative;
+			background: lighten($text, 75%);
 			margin-right: 25px;
 
 			&:hover, &.active {
-				background: $text url('../img/Dropdown-white.png') no-repeat 5px 5px;
+				background: $text;
+				color: white;
+			}
+
+			& > span {
+				display: inline;
+				position: absolute;
+				top: -3px;
+				right: 1.5px;
 			}
 		}
 

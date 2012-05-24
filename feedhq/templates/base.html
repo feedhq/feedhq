@@ -17,22 +17,24 @@
 						{% if user.is_authenticated %}
 							<a class="unread" title="{% trans "Unread entries" %}" href="{% url "feeds:unread" %}">{{ user.entries.unread }}</a>
 							<div id="add-menu">
+								<span class="icon menu"></span>
 								<ul>
-									<li><a href="{% url "feeds:dashboard" %}" class="add dashboard" title="{% trans "Dashboard" %}">{% trans "Dashboard" %}</a></li>
-									<li><a href="{% url "feeds:add_category" %}" class="add category" title="{% trans "Add a category" %}">{% trans "Add category" %}</a></li>
-									<li><a href="{% url "feeds:add_feed" %}" class="add feed" title="{% trans "Add a feed" %}">{% trans "Add feed" %}</a></li>
-									<li><a href="{% url "feeds:import_feeds" %}" class="add import" title="{% trans "Import feeds" %}">{% trans "Import" %}</a></li>
+									<li><a href="{% url "feeds:dashboard" %}" class="add" title="{% trans "Dashboard" %}"><span class="icon dashboard"></span>{% trans "Dashboard" %}</a></li>
+									<li><a href="{% url "feeds:add_category" %}" class="add" title="{% trans "Add a category" %}"><span class="icon tag"></span>{% trans "Add category" %}</a></li>
+									<li><a href="{% url "feeds:add_feed" %}" class="add" title="{% trans "Add a feed" %}"><span class="icon feed"></span>{% trans "Add feed" %}</a></li>
+									<li><a href="{% url "feeds:import_feeds" %}" class="add" title="{% trans "Import feeds" %}"><span class="icon import"></span>{% trans "Import" %}</a></li>
 								</ul>
 							</div>
 						{% endif %}
 					</h1>
 					<div id="navigation">
+						<span class="icon cog"></span>
 						<ul>{% spaceless %}
 							{% if not user.is_authenticated %}
 								<li><a href="{% url "login" %}">{% trans "Sign in" %}</a></li>
 							{% else %}
-								<li>{% trans "yo" %}, <strong><a href="{% url "profile" %}">{{ user.username }}</a></strong></li>
-								<li><a href="{% url "logout" %}">{% trans "Logout" %}</a></li>
+								<li>{% trans "yo" %}, <span class="icon settings"></span><strong><a href="{% url "profile" %}">{{ user.username }}</a></strong></li>
+								<li><span class="icon logout"></span><a href="{% url "logout" %}">{% trans "Logout" %}</a></li>
 							{% endif %}
 						</ul>{% endspaceless %}
 					</div>
@@ -114,7 +116,7 @@
 				pop.removeAttr('style');
 
 				pop.css('display', 'block');
-				pop.css("width", header.width() / 2 + 'px');
+				pop.css("width", header.width() / 1.7 + 'px');
 
 				var right = (window.innerWidth - header.width()) / 2;
 				pop.css("right", right + 'px');

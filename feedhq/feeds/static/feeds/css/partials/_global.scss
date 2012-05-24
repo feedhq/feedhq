@@ -1,5 +1,59 @@
 @include sticky-footer(70px);
 
+@font-face {
+	font-family: 'IconicFill';
+	src: url('../font/iconic_fill.eot');
+	src:
+		url('../font/iconic_fill.eot?#iefix') format('embedded-opentype'),
+		url('../font/iconic_fill.ttf') format('truetype'),
+		url('../font/iconic_fill.svg#iconic') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+.icon {
+	display:inline-block;
+	font-family: 'IconicFill';
+	font-size: 12px;
+	font-size: 16px;
+	padding-right: 2px;
+
+	&.dashboard:before {
+		content: "\e027";
+	}
+
+	&.tag:before {
+		content: "\e02b";
+	}
+
+	&.feed:before {
+		content: "\e02c";
+	}
+
+	&.import:before {
+		content: "\e045";
+	}
+
+	&.settings:before {
+		content: "\e062";
+	}
+
+	&.logout:before {
+		content: "\e04b";
+	}
+
+	&.pen:before {
+		content: "\e006";
+	}
+
+	&.menu:before {
+		content: "\e055";
+	}
+
+	&.cog:before {
+		content: "\2699";
+	}
+}
+
 $red: #ff0000;
 $dark_red: #cc0000;
 $pale_green: #64992c;
@@ -147,37 +201,24 @@ input, select {
 			&.add {
 				font-size: 0.6em;
 				font-weight: normal;
-				padding-left: 14px;
+				padding-left: 2px;
 				margin-right: 5px;
-				background-repeat: no-repeat;
-				background-position: 0 3px;
 				color: lighten($text, 20%);
 
 				&:hover {
 					color: lighten($text, 10%);
 				}
 			}
-
-			&.dashboard {
-				background-image: url('../img/Dashboard.png');
-			}
-
-			&.category {
-				background-image: url('../img/Tag.png');
-			}
-
-			&.feed {
-				background-image: url('../img/RSS.png');
-			}
-
-			&.import {
-				background-image: url('../img/Download.png');
-			}
 		}
 
 		#add-menu {
 			list-style: none;
 			display: inline;
+
+			a {
+				padding-left: 12px;
+				margin-left: -12px;
+			}
 
 			ul, li {
 				display: inline;
@@ -195,6 +236,11 @@ input, select {
 		&:last-child {
 			margin-right: 0;
 		}
+	}
+
+	a {
+		padding-left:15px;
+		margin-left: -15px;
 	}
 }
 
@@ -220,6 +266,11 @@ input, select {
 	padding: 5px;
 	li {
 		list-style: none;
+	}
+
+	.icon {
+		font-size: 16px;
+		padding-right: 2px;
 	}
 }
 
@@ -396,9 +447,6 @@ h2 .cat {
 }
 
 .edit {
-	background-image: url('../img/Pencil-white.png') !important;
-	background-repeat: no-repeat !important;
-	background-position: center center !important;
 	border-top-right-radius: 5px !important;
 	border-bottom-right-radius: 5px !important;
 }
