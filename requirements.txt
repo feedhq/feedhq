@@ -8,7 +8,7 @@ django-floppyforms==0.4.7
 django-password-reset==0.2
 django-push==0.4
 django-ratelimit-backend==0.1
-django-redis-cache==0.9.3
+django-redis-cache==0.9.4
 django-sekizai==0.5
 feedparser==5.1.2
 httplib2==0.7.4
@@ -21,8 +21,8 @@ psycopg2==2.4.5
 pyasn1==0.1.3
 python-dateutil==1.5
 pytz==2012c
-raven==1.7.6
-redis==2.4.12
+raven==1.9.1
+redis==2.4.13
 requests==0.12.1
 rq==0.1.2
 rsa==3.0.1
