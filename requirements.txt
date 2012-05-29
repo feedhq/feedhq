@@ -1,4 +1,5 @@
 Django==1.4
+Logbook==0.3
 Pillow==1.7.7
 certifi==0.0.8
 chardet==1.0.1
@@ -15,11 +16,15 @@ lxml==2.3.3
 oauth2==1.5.211
 oauthlib==0.1.3
 opml==0.5
+procname==0.3
 psycopg2==2.4.5
 pyasn1==0.1.3
+python-dateutil==1.5
 pytz==2012c
 raven==1.7.6
 redis==2.4.12
 requests==0.12.1
+rq==0.1.2
 rsa==3.0.1
 simplejson==2.5.2
+times==0.4
