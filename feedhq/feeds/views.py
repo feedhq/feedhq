@@ -1,7 +1,5 @@
 import opml
 
-from rq import use_connection, Queue
-
 from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -13,6 +11,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from ..decorators import login_required
+from ..tasks import enqueue
 from .models import Category, Feed, Entry
 from .forms import CategoryForm, FeedForm, OPMLImportForm, ActionForm, ReadForm
 from .tasks import read_later
@@ -352,9 +351,7 @@ def item(request, entry_id):
                 if settings.TESTS:
                     entry.read_later()
                 else:
-                    use_connection()
-                    queue = Queue()
-                    queue.enqueue(read_later, entry.pk)
+                    enqueue(read_later, entry.pk)
                 messages.success(
                     request,
                     _('Article successfully added to your reading list'),

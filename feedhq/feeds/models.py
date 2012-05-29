@@ -6,8 +6,6 @@ import urllib
 import urlparse
 import requests
 
-from rq import use_connection, Queue
-
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -22,6 +20,7 @@ from .tasks import update_feed
 from .utils import FeedUpdater
 from .. import __version__
 from ..storage import OverwritingStorage
+from ..tasks import enqueue
 
 COLORS = (
         ('red', _('Red')),
@@ -142,9 +141,7 @@ class Feed(models.Model):
             if settings.TESTS:
                 update_feed(self.url, use_etags=False)
             else:
-                use_connection()
-                queue = Queue()
-                queue.enqueue(update_feed, self.url, use_etags=False)
+                enqueue(update_feed, self.url, use_etags=False)
 
     def favicon_img(self):
         if not self.favicon:
