@@ -1,10 +1,13 @@
 import opml
 
-from django.shortcuts import get_object_or_404, redirect, render
+from rq import use_connection, Queue
+
+from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Sum
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 from django.views import generic
@@ -12,6 +15,7 @@ from django.views import generic
 from ..decorators import login_required
 from .models import Category, Feed, Entry
 from .forms import CategoryForm, FeedForm, OPMLImportForm, ActionForm, ReadForm
+from .tasks import read_later
 
 """
 Each view displays a list of entries, with a level of filtering:
@@ -345,7 +349,12 @@ def item(request, entry_id):
                 Feed.objects.filter(pk=entry.feed.pk).update(img_safe=False)
                 entry.feed.img_safe = False
             elif action == 'read_later':
-                entry.read_later()
+                if settings.TESTS:
+                    entry.read_later()
+                else:
+                    use_connection()
+                    queue = Queue()
+                    queue.enqueue(read_later, entry.pk)
                 messages.success(
                     request,
                     _('Article successfully added to your reading list'),
@@ -383,10 +392,8 @@ def save_outline(user, category, outline, existing):
         hasattr(outline, 'xmlUrl')):
         if outline.xmlUrl not in existing:
             existing.add(outline.xmlUrl)
-            feed = Feed(category=category, url=outline.xmlUrl,
-                        name=outline.title)
-            setattr(feed, "skip_post_save", True)
-            feed.save()
+            category.feeds.create(url=outline.xmlUrl,
+                                  name=outline.title)
             count += 1
     return count
 

@@ -86,7 +86,6 @@ class BaseTests(TestCase):
         cat = self.user.categories.create(name='Foo', slug='foo')
 
         feed = Feed(name='yo', url='http://example.com/feed', category=cat)
-        feed.skip_post_save = True
         feed.save()
 
         response = self.client.get(url)

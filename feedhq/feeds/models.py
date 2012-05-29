@@ -6,6 +6,8 @@ import urllib
 import urlparse
 import requests
 
+from rq import use_connection, Queue
+
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -16,6 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django_push.subscriber.signals import updated
 
+from .tasks import update_feed
 from .utils import FeedUpdater
 from .. import __version__
 from ..storage import OverwritingStorage
@@ -78,7 +81,7 @@ class Category(models.Model):
 
     # We delete the old entries after a certain while
     delete_after = models.CharField(
-        _('Delete after'), max_length=50, choices=DURATIONS, default='1week',
+        _('Delete after'), max_length=50, choices=DURATIONS, default='1month',
         help_text=_("Period of time after which entries are deleted, whether "
                     "they've been read or not."),
     )
@@ -132,6 +135,17 @@ class Feed(models.Model):
     def get_absolute_url(self):
         return reverse('feeds:feed', args=[self.id])
 
+    def save(self, *args, **kwargs):
+        update = self.pk is None
+        super(Feed, self).save(*args, **kwargs)
+        if update:
+            if settings.TESTS:
+                update_feed(self.url, use_etags=False)
+            else:
+                use_connection()
+                queue = Queue()
+                queue.enqueue(update_feed, self.url, use_etags=False)
+
     def favicon_img(self):
         if not self.favicon:
             return ''
@@ -151,15 +165,6 @@ class Feed(models.Model):
         Feed.objects.filter(pk=self.pk).update(
             unread_count=self.unread_count,
         )
-
-
-def update_on_creation(sender, instance, created, **kwargs):
-    if created and not getattr(instance, "skip_post_save", False):
-        try:
-            FeedUpdater(instance.url).update(use_etags=False)
-        except Exception:
-            pass
-models.signals.post_save.connect(update_on_creation, sender=Feed)
 
 
 class EntryManager(models.Manager):
@@ -268,7 +273,6 @@ class Entry(models.Model):
 
 def pubsubhubbub_update(notification, **kwargs):
     parsed = notification
-    from .utils import FeedUpdater
     url = None
     for link in parsed.feed.links:
         if link['rel'] == 'self':
