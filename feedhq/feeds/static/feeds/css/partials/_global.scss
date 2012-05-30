@@ -515,13 +515,13 @@ h2 .cat {
 			}
 		}
 
-		code {
+		code, tt {
 			border: 1px solid lighten($text, 75%);
 			border-radius: 3px;
 			padding: 2px 3px;
 		}
 
-		pre, code {
+		pre, code, tt {
 			font: 0.8em Inconsolata, Monaco, monospace;
 		}
 
