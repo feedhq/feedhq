@@ -15,6 +15,10 @@ DATABASES = {
 
 TESTS = True
 
+RQ = {
+    'eager': True,
+}
+
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 EMAIL_HOST = 'dummy'

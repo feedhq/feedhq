@@ -1,6 +1,5 @@
 import opml
 
-from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -348,10 +347,7 @@ def item(request, entry_id):
                 Feed.objects.filter(pk=entry.feed.pk).update(img_safe=False)
                 entry.feed.img_safe = False
             elif action == 'read_later':
-                if settings.TESTS:
-                    entry.read_later()
-                else:
-                    enqueue(read_later, entry.pk)
+                enqueue(read_later, entry.pk)
                 messages.success(
                     request,
                     _('Article successfully added to your reading list'),

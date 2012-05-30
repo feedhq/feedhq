@@ -8,7 +8,7 @@ from ...utils import FeedUpdater
 
 
 class Command(BaseCommand):
-    """Updates the user's feeds"""
+    """Updates the users' feeds"""
 
     def handle(self, *args, **kwargs):
         if args:
