@@ -27,7 +27,7 @@ from raven import Client
 
 def enqueue(function, *args, **kwargs):
     opts = getattr(settings, 'RQ', {})
-    eager = opts['eager'] if 'eager' in opts else False
+    eager = opts.get('eager', False)
     if eager:
         return function(*args, **kwargs)
 
