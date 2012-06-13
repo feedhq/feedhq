@@ -7,15 +7,15 @@ import time
 
 from httplib2 import Response
 from mock import patch
+from requests.exceptions import ConnectionError
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from ... import __version__
 from ..models import Category, Feed, Entry, Favicon
-from ..utils import FeedUpdater
+from ..utils import FeedUpdater, FEED_CHECKER, FAVICON_FETCHER
 
 feedparser.USER_AGENT = 'FeedHQ/dev +https://github.com/feedhq/feedhq'
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -198,6 +198,51 @@ class TestFeeds(TestCase):
         fake_update(feed.url)
         feed = Feed.objects.get(pk=feed.id)
         self.assertTrue(feed.muted)
+
+    @patch("requests.head")
+    def test_feed_resurrection(self, head):
+        class Response(object):  # noqa
+            def __init__(self, status_code):
+                self.status_code = status_code
+        head.return_value = Response(200)
+
+        self.feed.muted = True
+        self.feed.save()
+        self.feed.resurrect()
+        head.assert_called_with('sw-all.xml',
+                                headers={'User-Agent': FEED_CHECKER})
+        feed = Feed.objects.get(pk=self.feed.pk)
+        self.assertFalse(feed.muted)
+        self.assertEqual(feed.failed_attempts, 0)
+
+    @patch("requests.head")
+    def test_no_resurrection(self, head):
+        class Response(object):  # noqa
+            def __init__(self, status_code):
+                self.status_code = status_code
+        head.return_value = Response(500)
+        self.feed.muted = True
+        self.feed.save()
+        self.feed.resurrect()
+        head.assert_called_with('sw-all.xml',
+                                headers={'User-Agent': FEED_CHECKER})
+        feed = Feed.objects.get(pk=self.feed.pk)
+        self.assertTrue(feed.muted)
+        self.assertEqual(feed.failed_attempts, self.feed.failed_attempts + 1)
+
+    @patch("requests.head")
+    def test_resurection_exception(self, head):
+        def side_effect(*args, **kwargs):
+            raise ConnectionError()
+        head.side_effect = side_effect
+        self.feed.muted = True
+        self.feed.save()
+        self.feed.resurrect()
+        head.assert_called_with('sw-all.xml',
+                                headers={'User-Agent': FEED_CHECKER})
+        feed = Feed.objects.get(pk=self.feed.pk)
+        self.assertTrue(feed.muted)
+        self.assertEqual(feed.failed_attempts, self.feed.failed_attempts + 1)
 
     def test_no_date_and_304(self):
         """If the feed does not have a date, we'll have to find one.
@@ -648,8 +693,5 @@ class FaviconTests(TestCase):
         Favicon.objects.update_favicon('http://example.com/')
         get.assert_called_with(
             'http://example.com/favicon.ico',
-            headers={'User-Agent': (
-                'FeedHQ/%s +https://github.com/feedhq/feedhq (favicon fetcher)'
-                ' - https://github.com/feedhq/feedhq/wiki/User-'
-                'Agent' % __version__)
-            })
+            headers={'User-Agent': FAVICON_FETCHER},
+        )

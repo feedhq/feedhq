@@ -24,6 +24,7 @@ USER_AGENT = (
     'feedhq/feedhq/wiki/User-Agent'
 ) % __version__
 LINK_CHECKER = USER_AGENT % '(link checker)'
+FEED_CHECKER = USER_AGENT % '(feed checker)'
 FAVICON_FETCHER = USER_AGENT % '(favicon fetcher)'
 
 logger = logging.getLogger('feedupdater')

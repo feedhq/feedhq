@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import lxml
 import oauth2 as oauth
 import urllib
@@ -7,6 +8,7 @@ import urlparse
 import requests
 
 from django.db import models
+from django.db.models import F
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
@@ -17,9 +19,11 @@ from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 
 from .tasks import update_feed
-from .utils import FeedUpdater, FAVICON_FETCHER
+from .utils import FeedUpdater, FAVICON_FETCHER, FEED_CHECKER
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
+
+logger = logging.getLogger('feedupdater')
 
 COLORS = (
         ('red', _('Red')),
@@ -157,6 +161,29 @@ class Feed(models.Model):
         self.unread_count = self.entries.filter(read=False).count()
         Feed.objects.filter(pk=self.pk).update(
             unread_count=self.unread_count,
+        )
+
+    def resurrect(self):
+        if not self.muted:
+            return
+        ua = {'User-Agent': FEED_CHECKER}
+        try:
+            response = requests.head(self.url, headers=ua)
+        except requests.exceptions.RequestException:
+            logger.debug("Feed still dead, raised exception. %s" % self.url)
+        else:
+            if response.status_code == 200:
+                logger.info("Unmuting %s" % self.url)
+                Feed.objects.filter(pk=self.pk).update(
+                    muted=False,
+                    failed_attempts=0,
+                )
+                return
+            else:
+                logger.debug("Feed still dead, status %s, %s" % (
+                    response.status_code, self.url))
+        Feed.objects.filter(pk=self.pk).update(
+            failed_attempts=F('failed_attempts') + 1
         )
 
 
