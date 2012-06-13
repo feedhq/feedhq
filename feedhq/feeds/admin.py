@@ -1,7 +1,5 @@
 from ratelimitbackend import admin
 
-from django.contrib.auth.models import User, Group
-from django.contrib.sites.models import Site
 from django_push.subscriber.models import Subscription
 
 from .models import Category, Feed, Entry, Favicon
@@ -12,7 +10,7 @@ class FeedInline(admin.TabularInline):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'user')
+    list_display = ('name', 'slug')
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
             (None, {
@@ -28,7 +26,7 @@ class FeedAdmin(admin.ModelAdmin):
 
 
 class EntryAdmin(admin.ModelAdmin):
-    list_display = ('title', 'date', 'user')
+    list_display = ('title', 'date')
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
@@ -46,6 +44,3 @@ admin.site.register(Feed, FeedAdmin)
 admin.site.register(Entry, EntryAdmin)
 admin.site.register(Favicon, FaviconAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
-admin.site.register(User)
-admin.site.register(Group)
-admin.site.register(Site)
