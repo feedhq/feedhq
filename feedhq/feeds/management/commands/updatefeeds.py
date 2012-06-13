@@ -1,3 +1,6 @@
+import datetime
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import connection
@@ -5,6 +8,8 @@ from raven import Client
 
 from ...models import Feed
 from ...utils import FeedUpdater
+
+logger = logging.getLogger('feedupdater')
 
 
 class Command(BaseCommand):
@@ -16,6 +21,8 @@ class Command(BaseCommand):
             feed = Feed.objects.get(pk=pk)
             feed.etag = ''
             return FeedUpdater(feed.url).update(use_etags=False)
+
+        start = datetime.datetime.now()
 
         # Making a list of unique URLs. Makes one call whatever the number of
         # subscribers is.
@@ -44,4 +51,6 @@ class Command(BaseCommand):
                     client = Client(dsn=settings.SENTRY_DSN)
                     client.captureException()
 
+        duration = datetime.datetime.now() - start
+        logger.info("Updatefeeds took %s" % duration)
         connection.close()
