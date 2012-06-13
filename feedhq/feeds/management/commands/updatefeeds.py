@@ -15,7 +15,7 @@ class Command(BaseCommand):
             pk = args[0]
             feed = Feed.objects.get(pk=pk)
             feed.etag = ''
-            return FeedUpdater(feed.url).update()
+            return FeedUpdater(feed.url).update(use_etags=False)
 
         # Making a list of unique URLs. Makes one call whatever the number of
         # subscribers is.
