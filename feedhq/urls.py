@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.conf import settings
 from django.conf.urls import url, patterns, include
 from django.conf.urls.static import static
@@ -14,6 +15,19 @@ from .profiles.forms import AuthForm
 
 robots = lambda _: HttpResponse('User-agent: *\nDisallow:\n',
                                 mimetype='text/plain')
+
+humans = lambda _: HttpResponse(u"""/* TEAM */
+    Main developer: Bruno Renié
+    Contact: contact [at] feedhq.org
+    Twitter: @brutasse, @FeedHQ
+    From: Switzerland
+
+/* SITE */
+    Language: English
+    Backend: Django, PostgreSQL, Redis
+    Frontend: SCSS, Compass, Iconic
+""", mimetype='text/plain; charset=UTF-8')
+
 favicon = lambda _: HttpResponsePermanentRedirect(
     '%sfeeds/img/icon-rss.png' % settings.STATIC_URL
 )
@@ -22,6 +36,7 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^subscriber/', include('django_push.subscriber.urls')),
     url(r'^robots.txt$', robots),
+    url(r'^humans.txt$', humans),
     url(r'^favicon.ico$', favicon),
     (r'^accounts/', include('feedhq.profiles.urls')),
     (r'^', include('feedhq.feeds.urls', namespace='feeds')),
