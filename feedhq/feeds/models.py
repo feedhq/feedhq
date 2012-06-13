@@ -17,8 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 
 from .tasks import update_feed
-from .utils import FeedUpdater
-from .. import __version__
+from .utils import FeedUpdater, FAVICON_FETCHER
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
 
@@ -301,17 +300,13 @@ def upload_favicon(instance, filename):
 
 
 class FaviconManager(models.Manager):
-    USER_AGENT = ('FeedHQ/%s +https://github.com/feedhq/feedhq (favicon '
-                  'fetcher) - https://github.com/feedhq/feedhq/wiki/'
-                  'User-Agent' % __version__)
-
     def update_favicon(self, link, force_update=False):
         parsed = list(urlparse.urlparse(link))
         favicon, created = self.get_or_create(url=link)
         if favicon.favicon and not force_update:
             return favicon
 
-        ua = {'User-Agent': self.USER_AGENT}
+        ua = {'User-Agent': FAVICON_FETCHER}
 
         try:
             page = requests.get(link, headers=ua).content

@@ -19,22 +19,24 @@ from django_push.subscriber.models import Subscription
 from .. import __version__
 
 
-USER_AGENT = 'FeedHQ/%s +https://github.org/feedhq/feedhq' % __version__
-LINK_CHECKER = USER_AGENT + (' (link checker) - https://github.com/feedhq/'
-                             'feedhq/wiki/User-Agent')
+USER_AGENT = (
+    'FeedHQ/%s +https://github.com/feedhq/feedhq %%s - https://github.com/'
+    'feedhq/feedhq/wiki/User-Agent'
+) % __version__
+LINK_CHECKER = USER_AGENT % '(link checker)'
+FAVICON_FETCHER = USER_AGENT % '(favicon fetcher)'
 
 logger = logging.getLogger('feedupdater')
 
 
 class FeedUpdater(object):
 
-    def __init__(self, url, agent=' (1 subscriber)', feedparser=feedparser):
+    def __init__(self, url, agent='(1 subscriber)', feedparser=feedparser):
         self.url = url
         self.feedparser = feedparser
         self.updated = {}
         self.feeds = None
-        feedparser.USER_AGENT = (USER_AGENT + agent + ' - https://github.com/f'
-                                 'eedhq/feedhq/wiki/User-Agent')
+        feedparser.USER_AGENT = USER_AGENT % agent
 
     def update(self, use_etags=True):
         self.get_feeds()
