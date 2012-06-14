@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us"><title>Entries tagged "django-community" on bruno.im</title><link href="http://bruno.im/tag/django-community/" rel="alternate"></link><link href="http://bruno.im/atom/tag/django-community/" rel="self"></link><id>http://bruno.im/tag/django-community/</id><updated>2012-06-11T21:39:14+02:00</updated><author><name>Bruno Renié</name><uri>http://bruno.renie.fr/</uri></author><subtitle>Bruno Renié's weblog</subtitle><rights>Copyright (c) 2009, Bruno Renié</rights><entry><title>Django-floppyforms 1.0 released</title><link href="http://bruno.im/2012/jun/11/django-floppyforms-10-released/" rel="alternate"></link><updated>2012-06-11T21:39:14+02:00</updated><id>http://bruno.im/2012/jun/11/django-floppyforms-10-released/</id><content type="html">&lt;p&gt;I just pushed &lt;a class="reference external" href="http://pypi.python.org/pypi/django-floppyforms"&gt;django-floppyforms&lt;/a&gt; 1.0 to the cheese shop. The previous version (0.4.7) was published quite some time ago and a couple of things happened since then.&lt;/p&gt;
+&lt;div class="section" id="what-is-django-floppyforms"&gt;
+&lt;h1&gt;What is django-floppyforms?&lt;/h1&gt;
+&lt;p&gt;This project started from too much frustration trying to customize form widgets in Django. It lets you customize the output of forms using Django templates instead of python code.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="so-what-s-new-in-1-0"&gt;
+&lt;h1&gt;So, what's new in 1.0?&lt;/h1&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://twitter.com/gregmuellegger"&gt;Gregor Mülleger&lt;/a&gt; did a GSoC project on Django last summer, aiming to switch Django forms to template-based rendering. His work didn't get merged in Django itself for performance concerns with regards to the Django Template Language but has been added to floppyforms by &lt;a class="reference external" href="https://twitter.com/jezdez"&gt;Jannis Leidel&lt;/a&gt;. There is now a nice &lt;a class="reference external" href="http://django-floppyforms.readthedocs.org/en/latest/layouts.html"&gt;layout API&lt;/a&gt; that lets you completely customize the way forms are rendered.&lt;/li&gt;
+&lt;li&gt;As a side effect, Jannis and Gregor are core committers on the project!&lt;/li&gt;
+&lt;li&gt;Django 1.2 support was dropped, only Django 1.3 and above are supported.&lt;/li&gt;
+&lt;li&gt;&lt;tt class="docutils literal"&gt;Select&lt;/tt&gt; widgets now support &lt;tt class="docutils literal"&gt;&amp;lt;optgroup&amp;gt;&lt;/tt&gt;. This change is backwards-incompatible if you have any custom templates for &lt;tt class="docutils literal"&gt;Select&lt;/tt&gt; widgets and friends (&lt;tt class="docutils literal"&gt;SelectMultiple&lt;/tt&gt;, &lt;tt class="docutils literal"&gt;CheckboxSelectMultiple&lt;/tt&gt;, etc.) Keep an eye on them while upgrading.&lt;/li&gt;
+&lt;li&gt;Various areas of the code are now more robust and better tested.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you are hesitant to use it because of possible performance regressions, just keep in mind that performance was an issue in some very specific cases: forms with hundreds of fields for instance. If you mostly have simple forms, you shouldn't notice the difference. when switching from Django forms.&lt;/p&gt;
+&lt;p&gt;So, please upgrade, have fun, &lt;a class="reference external" href="https://github.com/brutasse/django-floppyforms/issues"&gt;report bugs&lt;/a&gt; and give us feedback on the new forms API!&lt;/p&gt;
+&lt;/div&gt;
+
+</content></entry><entry><title>RQ tips</title><link href="http://bruno.im/2012/may/30/rq-tips/" rel="alternate"></link><updated>2012-05-30T19:31:54+02:00</updated><id>http://bruno.im/2012/may/30/rq-tips/</id><summary type="html">&lt;p&gt;I just added RQ as an asynchronous tasks manager to my &lt;a class="reference external" href="https://feedhq.org/"&gt;current project&lt;/a&gt;. If you haven't heard of &lt;a class="reference external" href="http://python-rq.org/"&gt;RQ&lt;/a&gt; yet, it's a simpler alternative to &lt;a class="reference external" href="http://celeryproject.org/"&gt;Celery&lt;/a&gt; for executing asynchronous tasks.&lt;/p&gt;
+&lt;div class="section" id="eager-mode"&gt;
+&lt;h1&gt;Eager mode&lt;/h1&gt;
+&lt;p&gt;If you're familiar with Celery, you probably know it has an &lt;a class="reference external" href="http://ask.github.com/celery/configuration.html#celery-always-eager"&gt;eager mode&lt;/a&gt; that makes tasks synchronous, making things like testing and local development a little bit easier. RQ doesn't have this feature, however it can be added by simply wrapping its queuing mechanism:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;redis&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;rq&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.conf&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;settings&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;enqueue&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;opts&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;getattr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;settings&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;RQ&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{})&lt;/span&gt;
+    &lt;span class="n"&gt;eager&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;eager&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="bp"&gt;False&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;eager&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;conn&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;redis&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Redis&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;opts&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;queue&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;rq&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Queue&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;default&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;connection&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;conn&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;queue&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;enqueue&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Here we're using the Django settings to determine whether eager mode is enabled via the &lt;tt class="docutils literal"&gt;RQ&lt;/tt&gt; dictionary, and this setting also lets us specify the Redis connection options (hostname, port, DB, etc.). The minimal &lt;tt class="docutils literal"&gt;settings.py&lt;/tt&gt; syntax to run in eager mode is:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;RQ&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;eager&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Now where you'd call RQ's &lt;tt class="docutils literal"&gt;Queue.enqueue&lt;/tt&gt; method, use this function instead. This example only uses the &lt;tt class="docutils literal"&gt;default&lt;/tt&gt; queue but adapt it to your needs if you have different queue names.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="sentry-integration"&gt;
+&lt;h1&gt;Sentry integration&lt;/h1&gt;
+&lt;p&gt;When RQ tasks fail, the stacktrace is captured and stored. Then using tools like &lt;a class="reference external" href="https://github.com/nvie/rq-dashboard"&gt;rq-dashboard&lt;/a&gt; we can try to understand what's going on with failing tasks. But if you're used to &lt;a class="reference external" href="https://github.com/dcramer/sentry"&gt;Sentry&lt;/a&gt; you'll miss its the introspection features that lets you see the state of the interpreter at the moment of the crash.&lt;/p&gt;
+&lt;p&gt;With a simple decorator, you can make your failing tasks reports to Sentry:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;functools&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;wraps&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.conf&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;settings&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;raven&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Client&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;raven&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="nd"&gt;@wraps&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;function&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;ravenify&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;try&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="n"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;except&lt;/span&gt; &lt;span class="ne"&gt;Exception&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;settings&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DEBUG&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="n"&gt;client&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Client&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;dsn&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;settings&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SENTRY_DSN&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;captureException&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="k"&gt;raise&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;ravenify&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Now just make sure your have a &lt;tt class="docutils literal"&gt;SENTRY_DSN&lt;/tt&gt; in your settings, decorate your tasks with &lt;tt class="docutils literal"&gt;&amp;#64;raven&lt;/tt&gt; and profit!&lt;/p&gt;
+&lt;/div&gt;
+
+</summary></entry><entry><title>Preventing brute-force attacks with django</title><link href="http://bruno.im/2011/nov/22/preventing-brute-force-attacks-django/" rel="alternate"></link><updated>2011-11-22T14:36:50+01:00</updated><id>http://bruno.im/2011/nov/22/preventing-brute-force-attacks-django/</id><summary type="html">&lt;p&gt;Brute-force attack prevention is a topic that gets mentioned every now and then in the Django community, on mailing-lists and at &lt;a class="reference external" href="http://blip.tv/djangocon/advanced-security-topics-5573326"&gt;conferences&lt;/a&gt;. I've been thinking about this a little bit and I believe I found a &lt;a class="reference external" href="https://github.com/brutasse/django-ratelimit-backend"&gt;very nice solution&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Note that I'm only tackling the issue of brute-forcing user credentials, &lt;strong&gt;not&lt;/strong&gt; rate-limiting in general.&lt;/p&gt;
+&lt;p&gt;There are a bunch of ways to monitor login attempts:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;With a decorator applied to every login view,&lt;/li&gt;
+&lt;li&gt;With a middleware that inspects incoming requests (note: &lt;a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/http/middleware/#process_view"&gt;this is a bad idea&lt;/a&gt;),&lt;/li&gt;
+&lt;li&gt;With Nginx (or whatever your web server is), using &lt;a class="reference external" href="http://wiki.nginx.org/NginxHttpLimitReqModule"&gt;HttpLimitReqModule&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Neither of these solutions are optimal:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;the admin accepts login attempts at arbitrary URLs, which makes it &lt;a class="reference external" href="http://stackoverflow.com/questions/2552068/rate-limiting-django-admin-login-with-nginx-to-prevent-dictionary-attack"&gt;difficult to monitor&lt;/a&gt;,&lt;/li&gt;
+&lt;li&gt;there are different ways to authenticate users, maybe you have an API that does Basic authentication,&lt;/li&gt;
+&lt;li&gt;the nginx syntax is hard to get and maybe some day you'll need to move to something else.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The solution is to put the rate-limit logic and the credentials verification logic at the same place: &lt;em&gt;on the authentication backend&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;To do this, we need to make the authentication backend request-aware, in order to block people based on some criteria such as their IP or User-Agent. This requires:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;A custom login view, to pass the request to the authentication form,&lt;/li&gt;
+&lt;li&gt;A custom authentication form, to pass the request to the authentication backend,&lt;/li&gt;
+&lt;li&gt;A custom authentication backend, to make use of the request it gets,&lt;/li&gt;
+&lt;li&gt;A custom admin site, to use the custom login view in the admin too.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;First, we'll need to rewrite Django's login view and replace:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;POST&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;form&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;authentication_form&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;POST&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;with:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;POST&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;form&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;authentication_form&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;POST&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;The default authentication form already accepts a request, it'll store it on &lt;tt class="docutils literal"&gt;self&lt;/tt&gt;. But we still need to subclass it since it's the form that calls the authentication backend:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.contrib.auth.forms&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;AuthenticationForm&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;AuthForm&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;AuthenticationForm&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthForm&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;clean&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cleaned_data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;username&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;password&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cleaned_data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;password&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;username&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user_cache&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;authenticate&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                           &lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;password&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+                                           &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user_cache&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="n"&gt;forms&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ValidationError&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+                    &lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;Please enter a correct username and password. &amp;#39;&lt;/span&gt;
+                      &lt;span class="s"&gt;&amp;#39;Note that both fields are case-sensitive.&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+                &lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;elif&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;user_cache&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;is_active&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="k"&gt;raise&lt;/span&gt; &lt;span class="n"&gt;forms&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ValidationError&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;_&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;This account is inactive.&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;check_for_test_cookie&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cleaned_data&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Here we're calling &lt;tt class="docutils literal"&gt;authenticate(username, password, request)&lt;/tt&gt;, the only thing left is to implement the logic on the backend itself. This represents a little bit more code so I'll just &lt;a class="reference external" href="https://github.com/brutasse/django-ratelimit-backend/blob/master/ratelimitbackend/backends.py#L21-39"&gt;link to an implementation&lt;/a&gt;, which I've packaged and released under the name of &lt;a class="reference external" href="http://pypi.python.org/pypi/django-ratelimit-backend"&gt;django-ratelimit-backend&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The rate-limiting strategy is borrowed from Simon Willison's &lt;a class="reference external" href="http://simonwillison.net/2009/Jan/7/ratelimitcache/"&gt;ratelimit-cache&lt;/a&gt; idea: failed attempts are cached for 5 minutes and if more than X attempts (30 by default) are made, further attempts are blocked until there are less than X attempts in the past 5 minutes.&lt;/p&gt;
+&lt;p&gt;In order to fully protect your django site, configure your cache backend and go through the &lt;a class="reference external" href="http://django-ratelimit-backend.readthedocs.org/en/latest/usage.html#quickstart"&gt;checklist&lt;/a&gt; (make sure &lt;strong&gt;every&lt;/strong&gt; item is fulfilled).&lt;/p&gt;
+&lt;p&gt;There is a pretty significant caveat: you can't use Django's default admin site because it's not protected. You need to register your models on ratlimitbackend's admin site instead, and hook that site into your URLconf. This means all apps that automatically register their models (such as &lt;tt class="docutils literal"&gt;django.contrib.auth&lt;/tt&gt;, &lt;tt class="docutils literal"&gt;django.contrib.sites&lt;/tt&gt;, django-registration…) won't show up in the admin until you re-register their models on the rate-limited admin site.&lt;/p&gt;
+&lt;p&gt;This is a bit annoying but I'm happily using this in production and it works wonderfully. The &lt;a class="reference external" href="http://django-ratelimit-backend.readthedocs.org"&gt;documentation is extensive&lt;/a&gt; and it's highly customizable:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;failed attempts can be logged to let you take appropriate measures when it gets too annoying,&lt;/li&gt;
+&lt;li&gt;you can choose the number of failed attempts you want to allow,&lt;/li&gt;
+&lt;li&gt;you can customize the action to take when a user hits the limit.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Feel free to try it and &lt;a class="reference external" href="https://github.com/brutasse/django-ratelimit-backend"&gt;let me know what you think&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Now how about you? What techniques do you use to prevent such attacks?&lt;/p&gt;
+
+</summary></entry><entry><title>Streamline your Django workflow</title><link href="http://bruno.im/2011/sep/29/streamline-your-django-workflow/" rel="alternate"></link><updated>2011-09-29T15:06:15+02:00</updated><id>http://bruno.im/2011/sep/29/streamline-your-django-workflow/</id><summary type="html">&lt;p&gt;This post is about a couple of improvements I made to my Django development environments recently. It started with a simple issue. Whenever I want to work on something, I need to:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Run the Django development server,&lt;/li&gt;
+&lt;li&gt;Run &lt;tt class="docutils literal"&gt;compass watch&lt;/tt&gt; on my CSS files,&lt;/li&gt;
+&lt;li&gt;Run the command that automatically runs my tests when a file changes in the project.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That's 3 terminal windows to open (I don't use tabs :) and twice as much commands to type. Tedious, to say the least. Luckily a friend / colleague of mine, &lt;a class="reference external" href="http://bcachet.github.com/"&gt;Bertrand&lt;/a&gt;, pointed me to a tool to manage such repetitive tasks: &lt;a class="reference external" href="http://ddollar.github.com/foreman/"&gt;Foreman&lt;/a&gt;. To quote their documentation:&lt;/p&gt;
+&lt;blockquote&gt;
+Foreman is a tool to manage Procfile-based applications.&lt;/blockquote&gt;
+&lt;p&gt;Which means (for us), it reads a file that describes different processes and runs them in parallel, merging the output of every process.&lt;/p&gt;
+&lt;p&gt;First, let's install the gem.&lt;/p&gt;
+&lt;div class="section" id="making-gems-play-nice-with-virtualenv"&gt;
+&lt;h1&gt;Making gems play nice with virtualenv&lt;/h1&gt;
+&lt;p&gt;If you like virtualenv, you'll probably don't want to install ruby gems system-wide. To tell &lt;tt class="docutils literal"&gt;gem&lt;/tt&gt; to install stuff in your virtualenv, just add:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;GEM_HOME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;$VIRTUAL_ENV/gems&amp;quot;&lt;/span&gt;
+&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;GEM_PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class="nb"&gt;export &lt;/span&gt;&lt;span class="nv"&gt;PATH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$PATH&lt;/span&gt;:&lt;span class="nv"&gt;$GEM_HOME&lt;/span&gt;/bin
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;to your &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;~/.virtualenvs/postactivate&lt;/span&gt;&lt;/tt&gt; hook. Now you can &lt;tt class="docutils literal"&gt;gem install&lt;/tt&gt; stuff and it'll be isolated from your system.&lt;/p&gt;
+&lt;p&gt;As a side note, &lt;tt class="docutils literal"&gt;gem&lt;/tt&gt; compiles the documentation when it installs something. If you don't need it and want to save a couple of seconds, add &lt;tt class="docutils literal"&gt;gem: &lt;span class="pre"&gt;--no-rdoc&lt;/span&gt; &lt;span class="pre"&gt;--no-ri&lt;/span&gt;&lt;/tt&gt; to your &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;~/.gemrc&lt;/span&gt;&lt;/tt&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="requirements-txt-the-ruby-way"&gt;
+&lt;h1&gt;Requirements.txt, the Ruby way&lt;/h1&gt;
+&lt;p&gt;Next, we'll specify our dependencies for the project. For python we have pip requirements, for Ruby there is &lt;a class="reference external" href="http://gembundler.com/"&gt;Bundler&lt;/a&gt;. Create a file named &lt;tt class="docutils literal"&gt;Gemfile&lt;/tt&gt; with the following content:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+source :rubygems
+gem 'foreman'
+&lt;/pre&gt;
+&lt;p&gt;Then run:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+gem install bundler
+bundle install
+&lt;/pre&gt;
+&lt;p&gt;I use &lt;a class="reference external" href="http://compass-style.org/"&gt;Compass&lt;/a&gt; which is a Ruby gem too, so my &lt;tt class="docutils literal"&gt;Gemfile&lt;/tt&gt; looks like:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+source :rubygems
+gem 'foreman'
+gem 'compass-less-plugin'
+gem 'rb-inotify'
+&lt;/pre&gt;
+&lt;p&gt;Running &lt;tt class="docutils literal"&gt;bundle install&lt;/tt&gt; installs everything and generates a &lt;tt class="docutils literal"&gt;Gemfile.lock&lt;/tt&gt; file describing your installation, with pinned version numbers (what you usually do — or &lt;em&gt;should&lt;/em&gt; do — in &lt;tt class="docutils literal"&gt;requirements.txt&lt;/tt&gt;). This ensures you get the same packages if you recreate your environment from scratch, so make sure you keep it under version control too.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="foreman-and-django"&gt;
+&lt;h1&gt;Foreman and Django&lt;/h1&gt;
+&lt;p&gt;Now we have everything in place, let's create our configuration file for &lt;tt class="docutils literal"&gt;foreman&lt;/tt&gt;. Create a &lt;tt class="docutils literal"&gt;Procfile&lt;/tt&gt; with the following content:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+web: django-admin.py runserver --settings=project.settings
+&lt;/pre&gt;
+&lt;p&gt;Now run &lt;tt class="docutils literal"&gt;foreman start&lt;/tt&gt; and here is what you should see:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+14:12:31 web.1     | started with pid 19591
+14:12:32 web.1     | Validating models...
+14:12:32 web.1     |
+14:12:33 web.1     | 0 errors found
+14:12:33 web.1     | Django version 1.3.1, using settings 'project.settings'
+14:12:33 web.1     | Development server is running at http://127.0.0.1:8000/
+14:12:33 web.1     | Quit the server with CONTROL-C.
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;foreman&lt;/tt&gt; successfully launches &lt;tt class="docutils literal"&gt;runserver&lt;/tt&gt; and prefixes the output with the name we specified in the &lt;tt class="docutils literal"&gt;Procfile&lt;/tt&gt;. But let's add more stuff. Like I wrote above I run my tests whenever a file changes in my project, and I use &lt;a class="reference external" href="https://github.com/peterbe/python-gorun"&gt;gorun&lt;/a&gt; for this:&lt;/p&gt;
+&lt;p&gt;Gorun uses inotify so it's linux-only but there are other tools for OSX and windows. To use gorun, just add to your &lt;tt class="docutils literal"&gt;settings.py&lt;/tt&gt;:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;DIRECTORIES&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;django-admin.py test app1 app2 --settings=project.settings&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;In a shell, what you need to do is &lt;tt class="docutils literal"&gt;cd&lt;/tt&gt; to your project and run &lt;tt class="docutils literal"&gt;gorun settings.py&lt;/tt&gt;. Let's add this to our &lt;tt class="docutils literal"&gt;Procfile&lt;/tt&gt;:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+web: django-admin.py runserver --settings=project.settings
+tests: cd project &amp;amp;&amp;amp; gorun settings.py
+&lt;/pre&gt;
+&lt;p&gt;An now, when we run &lt;tt class="docutils literal"&gt;foreman start&lt;/tt&gt; again, we see the combined output of both &lt;tt class="docutils literal"&gt;runserver&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;gorun&lt;/tt&gt;:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+14:24:50 web.1     | started with pid 21066
+14:24:50 tests.1   | started with pid 21069
+14:24:51 tests.1   | DIRECTORY /path/to/project
+14:24:51 tests.1   | Waiting for stuff to happen...
+14:24:51 web.1     | Validating models...
+14:24:51 web.1     |
+14:24:51 web.1     | 0 errors found
+14:24:51 web.1     | Django version 1.3.1, using settings 'project.settings'
+14:24:51 web.1     | Development server is running at http://127.0.0.1:8000/
+14:24:51 web.1     | Quit the server with CONTROL-C.
+&lt;/pre&gt;
+&lt;p&gt;And finally, compass. I've started using it since watching &lt;a class="reference external" href="http://blip.tv/djangocon-europe-2011/monday-1600-idan-gazit-5309361"&gt;Idan Gazit's Djangocon.eu talk&lt;/a&gt; and like Idan, I don't want to do plain CSS anymore :)&lt;/p&gt;
+&lt;p&gt;So I have a bunch of SASS files in my project and I generate the CSS file on the fly using &lt;tt class="docutils literal"&gt;compass watch&lt;/tt&gt;. The command looks like this:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+compass watch --force --no-line-comments --output-style compressed \
+    --require less --sass-dir &amp;lt;project&amp;gt;/&amp;lt;app&amp;gt;/static/&amp;lt;app&amp;gt;/css \
+    --css-dir &amp;lt;project&amp;gt;/&amp;lt;app&amp;gt;/static/&amp;lt;app&amp;gt;/css \
+    --image-dir /static/ &amp;lt;project&amp;gt;/&amp;lt;app&amp;gt;/static/&amp;lt;app&amp;gt;/css/screen.scss
+&lt;/pre&gt;
+&lt;p&gt;It's a pretty awful line but it does what I want: take the &lt;tt class="docutils literal"&gt;screen.scss&lt;/tt&gt; file provided by my project's &amp;quot;core&amp;quot; app and generate the CSS. I put the compass-compiled CSS under source control to avoid the compass dependency during deployments.&lt;/p&gt;
+&lt;p&gt;To make your &lt;tt class="docutils literal"&gt;Procfile&lt;/tt&gt; more generic, you can define environment variables in a &lt;tt class="docutils literal"&gt;.env&lt;/tt&gt; file and use them in the &lt;tt class="docutils literal"&gt;Procfile&lt;/tt&gt;:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+PROJ=project
+APP=app
+&lt;/pre&gt;
+&lt;p&gt;And the final &lt;tt class="docutils literal"&gt;Procfile&lt;/tt&gt; looks like:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+compass: compass watch &amp;lt;the compass line above&amp;gt;
+web: django-admin.py runserver --settings=$PROJ.settings
+tests: cd $PROJ &amp;amp;&amp;amp; gorun settings.py
+&lt;/pre&gt;
+&lt;p&gt;Now you can directly jump to your project, run &lt;tt class="docutils literal"&gt;foreman start&lt;/tt&gt; and start coding!&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+14:37:18 compass.1  | started with pid 22145
+14:37:18 web.1      | started with pid 22148
+14:37:18 tests.1    | started with pid 22151
+14:37:19 tests.1    | DIRECTORY /path/to/project
+14:37:19 tests.1    | Waiting for stuff to happen...
+14:37:19 compass.1  | &amp;gt;&amp;gt;&amp;gt; Compass is watching for changes. Press Ctrl-C to Stop.
+14:37:19 web.1      | Validating models...
+14:37:19 web.1      |
+14:37:19 web.1      | 0 errors found
+14:37:19 web.1      | Django version 1.3.1, using settings 'project.settings'
+14:37:19 web.1      | Development server is running at http://127.0.0.1:8000/
+14:37:19 web.1      | Quit the server with CONTROL-C.
+&lt;/pre&gt;
+&lt;p&gt;As you can see it's really easy to setup and saves a lot of time and typos as you add more moving parts to your projects.&lt;/p&gt;
+&lt;/div&gt;
+
+</summary></entry><entry><title>Django 1.3 patterns for older django versions</title><link href="http://bruno.im/2011/feb/19/django-13-patterns-older-django-versions/" rel="alternate"></link><updated>2011-02-19T02:58:55+01:00</updated><id>http://bruno.im/2011/feb/19/django-13-patterns-older-django-versions/</id><summary type="html">&lt;p&gt;Django 1.3 is approaching fast, with tons of bugfixes but also some
+&lt;a class="reference external" href="http://docs.djangoproject.com/en/dev/releases/1.3/"&gt;very interesting features&lt;/a&gt;. Among those, two are particularly interesting as
+I think they improve a lot the way we write our Django apps: class-based
+generic views and the new &lt;tt class="docutils literal"&gt;contrib.staticfiles&lt;/tt&gt; app.&lt;/p&gt;
+&lt;div class="section" id="class-based-views"&gt;
+&lt;h1&gt;Class-based views&lt;/h1&gt;
+&lt;p&gt;The benefits of class-based generic views are quite obvious: instead of
+wrapping an existing function-based generic view and/or passing it a countless
+number of argument, functionality can be easily extended using inheritance.
+Although the learning curve is steeper, it's totally worth learning. But see &lt;a class="reference external" href="http://docs.djangoproject.com/en/dev/ref/class-based-views/"&gt;the docs&lt;/a&gt; for that, it's not the point of this post.&lt;/p&gt;
+&lt;p&gt;Let's say you've got this big project that runs on Django 1.2. You're in the
+process of upgrading it to 1.3 but you're not ready yet, and you want to use
+class-based views for new features? Meet &lt;a class="reference external" href="http://pypi.python.org/pypi/django-cbv"&gt;django-cbv&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Django-cbv is a backport of the class-based views from django trunk that you
+can use with older django versions. As of writing this, you need to install it
+from my github fork since the package on pypi is missing an import (&lt;strong&gt;Update&lt;/strong&gt;: fixed in django-cbv 0.1.5):&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+pip install django-cbv
+&lt;/pre&gt;
+&lt;p&gt;Once installed, you just need to add to your &lt;tt class="docutils literal"&gt;MIDDLEWARE_CLASSES&lt;/tt&gt;:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+'cbv.middleware.DeferredRenderingMiddleware'
+&lt;/pre&gt;
+&lt;p&gt;And then in your views code:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;cbv&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;generic&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;SomeView&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;generic&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;TemplateView&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;template_name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;some_template.html&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;When you're ready to upgrade to Django 1.3, switch the import statement to:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.views&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;generic&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Then change the middleware settings and you can drop the &lt;tt class="docutils literal"&gt;cbv&lt;/tt&gt; package!&lt;/p&gt;
+&lt;p&gt;For reusable apps developers, django-cbv can be used to provide a fallback for
+older django versions with a simple conditional import.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="the-staticfiles-app"&gt;
+&lt;h1&gt;The staticfiles app&lt;/h1&gt;
+&lt;p&gt;The addition of a new contrib app for managing static files clarifies the
+shady area of media files in Django. Now, we have a clear separation between
+&lt;strong&gt;media&lt;/strong&gt; files and &lt;strong&gt;static&lt;/strong&gt; files.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Media files are &lt;strong&gt;user-uploaded&lt;/strong&gt; files. Typically stuff you put in
+FileFields. They are stored in &lt;tt class="docutils literal"&gt;settings.MEDIA_ROOT&lt;/tt&gt; and can be accessed
+under &lt;tt class="docutils literal"&gt;settings.MEDIA_URL&lt;/tt&gt;.&lt;/li&gt;
+&lt;li&gt;Static files are, well, static files. CSS / JS files, images, static assets
+provided by your apps. They are &lt;strong&gt;collected&lt;/strong&gt; in &lt;tt class="docutils literal"&gt;settings.STATIC_ROOT&lt;/tt&gt;
+and can be accessed under &lt;tt class="docutils literal"&gt;settings.STATIC_URL&lt;/tt&gt;. Read the &lt;a class="reference external" href="http://docs.djangoproject.com/en/dev/howto/static-files/"&gt;staticfiles
+docs&lt;/a&gt; for more info, again and again.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;So, how can we apply this pattern to Django 1.2 or 1.1? Luckily Jannis Leidel
+provides a standalone version of contrib.staticfiles, &lt;a class="reference external" href="https://github.com/jezdez/django-staticfiles"&gt;django-staticfiles&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Here again, pip-install it:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+pip install django-staticfiles
+&lt;/pre&gt;
+&lt;p&gt;A few settings changes need to be made:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;django&lt;/span&gt;
+
+&lt;span class="n"&gt;INSTALLED_APPS&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;staticfiles&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,)&lt;/span&gt;
+
+&lt;span class="n"&gt;TEMPLATE_CONTEXT_PROCESSORS&lt;/span&gt; &lt;span class="o"&gt;+=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;staticfiles.context_processors.static&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,)&lt;/span&gt;
+
+&lt;span class="n"&gt;STATIC_ROOT&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PROJECT_PATH&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;static&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;STATIC_URL&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;/static/&amp;#39;&lt;/span&gt;
+&lt;span class="n"&gt;ADMIN_MEDIA_PREFIX&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;/static/admin/&amp;#39;&lt;/span&gt;
+
+&lt;span class="n"&gt;STATICFILES_DIRS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;admin&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;django&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;__file__&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+                           &lt;span class="s"&gt;&amp;#39;contrib&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;admin&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;media&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;(When you upgrade to Django 1.3, just delete the django import and the
+&lt;tt class="docutils literal"&gt;ADMIN_MEDIA_PREFIX&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;STATICFILES_DIRS&lt;/tt&gt; setting)&lt;/p&gt;
+&lt;p&gt;Now, instead of putting your static files in &lt;tt class="docutils literal"&gt;STATIC_ROOT&lt;/tt&gt;, put them in
+&lt;tt class="docutils literal"&gt;project/app/static/app/&lt;/tt&gt;. They will be automatically served by runserver,
+and when you deploy just run &lt;tt class="docutils literal"&gt;manage.py collectstatic&lt;/tt&gt; to copy everything
+to &lt;tt class="docutils literal"&gt;STATIC_ROOT&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;In your templates, you used to link to your static files like this:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;MEDIA_URL&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;css/style.css&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Instead, use &lt;tt class="docutils literal"&gt;STATIC_URL&lt;/tt&gt;:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;{{&lt;/span&gt; &lt;span class="nv"&gt;STATIC_URL&lt;/span&gt; &lt;span class="cp"&gt;}}&lt;/span&gt;&lt;span class="x"&gt;blog/css/style.css&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;There is still one area where Django will look for static files using
+&lt;tt class="docutils literal"&gt;MEDIA_URL&lt;/tt&gt;: the forms' media handling system. To make it use &lt;tt class="docutils literal"&gt;STATIC_URL&lt;/tt&gt;
+instead of &lt;tt class="docutils literal"&gt;MEDIA_URL&lt;/tt&gt;, I haven't found a better solution than
+monkepatching. Put this piece of code somewhere in your project, in an app's
+&lt;tt class="docutils literal"&gt;__init__.py&lt;/tt&gt; for instance:&lt;/p&gt;
+&lt;div class="codeblock"&gt;&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;urlparse&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;urljoin&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.forms&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;widgets&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;django.conf&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;settings&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Media&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;widgets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Media&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;absolute_path&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;prefix&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;u&amp;#39;http://&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;u&amp;#39;https://&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;u&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+            &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;path&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;prefix&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="bp"&gt;None&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="nb"&gt;hasattr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;settings&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;STATIC_URL&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+                &lt;span class="n"&gt;prefix&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;settings&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;MEDIA_URL&lt;/span&gt;
+            &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="n"&gt;prefix&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;settings&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;STATIC_URL&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;urljoin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;prefix&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="n"&gt;widgets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Media&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Media&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;(Again, delete this snippet from your project when you upgrade to django 1.3)&lt;/p&gt;
+&lt;p&gt;With this snippet, all the files declared in your forms or widget's &lt;tt class="docutils literal"&gt;Media&lt;/tt&gt; inner class will be resolved using &lt;tt class="docutils literal"&gt;STATIC_URL&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;Staticfiles and class-based views are two really nice improvements and they
+deserve some love even with older django versions. I hope to see interesting
+uses of both, I already can't see myself going back to the &amp;quot;old&amp;quot; way anyway :).&lt;/p&gt;
+&lt;/div&gt;
+
+</summary></entry></feed>

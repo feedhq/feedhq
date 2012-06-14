@@ -5,8 +5,9 @@ import os
 import random
 import time
 
+from django_push.subscriber.signals import updated
 from httplib2 import Response
-from mock import patch
+from mock import patch, Mock
 from requests.exceptions import ConnectionError
 
 from django.test import TestCase
@@ -680,6 +681,29 @@ class TestFeeds(TestCase):
                   'title': (u'RE2: a principled approach to regular '
                             u'expression matching')},
         )
+
+    def test_pubsubhubbub_handling(self):
+        url = 'http://bruno.im/atom/tag/django-community/'
+        parse = feedparser.parse
+        feedparser.parse = Mock()
+        feedparser.parse.return_value = {}
+        feed = Feed.objects.create(url=url, name='Bruno', category=self.cat)
+        feedparser.parse.assert_called_with(url)
+
+        feedparser.parse = parse
+        self.assertEqual(feed.entries.count(), 0)
+        path = os.path.join(ROOT, 'bruno.im.atom')
+        parsed = feedparser.parse(path)
+        updated.send(sender=None, notification=parsed)
+        self.assertEqual(feed.entries.count(), 5)
+
+        # Check content handling
+        for entry in feed.entries.all():
+            self.assertTrue(len(entry.subtitle) > 2400)
+
+        # Check date handling
+        self.assertEqual(feed.entries.filter(date__year=2011).count(), 3)
+        self.assertEqual(feed.entries.filter(date__year=2012).count(), 2)
 
 
 class FaviconTests(TestCase):

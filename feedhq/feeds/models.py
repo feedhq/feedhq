@@ -300,24 +300,10 @@ def pubsubhubbub_update(notification, **kwargs):
     if url is None:
         return
     updater = FeedUpdater(url)
-
-    entries = []
-    for entry in parsed.entries:
-        if not 'link' in entry:
-            continue
-        e = Entry(title=entry.title)
-        if 'description' in entry:
-            e.subtitle = entry.description
-        if 'summary' in entry:
-            e.subtitle = entry.summary
-
-        e.link = entry.link
-        e.date = updater.get_date(entry)
-        entries.append(e)
-
     updater.get_feeds()
-    updater.entries = entries
+    updater.transform_entries(parsed)
     updater.add_entries_to_feeds()
+    updater.update_counts()
 updated.connect(pubsubhubbub_update)
 
 

@@ -57,7 +57,6 @@ class FeedUpdater(object):
         self.entries: a list of Entry objects, parsed from self.url
         self.updated: a dict of values to push to self.feeds
         """
-        from .models import Entry
         socket.setdefaulttimeout(5)  # aggressive but otherwise
                                      # it can take ages
         feed = self.feeds[0]
@@ -115,6 +114,10 @@ class FeedUpdater(object):
                 if link.rel == 'hub':
                     self.handle_hub(parsed_feed.href, link.href)
 
+        self.transform_entries(parsed_feed)
+
+    def transform_entries(self, parsed_feed):
+        from .models import Entry
         self.entries = []
         for entry in parsed_feed.entries:
             if not 'link' in entry:
