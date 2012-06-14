@@ -27,6 +27,7 @@ class FeedAdmin(admin.ModelAdmin):
 
 class EntryAdmin(admin.ModelAdmin):
     list_display = ('title', 'date')
+    search_fields = ('title', 'link', 'permalink')
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
