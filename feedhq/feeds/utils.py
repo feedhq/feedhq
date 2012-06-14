@@ -215,11 +215,14 @@ class FeedUpdater(object):
                     params = {'title__iexact': entry.title, 'feed': feed}
                 else:
                     params = {'link__iexact': entry.link, 'feed': feed}
+                params['feed'] = feed
 
+                create = False
                 try:
                     db_entry = Entry.objects.get(**params)
                 except Entry.DoesNotExist:
                     db_entry = entry
+                    create = True
                 except Entry.MultipleObjectsReturned:
                     multiple = Entry.objects.filter(**params).order_by('date')
                     db_entry = multiple[0]
@@ -252,6 +255,8 @@ class FeedUpdater(object):
 
                 db_entry.feed = feed
                 db_entry.user = feed.category.user
+                if create:
+                    db_entry.pk = None
                 db_entry.save()
                 feed.update_unread_count()
 
