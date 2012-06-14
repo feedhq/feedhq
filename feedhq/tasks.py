@@ -43,7 +43,7 @@ def raven(function):
         try:
             function(*args, **kwargs)
         except Exception:
-            if not settings.DEBUG:
+            if not settings.DEBUG and hasattr(settings, 'SENTRY_DSN'):
                 client = Client(dsn=settings.SENTRY_DSN)
                 client.captureException()
             raise
