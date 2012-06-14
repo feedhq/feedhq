@@ -39,7 +39,7 @@ class Command(BaseCommand):
             if subscriber_count > 1:
                 plural = 's'
 
-            agent_detail = ' (%s subscriber%s)' % (subscriber_count, plural)
+            agent_detail = '(%s subscriber%s)' % (subscriber_count, plural)
             try:
                 updater = FeedUpdater(url, agent=agent_detail)
                 updater.update()
