@@ -29,9 +29,8 @@ class Command(BaseCommand):
         urls = Feed.objects.filter(muted=False).values_list('url', flat=True)
         unique_urls = {}
         map(unique_urls.__setitem__, urls, [])
-        urls = unique_urls.keys()
 
-        for url in urls:
+        for url in unique_urls:
             subscriber_count = Feed.objects.filter(url=url,
                                                    muted=False).count()
 

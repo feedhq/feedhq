@@ -26,3 +26,6 @@ updatefeeds:
 
 check_defunct:
 	django-admin.py check_defunct $(settings)
+
+favicons:
+	django-admin.py favicons $(settings)
