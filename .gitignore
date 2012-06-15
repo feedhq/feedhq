@@ -2,6 +2,7 @@
 *.pyc
 feedhq/media
 feedhq/settings.py
+feedhq/test_media
 .sass-cache
 dist
 feedhq.egg-info
