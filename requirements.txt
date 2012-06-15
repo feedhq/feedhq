@@ -4,12 +4,12 @@ Pillow==1.7.7
 certifi==0.0.8
 chardet==1.0.1
 django-classy-tags==0.3.4.1
-django-floppyforms==0.4.7
+django-floppyforms==1.0
 django-password-reset==0.2
 django-push==0.4
 django-ratelimit-backend==0.1
 django-redis-cache==0.9.4
-django-sekizai==0.5
+django-sekizai==0.6.1
 feedparser==5.1.2
 httplib2==0.7.4
 lxml==2.3.3
@@ -24,7 +24,7 @@ python-magic==0.4.2
 pytz==2012c
 raven==1.9.1
 redis==2.4.13
-requests==0.12.1
+requests==0.13.1
 rq==0.1.2
 rsa==3.0.1
 simplejson==2.5.2
