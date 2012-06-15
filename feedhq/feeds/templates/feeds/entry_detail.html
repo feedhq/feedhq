@@ -19,39 +19,38 @@
 			<a href="{% url "feeds:category" object.feed.category.slug %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}"><span class="icon pen"></span></a>
 		</h2>
 		{% include "feeds/entry_links.html" %}
-		<div class="actions">
+		<div class="actions navlist">
 			{% if has_img and not img_safe and not object.feed.img_safe %}
-				<form method="post" action="{% url "feeds:item" object.id %}">
+				<form method="post" action="{% url "feeds:item" object.id %}" class="images">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="images">
-					<input type="submit" value="{% trans "Show images" %}">
+					<input class="tultip icon" type="submit" title="{% trans "Show images" %}" value="&#xe027;">
 				</form>
 			{% endif %}
 			{% if img_safe and not object.feed.img_safe %}
-				<form method="post" action="{% url "feeds:item" object.id %}">
+				<form method="post" action="{% url "feeds:item" object.id %}" class="images_always">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="images_always">
-					<input type="submit" value="{% blocktrans %}Always show images
-for this feed{% endblocktrans %}">
+					<input class="tultip icon" type="submit" title="{% blocktrans %}Always show images for this feed{% endblocktrans %}" value="&#xe027;">
 				</form>
 			{% endif %}
 			{% if object.feed.img_safe %}
-				<form method="post" action="{% url "feeds:item" object.id %}">
+				<form method="post" action="{% url "feeds:item" object.id %}" class="images_never">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="images_never">
-					<input type="submit" value="{% trans "Hide images for this feed" %}">
+					<input class="tultip icon" type="submit" title="{% trans "Hide images for this feed" %}" value="&#xe027;">
 				</form>
 			{% endif %}
 			<form method="post" action="{% url "feeds:item" object.id %}">
 				{% csrf_token %}
 				<input type="hidden" name="action" value="unread">
-				<input type="submit" value="{% trans "Unread" %}">
+				<input class="tultip icon" type="submit" title="{% trans "Unread" %}" value="&#xe01f;">
 			</form>
 			{% if not object.read_later_url and user.read_later %}
 				<form method="post" action="{% url "feeds:item" object.id %}">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="read_later">
-					<input type="submit" value="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}">
+					<input class="tultip icon" type="submit" title="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}" value="&#xe069;">
 				</form>
 			{% endif %}
 		</div>

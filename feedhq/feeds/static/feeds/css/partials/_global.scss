@@ -679,10 +679,22 @@ h2 .cat {
 		form {
 			margin: 0;
 			display: inline-block;
+
+			&.images {
+				color: $orange;
+			}
+
+			&.images_always {
+				color: $green;
+			}
+
+			&.images_never {
+				color: $dark_red;
+			}
 		}
 
 		input {
-			font-size: 0.8em;
+			font-size: 24px;
 		}
 	}
 
