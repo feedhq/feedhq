@@ -12,16 +12,15 @@
 		#navigation {
 			font-size: 0.8em;
 			position: absolute;
-			top: 10px;
+			top: 8px;
 			right: 0;
-
 
 			background: lighten($text, 75%);
 			& > span {
 				display: inline;
 				position: absolute;
-				top: -3px;
-				right: 2px;
+				top: -1px;
+				right: 3.5px;
 			}
 
 			&:hover, &.active {
@@ -33,7 +32,7 @@
 		#add-menu {
 			position: relative;
 			background: lighten($text, 75%);
-			margin-right: 25px;
+			margin-right: 32px;
 
 			&:hover, &.active {
 				background: $text;
@@ -43,17 +42,24 @@
 			& > span {
 				display: inline;
 				position: absolute;
-				top: -3px;
-				right: 1.5px;
+				top: -1px;
+				right: 3.5px;
 			}
+		}
+
+		#add-menu {
+			margin-top: 1px;
+		}
+
+		#navigation {
+			margin-top: 3px;
 		}
 
 		#add-menu, #navigation {
 			display: block !important;
 			float: right;
-			margin-top: 3px;
-			width: 20px;
-			height: 20px;
+			width: 24px;
+			height: 24px;
 			border-radius: 5px;
 
 			&:hover, &.active {

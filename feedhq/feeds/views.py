@@ -40,7 +40,7 @@ def paginate(object_list, page=1, nb_items=25, force_count=None):
     except (EmptyPage, InvalidPage):
         paginated = paginator.page(paginator.num_pages)
 
-    return paginated
+    return paginated, paginator._count
 
 
 @login_required
@@ -103,25 +103,28 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
     # that the paginator can't use reversed URLs.
     base_url = all_url
     if only_unread:
+        total_count = entries.count()
         entries = entries.filter(read=False)
         base_url = unread_url
-        entries = paginate(entries, page=page, force_count=unread_count,
-                           nb_items=request.user.entries_per_page)
+        entries, foo = paginate(entries, page=page,
+                                force_count=unread_count,
+                                nb_items=request.user.entries_per_page)
     else:
-        entries = paginate(entries, page=page,
-                           nb_items=request.user.entries_per_page)
+        entries, total_count = paginate(entries, page=page,
+                                        nb_items=request.user.entries_per_page)
 
     request.session['back_url'] = request.get_full_path()
     context = {
-            'categories': categories,
-            'category': category,
-            'feed': feed,
-            'entries': entries,
-            'only_unread': only_unread,
-            'unread_count': unread_count,
-            'all_url': all_url,
-            'unread_url': unread_url,
-            'base_url': base_url,
+        'categories': categories,
+        'category': category,
+        'feed': feed,
+        'entries': entries,
+        'only_unread': only_unread,
+        'unread_count': unread_count,
+        'total_count': total_count,
+        'all_url': all_url,
+        'unread_url': unread_url,
+        'base_url': base_url,
     }
     if unread_count:
         context['form'] = ReadForm()
@@ -153,7 +156,7 @@ def add_category(request):
         form = CategoryForm()
 
     context = {
-            'form': form,
+        'form': form,
     }
     return render(request, 'feeds/category_form.html', context)
 
@@ -174,8 +177,8 @@ def edit_category(request, slug):
         form = CategoryForm(instance=category)
 
     context = {
-            'form': form,
-            'category': category,
+        'form': form,
+        'category': category,
     }
     return render(request, 'feeds/edit_category.html', context)
 
@@ -218,7 +221,7 @@ def add_feed(request):
                 user=request.user)
 
     context = {
-            'form': form,
+        'form': form,
     }
     return render(request, 'feeds/feed_form.html', context)
 
@@ -228,8 +231,9 @@ def edit_feed(request, feed):
     feed = get_object_or_404(Feed, category__user=request.user, pk=feed)
     if request.method == 'POST':
         form = FeedForm(data=request.POST, instance=feed)
-        form.fields['category'].queryset = Category.objects.filter(\
-                user=request.user)
+        form.fields['category'].queryset = Category.objects.filter(
+            user=request.user,
+        )
 
         if form.is_valid():
             instance = form.save()
@@ -239,13 +243,14 @@ def edit_feed(request, feed):
 
     else:
         form = FeedForm(instance=feed)
-        form.fields['category'].queryset = Category.objects.filter(\
-                user=request.user)
+        form.fields['category'].queryset = Category.objects.filter(
+            user=request.user,
+        )
 
     context = {
-            'feed': feed,
-            'form': form,
-    }
+        'feed': feed,
+        'form': form,
+}
     return render(request, 'feeds/edit_feed.html', context)
 
 

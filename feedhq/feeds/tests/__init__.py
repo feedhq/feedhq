@@ -356,7 +356,7 @@ class TestFeeds(TestCase):
         url = reverse('feeds:feed', args=[self.feed.id])
         response = self.client.get(url)
 
-        expected = '<a href="%sunread/">Show only unread</a>'
+        expected = '<a href="%sunread/">unread <span class="ct">0</span></a>'
         expected = expected % self.feed.get_absolute_url()
         self.assertContains(response, expected)
 
@@ -365,7 +365,7 @@ class TestFeeds(TestCase):
         response = self.client.get(url)
 
         self.assertContains(response, 'Cat')
-        self.assertContains(response, 'Show all')
+        self.assertContains(response, 'all <span class="ct">')
 
     def test_add_category(self):
         url = reverse('feeds:add_category')

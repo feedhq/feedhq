@@ -51,6 +51,9 @@
 	&.cog:before {
 		content: "\2699";
 	}
+	&.check:before {
+		content: "\2717";
+	}
 }
 
 $red: #ff0000;
@@ -183,13 +186,13 @@ input, select {
 
 			&.unread {
 				margin-right: 10px;
-				font-size: 0.8em;
-				line-height: 1em;
-				padding: 2px 5px;
+				padding: 0px 7px;
 				background: lighten($text, 75%);
 				color: lighten($text, 25%);
 				display: inline-block;
+				height: 24px;
 				border-radius: 5px;
+				font-size: 16px;
 
 				&:hover {
 					background: $text;
@@ -243,6 +246,45 @@ input, select {
 	}
 }
 
+.navlist {
+	display: inline;
+	input {
+		border: none;
+		background: none;
+		color: inherit;
+		cursor: pointer;
+		display: inline-block;
+		height: 26px;
+	}
+	a, form {
+		cursor: pointer;
+		display: inline-block;
+		height: 26px;
+		padding: 0px 8px;
+		text-decoration: none;
+		color: lighten($text, 30%);
+		font-size: 16px;
+		border-right: 1px solid white;
+
+		&.current, .ct {
+			color: $text;
+		}
+
+		.ct {
+			font-weight: bold;
+		}
+
+		&:hover, &.current {
+			background: lighten($text, 80%);
+		}
+	}
+
+	form {
+		padding: 0px 4px 0 2px;
+		color: $text;
+	}
+}
+
 .popover {
 	position: absolute;
 	background: white;
@@ -271,6 +313,90 @@ input, select {
 		font-size: 16px;
 		padding-right: 2px;
 	}
+}
+
+.tooltip {
+	position: absolute;
+	z-index: 1020;
+	display: block;
+	padding: 5px;
+	font-size: 14px;
+	opacity: 0;
+	filter: alpha(opacity=0);
+	visibility: visible;
+
+	&.in {
+		opacity: 0.8;
+		filter: alpha(opacity=80);
+	}
+
+	&.top {
+		margin-top: -2px;
+
+		.tooltip-arrow {
+			bottom: 0;
+			left: 50%;
+			margin-left: -5px;
+			border-top: 5px solid #000000;
+			border-right: 5px solid transparent;
+			border-left: 5px solid transparent;
+		}
+	}
+
+	&.right {
+		margin-right: -2px;
+
+		.tooltip-arrow {
+			top: 50%;
+			left: 0;
+			margin-top: -5px;
+			border-top: 5px solid transparent;
+			border-right: 5px solid #000000;
+			border-bottom: 5px solid transparent;
+		}
+	}
+
+	&.left {
+		margin-left: -2px;
+
+		.tooltip-arrow {
+			top: 50%;
+			right: 0;
+			margin-top: -5px;
+			border-top: 5px solid transparent;
+			border-bottom: 5px solid transparent;
+			border-left: 5px solid #000000;
+		}
+	}
+
+	&.bottom {
+		margin-bottom: -2px;
+
+		.tooltip-arrow {
+			top: 0;
+			left: 50%;
+			margin-left: -5px;
+			border-right: 5px solid transparent;
+			border-bottom: 5px solid #000000;
+			border-left: 5px solid transparent;
+		}
+	}
+}
+
+.tooltip-inner {
+	max-width: 200px;
+	padding: 3px 8px;
+	color: #ffffff;
+	text-align: center;
+	text-decoration: none;
+	background-color: #000000;
+	border-radius: 4px;
+}
+
+.tooltip-arrow {
+	position: absolute;
+	width: 0;
+	height: 0;
 }
 
 #content {
@@ -451,6 +577,12 @@ h2 .cat {
 }
 
 .count {
+	overflow: hidden;
+	a.cat {
+		float: left;
+		padding: 0 2px;
+		height: 26px;
+	}
 	.edit {
 		display: inline;
 		border-radius: 0;

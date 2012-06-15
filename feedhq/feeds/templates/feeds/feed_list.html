@@ -29,22 +29,16 @@
 					<a class="cat {{ feed.category.color }} left" href="{% url "feeds:feed" feed.pk %}">{{ feed }}</a>
 					<a class="edit {{ feed.category.color }} cat right" href="{% url "feeds:edit_feed" feed.pk %}"><span class="icon pen"></span></a>
 				{% endif %}{% endspaceless %}
-				{% if only_unread %}
-					{% blocktrans with start=entries.start_index end=entries.end_index count counter=entries.paginator.count %}{{ start }} - {{ end }} of {{ counter }} unread entry.{% plural %}{{ start }} - {{ end }} of {{ counter }} unread entries.{% endblocktrans %}
-				{% else %}
-					{% blocktrans with start=entries.start_index end=entries.end_index count counter=entries.paginator.count %}{{ start }} - {{ end }} of {{ counter }} entry{% plural %}{{ start }} - {{ end }} of {{ counter }} entries{% endblocktrans %}{% if unread_count %}{% blocktrans count counter=unread_count %} ({{ unread_count }} unread){% plural %} ({{ unread_count }} unread){% endblocktrans %}{% endif %}.
-				{% endif %}
-				{% if only_unread %}
-					<a href="{{ all_url }}">{% trans "Show all" %}</a>
-				{% else %}
-					<a href="{{ unread_url }}">{% trans "Show only unread" %}</a>
-				{% endif %}
-				{% if form %}
-					<form method="post" action="{{ action }}">
-						{% include "form.html" %}
-						<input type="submit" value="{% trans "Mark all as read" %}">
-					</form>
-				{% endif %}
+				<div class="navlist">{% spaceless %}
+					<a href="{{ all_url }}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %} <span class="ct">{{ total_count }}</span></a>
+					<a href="{{ unread_url }}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %} <span class="ct">{{ unread_count }}</span></a>
+					{% if form %}
+						<form method="post" action="{{ action }}">
+							{% include "form.html" %}
+							<input title="{% trans "Mark all as read" %}" class="icon tultip" type="submit" value="&#x2717;">
+						</form>
+					{% endif %}
+				{% endspaceless %}</div>
 			</div>
 			<div class="pagination">{% include "feeds/paginator.html" %}</div>
 		</div>
