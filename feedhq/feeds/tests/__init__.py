@@ -711,6 +711,7 @@ class FaviconTests(TestCase):
     def test_declared_favicon(self, get):
         with open(os.path.join(ROOT, 'bruno.im.png'), 'r') as f:
             fav = f.read()
+
         class Response:
             status_code = 200
             content = fav

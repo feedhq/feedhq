@@ -341,7 +341,7 @@ class FaviconManager(models.Manager):
             icon_path = [urlparse.urlunparse(parsed)]
         try:
             response = requests.get(icon_path[0], headers=ua, timeout=10)
-        except requests.RequestException as e:
+        except requests.RequestException:
             return favicon
         if response.status_code != 200:
             return favicon
