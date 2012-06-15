@@ -33,7 +33,7 @@
 					<a href="{{ all_url }}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %} <span class="ct">{{ total_count }}</span></a>
 					<a href="{{ unread_url }}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %} <span class="ct">{{ unread_count }}</span></a>
 					{% if form %}
-						<form method="post" action="{{ action }}">
+						<form method="post" action="{{ action }}" class="read">
 							{% include "form.html" %}
 							<input title="{% trans "Mark all as read" %}" class="icon tultip" type="submit" value="&#x2717;">
 						</form>

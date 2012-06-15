@@ -85,10 +85,14 @@
 <script src="{% static "feeds/js/bootstrap-popover.js" %}"></script>
 {% endaddtoblock %}
 
-{% addtoblock "js" %}
+{% addtoblock "js" %}
 <script type="text/javascript">
 	$(function() {
-		$('.tultip').tooltip();
+		window.mobile = $(this).find('li').css('display') == 'none' || $(this).attr('class') == 'active';
+
+		if (!mobile) {
+			$('.tultip').tooltip();
+		}
 		$('#add-menu, #navigation').popover({
 			trigger: "manual",
 			content: function() {
@@ -98,16 +102,15 @@
 		});
 
 		$('#add-menu, #navigation').click(function() {
-			var mobile = $(this).find('li').css('display') == 'none' || $(this).attr('class') == 'active';
 			if (!mobile) {
 				return;
 			}
 
 			var id = $(this).attr('id'), hide;
-			if (id == 'navigation') {
+			if (id == 'navigation') {
 				hide = 'add-menu';
 			} else {
-				hide = 'navigation';
+				hide = 'navigation';
 			}
 			$('#' + hide).popover('hide');
 			$('#' + hide).removeClass('active');
@@ -125,6 +128,12 @@
 				var right = (window.innerWidth - header.width()) / 2;
 				pop.css("right", right + 'px');
 				pop.css("top", top + 'px');
+			}
+		});
+
+		$('form.read').submit(function(e) {
+			if (!confirm("{% blocktrans %}Are you sure you want to mark {{ unread_count }} items as read?{% endblocktrans %}")) {
+				return false;
 			}
 		});
 	});
