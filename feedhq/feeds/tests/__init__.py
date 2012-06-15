@@ -709,13 +709,16 @@ class TestFeeds(TestCase):
 class FaviconTests(TestCase):
     @patch("requests.get")
     def test_declared_favicon(self, get):
+        with open(os.path.join(ROOT, 'bruno.im.png'), 'r') as f:
+            fav = f.read()
         class Response:
             status_code = 200
-            content = 'some content'
+            content = fav
             headers = {'foo': 'bar'}
         get.return_value = Response()
         Favicon.objects.update_favicon('http://example.com/')
         get.assert_called_with(
             'http://example.com/favicon.ico',
             headers={'User-Agent': FAVICON_FETCHER},
+            timeout=10,
         )

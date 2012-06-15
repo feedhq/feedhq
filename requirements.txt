@@ -20,6 +20,7 @@ procname==0.3
 psycopg2==2.4.5
 pyasn1==0.1.3
 python-dateutil==1.5
+python-magic==0.4.2
 pytz==2012c
 raven==1.9.1
 redis==2.4.13

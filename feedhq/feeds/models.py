@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import lxml
+import magic
 import oauth2 as oauth
 import urllib
 import urlparse
@@ -307,22 +308,21 @@ def pubsubhubbub_update(notification, **kwargs):
 updated.connect(pubsubhubbub_update)
 
 
-def upload_favicon(instance, filename):
-    netloc = urlparse.urlparse(instance.url).netloc
-    return 'favicons/%s.png' % netloc
-
-
 class FaviconManager(models.Manager):
     def update_favicon(self, link, force_update=False):
+        if not link:
+            return
         parsed = list(urlparse.urlparse(link))
+        if not parsed[0].startswith('http'):
+            return
         favicon, created = self.get_or_create(url=link)
-        if favicon.favicon and not force_update:
+        if not created and not force_update:
             return favicon
 
         ua = {'User-Agent': FAVICON_FETCHER}
 
         try:
-            page = requests.get(link, headers=ua).content
+            page = requests.get(link, headers=ua, timeout=10).content
         except requests.RequestException:
             return favicon
         if not page:
@@ -337,33 +337,54 @@ class FaviconManager(models.Manager):
             icon_path = [urlparse.urlunparse(parsed)]
         if not icon_path[0].startswith('http'):
             parsed[2] = icon_path[0]
+            parsed[3] = parsed[4] = parsed[5] = ''
             icon_path = [urlparse.urlunparse(parsed)]
         try:
-            response = requests.get(icon_path[0], headers=ua)
-        except requests.RequestException:
+            response = requests.get(icon_path[0], headers=ua, timeout=10)
+        except requests.RequestException as e:
             return favicon
         if response.status_code != 200:
             return favicon
-        if ('content-type' not in response.headers or
-            not response.headers['content-type'].startswith('image/')):
-            return favicon
 
         icon_file = ContentFile(response.content)
-        favicon.favicon.save(upload_favicon(favicon, ''), icon_file)
+        m = magic.Magic()
+        icon_type = m.from_buffer(response.content)
+        if 'PNG' in icon_type:
+            ext = 'png'
+        elif 'MS Windows icon' in icon_type:
+            ext = 'ico'
+        elif 'GIF' in icon_type:
+            ext = 'gif'
+        elif 'JPEG' in icon_type:
+            ext = 'jpg'
+        elif 'PC bitmap' in icon_type:
+            ext = 'bmp'
+        elif 'HTML' in icon_type or icon_type == 'empty':
+            return favicon
+        else:
+            logger.info("Unknown content type for %s: %s" % (link, icon_type))
+            favicon.delete()
+            return
+
+        filename = '%s.%s' % (urlparse.urlparse(favicon.url).netloc, ext)
+        favicon.favicon.save(filename, icon_file)
 
         feeds = Feed.objects.filter(link=link)
         for feed in feeds:
-            feed.favicon.save(upload_favicon(favicon, ''), icon_file)
+            feed.favicon.save(filename, icon_file)
         feeds.update(no_favicon=False)
         return favicon
 
 
 class Favicon(models.Model):
     url = models.URLField(_('Domain URL'), db_index=True)
-    favicon = models.FileField(upload_to=upload_favicon, blank=True,
+    favicon = models.FileField(upload_to='favicons', blank=True,
                                storage=OverwritingStorage())
 
     objects = FaviconManager()
+
+    def __unicode__(self):
+        return u'Favicon for %s' % self.url
 
     def favicon_img(self):
         if not self.favicon:
