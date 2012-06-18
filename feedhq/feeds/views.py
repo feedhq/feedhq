@@ -374,7 +374,9 @@ def item(request, entry_id):
 
 def save_outline(user, category, outline, existing):
     count = 0
-    if hasattr(outline, 'type') and outline.type == 'folder':
+    if (not hasattr(outline, 'xmlUrl') and
+        hasattr(outline, 'title') and
+        outline._outlines):
         slug = slugify(outline.title)
         cat, created = user.categories.get_or_create(
             slug=slug, defaults={'name': outline.title},
