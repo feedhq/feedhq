@@ -19,7 +19,7 @@
 			<p>{% trans "Now look closely. These three vital features can be accessed using the three buttons on the top bar. Got it? Good. This page will self-destruct as soon as you add your first feed." %}</p>
 		</div></div>
 	{% else %}
-		<div class="figures">
+		<div class="figures{% if not category %} full{% endif %}">
 			<div class="count">{% spaceless %}
 				{% if category %}
 					<a class="cat {{ category.color }} left" href="{% url "feeds:category" category.slug %}">{{ category }}</a>

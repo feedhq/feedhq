@@ -1,2 +1,82 @@
 @media only screen and (min-width: 480px) and (max-width: 767px) {
+	#header {
+		@include grid(6);
+		padding: 0;
+
+		h1 {
+			@include cols(6);
+		}
+	}
+
+	#footer, #content, #categories, #options {
+		@include grid(6);
+		padding: 0;
+	}
+
+	.figures {
+		@include cols(6);
+		margin-right: 0;
+
+		.count, .back, .pagination {
+			@include cols(6);
+			margin: 0;
+		}
+
+		&.bottom {
+			margin: 0 !important;
+		}
+
+		&.detail {
+			margin-left: 0;
+
+			.back {
+				@include cols(2);
+				margin-left: 0;
+			}
+
+			.pagination {
+				@include cols(4);
+				margin-right: 0;
+			}
+		}
+
+		&.full {
+			.count {
+				@include cols(3);
+				margin-left: 0;
+			}
+
+			.pagination {
+				@include cols(3);
+				margin-right: 0;
+			}
+		}
+	}
+
+	#entries {
+		@include cols(6);
+		margin: 0.5em 0;
+	}
+
+	.entry {
+		.title {
+			width: column-width(6) - 20;
+		}
+	}
+
+	#entry {
+		.date {
+			@include cols(4);
+			margin-left: 0;
+		}
+		.actions {
+			@include cols(2);
+			margin-right: 0;
+		}
+	}
+
+	.col {
+		@include cols(6);
+		margin: 0;
+	}
 }

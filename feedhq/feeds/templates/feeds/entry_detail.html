@@ -4,7 +4,7 @@
 {% block title %}{{ object.title|striptags|safe }}{% endblock %}
 
 {% block content %}
-	<div class="figures">
+	<div class="figures detail">
 		<div class="back">
 			<a href="{{ back_url }}">⇠ {% trans "Back" %}</a>
 		</div>
@@ -63,7 +63,7 @@
 		</div>
 		{% include "feeds/entry_links.html" %}
 	</div>
-	<div class="figures">
+	<div class="figures detail">
 		<div class="back">
 			<a href="{{ back_url }}">⇠ {% trans "Back" %}</a>
 		</div>
