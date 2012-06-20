@@ -6,10 +6,17 @@ import floppyforms as forms
 from .models import Category, Feed
 
 
+class ColorWidget(forms.Select):
+    template_name = 'forms/color_select.html'
+
+
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         exclude = ('user', 'slug', 'order')
+        widgets = {
+            'color': ColorWidget,
+        }
 
     def clean_name(self):
         """Generates a slug and ensures it is unique for this user"""

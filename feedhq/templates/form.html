@@ -1,3 +1,4 @@
+{% load floppyforms %}
 {% csrf_token %}
 {% if form.errors and not form.non_field_errors %}
 	<p class="errorlist">{% trans "Please correct the errors below and submit the form again." %}</p>
@@ -10,7 +11,7 @@
 				<h6>{{ field.label_tag }}</h6>
 			</div>
 			<div class="input">
-				<p>{{ field }}</p>
+				<p>{% widget field %}</p>
 				{{ field.errors }}
 				{% if field.help_text %}<p class="helptext">{{ field.help_text|safe }}</p>{% endif %}
 			</div>

@@ -1,0 +1,46 @@
+{% load sekizai_tags staticfiles %}
+{% include "floppyforms/select.html" %}
+
+{% addtoblock "js" %}
+<script src="{% static "feeds/js/jquery.min.js" %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script src="{% static "feeds/js/bootstrap-tooltip.js" %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+	$(function() {
+		var select = $('#{{ attrs.id }}');
+
+		var colors = $('<div class="colors"></div>');
+		select.find('option').each(function() {
+			var option = $(this);
+			var selected = option.attr('value') === select.val();
+			var color = $('<div class="color tultip"></div>');
+			color.addClass(option.attr('value'));
+			color.attr('title', option.text());
+			color.attr('value', option.attr('value'));
+			if (selected) {
+				color.addClass('selected');
+			}
+			colors.append(color);
+		});
+		select.hide()
+		select.after(colors);
+
+		$('.color').click(function() {
+			var color = $(this);
+			if (color.hasClass('selected')) {
+				return;
+			}
+			color.parent().find('.color.selected').removeClass('selected');
+			color.addClass('selected')
+			select.find('option').filter(function() {
+				return $(this).attr('value') == color.attr('value');
+			}).attr('selected', true);
+		});
+	});
+</script>
+{% endaddtoblock %}

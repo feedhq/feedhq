@@ -90,7 +90,7 @@ ol {
 	list-style-type: decimal;
 }
 
-.cat, .edit {
+.cat, .edit, .color {
 	color: white !important;
 	font-weight: normal !important;
 	padding: 2px 4px;
@@ -489,6 +489,26 @@ form {
 
 .back a {
 	text-decoration: none;
+}
+
+.colors {
+	.color {
+		display: inline-block;
+		width: 20px;
+		height: 20px;
+		margin-right: 5px;
+		padding: 3px;
+		margin: 4px 7px 4px 4px;
+		cursor: pointer;
+
+		&:hover, &.selected {
+			padding: 7px;
+			margin: 0 3px 0 0;
+		}
+
+		&.selected {
+		}
+	}
 }
 
 .pagination {
