@@ -53,7 +53,6 @@ DURATIONS = (
         ('1week', _('One week')),
         ('1month', _('One month')),
         ('1year', _('One year')),
-        ('never', _('Never')),
 )
 
 
