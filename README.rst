@@ -86,8 +86,12 @@ Create ``feedhq/settings.py`` and put the minimal stuff in it::
     EMAIL_HOST = 'mail.your_domain.com'
     EMAIL_SUBJECT_PREFIX = '[FeedHQ] '
 
-For Readability and Instapaper support, you'll need a couple of additional
-settings::
+For Readability, Instapaper and Pocket support, you'll need a couple of
+additional settings::
+
+    API_KEYS = {
+        'readitlater': 'your readitlater (pocket) key',
+    }
 
     INSTAPAPER = {
         'CONSUMER_KEY': 'yay isntappaper',
@@ -127,6 +131,10 @@ And another job for checking feeds that have been muted because they were
 failing too much::
 
     @daily /path/to/env/bin/django-admin.py check_defunct --settings=feedhq.settings
+
+And a final one to purge expired sessions from the DB::
+
+    @daily /path/to/env/bin/django-admin.py cleanup --settings=feedhq.settings
 
 Development
 -----------
