@@ -720,7 +720,10 @@ class TestFeeds(TestCase):
             response = self.client.post(url, data)
         self.assertContains(response, 'value="http://bruno.im/atom/latest/"')
 
-        url = reverse('feeds:bookmarklet_subscribe_save')
+        token = response.content.split("csrfmiddlewaretoken' value='")[1]
+        token = token.split("' />", 1)[0]
+
+        url = reverse('feeds:bookmarklet_subscribe')
         data = {
             'form-TOTAL_FORMS': 1,
             'form-INITIAL_FORMS': 1,
@@ -728,6 +731,7 @@ class TestFeeds(TestCase):
             'form-0-name': 'Bruno.im',
             'form-0-url': 'http://bruno.im/atom/latest/',
             'form-0-category': self.cat.pk,
+            'csrfmiddlewaretoken': token,
         }
         self.assertEqual(Feed.objects.count(), 1)
         response = self.client.post(url, data, follow=True)

@@ -1,4 +1,4 @@
-(function() {{% if user.is_authenticated %}
+(function() {
 	var html = document.head.innerHTML
 	, source = window.location.toString()
 	, url = '{{ scheme }}://{{ site.domain }}{% url "feeds:bookmarklet_subscribe" %}'
@@ -22,6 +22,5 @@
 
 	window.setTimeout(function() {
 		form.submit();
-	}, 50);{% else %}
-	window.location = '{{ scheme }}://{{ site.domain }}{% url "login" %}?from=bookmarklet';
-{% endif %}})();
+	}, 50);
+})();

@@ -16,8 +16,6 @@ urlpatterns = patterns('',
     url(r'^bookmarklet/$', views.bookmarklet, name='bookmarklet'),
     url(r'^bookmarklet/js/$', views.bookmarklet_js, name='bookmarklet_js'),
     url(r'^subscribe/$', views.subscribe, name='bookmarklet_subscribe'),
-    url(r'^subscribe/save/$', views.save_subscribe,
-        name='bookmarklet_subscribe_save'),
 
     # Categories
     url(r'^category/add/$', views.add_category, name='add_category'),
