@@ -6,6 +6,7 @@ import magic
 import oauth2 as oauth
 import urllib
 import urlparse
+import random
 import requests
 
 from django.db import models
@@ -40,6 +41,10 @@ COLORS = (
         ('black', _('Black')),
         ('gray', _('Gray')),
 )
+
+
+def random_color():
+    return random.choice(COLORS)[0]
 
 
 DURATIONS = (
@@ -80,7 +85,7 @@ class Category(models.Model):
 
     # Categories have nice cute colors
     color = models.CharField(_('Color'), max_length=50, choices=COLORS,
-                             default='pale-green')
+                             default=random_color)
 
     # We delete the old entries after a certain while
     delete_after = models.CharField(
