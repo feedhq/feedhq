@@ -1,18 +1,25 @@
+import lxml.html
 import opml
+import urllib
 
 from django.contrib import messages
+from django.contrib.sites.models import RequestSite
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Sum
+from django.forms.formsets import formset_factory
+from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 from django.views import generic
+from django.views.decorators.csrf import csrf_exempt
 
 from ..decorators import login_required
 from ..tasks import enqueue
 from .models import Category, Feed, Entry
-from .forms import CategoryForm, FeedForm, OPMLImportForm, ActionForm, ReadForm
+from .forms import (CategoryForm, FeedForm, OPMLImportForm, ActionForm,
+                    ReadForm, SubscriptionForm)
 from .tasks import read_later
 
 """
@@ -456,3 +463,90 @@ def dashboard(request):
         'breaks': [col_1, col_2],
     }
     return render(request, 'feeds/dashboard.html', context)
+
+
+def bookmarklet(request):
+    site = RequestSite(request)
+    proto = 'https' if request.is_secure() else 'http'
+    url = '%s://%s%s' % (proto, site.domain, reverse('feeds:bookmarklet_js'))
+    js_func = ("(function(){var s=document.createElement('script');"
+               "s.setAttribute('type','text/javascript');"
+               "s.setAttribute('charset','UTF-8');"
+               "s.setAttribute('src','%s?'+Math.round(Math.random()*100000));"
+               "document.documentElement.appendChild(s);})()") % url
+    js_func = urllib.quote(js_func)
+    return render(request, "feeds/bookmarklet.html",
+                  {'js_func': js_func,
+                   'scheme': 'https' if request.is_secure() else 'http',
+                   'site': site})
+
+
+def bookmarklet_js(request):
+    site = RequestSite(request)
+    scheme = 'https' if request.is_secure() else 'http'
+    response = render(request, "feeds/bookmarklet.js",
+                  {'scheme': scheme, 'site': site})
+    response['Content-Type'] = 'text/javascript; charset=utf-8'
+    return response
+
+
+@csrf_exempt
+@login_required
+def subscribe(request):
+    if request.method != 'POST':
+        response = HttpResponseNotAllowed('Method not allowed')
+        response['Accept'] = 'POST'
+        return response
+
+    SubscriptionFormSet = formset_factory(SubscriptionForm, extra=0)
+
+    xml = lxml.html.fromstring(request.POST['html'])
+    xml.make_links_absolute(request.POST['source'])  # lxml FTW
+    links = xml.xpath(('//link[@type="application/atom+xml" or '
+                       '@type="application/rss+xml"]'))
+    parsed_links = []
+    for link in links:
+        parsed_links.append({
+            'url': link.get('href'),
+            'name': link.get('title'),
+            'subscribe': True,
+        })
+    formset = SubscriptionFormSet(initial=parsed_links)
+    cats = [(str(c.pk), c.name) for c in request.user.categories.all()]
+    for form in formset:
+        form.fields['category'].choices = cats
+    return render(request, 'feeds/bookmarklet_subscribe.html',
+                  {'formset': formset, 'source': request.POST['source']})
+
+
+@login_required
+def save_subscribe(request):
+    if request.method != 'POST':
+        response = HttpResponseNotAllowed('Method not allowed')
+        response['Accept'] = 'POST'
+        return response
+
+    SubscriptionFormSet = formset_factory(SubscriptionForm, extra=0)
+    formset = SubscriptionFormSet(data=request.POST)
+    cats = [(str(c.pk), c.name) for c in request.user.categories.all()]
+    for form in formset:
+        form.fields['category'].choices = cats
+    if formset.is_valid():
+        created = 0
+        for form in formset:
+            if form.cleaned_data['subscribe']:
+                category = request.user.categories.get(
+                    pk=form.cleaned_data['category'],
+                )
+                category.feeds.create(name=form.cleaned_data['name'],
+                                      url=form.cleaned_data['url'])
+                created += 1
+        if created == 1:
+            message = _('1 feed has been added')
+        else:
+            message = _('%s feeds have been added') % created
+        messages.success(request, message)
+        return redirect(reverse('feeds:home'))
+    else:
+        return render(request, 'feeds/bookmarklet_subscribe.html',
+                      {'formset': formset})

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Bookmarklet" %}{% endblock %}
+
+{% block content %}
+	<div id="entry">
+		<div class="content">
+			<h1>{% trans "Bookmarklet" %}</h1>
+
+			<p>{% trans "If you want to be able to add sites to FeedHQ as you browse the web, simply drag this link to your bookmarks toolbar:" %}</p>
+
+			<p><a class="bookmarklet" href="javascript:{{ js_func|safe }}">{% trans "Subscribe on FeedHQ" %}</a></p>
+
+			<p>{% trans "Then from any website that provides feeds (news sites, blogs), just click on the bookmark. You'll be shown the list of feeds detected on the page and can subscribe to them immediately." %}</p>
+
+			<h3>{% trans "NoScript users" %}</h3>
+
+			<p>{% trans "If you use <a href=\"http://noscript.net/\">NoScript</a>, you need to add this line to your NoScript preferences &gt; Advanced &gt; XSS:" %}</p>
+
+			<pre><code>^{{ scheme }}://{{ site.domain }}{% url "feeds:bookmarklet_subscribe" %}$</code></pre>
+		</div>
+	</div>
+{% endblock %}

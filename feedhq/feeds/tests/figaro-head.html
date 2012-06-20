@@ -1,0 +1,128 @@
+<title>
+  Le Figaro - Actualités</title>
+
+<meta name="google-site-verification" content="rH8k1TSxKSJX9yu0H-GmP6dVxvN8EFge2A6iahyuqH0" />
+<meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
+
+<meta name="title" content="Le Figaro - Actualité en direct et informations en continu" />
+<meta name="description" content="A la Une : Retrouvez toute l'actualité en France, à l'international, l'actualité économique et politique avec Le Figaro" />
+<meta name="keywords" content="A la Une, actualité, informations, titres, actualité internationale, actualité française, sport, économie" />
+<meta name="author" content="lefigaro.fr">
+<meta name="copyright" content="lefigaro.fr">
+<meta name="robots" content="index,follow,noarchive">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="shortcut icon" type="image/x-icon" href="http://www.lefigaro.fr/icones/favicon.ico" />
+
+<META name="verify-v1" content="M2bZ3dMD8xOvoECn3mkzpescWsQ/hanPt73RPibJ7IQ=" />
+
+
+<link href="http://rss.lefigaro.fr/lefigaro/laune" title="Le Figaro.fr : La Une" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_flash-actu.xml" title="Le Figaro.fr : Flash Actu" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_politique.xml" title="Le Figaro.fr : Politique" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_international.xml" title="Le Figaro.fr : International" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_environnement.xml" title="Le Figaro.fr : Environnement" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_sante.xml" title="Le Figaro.fr : Santé" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_automobile.xml" title="Le Figaro.fr : Automobile" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_actualite-france.xml" title="Le Figaro.fr : France" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_medias.xml" title="Le Figaro.fr : Médias" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_sciences-technologies.xml" title="Le Figaro.fr : Science et Technologie" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_web.xml" title="Le Figaro.fr : Web" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_economie.xml" title="Le Figaro.fr : Economie" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_culture.xml" title="Le Figaro.fr : Culture" type="application/rss+xml" rel="alternate" />
+<link href="http://madame.lefigaro.fr/rss/index.xml" title="Le Figaro.fr : Madame" type="application/rss+xml" rel="alternate" />
+<link href="http://www.lefigaro.fr/rss/figaro_sport.xml" title="Le Figaro.fr : Sports" type="application/rss+xml" rel="alternate" />
+
+<link rel="stylesheet" href="http://assets1.lefigaro.fr/assets-css/V6/css/styles.css?20110728" />
+<link rel="stylesheet" href="http://assets1.lefigaro.fr/assets-css/V6/maquettes_2009/css/maquettes-2009_styles.css" />
+<link rel="stylesheet" href="http://assets1.lefigaro.fr/assets-css/V6/premium/css/extra-style.css" />
+<link rel="stylesheet" href="http://assets1.lefigaro.fr/assets-css/V6/css/header_2009.css" />
+<link rel="stylesheet" href="http://assets1.lefigaro.fr/assets-css/V6/css/footer_2009.css" />
+<script src="http://assets2.lefigaro.fr/assets-js/lib/modernizr-custom.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script>!window.jQuery && document.write('<script src="http://assets2.lefigaro.fr/assets-js/lib/jquery-1.7.2.min.js"><\/script>')</script>
+<script src="http://assets2.lefigaro.fr/assets-js/V6/scripts/FigaroTools.js?20110728"></script>
+<script src="http://www.lefigaro.fr/components/ffw_base.js.php?20100215"></script>
+<script src="/premium/script/extra-sliders-script.js"></script>
+<script src="/premium/script/extra-diapos-script.js"></script>
+<script src="/premium/script/extra-script-loader.js"></script>
+<script src="http://assets2.lefigaro.fr/assets-js/lib/json2.js"></script>
+<script src="http://assets2.lefigaro.fr/assets-js/geoloc.js" id="f_geoloc"></script>
+
+<script src="http://admin.brightcove.com/js/BrightcoveExperiences_all.js"></script>
+<script src="http://admin.brightcove.com/js/APIModules_all.js"></script>
+<script>
+
+/* Brightcove onTemplateLoaded */
+function onTemplateLoaded(experienceID) {
+
+	var bcExp, modMenu, modVP, modAD;
+	bcExp = brightcove.getExperience(experienceID);
+
+	// Pour la vidÃ©o :
+	modVP = bcExp.getModule(APIModules.VIDEO_PLAYER);
+	modVP.addEventListener(BCMediaEvent.PLAY, onPlay);
+	modVP.addEventListener(BCMediaEvent.STOP, onStop);
+
+	// Pour la Pub :
+	modAD = bcExp.getModule(APIModules.ADVERTISING);
+	modAD.addEventListener(BCAdvertisingEvent.AD_START, onPlay);
+	modAD.addEventListener(BCAdvertisingEvent.AD_STOP, onStop);
+}
+function onPlay(evt) {
+	window.boolRefreshPage = false;
+}
+function onStop(evt) {
+	window.boolRefreshPage = true;
+}
+
+// Refresh :
+window.boolRefreshPage = true;
+window.refreshDelay = Number(180);
+window.refreshBuffer = 0;
+refreshPage = function() {
+	if(window.boolRefreshPage == true) {
+		if(window.refreshBuffer == 0)	location.reload();
+		else	window.setTimeout(refreshPage, window.refreshBuffer*1000);
+		window.refreshBuffer = 0;
+	} else {
+		window.refreshBuffer = 25;
+		window.setTimeout(refreshPage, window.refreshDelay*1000);
+	}
+}
+window.setTimeout(refreshPage, window.refreshDelay*1000);
+</script>
+<noscript><meta http-equiv="refresh" content="180"></noscript>
+
+<!--[if lte IE 8]><script src="http://assets2.lefigaro.fr/assets-components/V6/__templates/header-footer/components/html5shiv.js"></script><![endif]--><link rel="stylesheet" href="http://assets2.lefigaro.fr/assets-components/V6/__templates/header-footer/components/patch-style-fig.css"><link rel="stylesheet" href="http://assets2.lefigaro.fr/assets-components/V6/__templates/header-footer/header.actu.css"><link rel="stylesheet" href="http://assets2.lefigaro.fr/assets-components/V6/__templates/header-footer/footer.actu.css"><script src="http://assets2.lefigaro.fr/assets-components/V6/__templates/header-footer/components/header.js"></script><script src="http://assets2.lefigaro.fr/assets-components/V6/__templates/header-footer/components/footer.js"></script>
+<script src="http://assets2.lefigaro.fr/assets-js/V6/scripts/live.js"></script>
+
+<script type="text/javascript">
+var ffw_stylingForPub = function() { return false; }
+</script>
+
+
+	<meta property="og:site_name" content="Le Figaro" />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="Actualité en direct et informations en continu" />
+	<meta property="og:image" content="http://www.lefigaro.fr/img/logo-figaro-128x128.jpg" />
+	<meta property="og:url" content="http://www.lefigaro.fr" />
+	<meta property="og:description" content="A la Une : Retrouvez toute l'actualité en France, à l'international, l'actualité économique et politique avec Le Figaro" />
+
+	<meta property="fb:app_id" content="253015184720028" />
+
+	
+<script type='text/javascript'>
+//<!--
+var ezMarkerType = 'lefigaro';
+(function(){
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "http://lefigaro.ezakus.net/marker/";
+    s.async = true;
+    var head = document.head || document.getElementsByTagName("head")[0];
+    head.appendChild(s);
+})();
+//-->
+</script>

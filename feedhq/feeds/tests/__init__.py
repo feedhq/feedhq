@@ -92,6 +92,11 @@ class BaseTests(TestCase):
         response = self.client.get(url)
         self.assertNotContains(response, 'Getting started')
 
+    def test_bookmarklet(self):
+        url = reverse('feeds:bookmarklet')
+        response = self.client.get(url)
+        self.assertContains(response, 'Subscribe on FeedHQ')
+
 
 class TestFeeds(TestCase):
     def setUp(self):
@@ -102,15 +107,12 @@ class TestFeeds(TestCase):
                                              'foo@example.com',
                                              'pass')
         # ... a category...
-        cat = Category(name='Cat', slug='cat', user=self.user,
-                       delete_after='never')
-        cat.save()
-        self.cat = cat
+        self.cat = Category.objects.create(name='Cat', slug='cat',
+                                           user=self.user,
+                                           delete_after='never')
 
         # ... and a feed.
-        feed = Feed(name='Test Feed', category=self.cat, url='sw-all.xml')
-        feed.save()
-        self.feed = feed
+        self.feed = self.cat.feeds.create(name='Test Feed', url='sw-all.xml')
 
         # The user is logged in
         self.client.login(username='testuser', password='pass')
@@ -707,6 +709,56 @@ class TestFeeds(TestCase):
         # Check date handling
         self.assertEqual(feed.entries.filter(date__year=2011).count(), 3)
         self.assertEqual(feed.entries.filter(date__year=2012).count(), 2)
+
+    def test_bookmarklet_post(self):
+        url = '/subscribe/'  # hardcoded in the JS file
+        with open(os.path.join(ROOT, 'bruno-head.html'), 'r') as f:
+            data = {
+                'source': 'http://bruno.im/',
+                'html': f.read(),
+            }
+            response = self.client.post(url, data)
+        self.assertContains(response, 'value="http://bruno.im/atom/latest/"')
+
+        url = reverse('feeds:bookmarklet_subscribe_save')
+        data = {
+            'form-TOTAL_FORMS': 1,
+            'form-INITIAL_FORMS': 1,
+            'form-0-subscribe': True,
+            'form-0-name': 'Bruno.im',
+            'form-0-url': 'http://bruno.im/atom/latest/',
+            'form-0-category': self.cat.pk,
+        }
+        self.assertEqual(Feed.objects.count(), 1)
+        response = self.client.post(url, data, follow=True)
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(Feed.objects.count(), 2)
+
+    def test_bookmarklet_parsing(self):
+        url = reverse('feeds:bookmarklet_subscribe')
+        for name, count in [('figaro', 15), ('github', 2), ('techcrunch', 3)]:
+            with open(os.path.join(ROOT, '%s-head.html' % name), 'r') as f:
+                response = self.client.post(url, {'html': f.read(),
+                                                  'source': 'http://t.com'})
+            self.assertContains(response, name)
+            self.assertEqual(len(response.content.split(
+                '<div class="subscribe_form">'
+            )), count + 1)
+
+    def test_get_bookmarklet(self):
+        url = reverse('feeds:bookmarklet_subscribe')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response['Accept'], 'POST')
+
+    def test_bookmarklet_no_feed(self):
+        url = reverse('feeds:bookmarklet_subscribe')
+        response = self.client.post(url, {
+            'source': 'http://isitbeeroclock.com/',
+            'html': '<link>',
+        })
+        self.assertContains(response, 'No feed found')
+        self.assertContains(response, 'Return to the site')
 
 
 class FaviconTests(TestCase):

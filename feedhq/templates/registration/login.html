@@ -3,6 +3,9 @@
 {% block title %}{% trans "Sign in" %}{% endblock %}
 
 {% block content %}
+	{% if request.GET.from == "bookmarklet" %}
+		<p>{% trans "You are not logged in. Please log in before using the bookmarklet." %}</p>
+	{% endif %}
 	<form method="post" action="{% url "login" %}">
 		{% if next %}
 		<input type="hidden" name="next" value="{{ next }}" />{% endif %}

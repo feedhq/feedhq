@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "New feeds" %}{% endblock %}
+
+{% block content %}
+	{% if formset.forms %}
+		<h1>{% trans "New feeds" %}</h1>
+		<p>{% trans "We found the following feeds. Please uncheck those you don't want to subscribe to and select the category for each one." %}</p>
+		<form method="post" action="{% url "feeds:bookmarklet_subscribe_save" %}">
+			{{ formset.management_form }}
+			{% for form in formset %}
+				<div class="subscribe_form">
+					<h2>#{{ forloop.counter }}</h2>
+					{% include "form.html" %}
+				</div>
+			{% endfor %}
+			<div class="submit">
+				<input type="submit" value="{% trans "Subscribe" %}">
+			</div>
+		</form>
+	{% else %}
+		<div id="entry">
+			<div class="content">
+				<h1>{% trans "No feed found" %}</h1>
+				<p>{% trans "Sorry, it looks like there are no feeds available on this site." %}</p>
+				<p><a href="{{ source }}">{% trans "Return to the site" %}</a></p>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}

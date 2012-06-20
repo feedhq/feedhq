@@ -167,6 +167,10 @@ body {
 
 a {
 	color: #000;
+
+	&.bookmarklet {
+		cursor: move;
+	}
 }
 
 input, select {
@@ -435,6 +439,11 @@ input, select {
 	}
 }
 
+.subscribe_form {
+	margin-bottom: 1em;
+	@include clearfix;
+}
+
 .no label {
 	font-weight: bold;
 }
@@ -460,7 +469,7 @@ form {
 
 	.input {
 		input, select {
-			width: 100%;
+			width: 90%;
 		}
 	}
 
@@ -604,6 +613,21 @@ h2 .cat {
 	}
 }
 
+code, tt {
+	border: 1px solid lighten($text, 75%);
+	border-radius: 3px;
+	padding: 2px 3px;
+}
+
+pre, code, tt {
+	font: 0.8em Inconsolata, Monaco, monospace;
+}
+
+pre code {
+	border: none;
+	font-size: 1em;
+}
+
 #entry > h2:hover {
 	.edit, .edit_cat {
 		opacity: 1;
@@ -647,21 +671,6 @@ h2 .cat {
 				list-style: circle;
 				margin-left: 1em;
 			}
-		}
-
-		code, tt {
-			border: 1px solid lighten($text, 75%);
-			border-radius: 3px;
-			padding: 2px 3px;
-		}
-
-		pre, code, tt {
-			font: 0.8em Inconsolata, Monaco, monospace;
-		}
-
-		pre code {
-			border: none;
-			font-size: 1em;
 		}
 	}
 

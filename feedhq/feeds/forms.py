@@ -1,5 +1,7 @@
-from django import forms
 from django.template.defaultfilters import slugify
+from django.utils.translation import ugettext_lazy as _
+
+import floppyforms as forms
 
 from .models import Category, Feed
 
@@ -7,7 +9,7 @@ from .models import Category, Feed
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        exclude = ('user', 'slug', 'order',)
+        exclude = ('user', 'slug', 'order')
 
     def clean_name(self):
         """Generates a slug and ensures it is unique for this user"""
@@ -48,3 +50,10 @@ class ReadForm(forms.Form):
     action = forms.ChoiceField(choices=(
         ('read', 'read'),
     ), widget=forms.HiddenInput, initial='read')
+
+
+class SubscriptionForm(forms.Form):
+    subscribe = forms.BooleanField(label=_('Subscribe?'), required=False)
+    name = forms.CharField(label=_('Name'))
+    url = forms.URLField(label=_('URL'))
+    category = forms.ChoiceField(label=_('Category'))
