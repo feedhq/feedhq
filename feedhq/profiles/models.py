@@ -39,6 +39,12 @@ class User(models.Model):
     read_later_credentials = models.TextField(_('Read later credentials'),
                                               blank=True)
 
+    sharing_twitter = models.BooleanField(_('Enable tweet button'),
+                                          default=False)
+    sharing_gplus = models.BooleanField(_('Enable +1 button (Google+)'),
+                                        default=False)
+    sharing_email = models.BooleanField(_('Enable Mail button'), default=False)
+
     class Meta:
         abstract = True
 

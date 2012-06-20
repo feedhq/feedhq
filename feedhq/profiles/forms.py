@@ -25,7 +25,8 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['timezone', 'entries_per_page']
+        fields = ['timezone', 'entries_per_page', 'sharing_twitter',
+                  'sharing_gplus', 'sharing_email']
 
 
 class ChangePasswordForm(forms.Form):

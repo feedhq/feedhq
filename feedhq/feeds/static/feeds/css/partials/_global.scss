@@ -253,6 +253,7 @@ input, select {
 
 .navlist {
 	display: inline;
+
 	input {
 		border: none;
 		background: none;
@@ -262,11 +263,17 @@ input, select {
 		height: 26px;
 		padding: 0 5px;
 	}
+
+	&.actions input {
+		display: block;
+		padding: 0 8px;
+	}
+
 	a, form {
 		cursor: pointer;
 		display: inline-block;
 		height: 26px;
-		padding: 0px 8px;
+		padding: 0 8px;
 		text-decoration: none;
 		color: lighten($text, 30%);
 		font-size: 16px;
@@ -285,8 +292,24 @@ input, select {
 		}
 	}
 
+	&.actions {
+		form {
+			padding: 0;
+		}
+		a, form {
+			display: block;
+			float: right;
+			text-align: center;
+			color: $text;
+			font-size: 24px;
+		}
+
+		.sbutton {
+			float: right;
+		}
+	}
+
 	form {
-		padding: 0px 4px 0 2px;
 		color: $text;
 	}
 }
@@ -470,6 +493,10 @@ form {
 	.input {
 		input, select {
 			width: 90%;
+
+			&[type="checkbox"] {
+				width: inherit;
+			}
 		}
 	}
 
