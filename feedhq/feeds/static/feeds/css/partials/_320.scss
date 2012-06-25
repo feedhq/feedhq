@@ -159,9 +159,15 @@
 		}
 	}
 
+	.overflow {
+		-webkit-overflow-scrolling: touch;
+		overflow: scroll;
+	}
+
 	.content {
 		pre, img {
 			overflow: auto;
+			-webkit-overflow-scrolling: touch;
 		}
 
 		ul, ol {
