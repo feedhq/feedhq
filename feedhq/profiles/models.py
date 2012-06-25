@@ -6,9 +6,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from ..models import contribute_to_model
 
-TIMEZONES = (
+TIMEZONES = [
     (tz, _(tz)) for tz in pytz.common_timezones
-)
+]
 
 ENTRIES_PER_PAGE = (
     (25, 25),
