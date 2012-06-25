@@ -32,7 +32,7 @@ class User(models.Model):
     username = models.CharField(max_length=75, unique=True)
     timezone = models.CharField(_('Time zone'), max_length=75,
                                 choices=TIMEZONES, default='UTC')
-    entries_per_page = models.IntegerField(_('Entries per page'), default=25,
+    entries_per_page = models.IntegerField(_('Entries per page'), default=50,
                                            choices=ENTRIES_PER_PAGE)
     read_later = models.CharField(_('Read later service'), blank=True,
                                   choices=READ_LATER_SERVICES, max_length=50)
