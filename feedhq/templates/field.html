@@ -1,0 +1,15 @@
+{% load floppyforms %}
+{% if not field.is_hidden %}
+	<div class="field{% if forloop.first %} first{% endif %}{% if forloop.last %} last{% endif %}">
+		<div class="title">
+			<h6>{{ field.label_tag }}</h6>
+		</div>
+		<div class="input">
+			<p>{% widget field %}</p>
+			{{ field.errors }}
+			{% if field.help_text %}<p class="helptext">{{ field.help_text|safe }}</p>{% endif %}
+		</div>
+	</div>
+{% else %}
+	{{ field }}
+{% endif %}
