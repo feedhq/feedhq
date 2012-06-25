@@ -308,12 +308,6 @@ class TestFeeds(TestCase):
         fake_update(self.feed.url)
         self.assertEqual(self.feed.entries.count(), 30)
 
-    def test_screenscraping(self):
-        self.feed.screenscraping = 'bob'
-        self.feed.save()
-        fake_update(self.feed.url)
-        # FIXME mock something
-
     def test_future_date(self):
         self.feed.url = 'future.xml'
         self.feed.save()
@@ -462,8 +456,9 @@ class TestFeeds(TestCase):
         fake_update(self.feed.url)
         url = reverse('feeds:home', args=[12000])  # that page doesn't exist
         response = self.client.get(url)
-        self.assertContains(response, '<a href="/">1</a>')
+        self.assertContains(response, '<a href="/" class="current">')
 
+    # This is called by other tests
     def _test_entry(self, from_url):
         self.assertEqual(self.client.get(from_url).status_code, 200)
 
@@ -529,6 +524,7 @@ class TestFeeds(TestCase):
         with open(os.path.join(ROOT, 'sample.opml'), 'r') as opml_file:
             data = {'file': opml_file}
             response = self.client.post(url, data, follow=True)
+
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, '2 feeds have been imported')
         self.assertEqual(Category.objects.filter(name='Imported').count(), 1)
