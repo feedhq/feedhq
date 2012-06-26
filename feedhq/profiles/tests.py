@@ -51,6 +51,7 @@ class ProfilesTest(TestCase):
         self.assertContains(response,
                             '<option value="UTC" selected="selected">')
         data = {
+            'username': 'test',
             'action': 'profile',
             'timezone': 'Foo/Bar',
             'entries_per_page': 25,
@@ -78,6 +79,21 @@ class ProfilesTest(TestCase):
         response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertEqual(User.objects.get().entries_per_page, 50)
+
+        # changing a username
+        new = User.objects.create_user('foobar', 'foo@bar.com', 'pass')
+
+        data['username'] = 'foobar'
+        response = self.client.post(url, data)
+        self.assertFormError(response, 'profile_form', 'username',
+                             'This username is already taken.')
+
+        new.username = 'lol'
+        new.save()
+
+        self.assertEqual(User.objects.get(pk=self.user.pk).username, 'test')
+        response = self.client.post(url, data)
+        self.assertEqual(User.objects.get(pk=self.user.pk).username, 'foobar')
 
     def test_opml_export(self):
         url = reverse('export')

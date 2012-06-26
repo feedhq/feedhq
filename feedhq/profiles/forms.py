@@ -25,8 +25,16 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['timezone', 'entries_per_page', 'sharing_twitter',
-                  'sharing_gplus', 'sharing_email']
+        fields = ['username', 'timezone', 'entries_per_page',
+                  'sharing_twitter', 'sharing_gplus', 'sharing_email']
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.exclude(pk=self.instance.pk).filter(
+            username=username,
+        ).exists():
+            raise forms.ValidationError(_('This username is already taken.'))
+        return username
 
 
 class ChangePasswordForm(forms.Form):
