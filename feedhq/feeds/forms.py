@@ -1,3 +1,5 @@
+import urlparse
+
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
@@ -37,6 +39,19 @@ class FeedForm(forms.ModelForm):
     class Meta:
         model = Feed
         fields = ('name', 'url', 'category', 'muted')
+
+    def clean_url(self):
+        url = self.cleaned_data['url']
+        parsed = urlparse.urlparse(url)
+        if parsed.scheme not in ['http', 'https']:
+            raise forms.ValidationError(
+                _("Invalid URL scheme: '%s'. Only HTTP and HTTPS are "
+                  "supported.") % parsed.scheme)
+
+        netloc = parsed.netloc.split(':')[0]
+        if netloc in ['localhost', '127.0.0.1', '::1']:
+            raise forms.ValidationError(_("Invalid URL."))
+        return url
 
 
 class OPMLImportForm(forms.Form):

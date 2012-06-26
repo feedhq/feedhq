@@ -423,6 +423,25 @@ class TestFeeds(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue('/category/cat/' in response['Location'])
 
+    def test_feed_url_validation(self):
+        url = reverse('feeds:add_feed')
+        data = {
+            'name': 'Test',
+            'url': 'ftp://example.com',
+            'category': self.cat.pk,
+        }
+        response = self.client.post(url, data)
+        self.assertFormError(
+            response, 'form', 'url',
+            "Invalid URL scheme: 'ftp'. Only HTTP and HTTPS are supported.",
+        )
+
+        for invalid_url in ['http://localhost:8000', 'http://localhost',
+                            'http://127.0.0.1']:
+            data['url'] = invalid_url
+            response = self.client.post(url, data)
+            self.assertFormError(response, 'form', 'url', "Invalid URL.")
+
     def test_edit_feed(self):
         url = reverse('feeds:edit_feed', args=[self.feed.id])
         response = self.client.get(url)
