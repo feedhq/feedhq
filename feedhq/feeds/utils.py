@@ -14,6 +14,8 @@ from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
 
+from interruptingcow import timeout
+
 from django_push.subscriber.models import Subscription
 
 from .. import __version__
@@ -60,12 +62,19 @@ class FeedUpdater(object):
         socket.setdefaulttimeout(5)  # aggressive but otherwise
                                      # it can take ages
         feed = self.feeds[0]
-        if use_etags and feed.modified:
-            modified = time.localtime(float(feed.modified))
-            parsed_feed = self.feedparser.parse(feed.url, etag=feed.etag,
-                                                modified=modified)
-        else:
-            parsed_feed = self.feedparser.parse(feed.url)
+
+        try:
+            with timeout(10, exception=RuntimeError):
+                if use_etags and feed.modified:
+                    modified = time.localtime(float(feed.modified))
+                    parsed_feed = self.feedparser.parse(feed.url,
+                                                        etag=feed.etag,
+                                                        modified=modified)
+                else:
+                    parsed_feed = self.feedparser.parse(feed.url)
+        except RuntimeError:
+            logger.debug("Feed took more than 10 seconds, %s" % feed.url)
+            return
 
         if not 'status' in parsed_feed:
             logger.debug("No status in parsed feed, %s: %s" % (feed.pk,
