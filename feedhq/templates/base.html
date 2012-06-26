@@ -33,12 +33,7 @@
 					<div id="navigation">
 						<span class="icon cog"></span>
 						<ul>{% spaceless %}
-							{% if not user.is_authenticated %}
-								<li><a href="{% url "login" %}">{% trans "Sign in" %}</a></li>
-							{% else %}
-								<li>{% trans "yo" %}, <span class="icon settings"></span><strong><a href="{% url "profile" %}">{{ user.username }}</a></strong></li>
-								<li><span class="icon logout"></span><a href="{% url "logout" %}">{% trans "Logout" %}</a></li>
-							{% endif %}
+							{% include "navigation.html" %}
 						</ul>{% endspaceless %}
 					</div>
 				</div>
