@@ -2,6 +2,7 @@ from optparse import make_option
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db import connection
 
 from raven import Client
 
@@ -32,3 +33,4 @@ class Command(BaseCommand):
                 else:
                     client = Client(dsn=settings.SENTRY_DSN)
                     client.captureException()
+        connection.close()
