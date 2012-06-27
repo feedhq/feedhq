@@ -2,81 +2,44 @@
 import feedparser
 import json
 import os
-import random
-import time
+import requests
+
+from StringIO import StringIO
 
 from django_push.subscriber.signals import updated
 from httplib2 import Response
-from mock import patch, Mock
+from mock import patch
 from requests.exceptions import ConnectionError
+from requests import Response as _Response
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from ..models import Category, Feed, Entry, Favicon
-from ..utils import FeedUpdater, FEED_CHECKER, FAVICON_FETCHER
+from ..models import Category, Feed, Entry, Favicon, UniqueFeed
+from ..tasks import update_feed
+from ..utils import FEED_CHECKER, FAVICON_FETCHER, USER_AGENT
 
-feedparser.USER_AGENT = 'FeedHQ/dev +https://github.com/feedhq/feedhq'
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
-class FakeFeedParser(object):
-
-    @staticmethod
-    def parse(url, *args, **kwargs):
-        if url.startswith('http://'):
-            raise TypeError('Only local feeds in unit tests -- url was "%s"' %
-                            url)
-        url = os.path.join(ROOT, url)
-        parsed = feedparser.parse(url)
-        # Adding some HTTP sugar
-        parsed['status'] = 200
-        parsed['modified'] = time.localtime()
-        parsed['etag'] = str(random.random())
-
-        # Force some parameters here...
-        if url.endswith('permanent.xml'):
-            parsed.status = 301
-            parsed.href = 'atom10.xml'
-
-        if url.endswith('gone.xml'):
-            parsed.status = 410
-
-        if url.endswith('no-date.xml') and 'etag' in kwargs:
-            parsed.entries = []
-            parsed.status = 304
-
-        if url.endswith('future.xml'):
-            future_date = list(time.localtime())
-            # Adding a year...
-            future_date[0] = future_date[0] + 1
-            if future_date[1] == 2 and future_date[2] == 29:
-                future_date[2] = 28  # Fuck leap years
-            parsed.entries[0].updated_parsed = future_date
-
-        if url.endswith('no-status.xml'):
-            parsed = {
-                'feed': {},
-                'bozo': 1,
-                'bozo_exception': "Name or service not known",
-                'entries': [],
-            }
-
-        if url.endswith('no-link.xml'):
-            parsed.entries[0]['link'] = None
-        return parsed
-
-
-def fake_update(url):
-    updater = FeedUpdater(url, feedparser=FakeFeedParser)
-    updater.update()
+def responses(code, path=None, redirection=None):
+    response = _Response()
+    response.status_code = code
+    if path is not None:
+        with open(os.path.join(ROOT, path), 'r') as f:
+            response.raw = StringIO(f.read())
+    if redirection is not None:
+        response.history.append('yo')
+        response.url = redirection
+    return response
 
 
 class BaseTests(TestCase):
     """Tests that do not require specific setup"""
-    def test_welcome_page(self):
+    @patch('requests.get')
+    def test_welcome_page(self, get):
         self.user = User.objects.create_user('testuser',
                                              'foo@example.com',
                                              'pass')
@@ -86,6 +49,7 @@ class BaseTests(TestCase):
         self.assertContains(response, 'Getting started')
         cat = self.user.categories.create(name='Foo', slug='foo')
 
+        get.return_value = responses(304)
         feed = Feed(name='yo', url='http://example.com/feed', category=cat)
         feed.save()
 
@@ -99,7 +63,8 @@ class BaseTests(TestCase):
 
 
 class TestFeeds(TestCase):
-    def setUp(self):
+    @patch("requests.get")
+    def setUp(self, get):
         """Main stuff we need for testing the app - this is mainly for signed
         in users."""
         # We'll need a user...
@@ -112,7 +77,13 @@ class TestFeeds(TestCase):
                                            delete_after='never')
 
         # ... and a feed.
+        response = _Response()
+        response.status_code = 304
+        get.return_value = response
         self.feed = self.cat.feeds.create(name='Test Feed', url='sw-all.xml')
+        get.assert_called_with(
+            'sw-all.xml',
+            headers={'User-Agent': USER_AGENT % '(1 subscriber)'}, timeout=10)
 
         # The user is logged in
         self.client.login(username='testuser', password='pass')
@@ -130,10 +101,11 @@ class TestFeeds(TestCase):
         # get_absolute_url()
         self.assertEqual('/category/new-cat/', cat_from_db.get_absolute_url())
 
-    def test_feed_model(self):
+    @patch('requests.get')
+    def test_feed_model(self, get):
         """Behaviour of the ``Feed`` model"""
-        feed = Feed(name='RSS test', url='rss20.xml', category=self.cat,
-                    muted=False)
+        get.return_value = responses(200, 'rss20.xml')
+        feed = self.cat.feeds.create(name='RSS test', url='rss20.xml')
         feed.save()
         self.cat.delete_after = 'never'
         self.cat.save()
@@ -147,23 +119,20 @@ class TestFeeds(TestCase):
         self.assertEqual('/feed/%s/' % feed.id, feed.get_absolute_url())
 
         # update()
-        fake_update(feed.url)
+        update_feed(feed.url, use_etags=False)
+
+        unique_feed = UniqueFeed.objects.get(url=feed.url)
+        self.assertEqual(unique_feed.title, 'Sample Feed')
+        self.assertEqual(unique_feed.link, 'http://example.org/')
+
         feed = Feed.objects.get(pk=feed.id)
-        self.assertEqual(feed.title, 'Sample Feed')
-        self.assertEqual(feed.link, 'http://example.org/')
         self.assertEqual(feed.entries.count(), 1)
         self.assertEqual(feed.entries.all()[0].title, 'First item title')
-        # Testing the use of etags/modified headers
-        fake_update(feed.url)
-        self.assertEqual(feed.entries.count(), 1)
 
-        # remove_old_entries won't run if delete_after is never
-        self.cat.delete_after = 'never'
-        self.cat.save()
-        fake_update(feed.url)
-
-    def test_entry_model(self):
-        fake_update(self.feed.url)
+    @patch('requests.get')
+    def test_entry_model(self, get):
+        get.return_value = responses(200, self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
         title = 'RE2: a principled approach to regular expression matching'
         entry = Entry.objects.get(title=title)
 
@@ -176,143 +145,141 @@ class TestFeeds(TestCase):
         entry.permalink = 'http://example.com/some-url'
         self.assertEqual(entry.get_link(), entry.permalink)
 
-    def test_permanent_redirects(self):
+    @patch('requests.get')
+    def test_permanent_redirects(self, get):
         """Updating the feed if there's a permanent redirect"""
-        feed = Feed(name='Permanent', category=self.cat,
-                    url='permanent.xml')
-        feed.save()
-        fake_update(feed.url)
+        get.return_value = responses(301, redirection='atom10.xml')
+        feed = self.cat.feeds.create(name='Permanent', url='permanent.xml')
         feed = Feed.objects.get(pk=feed.id)
         self.assertEqual(feed.url, 'atom10.xml')
 
-    def test_content_handling(self):
+    @patch('requests.get')
+    def test_content_handling(self, get):
         """The content section overrides the subtitle section"""
-        feed = Feed(name='Content', category=self.cat,
-                    url='atom10.xml')
-        feed.save()
-        fake_update(feed.url)
+        get.return_value = responses(200, 'atom10.xml')
+        self.cat.feeds.create(name='Content', url='atom10.xml')
         entry = Entry.objects.get()
         self.assertTrue('Watch out for <span> nasty tricks' in entry.subtitle)
 
-    def test_gone(self):
+    @patch('requests.get')
+    def test_gone(self, get):
         """Muting the feed if the status code is 410"""
-        feed = Feed(name='Gone', category=self.cat, url='gone.xml')
-        feed.save()
-        fake_update(feed.url)
-        feed = Feed.objects.get(pk=feed.id)
+        get.return_value = responses(410)
+        feed = self.cat.feeds.create(name='Gone', url='gone.xml')
+        feed = UniqueFeed.objects.get(url='gone.xml')
         self.assertTrue(feed.muted)
 
     @patch("requests.head")
     def test_feed_resurrection(self, head):
-        class Response(object):  # noqa
-            def __init__(self, status_code):
-                self.status_code = status_code
-        head.return_value = Response(200)
+        head.return_value = responses(200)
+        unique = UniqueFeed.objects.get()
 
-        self.feed.muted = True
-        self.feed.save()
-        self.feed.resurrect()
+        unique.muted = True
+        unique.save()
+        unique.resurrect()
         head.assert_called_with('sw-all.xml',
                                 headers={'User-Agent': FEED_CHECKER})
-        feed = Feed.objects.get(pk=self.feed.pk)
+        feed = UniqueFeed.objects.get(url=self.feed.url)
         self.assertFalse(feed.muted)
         self.assertEqual(feed.failed_attempts, 0)
 
     @patch("requests.head")
     def test_no_resurrection(self, head):
-        class Response(object):  # noqa
-            def __init__(self, status_code):
-                self.status_code = status_code
-        head.return_value = Response(500)
-        self.feed.muted = True
-        self.feed.save()
-        self.feed.resurrect()
+        head.return_value = responses(500)
+        unique = UniqueFeed.objects.get()
+
+        unique.muted = True
+        unique.save()
+        unique.resurrect()
         head.assert_called_with('sw-all.xml',
                                 headers={'User-Agent': FEED_CHECKER})
-        feed = Feed.objects.get(pk=self.feed.pk)
+        feed = UniqueFeed.objects.get(url=self.feed.url)
         self.assertTrue(feed.muted)
-        self.assertEqual(feed.failed_attempts, self.feed.failed_attempts + 1)
+        self.assertEqual(feed.failed_attempts, 1)
 
     @patch("requests.head")
     def test_resurection_exception(self, head):
         def side_effect(*args, **kwargs):
             raise ConnectionError()
         head.side_effect = side_effect
-        self.feed.muted = True
-        self.feed.save()
-        self.feed.resurrect()
+        unique = UniqueFeed.objects.get()
+
+        unique.muted = True
+        unique.save()
+        unique.resurrect()
         head.assert_called_with('sw-all.xml',
                                 headers={'User-Agent': FEED_CHECKER})
-        feed = Feed.objects.get(pk=self.feed.pk)
+        feed = UniqueFeed.objects.get(url=self.feed.url)
         self.assertTrue(feed.muted)
         self.assertEqual(feed.failed_attempts, self.feed.failed_attempts + 1)
 
-    def test_no_date_and_304(self):
+    @patch('requests.get')
+    def test_no_date_and_304(self, get):
         """If the feed does not have a date, we'll have to find one.
         Also, since we update it twice, the 2nd time it's a 304 response."""
-        feed = Feed(name='Django Community', category=self.cat,
-                    url='no-date.xml')
-        feed.save()
+        get.return_value = responses(200, 'no-date.xml')
+        feed = self.cat.feeds.create(name='Django Community',
+                                     url='no-date.xml')
 
         # Update the feed twice and make sure we don't index the content twice
-        fake_update(feed.url)
+        update_feed(feed.url, use_etags=False)
         feed1 = Feed.objects.get(pk=feed.id)
         count1 = feed1.entries.count()
 
-        fake_update(feed1.url)
+        update_feed(feed1.url, use_etags=False)
         feed2 = Feed.objects.get(pk=feed1.id)
         count2 = feed2.entries.count()
 
         self.assertEqual(count1, count2)
 
-    def test_no_status(self):
-        self.feed.url = 'no-status.xml'
-        self.feed.save()
-        fake_update(self.feed.url)
-        self.assertEqual(Entry.objects.count(), 0)
-
-    def test_auto_mute_feed(self):
+    @patch('requests.get')
+    def test_auto_mute_feed(self, get):
         """Auto-muting feeds with no status for too long"""
         self.feed.url = 'no-status.xml'
         self.feed.save()
-        fake_update(self.feed.url)
+
+        def raise_timeout(*args, **kwargs):
+            raise requests.Timeout()
+        get.side_effect = raise_timeout
+
+        update_feed(self.feed.url, use_etags=False)
+
         self.assertEqual(Entry.objects.count(), 0)
-        feed = Feed.objects.get(url=self.feed.url)
+        feed = UniqueFeed.objects.get(url=self.feed.url)
         self.assertEqual(feed.failed_attempts, 1)
         for i in range(20):
-            fake_update(self.feed.url)
-        feed = Feed.objects.get(url=self.feed.url)
+            update_feed(self.feed.url, use_etags=False)
+        feed = UniqueFeed.objects.get(url=self.feed.url)
         self.assertEqual(feed.failed_attempts, 20)
         self.assertTrue(feed.muted)
 
-    def test_no_link(self):
+    @patch('requests.get')
+    def test_no_link(self, get):
+        get.return_value = responses(200, 'rss20.xml')
         self.feed.url = 'rss20.xml'
         self.feed.save()
-        fake_update(self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
         self.assertEqual(Entry.objects.count(), 1)
 
+        get.return_value = responses(200, 'no-link.xml')
         self.feed.url = 'no-link.xml'
         self.feed.save()
-        fake_update(self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
         self.assertEqual(Entry.objects.count(), 1)
 
-    def test_multiple_objects(self):
+    @patch('requests.get')
+    def test_multiple_objects(self, get):
         """Duplicates are removed at the next update"""
-        fake_update(self.feed.url)
+        get.return_value = responses(200, self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
         entry = self.feed.entries.all()[0]
         entry.id = None
         entry.save()
         entry.id = None
         entry.save()
         self.assertEqual(self.feed.entries.count(), 32)
-        fake_update(self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
         self.assertEqual(self.feed.entries.count(), 30)
-
-    def test_future_date(self):
-        self.feed.url = 'future.xml'
-        self.feed.save()
-        fake_update(self.feed.url)
-        self.assertEqual(self.feed.entries.count(), 1)
 
     def test_entry_model_behaviour(self):
         """Behaviour of the `Entry` model"""
@@ -408,7 +375,8 @@ class TestFeeds(TestCase):
         self.assertContains(response,
                             'New Name has been successfully updated')
 
-    def test_add_feed(self):
+    @patch('requests.get')
+    def test_add_feed(self, get):
         url = reverse('feeds:add_feed')
         response = self.client.get(url)
         self.assertContains(response, 'Add a feed')
@@ -419,6 +387,7 @@ class TestFeeds(TestCase):
 
         data = {'name': 'Bobby', 'url': 'http://example.com/feed.xml',
                 'category': self.cat.id}
+        get.return_value = responses(304)
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 302)
         self.assertTrue('/category/cat/' in response['Location'])
@@ -472,7 +441,7 @@ class TestFeeds(TestCase):
 
     def test_invalid_page(self):
         # We need more than 25 entries
-        fake_update(self.feed.url)
+        update_feed(self.feed.url)
         url = reverse('feeds:home', args=[12000])  # that page doesn't exist
         response = self.client.get(url)
         self.assertContains(response, '<a href="/" class="current">')
@@ -487,8 +456,10 @@ class TestFeeds(TestCase):
         self.assertContains(response, "jacobian's django-deployment-workshop")
         self.assertContains(response, '<a href="%s">⇠ Back</a>' % from_url)
 
-    def test_entry(self):
-        fake_update(self.feed.url)
+    @patch('requests.get')
+    def test_entry(self, get):
+        get.return_value = responses(200, self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
 
         url = reverse('feeds:home')
         self._test_entry(url)
@@ -508,8 +479,10 @@ class TestFeeds(TestCase):
         url = reverse('feeds:unread_feed', args=[self.feed.pk])
         self._test_entry(url)
 
-    def test_last_entry(self):
-        fake_update(self.feed.url)
+    @patch('requests.get')
+    def test_last_entry(self, get):
+        get.return_value = responses(200, self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
 
         last_item = self.user.entries.order_by('date')[0]
         url = reverse('feeds:item', args=[last_item.id])
@@ -535,10 +508,13 @@ class TestFeeds(TestCase):
         response = self.client.post(url, {'action': 'images_never'})
         self.assertNotContains(response, 'Hide images')
 
-    def test_opml_import(self):
+    @patch('requests.get')
+    def test_opml_import(self, get):
         url = reverse('feeds:import_feeds')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        get.return_value = responses(304)
 
         with open(os.path.join(ROOT, 'sample.opml'), 'r') as opml_file:
             data = {'file': opml_file}
@@ -555,10 +531,13 @@ class TestFeeds(TestCase):
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, '0 feeds have been imported')
 
-    def test_categories_in_opml(self):
+    @patch('requests.get')
+    def test_categories_in_opml(self, get):
         url = reverse('feeds:import_feeds')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        get.return_value = responses(304)
 
         with open(os.path.join(ROOT, 'categories.opml'), 'r') as opml_file:
             data = {'file': opml_file}
@@ -575,7 +554,8 @@ class TestFeeds(TestCase):
         response = self.client.get(url)
         self.assertContains(response, 'Dashboard')
 
-    def test_unread_count(self):
+    @patch('requests.get')
+    def test_unread_count(self, get):
         """Unread feed count everywhere"""
         url = reverse('profile')
         response = self.client.get(url)
@@ -584,7 +564,8 @@ class TestFeeds(TestCase):
             '<a class="unread" title="Unread entries" href="/unread/">0</a>'
         )
 
-        fake_update(self.feed.url)
+        get.return_value = responses(200, self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
 
         response = self.client.get(url)
         self.assertContains(
@@ -592,12 +573,14 @@ class TestFeeds(TestCase):
             '<a class="unread" title="Unread entries" href="/unread/">30</a>'
         )
 
-    def test_mark_as_read(self):
+    @patch('requests.get')
+    def test_mark_as_read(self, get):
         url = reverse('feeds:unread')
         response = self.client.get(url)
         self.assertNotContains(response, 'Mark all as read')
 
-        fake_update(self.feed.url)
+        get.return_value = responses(200, self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
 
         response = self.client.get(url)
         self.assertContains(response, 'Mark all as read')
@@ -607,8 +590,9 @@ class TestFeeds(TestCase):
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, '30 entries have been marked as read')
 
+    @patch('requests.get')
     @patch('oauth2.Client')
-    def test_add_to_readability(self, Client):
+    def test_add_to_readability(self, Client, get):
         client = Client.return_value
         r = Response({
             'status': 202,
@@ -625,7 +609,12 @@ class TestFeeds(TestCase):
         })
         self.user.save()
 
-        fake_update(self.feed.url)
+        get.return_value = responses(200, self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
+        get.assert_called_with(
+            'sw-all.xml',
+            headers={'User-Agent': USER_AGENT % '(1 subscriber)'}, timeout=10)
+
         entry_pk = Entry.objects.all()[0].pk
         url = reverse('feeds:item', args=[entry_pk])
         response = self.client.get(url)
@@ -640,8 +629,9 @@ class TestFeeds(TestCase):
         response = self.client.get(url)
         self.assertNotContains(response, "Add to Instapaper")
 
+    @patch("requests.get")
     @patch('oauth2.Client')
-    def test_add_to_instapaper(self, Client):
+    def test_add_to_instapaper(self, Client, get):
         client = Client.return_value
         r = Response({'status': 200})
         client.request.return_value = [
@@ -650,7 +640,14 @@ class TestFeeds(TestCase):
                          'title': 'Some bookmark',
                          'url': 'http://example.com/some-bookmark'}])
         ]
-        fake_update(self.feed.url)
+
+        get.return_value = responses(200, self.feed.url)
+
+        update_feed(self.feed.url, use_etags=False)
+        get.assert_called_with(
+            'sw-all.xml',
+            headers={'User-Agent': USER_AGENT % '(1 subscriber)'}, timeout=10)
+
         self.user.read_later = 'instapaper'
         self.user.read_later_credentials = json.dumps({
             'oauth_token': 'token',
@@ -676,14 +673,20 @@ class TestFeeds(TestCase):
         response = self.client.get(url)
         self.assertNotContains(response, "Add to Instapaper")
 
+    @patch('requests.get')
     @patch('requests.post')
-    def test_add_to_readitlaterlist(self, post):
+    def test_add_to_readitlaterlist(self, post, get):
         data = {'action': 'read_later'}
         self.user.read_later = 'readitlater'
         self.user.read_later_credentials = json.dumps({'username': 'foo',
                                                        'password': 'bar'})
         self.user.save()
-        fake_update(self.feed.url)
+
+        get.return_value = responses(200, self.feed.url)
+        update_feed(self.feed.url, use_etags=False)
+        get.assert_called_with(
+            'sw-all.xml',
+            headers={'User-Agent': USER_AGENT % '(1 subscriber)'}, timeout=10)
 
         url = reverse('feeds:item', args=[Entry.objects.all()[0].pk])
         response = self.client.get(url)
@@ -702,15 +705,15 @@ class TestFeeds(TestCase):
                             u'expression matching')},
         )
 
-    def test_pubsubhubbub_handling(self):
+    @patch('requests.get')
+    def test_pubsubhubbub_handling(self, get):
         url = 'http://bruno.im/atom/tag/django-community/'
-        parse = feedparser.parse
-        feedparser.parse = Mock()
-        feedparser.parse.return_value = {}
-        feed = Feed.objects.create(url=url, name='Bruno', category=self.cat)
-        feedparser.parse.assert_called_with(url)
+        get.return_value = responses(304)
+        feed = self.cat.feeds.create(url=url, name='Bruno')
+        get.assert_called_with(
+            url, headers={'User-Agent': USER_AGENT % '(1 subscriber)'},
+            timeout=10)
 
-        feedparser.parse = parse
         self.assertEqual(feed.entries.count(), 0)
         path = os.path.join(ROOT, 'bruno.im.atom')
         parsed = feedparser.parse(path)
@@ -725,7 +728,8 @@ class TestFeeds(TestCase):
         self.assertEqual(feed.entries.filter(date__year=2011).count(), 3)
         self.assertEqual(feed.entries.filter(date__year=2012).count(), 2)
 
-    def test_bookmarklet_post(self):
+    @patch('requests.get')
+    def test_bookmarklet_post(self, get):
         url = '/subscribe/'  # hardcoded in the JS file
         with open(os.path.join(ROOT, 'bruno-head.html'), 'r') as f:
             data = {
@@ -749,6 +753,8 @@ class TestFeeds(TestCase):
             'csrfmiddlewaretoken': token,
         }
         self.assertEqual(Feed.objects.count(), 1)
+
+        get.return_value = responses(304)
         response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertEqual(Feed.objects.count(), 2)

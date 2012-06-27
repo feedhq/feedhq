@@ -360,7 +360,7 @@ def item(request, entry_id):
                 Feed.objects.filter(pk=entry.feed.pk).update(img_safe=False)
                 entry.feed.img_safe = False
             elif action == 'read_later':
-                enqueue(read_later, entry.pk)
+                enqueue(read_later, entry.pk, timeout=20)
                 messages.success(
                     request,
                     _('Article successfully added to your reading list'),

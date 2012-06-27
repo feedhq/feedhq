@@ -2,12 +2,12 @@ from django.conf import settings
 from django.db import connection
 
 from ..tasks import raven
-from .utils import FeedUpdater
 
 
 @raven
 def update_feed(feed_url, use_etags=True):
-    FeedUpdater(feed_url).update(use_etags)
+    from .models import UniqueFeed
+    UniqueFeed.objects.update_feed(feed_url, use_etags)
     close_connection()
 
 
@@ -20,5 +20,6 @@ def read_later(entry_pk):
 
 def close_connection():
     """Close the connection only if not in eager mode"""
-    if not settings.RQ.get('eager', True):
-        connection.close()
+    if hasattr(settings, 'RQ'):
+        if not settings.RQ.get('eager', True):
+            connection.close()

@@ -1,19 +1,14 @@
 import datetime
-import feedparser
 import logging
 import lxml.html
 import pytz
 import requests
-import time
 import urllib2
 import urlparse
 
 from django.conf import settings
 from django.db import transaction
-from django.db.models import F
 from django.utils import timezone
-
-from interruptingcow import timeout
 
 from django_push.subscriber.models import Subscription
 
@@ -32,101 +27,21 @@ logger = logging.getLogger('feedupdater')
 
 
 class FeedUpdater(object):
+    def __init__(self, parsed, feeds):
+        self.parsed = parsed
+        self.feeds = feeds
 
-    def __init__(self, url, agent='(1 subscriber)', feedparser=feedparser):
-        self.url = url
-        self.feedparser = feedparser
-        self.updated = {}
-        self.feeds = None
-        feedparser.USER_AGENT = USER_AGENT % agent
-
-    def update(self, use_etags=True):
-        self.get_feeds()
-        self.get_entries(use_etags)
+    def update(self):
+        self.get_entries()
         self.add_entries_to_feeds()
-        self.handle_updated()
         self.remove_old_stuff()
         self.update_counts()
 
-    def get_feeds(self):
-        if self.feeds is None:
-            from .models import Feed
-            self.feeds = Feed.objects.filter(url=self.url, muted=False)
-
-    def get_entries(self, use_etags=True):
-        """Populates self.entries and self.updated
-        self.entries: a list of Entry objects, parsed from self.url
-        self.updated: a dict of values to push to self.feeds
-        """
-        feed = self.feeds[0]
-
-        try:
-            with timeout(10, exception=RuntimeError):
-                if use_etags and feed.modified:
-                    modified = time.localtime(float(feed.modified))
-                    parsed_feed = self.feedparser.parse(feed.url,
-                                                        etag=feed.etag,
-                                                        modified=modified)
-                else:
-                    parsed_feed = self.feedparser.parse(feed.url)
-        except RuntimeError:
-            logger.info("Feed took more than 10 seconds, %s" % feed.url)
-            self.entries = []
-            return
-
-        if not 'status' in parsed_feed:
-            logger.debug("No status in parsed feed, %s: %s" % (feed.pk,
-                                                               feed.url))
-            if feed.failed_attempts >= 20:
-                logger.info("Feed failed 20 times, muting %s: %s" % (feed.pk,
-                                                                     feed.url))
-                self.feeds.update(muted=True)
-            self.feeds.filter(url=feed.url).update(
-                failed_attempts=F('failed_attempts') + 1
-            )
-            self.entries = []
-            return
-        self.feeds.update(failed_attempts=0)
-
-        if parsed_feed.status == 301:  # permanent redirect
-            self.updated['url'] = parsed_feed.href
-
-        if parsed_feed.status == 410:  # Gone
-            logger.info("Feed gone, %s: %s" % (feed.pk, feed.url))
-            self.updated['muted'] = True
-            self.entries = []
-            return
-
-        if parsed_feed.status == 304:  # Not modified
-            logger.debug("Feed not modified, %s" % feed.url)
-            self.entries = []
-            return
-
-        if ('link' in parsed_feed.feed and
-            not feed.link == parsed_feed.feed.link):
-            self.updated['link'] = parsed_feed.feed.link
-
-        if ('title' in parsed_feed.feed and
-            not feed.title == parsed_feed.feed.title):
-            self.updated['title'] = parsed_feed.feed.title
-
-        if 'etag' in parsed_feed:
-            self.updated['etag'] = parsed_feed.etag
-        if 'modified_parsed' in parsed_feed:
-            timed = time.mktime(parsed_feed.modified_parsed)
-            self.updated['modified'] = '%s' % timed
-
-        if 'links' in parsed_feed.feed:
-            for link in parsed_feed.feed.links:
-                if link.rel == 'hub':
-                    self.handle_hub(parsed_feed.href, link.href)
-
-        self.transform_entries(parsed_feed)
-
-    def transform_entries(self, parsed_feed):
+    def get_entries(self):
+        """Populates self.entries: a list of Entry objects"""
         from .models import Entry
         self.entries = []
-        for entry in parsed_feed.entries:
+        for entry in self.parsed.entries:
             if not 'link' in entry:
                 continue
             title = entry.title if 'title' in entry else '(No title)'
@@ -150,7 +65,7 @@ class FeedUpdater(object):
             parsed_entry.link = entry.link
             if 'guid' in entry:
                 parsed_guid = urlparse.urlparse(entry.guid)
-                parsed_link = urlparse.urlparse(parsed_feed.feed.link)
+                parsed_link = urlparse.urlparse(self.parsed.feed.link)
                 if (parsed_guid.scheme in ('http', 'https') and
                     parsed_guid.netloc == parsed_link.netloc):
                     parsed_entry.guid = entry.guid
@@ -278,9 +193,6 @@ class FeedUpdater(object):
                 # Tracking image -- deleting
                 element.drop_tree()
         return lxml.etree.tostring(page)
-
-    def handle_updated(self):
-        self.feeds.update(**self.updated)
 
     def remove_old_stuff(self):
         """

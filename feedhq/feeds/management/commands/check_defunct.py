@@ -3,14 +3,15 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from raven import Client
 
-from ...models import Feed
+from ...models import UniqueFeed
 
 
 class Command(BaseCommand):
     """Checks defunct feeds in case of resurrection."""
 
     def handle(self, *args, **kwargs):
-        for feed in Feed.objects.filter(failed_attempts__gt=0, muted=True):
+        for feed in UniqueFeed.objects.filter(failed_attempts__gt=0,
+                                              muted=True):
             try:
                 feed.resurrect()
             except Exception:

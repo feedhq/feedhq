@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from django.conf import settings
@@ -6,7 +5,9 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from raven import Client
 
-from ...models import Feed
+from ....tasks import enqueue
+from ...models import UniqueFeed, Feed
+from ...tasks import update_feed
 from ...utils import FeedUpdater
 
 logger = logging.getLogger('feedupdater')
@@ -22,8 +23,6 @@ class Command(BaseCommand):
             feed.etag = ''
             return FeedUpdater(feed.url).update(use_etags=False)
 
-        start = datetime.datetime.now()
-
         # Making a list of unique URLs. Makes one call whatever the number of
         # subscribers is.
         urls = Feed.objects.filter(muted=False).values_list('url', flat=True)
@@ -31,17 +30,13 @@ class Command(BaseCommand):
         map(unique_urls.__setitem__, urls, [])
 
         for url in unique_urls:
-            subscriber_count = Feed.objects.filter(url=url,
-                                                   muted=False).count()
-
-            plural = ''
-            if subscriber_count > 1:
-                plural = 's'
-
-            agent_detail = '(%s subscriber%s)' % (subscriber_count, plural)
             try:
-                updater = FeedUpdater(url, agent=agent_detail)
-                updater.update()
+                try:
+                    unique = UniqueFeed.objects.get(url=url)
+                    if unique.should_update():
+                        enqueue(update_feed, url)
+                except UniqueFeed.DoesNotExist:
+                    enqueue(update_feed, url)
             except Exception:  # We don't know what to expect, and anyway
                                # we're reporting the exception
                 if settings.DEBUG or not hasattr(settings, 'SENTRY_DSN'):
@@ -49,7 +44,4 @@ class Command(BaseCommand):
                 else:
                     client = Client(dsn=settings.SENTRY_DSN)
                     client.captureException()
-
-        duration = datetime.datetime.now() - start
-        logger.info("Updatefeeds took %s" % duration)
         connection.close()

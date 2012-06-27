@@ -2,7 +2,7 @@ from ratelimitbackend import admin
 
 from django_push.subscriber.models import Subscription
 
-from .models import Category, Feed, Entry, Favicon
+from .models import Category, UniqueFeed, Feed, Entry, Favicon
 
 
 class FeedInline(admin.TabularInline):
@@ -18,6 +18,13 @@ class CategoryAdmin(admin.ModelAdmin):
             }),
     )
     inlines = [FeedInline]
+
+
+class UniqueFeedAdmin(admin.ModelAdmin):
+    list_display = ('url', 'subscribers', 'last_update', 'muted',
+                    'muted_reason', 'failed_attempts')
+    list_filter = ('muted', 'muted_reason', 'hub')
+    search_fields = ('url', 'title', 'link')
 
 
 class FeedAdmin(admin.ModelAdmin):
@@ -41,6 +48,7 @@ class FaviconAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(UniqueFeed, UniqueFeedAdmin)
 admin.site.register(Feed, FeedAdmin)
 admin.site.register(Entry, EntryAdmin)
 admin.site.register(Favicon, FaviconAdmin)

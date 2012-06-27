@@ -1,4 +1,5 @@
 import datetime
+import feedparser
 import json
 import logging
 import lxml
@@ -21,7 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 
 from .tasks import update_feed
-from .utils import FeedUpdater, FAVICON_FETCHER, FEED_CHECKER
+from .utils import FeedUpdater, FAVICON_FETCHER, FEED_CHECKER, USER_AGENT
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
 
@@ -106,6 +107,157 @@ class Category(models.Model):
         return reverse('feeds:category', args=[self.slug])
 
 
+class UniqueFeedManager(models.Manager):
+    def update_feed(self, url, use_etags=True):
+        obj, created = self.get_or_create(url=url)
+
+        if not created and use_etags:
+            if not obj.should_update():
+                logger.debug("Last update too recent, skipping %s" % obj.url)
+                return
+
+        if obj.muted:
+            logger.debug("%s is muted" % obj.url)
+            return
+
+        feeds = Feed.objects.filter(url=url)
+        obj.subscribers = feeds.count()
+
+        if obj.subscribers == 1:
+            subscribers = '(1 subscriber)'
+        else:
+            subscribers = '(%s subscribers)' % obj.subscribers
+
+        headers = {
+            'User-Agent': USER_AGENT % subscribers,
+        }
+
+        if use_etags:
+            if obj.modified:
+                headers['If-Modified-Since'] = obj.modified
+            if obj.etag:
+                headers['If-None-Match'] = obj.etag
+
+        if settings.TESTS:
+            # Make sure requests.get is properly mocked during tests
+            if str(type(requests.get)) != "<class 'mock.MagicMock'>":
+                raise ValueError("Not Mocked")
+
+        try:
+            response = requests.get(url, headers=headers, timeout=10)
+        except requests.RequestException:
+            logger.info("Error fetching %s" % obj.url)
+            obj.failed_attempts += 1
+            if obj.failed_attempts >= 20:
+                logger.info("%s failed 20 times, muting" % obj.url)
+                obj.muted = True
+                obj.muted_reason = 'timeout'
+            obj.save()
+            return
+
+        obj.failed_attempts = 0
+
+        if response.history:
+            logger.info("%s moved to %s" % (obj.url, response.url))
+            Feed.objects.filter(url=obj.url).update(url=response.url)
+            obj.url = response.url
+
+        if response.status_code == 410:
+            logger.info("Feed gone, %s" % obj.url)
+            obj.muted = True
+            obj.muted_reason = 'gone'
+
+        elif response.status_code == 304:
+            logger.debug("Feed not modified, %s" % obj.url)
+
+        elif response.status_code != 200:
+            logger.debug("%s returned %s" % (obj.url, response.status_code))
+
+        if 'etag' in response.headers:
+            obj.etag = response.headers['etag']
+
+        if 'last-modified' in response.headers:
+            obj.modified = response.headers['last-modified']
+
+        parsed = feedparser.parse(response.content)
+
+        if 'link' in parsed.feed:
+            obj.link = parsed.feed.link
+
+        if 'title' in parsed.feed:
+            obj.title = parsed.feed.title
+
+        if 'links' in parsed.feed:
+            for link in parsed.feed.links:
+                if link.rel == 'hub':
+                    obj.hub = link.href
+
+        obj.save()
+
+        updater = FeedUpdater(parsed=parsed, feeds=feeds)
+        updater.update()
+
+
+MUTE_CHOICES = (
+    ('gone', 'Feed gone (410)'),
+    ('timeout', 'Feed timed out'),
+)
+
+
+class UniqueFeed(models.Model):
+    url = models.URLField(_('URL'), verify_exists=False, max_length=1023,
+                          unique=True)
+    title = models.CharField(_('Title'), max_length=1023, blank=True)
+    link = models.URLField(_('Link'), verify_exists=False, max_length=1023,
+                           blank=True)
+    etag = models.CharField(_('Etag'), max_length=1023, null=True, blank=True)
+    modified = models.CharField(_('Modified'), max_length=1023, null=True,
+                                blank=True)
+    subscribers = models.PositiveIntegerField(default=1, db_index=True)
+    last_update = models.DateTimeField(_('Last update'), default=timezone.now)
+    muted = models.BooleanField(_('Muted'), default=False)
+    muted_reason = models.CharField(_('Muting reason'), max_length=50,
+                                    null=True, blank=True,
+                                    choices=MUTE_CHOICES)
+    failed_attempts = models.PositiveIntegerField(_('Failed fetch attempts'),
+                                                  default=0)
+    hub = models.URLField(_('Hub'), max_length=1023, null=True, blank=True)
+
+    objects = UniqueFeedManager()
+
+    def __unicode__(self):
+        if self.title:
+            return u'%s' % self.title
+        return u'%s' % self.url
+
+    def resurrect(self):
+        if not self.muted:
+            return
+        ua = {'User-Agent': FEED_CHECKER}
+        try:
+            response = requests.head(self.url, headers=ua)
+        except requests.exceptions.RequestException:
+            logger.debug("Feed still dead, raised exception. %s" % self.url)
+        else:
+            if response.status_code == 200:
+                logger.info("Unmuting %s" % self.url)
+                self.muted = False
+                self.muted_reason = None
+                self.failed_attempts = 0
+                self.save()
+                return
+            else:
+                logger.debug("Feed still dead, status %s, %s" % (
+                    response.status_code, self.url))
+        UniqueFeed.objects.filter(pk=self.pk).update(
+            failed_attempts=F('failed_attempts') + 1
+        )
+
+
+    def should_update(self):
+        return self.last_update + datetime.timedelta(hours=1) < timezone.now()
+
+
 class Feed(models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=255)
@@ -146,7 +298,7 @@ class Feed(models.Model):
         update = self.pk is None
         super(Feed, self).save(*args, **kwargs)
         if update:
-            enqueue(update_feed, self.url, use_etags=False)
+            enqueue(update_feed, self.url, use_etags=False, timeout=20)
 
     def favicon_img(self):
         if not self.favicon:
@@ -166,29 +318,6 @@ class Feed(models.Model):
         self.unread_count = self.entries.filter(read=False).count()
         Feed.objects.filter(pk=self.pk).update(
             unread_count=self.unread_count,
-        )
-
-    def resurrect(self):
-        if not self.muted:
-            return
-        ua = {'User-Agent': FEED_CHECKER}
-        try:
-            response = requests.head(self.url, headers=ua)
-        except requests.exceptions.RequestException:
-            logger.debug("Feed still dead, raised exception. %s" % self.url)
-        else:
-            if response.status_code == 200:
-                logger.info("Unmuting %s" % self.url)
-                Feed.objects.filter(pk=self.pk).update(
-                    muted=False,
-                    failed_attempts=0,
-                )
-                return
-            else:
-                logger.debug("Feed still dead, status %s, %s" % (
-                    response.status_code, self.url))
-        Feed.objects.filter(pk=self.pk).update(
-            failed_attempts=F('failed_attempts') + 1
         )
 
 
@@ -304,11 +433,9 @@ def pubsubhubbub_update(notification, **kwargs):
             url = link['href']
     if url is None:
         return
-    updater = FeedUpdater(url)
-    updater.get_feeds()
-    updater.transform_entries(parsed)
-    updater.add_entries_to_feeds()
-    updater.update_counts()
+    feeds = Feed.objects.filter(url=url)
+    updater = FeedUpdater(parsed, feeds)
+    updater.update()
 updated.connect(pubsubhubbub_update)
 
 
