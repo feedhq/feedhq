@@ -4,7 +4,6 @@ import logging
 import lxml.html
 import pytz
 import requests
-import socket
 import time
 import urllib2
 import urlparse
@@ -59,8 +58,6 @@ class FeedUpdater(object):
         self.entries: a list of Entry objects, parsed from self.url
         self.updated: a dict of values to push to self.feeds
         """
-        socket.setdefaulttimeout(5)  # aggressive but otherwise
-                                     # it can take ages
         feed = self.feeds[0]
 
         try:
