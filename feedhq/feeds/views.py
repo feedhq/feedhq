@@ -427,7 +427,9 @@ def import_feeds(request):
 
             messages.success(
                 request,
-                _('%(num)s feeds have been imported' % {'num': imported}),
+                _('%(num)s feeds have been imported, new content will appear '
+                  'in a moment when you refresh the '
+                  'page.' % {'num': imported}),
             )
             return redirect('feeds:home')
 
