@@ -111,11 +111,7 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'sentry_debug': {
-            'level': 'DEBUG',
-            'class': 'raven.contrib.django.handlers.SentryHandler',
-        },
-        'sentry_info': {
+        'sentry': {
             'level': 'INFO',
             'class': 'raven.contrib.django.handlers.SentryHandler',
         },
@@ -127,11 +123,11 @@ LOGGING = {
             'propagate': True,
         },
         'feedupdater': {
-            'handlers': ['console', 'sentry_info'],
+            'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
         },
         'ratelimitbackend': {
-            'handlers': ['console', 'sentry_debug'],
+            'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
         },
         'raven': {
