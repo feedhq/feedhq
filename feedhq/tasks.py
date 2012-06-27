@@ -29,6 +29,7 @@ def enqueue(function, *args, **kwargs):
     opts = getattr(settings, 'RQ', {})
     eager = opts.get('eager', False)
     if eager:
+        kwargs.pop('timeout', None)  # timeout is for RQ only
         return function(*args, **kwargs)
 
     else:
