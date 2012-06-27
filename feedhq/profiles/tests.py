@@ -4,8 +4,11 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from httplib2 import Response
+from httplib2 import Response as _Response
 from mock import patch
+from requests import Response
+
+from ..feeds.utils import USER_AGENT
 
 
 class ProfilesTest(TestCase):
@@ -95,7 +98,8 @@ class ProfilesTest(TestCase):
         response = self.client.post(url, data)
         self.assertEqual(User.objects.get(pk=self.user.pk).username, 'foobar')
 
-    def test_opml_export(self):
+    @patch("requests.get")
+    def test_opml_export(self, get):
         url = reverse('export')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -103,8 +107,15 @@ class ProfilesTest(TestCase):
         self.assertEqual(len(response.content), 126)  # No feed yet
 
         cat = self.user.categories.create(name='Test', slug='test')
+
+        response = Response()
+        response.status_code = 304
+        get.return_value = response
         cat.feeds.create(name='Test Feed',
                          url='http://example.com/test.atom')
+        get.assert_called_with(
+            'http://example.com/test.atom',
+            headers={"User-Agent": USER_AGENT % '(1 subscriber)'}, timeout=10)
         response = self.client.get(url)
         self.assertContains(response, 'xmlUrl="http://example.com/test.atom"')
 
@@ -167,7 +178,7 @@ class ProfilesTest(TestCase):
         client = Client.return_value
 
         client.request.return_value = [
-            Response({}),
+            _Response({}),
             "oauth_token=aabbccdd&oauth_token_secret=efgh1234"
         ]
 
@@ -200,7 +211,7 @@ class ProfilesTest(TestCase):
     @patch("oauth2.Client")
     def test_invalid_oauth_credentials(self, Client):
         client = Client.return_value
-        client.request.return_value = [Response({'status': 401}),
+        client.request.return_value = [_Response({'status': 401}),
                                        "xAuth error"]
 
         url = reverse("services", args=['instapaper'])
