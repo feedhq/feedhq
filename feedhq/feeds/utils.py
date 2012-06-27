@@ -70,7 +70,8 @@ class FeedUpdater(object):
                 else:
                     parsed_feed = self.feedparser.parse(feed.url)
         except RuntimeError:
-            logger.debug("Feed took more than 10 seconds, %s" % feed.url)
+            logger.info("Feed took more than 10 seconds, %s" % feed.url)
+            self.entries = []
             return
 
         if not 'status' in parsed_feed:
