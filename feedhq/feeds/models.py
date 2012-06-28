@@ -255,7 +255,8 @@ class UniqueFeed(models.Model):
 
 
     def should_update(self):
-        return self.last_update + datetime.timedelta(hours=1) < timezone.now()
+        delay = datetime.timedelta(minutes=45)
+        return self.last_update + delay < timezone.now()
 
 
 class Feed(models.Model):
