@@ -115,6 +115,7 @@ class UniqueFeedManager(models.Manager):
             if not obj.should_update():
                 logger.debug("Last update too recent, skipping %s" % obj.url)
                 return
+        obj.last_update = timezone.now()
 
         if obj.muted:
             logger.debug("%s is muted" % obj.url)
