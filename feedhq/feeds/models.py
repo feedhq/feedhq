@@ -146,7 +146,7 @@ class UniqueFeedManager(models.Manager):
         try:
             response = requests.get(url, headers=headers, timeout=10)
         except requests.RequestException:
-            logger.info("Error fetching %s" % obj.url)
+            logger.debug("Error fetching %s" % obj.url)
             obj.failed_attempts += 1
             if obj.failed_attempts >= 20:
                 logger.info("%s failed 20 times, muting" % obj.url)
