@@ -34,9 +34,9 @@ class Command(BaseCommand):
                 try:
                     unique = UniqueFeed.objects.get(url=url)
                     if unique.should_update():
-                        enqueue(update_feed, url)
+                        enqueue(update_feed, url, timeout=20)
                 except UniqueFeed.DoesNotExist:
-                    enqueue(update_feed, url)
+                    enqueue(update_feed, url, timeout=20)
             except Exception:  # We don't know what to expect, and anyway
                                # we're reporting the exception
                 if settings.DEBUG or not hasattr(settings, 'SENTRY_DSN'):
