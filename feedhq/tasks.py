@@ -34,7 +34,8 @@ def enqueue(function, *args, **kwargs):
 
     else:
         conn = redis.Redis(**opts)
-        queue = rq.Queue('default', connection=conn)
+        queue_name = kwargs.pop('queue', 'default')
+        queue = rq.Queue(queue_name, connection=conn)
         return queue.enqueue(function, *args, **kwargs)
 
 

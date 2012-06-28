@@ -300,7 +300,8 @@ class Feed(models.Model):
         update = self.pk is None
         super(Feed, self).save(*args, **kwargs)
         if update:
-            enqueue(update_feed, self.url, use_etags=False, timeout=20)
+            enqueue(update_feed, self.url, use_etags=False, timeout=20,
+                    queue='high')
 
     def favicon_img(self):
         if not self.favicon:
