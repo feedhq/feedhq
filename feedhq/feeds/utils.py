@@ -131,6 +131,8 @@ class FeedUpdater(object):
         from .models import Entry
         for entry in self.entries:
             for feed in self.feeds:
+                if feed.muted:
+                    continue
                 treshold = feed.get_treshold()
                 if treshold is not None and entry.date < treshold:
                     # Skipping, it's too old
