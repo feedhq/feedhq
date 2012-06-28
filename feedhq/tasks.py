@@ -28,13 +28,13 @@ from raven import Client
 def enqueue(function, *args, **kwargs):
     opts = getattr(settings, 'RQ', {})
     eager = opts.get('eager', False)
+    queue_name = kwargs.pop('queue', 'default')
     if eager:
         kwargs.pop('timeout', None)  # timeout is for RQ only
         return function(*args, **kwargs)
 
     else:
         conn = redis.Redis(**opts)
-        queue_name = kwargs.pop('queue', 'default')
         queue = rq.Queue(queue_name, connection=conn)
         return queue.enqueue(function, *args, **kwargs)
 
