@@ -33,7 +33,7 @@ class Command(BaseCommand):
             try:
                 try:
                     unique = UniqueFeed.objects.get(url=url)
-                    if unique.should_update():
+                    if not unique.muted and unique.should_update():
                         enqueue(update_feed, url, timeout=20)
                 except UniqueFeed.DoesNotExist:
                     enqueue(update_feed, url, timeout=20)
