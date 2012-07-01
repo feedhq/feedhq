@@ -21,7 +21,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django_push.subscriber.signals import updated
 
-from .tasks import update_feed
+from .tasks import update_feed, update_unique_feed
 from .utils import FeedUpdater, FAVICON_FETCHER, FEED_CHECKER, USER_AGENT
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
@@ -110,6 +110,7 @@ class Category(models.Model):
 class UniqueFeedManager(models.Manager):
     def update_feed(self, url, use_etags=True):
         obj, created = self.get_or_create(url=url)
+        save = True
 
         if not created and use_etags:
             if not obj.should_update():
@@ -122,7 +123,6 @@ class UniqueFeedManager(models.Manager):
             return
 
         feeds = Feed.objects.filter(url=url)
-        obj.subscribers = feeds.count()
 
         if obj.subscribers == 1:
             subscribers = '(1 subscriber)'
@@ -153,7 +153,8 @@ class UniqueFeedManager(models.Manager):
                 logger.info("%s failed 20 times, muting" % obj.url)
                 obj.muted = True
                 obj.muted_reason = 'timeout'
-            obj.save()
+            if save:
+                obj.save()
             return
 
         obj.failed_attempts = 0
@@ -161,7 +162,11 @@ class UniqueFeedManager(models.Manager):
         if response.history and obj.url != response.url:
             logger.info("%s moved to %s" % (obj.url, response.url))
             Feed.objects.filter(url=obj.url).update(url=response.url)
-            obj.url = response.url
+            if self.filter(url=response.url).exists():
+                obj.delete()
+                save = False
+            else:
+                obj.url = response.url
 
         if response.status_code == 410:
             logger.info("Feed gone, %s" % obj.url)
@@ -193,7 +198,8 @@ class UniqueFeedManager(models.Manager):
                 if link.rel == 'hub':
                     obj.hub = link.href
 
-        obj.save()
+        if save:
+            obj.save()
 
         updater = FeedUpdater(parsed=parsed, feeds=feeds)
         updater.update()
@@ -254,7 +260,6 @@ class UniqueFeed(models.Model):
             failed_attempts=F('failed_attempts') + 1
         )
 
-
     def should_update(self):
         delay = datetime.timedelta(minutes=45)
         return self.last_update + delay < timezone.now()
@@ -302,6 +307,7 @@ class Feed(models.Model):
         if update:
             enqueue(update_feed, self.url, use_etags=False, timeout=20,
                     queue='high')
+        enqueue(update_unique_feed, self.url, timeout=20)
 
     def favicon_img(self):
         if not self.favicon:

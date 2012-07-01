@@ -18,6 +18,18 @@ def read_later(entry_pk):
     close_connection()
 
 
+@raven
+def update_unique_feed(feed_url):
+    from .models import UniqueFeed, Feed
+    feed, created = UniqueFeed.objects.get_or_create(
+        url=feed_url,
+        defaults={'subscribers': 1},
+    )
+    if not created:
+        feed.subscribers = Feed.objects.filter(url=feed_url).count()
+        feed.save()
+
+
 def close_connection():
     """Close the connection only if not in eager mode"""
     if hasattr(settings, 'RQ'):
