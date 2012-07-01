@@ -221,8 +221,9 @@ class UniqueFeed(models.Model):
     modified = models.CharField(_('Modified'), max_length=1023, null=True,
                                 blank=True)
     subscribers = models.PositiveIntegerField(default=1, db_index=True)
-    last_update = models.DateTimeField(_('Last update'), default=timezone.now)
-    muted = models.BooleanField(_('Muted'), default=False)
+    last_update = models.DateTimeField(_('Last update'), default=timezone.now,
+                                       db_index=True)
+    muted = models.BooleanField(_('Muted'), default=False, db_index=True)
     muted_reason = models.CharField(_('Muting reason'), max_length=50,
                                     null=True, blank=True,
                                     choices=MUTE_CHOICES)
