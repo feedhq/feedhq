@@ -19,24 +19,21 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         if args:
             pk = args[0]
-            feed = Feed.objects.get(pk=pk)
-            feed.etag = ''
-            return FeedUpdater(feed.url).update(use_etags=False)
+            feed = UniqueFeed.objects.get(pk=pk)
+            return update_feed(feed.url, use_etags=False)
 
-        # Making a list of unique URLs. Makes one call whatever the number of
-        # subscribers is.
-        urls = Feed.objects.filter(muted=False).values_list('url', flat=True)
-        unique_urls = {}
-        map(unique_urls.__setitem__, urls, [])
+        # This command is run every 5 minutes. Don't queue more than
+        # 5/45 = a ninth of the total number of feeds.
+        limit = UniqueFeed.objects.count() / 9
 
-        for url in unique_urls:
+        uniques = UniqueFeed.objects.filter(
+            muted=False,
+        ).order_by('last_update')[:limit]
+
+        for unique in uniques:
             try:
-                try:
-                    unique = UniqueFeed.objects.get(url=url)
-                    if not unique.muted and unique.should_update():
-                        enqueue(update_feed, url, timeout=20)
-                except UniqueFeed.DoesNotExist:
-                    enqueue(update_feed, url, timeout=20)
+                if unique.should_update():
+                    enqueue(update_feed, unique.url, timeout=20)
             except Exception:  # We don't know what to expect, and anyway
                                # we're reporting the exception
                 if settings.DEBUG or not hasattr(settings, 'SENTRY_DSN'):

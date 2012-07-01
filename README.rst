@@ -116,10 +116,10 @@ account, you can crawl for updates::
 
     django-admin.py updatefeeds --settings=feedhq.settings
 
-Set up a cron job to update your feeds on a regular basis, every hour is fine,
-more can be quite aggressive::
+Set up a cron job to update your feeds on a regular basis. This puts the
+last-updated feeds in the update queue::
 
-    @hourly /path/to/env/django-admin.py updatefeeds --settings=feedhq.settings
+    */5 * * * * /path/to/env/django-admin.py updatefeeds --settings=feedhq.settings
 
 A cron job should also be set up for picking and updating favicons (the
 ``--all`` switch processes existing favicons in case they have changed)::
