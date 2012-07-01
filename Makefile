@@ -35,3 +35,9 @@ makemessages:
 
 compilemessages:
 	cd $(proj) && django-admin.py compilemessages $(settings)
+
+txpush:
+	tx push -s
+
+txpull:
+	tx pull -a
