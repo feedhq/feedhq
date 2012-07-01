@@ -29,3 +29,9 @@ check_defunct:
 
 favicons:
 	django-admin.py favicons $(settings)
+
+makemessages:
+	cd $(proj) && django-admin.py makemessages -a $(settings)
+
+compilemessages:
+	cd $(proj) && django-admin.py compilemessages $(settings)
