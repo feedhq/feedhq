@@ -32,12 +32,17 @@ favicon = lambda _: HttpResponsePermanentRedirect(
     '%sfeeds/img/icon-rss.png' % settings.STATIC_URL
 )
 
+touch_icon = lambda _: HttpResponsePermanentRedirect(
+    '%sfeeds/img/touch-icon-114.png' % settings.STATIC_URL
+)
+
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^subscriber/', include('django_push.subscriber.urls')),
     url(r'^robots.txt$', robots),
     url(r'^humans.txt$', humans),
     url(r'^favicon.ico$', favicon),
+    url(r'^apple-touch-icon-precomposed.png$', touch_icon),
     (r'^accounts/', include('feedhq.profiles.urls')),
     (r'^', include('feedhq.feeds.urls', namespace='feeds')),
 )
