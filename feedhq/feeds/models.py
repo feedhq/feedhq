@@ -159,7 +159,9 @@ class UniqueFeedManager(models.Manager):
 
         obj.failed_attempts = 0
 
-        if response.history and obj.url != response.url:
+        if (response.history and
+            obj.url != response.url and 'Content-Type' in response.headers and
+            response.headers['Content-Type'].startswith('application')):
             logger.info("%s moved to %s" % (obj.url, response.url))
             Feed.objects.filter(url=obj.url).update(url=response.url)
             if self.filter(url=response.url).exists():

@@ -24,7 +24,7 @@ from ..utils import FEED_CHECKER, FAVICON_FETCHER, USER_AGENT
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
-def responses(code, path=None, redirection=None):
+def responses(code, path=None, redirection=None, headers={}):
     response = _Response()
     response.status_code = code
     if path is not None:
@@ -33,6 +33,7 @@ def responses(code, path=None, redirection=None):
     if redirection is not None:
         response.history.append('yo')
         response.url = redirection
+    response.headers = headers
     return response
 
 
@@ -148,7 +149,9 @@ class TestFeeds(TestCase):
     @patch('requests.get')
     def test_permanent_redirects(self, get):
         """Updating the feed if there's a permanent redirect"""
-        get.return_value = responses(301, redirection='atom10.xml')
+        get.return_value = responses(
+            301, redirection='atom10.xml',
+            headers={'Content-Type': 'application/rss+xml'})
         feed = self.cat.feeds.create(name='Permanent', url='permanent.xml')
         feed = Feed.objects.get(pk=feed.id)
         self.assertEqual(feed.url, 'atom10.xml')
