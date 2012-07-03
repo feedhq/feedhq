@@ -6,9 +6,8 @@ from django.db import connection
 from raven import Client
 
 from ....tasks import enqueue
-from ...models import UniqueFeed, Feed
+from ...models import UniqueFeed
 from ...tasks import update_feed
-from ...utils import FeedUpdater
 
 logger = logging.getLogger('feedupdater')
 
