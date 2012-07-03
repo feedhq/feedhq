@@ -16,6 +16,7 @@ Add to your settings:
 
 Everything's optional, these are just the default values.
 """
+from __future__ import absolute_import
 from functools import wraps
 
 import redis
