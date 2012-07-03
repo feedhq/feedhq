@@ -86,6 +86,7 @@ INSTALLED_APPS = (
 
     'feedhq.feeds',
     'feedhq.profiles',
+    'feedhq.rq',
 
     'password_reset',
 )

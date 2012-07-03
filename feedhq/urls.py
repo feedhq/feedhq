@@ -37,6 +37,7 @@ touch_icon = lambda _: HttpResponsePermanentRedirect(
 )
 
 urlpatterns = patterns('',
+    (r'^admin/rq/', include('feedhq.rq.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^subscriber/', include('django_push.subscriber.urls')),
     url(r'^robots.txt$', robots),

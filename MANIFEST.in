@@ -5,6 +5,7 @@ recursive-include feedhq/feeds/static *
 recursive-include feedhq/feeds/templates *
 recursive-include feedhq/feeds/tests *
 recursive-include feedhq/profiles/templates *
+recursive-include feedhq/rq/templates *
 recursive-exclude feedhq *.pyc
 recursive-exclude feedhq *.scss
 recursive-exclude feedhq/test_media *

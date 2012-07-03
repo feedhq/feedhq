@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+
+{% block content_title %}<h1>{{ title }}</h1>{% endblock %}
+
+{% block extrastyle %}
+	{{ block.super }}
+	<style>table {width: 100%;}</style>
+{% endblock %}
+
+{% block bodyclass %}dashboard{% endblock %}
+
+{% block content %}
+	<div id="content-main">
+		<div class="module">
+			<table id="rq">
+				<caption>Queues</caption>
+				<thead>
+					<tr>
+						<th>Queue</th>
+						<th>Tasks</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for queue in queues %}
+						<tr class="{% cycle "row2" "row1" %}">
+							<td><a href="{% url "rq_queue" queue.name %}">{{ queue.name }}</a></td>
+							<td>{{ queue.count }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="module">
+			<table id="workers">
+				<caption>Workers</caption>
+				<thead>
+					<tr>
+						<th>Worker</th>
+						<th>Queues</th>
+						<th>State</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for worker in workers %}
+						<tr class="{% cycle "row2" "row1" %}">
+							<td><a href="{% url "rq_worker" worker.name %}">{{ worker.name }}</a></td>
+							<td>{% for queue in worker.queues %}{{ queue.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+							<td>{{ worker.state }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+{% endblock %}

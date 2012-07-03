@@ -1,0 +1,10 @@
+<form method="post" action="{% url "rq_queue" queue.name %}">
+	{% csrf_token %}
+	<div class="submit-row">
+		{% if failed %}
+			<input type="submit" name="_requeue" value="{% trans "Requeue all" %}">
+		{% endif %}
+		<input type="submit" name="_compact" value="{% trans "Compact queue" %}">
+		<input type="submit" name="_empty" value="{% trans "Empty queue" %}">
+	</div>
+</form>

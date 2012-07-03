@@ -1,0 +1,54 @@
+{% extends "admin/base_site.html" %}
+{% load admin_static %}
+
+{% block content_title %}<h1>{{ title }}</h1>{% endblock %}
+
+{% block extrastyle %}
+	{{ block.super }}
+	<style>table {width: 100%;}</style>
+	<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+{% endblock %}
+
+{% block breadcrumbs %}
+	<div class="breadcrumbs">
+		<a href="{% url "admin:index" %}">{% trans "Home" %}</a> &rsaquo;
+		<a href="{% url "rq_stats" %}">{% trans "RQ Status" %}</a> &rsaquo;
+		{% blocktrans with queue.name as name %}'{{ name }}' queue{% endblocktrans %}
+	</div>
+{% endblock %}
+
+
+{% block content %}
+	<div id="content-main">
+		<div class="module">
+			<table id="rq">
+				<caption>Jobs</caption>
+				<thead>
+					<tr>
+						<th>Job ID</th>
+						<th>Description</th>
+						<th>Date created</th>
+						<th>Date enqueued</th>
+						<th>Date ended</th>
+						<th>Origin</th>
+						<th>Result</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for job in jobs %}
+						<tr class="{% cycle "row2" "row1" %}">
+							<td><a href="{% url "rq_job" job.id %}">{{ job.id }}</a></td>
+							<td>{{ job.description }}</td>
+							<td>{{ job.created_at }}</td>
+							<td>{{ job.enqueued_at }}</td>
+							<td>{{ job.ended_at }}</td>
+							<td>{{ job.origin }}</td>
+							<td>{% if job.result %}{{ job.result }}{% else %}{% trans "failed" %}{% endif %}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% include "rq/queue_actions.html" %}
+	</div>
+{% endblock %}
