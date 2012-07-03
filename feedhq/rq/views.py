@@ -77,7 +77,6 @@ class JobDetails(SuperUserMixin, generic.TemplateView):
             job = Job.fetch(self.kwargs['job'])
         except NoSuchJobError:
             raise Http404
-        print dir(job)
         if job.exc_info:
             failed = True
             queue = get_failed_queue()
