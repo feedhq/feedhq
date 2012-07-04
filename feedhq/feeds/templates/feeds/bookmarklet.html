@@ -15,7 +15,7 @@
 
 			<h3>{% trans "NoScript users" %}</h3>
 
-			<p>{% trans "If you use <a href=\"http://noscript.net/\">NoScript</a>, you need to add this line to your NoScript preferences &gt; Advanced &gt; XSS:" %}</p>
+			<p>{% blocktrans %}If you use <a href="http://noscript.net/">NoScript</a>, you need to add this line to your NoScript preferences &gt; Advanced &gt; XSS:{% endblocktrans %}</p>
 
 			<pre><code>^{{ scheme }}://{{ site.domain }}{% url "feeds:bookmarklet_subscribe" %}$</code></pre>
 		</div>

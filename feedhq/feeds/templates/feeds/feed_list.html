@@ -14,7 +14,7 @@
 			<ul>
 				<li><a href="{% url "feeds:add_category" %}">{% trans "Create a category:" %}</a></li>
 				<li><a href="{% url "feeds:add_feed" %}">{% trans "Add a feed:" %}</a></li>
-				<li><a href="{% url "feeds:import_feeds" %}">{% trans "Got an OPML dump? Import it!" %}</a> {% trans "If you're a Google Reader user, you can get your OPML dump <a href=\"http://www.google.com/reader/subscriptions/export\">here</a>. Just download it and import it on FeedHQ." %}</li>
+				<li><a href="{% url "feeds:import_feeds" %}">{% trans "Got an OPML dump? Import it!" %}</a> {% blocktrans %}If you're a Google Reader user, you can get your OPML dump <a href="http://www.google.com/reader/subscriptions/export">here</a>. Just download it and import it on FeedHQ.{% endblocktrans %}</li>
 			</ul>
 			<p>{% trans "These three features can be accessed using the three buttons on the top bar. This page will self-destruct as soon as you add your first feed. And you will start reading." %}</p>
 		</div></div>
