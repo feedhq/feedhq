@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-01 13:46-0500\n"
+"POT-Creation-Date: 2012-07-04 06:52-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,16 +30,16 @@ msgstr ""
 msgid "Subscribe?"
 msgstr ""
 
-#: feeds/forms.py:79 feeds/models.py:79 feeds/models.py:271
+#: feeds/forms.py:79 feeds/models.py:79 feeds/models.py:273
 msgid "Name"
 msgstr ""
 
-#: feeds/forms.py:80 feeds/models.py:215 feeds/models.py:272
-#: feeds/models.py:345
+#: feeds/forms.py:80 feeds/models.py:217 feeds/models.py:274
+#: feeds/models.py:347
 msgid "URL"
 msgstr ""
 
-#: feeds/forms.py:81 feeds/models.py:274
+#: feeds/forms.py:81 feeds/models.py:276
 msgid "Category"
 msgstr ""
 
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Slug"
 msgstr ""
 
-#: feeds/models.py:81 feeds/models.py:353
+#: feeds/models.py:81 feeds/models.py:355
 msgid "User"
 msgstr ""
 
@@ -133,95 +133,95 @@ msgid ""
 "not."
 msgstr ""
 
-#: feeds/models.py:217 feeds/models.py:278 feeds/models.py:343
+#: feeds/models.py:219 feeds/models.py:280 feeds/models.py:345
 msgid "Title"
 msgstr ""
 
-#: feeds/models.py:218 feeds/models.py:279
+#: feeds/models.py:220 feeds/models.py:281
 msgid "Link"
 msgstr ""
 
-#: feeds/models.py:220 feeds/models.py:284
+#: feeds/models.py:222 feeds/models.py:286
 msgid "Etag"
 msgstr ""
 
-#: feeds/models.py:221 feeds/models.py:285
+#: feeds/models.py:223 feeds/models.py:287
 msgid "Modified"
 msgstr ""
 
-#: feeds/models.py:224
+#: feeds/models.py:226
 msgid "Last update"
 msgstr ""
 
-#: feeds/models.py:226 feeds/models.py:281
+#: feeds/models.py:228 feeds/models.py:283
 msgid "Muted"
 msgstr ""
 
-#: feeds/models.py:227
+#: feeds/models.py:229
 msgid "Muting reason"
 msgstr ""
 
-#: feeds/models.py:230
+#: feeds/models.py:232
 msgid "Failed fetch attempts"
 msgstr ""
 
-#: feeds/models.py:232
+#: feeds/models.py:234
 msgid "Hub"
 msgstr ""
 
-#: feeds/models.py:275
+#: feeds/models.py:277
 msgid "<a href=\"/category/add/\">Add a category</a>"
 msgstr ""
 
-#: feeds/models.py:282
+#: feeds/models.py:284
 msgid "Check this if you want to stop checking updates for this feed"
 msgstr ""
 
-#: feeds/models.py:287
+#: feeds/models.py:289
 msgid "Unread count"
 msgstr ""
 
-#: feeds/models.py:288
+#: feeds/models.py:290
 msgid "Favicon"
 msgstr ""
 
-#: feeds/models.py:290
+#: feeds/models.py:292
 msgid "No favicon"
 msgstr ""
 
-#: feeds/models.py:291
+#: feeds/models.py:293
 msgid "Display images by default"
 msgstr ""
 
-#: feeds/models.py:293
+#: feeds/models.py:295
 msgid "Failed fetching attempts"
 msgstr ""
 
-#: feeds/models.py:341
+#: feeds/models.py:343
 msgid "Feed"
 msgstr ""
 
-#: feeds/models.py:344
+#: feeds/models.py:346
 msgid "Abstract"
 msgstr ""
 
-#: feeds/models.py:348
+#: feeds/models.py:350
 msgid "Permalink"
 msgstr ""
 
-#: feeds/models.py:350
+#: feeds/models.py:352
 msgid "Date"
 msgstr ""
 
-#: feeds/models.py:356
+#: feeds/models.py:358
 msgid "Read"
 msgstr ""
 
-#: feeds/models.py:358
+#: feeds/models.py:360
 msgid "Read later URL"
 msgstr ""
 
-#: feeds/models.py:521
+#: feeds/models.py:523
 msgid "Domain URL"
 msgstr ""
 
@@ -296,7 +296,9 @@ msgid "NoScript users"
 msgstr ""
 
 #: feeds/templates/feeds/bookmarklet.html:18
-msgid "If you use <a href=\\"
+msgid ""
+"If you use <a href=\"http://noscript.net/\">NoScript</a>, you need to add "
+"this line to your NoScript preferences &gt; Advanced &gt; XSS:"
 msgstr ""
 
 #: feeds/templates/feeds/bookmarklet_subscribe.html:3
@@ -373,6 +375,7 @@ msgstr ""
 #: profiles/templates/profiles/services/none.html:12
 #: profiles/templates/profiles/services/readability.html:14
 #: profiles/templates/profiles/services/readitlater.html:12
+#: rq/templates/rq/job.html:23
 msgid "Cancel"
 msgstr ""
 
@@ -503,7 +506,10 @@ msgid "Got an OPML dump? Import it!"
 msgstr ""
 
 #: feeds/templates/feeds/feed_list.html:17
-msgid "If you're a Google Reader user, you can get your OPML dump <a href=\\"
+msgid ""
+"If you're a Google Reader user, you can get your OPML dump <a href=\"http://"
+"www.google.com/reader/subscriptions/export\">here</a>. Just download it and "
+"import it on FeedHQ."
 msgstr ""
 
 #: feeds/templates/feeds/feed_list.html:19
@@ -883,16 +889,119 @@ msgstr ""
 msgid "Read It Later settings"
 msgstr ""
 
+#: rq/views.py:89
+#, python-format
+msgid "Job %s"
+msgstr ""
+
+#: rq/views.py:105
+#, python-format
+msgid "Worker %s"
+msgstr ""
+
+#: rq/templates/rq/job.html:10 rq/templates/rq/queue.html:14
+#: rq/templates/rq/worker.html:7 templates/base.html:4
+msgid "Home"
+msgstr ""
+
+#: rq/templates/rq/job.html:11 rq/templates/rq/queue.html:15
+#: rq/templates/rq/worker.html:8
+msgid "RQ Status"
+msgstr ""
+
+#: rq/templates/rq/job.html:22
+msgid "Requeue"
+msgstr ""
+
+#: rq/templates/rq/job.html:29 rq/templates/rq/queue.html:27
+msgid "Job ID"
+msgstr ""
+
+#: rq/templates/rq/job.html:32 rq/templates/rq/queue.html:28
+msgid "Description"
+msgstr ""
+
+#: rq/templates/rq/job.html:35 rq/templates/rq/stats.html:19
+msgid "Queue"
+msgstr ""
+
+#: rq/templates/rq/job.html:38 rq/templates/rq/queue.html:29
+msgid "Date created"
+msgstr ""
+
+#: rq/templates/rq/job.html:39 rq/templates/rq/job.html.py:42
+#: rq/templates/rq/job.html:45
+#, python-format
+msgid "%(ago)s ago"
+msgstr ""
+
+#: rq/templates/rq/job.html:41 rq/templates/rq/queue.html:30
+msgid "Date enqueued"
+msgstr ""
+
+#: rq/templates/rq/job.html:44 rq/templates/rq/queue.html:31
+msgid "Date ended"
+msgstr ""
+
+#: rq/templates/rq/job.html:47 rq/templates/rq/queue.html:33
+msgid "Result"
+msgstr ""
+
+#: rq/templates/rq/job.html:51
+msgid "Exception"
+msgstr ""
+
+#: rq/templates/rq/queue.html:16
+#, python-format
+msgid "'%(name)s' queue"
+msgstr ""
+
+#: rq/templates/rq/queue.html:24 rq/templates/rq/stats.html:20
+msgid "Jobs"
+msgstr ""
+
+#: rq/templates/rq/queue.html:32
+msgid "Origin"
+msgstr ""
+
+#: rq/templates/rq/queue.html:45
+msgid "failed"
+msgstr ""
+
+#: rq/templates/rq/queue_actions.html:5
+msgid "Requeue all"
+msgstr ""
+
+#: rq/templates/rq/queue_actions.html:7
+msgid "Compact queue"
+msgstr ""
+
+#: rq/templates/rq/queue_actions.html:8
+msgid "Empty queue"
+msgstr ""
+
+#: rq/templates/rq/stats.html:16 rq/templates/rq/stats.html.py:40
+msgid "Queues"
+msgstr ""
+
+#: rq/templates/rq/stats.html:36
+msgid "Workers"
+msgstr ""
+
+#: rq/templates/rq/stats.html:39
+msgid "Worker"
+msgstr ""
+
+#: rq/templates/rq/stats.html:41
+msgid "State"
+msgstr ""
+
 #: templates/404.html:6
 msgid "404 - Page not found"
 msgstr ""
 
 #: templates/500.html:6
 msgid "500 - Server error"
-msgstr ""
-
-#: templates/base.html:4
-msgid "Home"
 msgstr ""
 
 #: templates/base.html:21

@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FeedHQ\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-01 13:46-0500\n"
-"PO-Revision-Date: 2012-07-01 19:07+0000\n"
+"POT-Creation-Date: 2012-07-04 06:52-0500\n"
+"PO-Revision-Date: 2012-07-04 11:53+0000\n"
 "Last-Translator: brutasse <buburno@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -32,16 +32,16 @@ msgstr "URL invalide."
 msgid "Subscribe?"
 msgstr "Souscrire?"
 
-#: feeds/forms.py:79 feeds/models.py:79 feeds/models.py:271
+#: feeds/forms.py:79 feeds/models.py:79 feeds/models.py:273
 msgid "Name"
 msgstr "Nom"
 
-#: feeds/forms.py:80 feeds/models.py:215 feeds/models.py:272
-#: feeds/models.py:345
+#: feeds/forms.py:80 feeds/models.py:217 feeds/models.py:274
+#: feeds/models.py:347
 msgid "URL"
 msgstr "URL"
 
-#: feeds/forms.py:81 feeds/models.py:274
+#: feeds/forms.py:81 feeds/models.py:276
 msgid "Category"
 msgstr "Catégorie"
 
@@ -117,7 +117,7 @@ msgstr "Un an"
 msgid "Slug"
 msgstr "Slug"
 
-#: feeds/models.py:81 feeds/models.py:353
+#: feeds/models.py:81 feeds/models.py:355
 msgid "User"
 msgstr "Utilisateur"
 
@@ -135,95 +135,95 @@ msgid ""
 " not."
 msgstr "Durée après laquelle les articles sont supprimés, qu'ils aient été lus ou non."
 
-#: feeds/models.py:217 feeds/models.py:278 feeds/models.py:343
+#: feeds/models.py:219 feeds/models.py:280 feeds/models.py:345
 msgid "Title"
 msgstr "Titre"
 
-#: feeds/models.py:218 feeds/models.py:279
+#: feeds/models.py:220 feeds/models.py:281
 msgid "Link"
 msgstr "Lien"
 
-#: feeds/models.py:220 feeds/models.py:284
+#: feeds/models.py:222 feeds/models.py:286
 msgid "Etag"
 msgstr "Etag"
 
-#: feeds/models.py:221 feeds/models.py:285
+#: feeds/models.py:223 feeds/models.py:287
 msgid "Modified"
 msgstr "Modifié"
 
-#: feeds/models.py:224
+#: feeds/models.py:226
 msgid "Last update"
 msgstr "Dernière mise à jour"
 
-#: feeds/models.py:226 feeds/models.py:281
+#: feeds/models.py:228 feeds/models.py:283
 msgid "Muted"
 msgstr "Pause"
 
-#: feeds/models.py:227
+#: feeds/models.py:229
 msgid "Muting reason"
 msgstr "Motif de pause"
 
-#: feeds/models.py:230
+#: feeds/models.py:232
 msgid "Failed fetch attempts"
 msgstr "Tenatives de mise à jour échouées"
 
-#: feeds/models.py:232
+#: feeds/models.py:234
 msgid "Hub"
 msgstr "Hub"
 
-#: feeds/models.py:275
+#: feeds/models.py:277
 msgid "<a href=\"/category/add/\">Add a category</a>"
 msgstr "<a href=\"/category/add/\">Ajouter une catégorie</a>"
 
-#: feeds/models.py:282
+#: feeds/models.py:284
 msgid "Check this if you want to stop checking updates for this feed"
 msgstr "Cochez cette case si vous voulez arrêter de charger les mises à jour pour ce fil"
 
-#: feeds/models.py:287
+#: feeds/models.py:289
 msgid "Unread count"
 msgstr "Non lus"
 
-#: feeds/models.py:288
+#: feeds/models.py:290
 msgid "Favicon"
 msgstr "Favicon"
 
-#: feeds/models.py:290
+#: feeds/models.py:292
 msgid "No favicon"
 msgstr "Pas de favicon"
 
-#: feeds/models.py:291
+#: feeds/models.py:293
 msgid "Display images by default"
 msgstr "Afficher les images par défaut"
 
-#: feeds/models.py:293
+#: feeds/models.py:295
 msgid "Failed fetching attempts"
 msgstr "Tentatives de mise à jour échouées"
 
-#: feeds/models.py:341
+#: feeds/models.py:343
 msgid "Feed"
 msgstr "Fil"
 
-#: feeds/models.py:344
+#: feeds/models.py:346
 msgid "Abstract"
 msgstr "Résumé"
 
-#: feeds/models.py:348
+#: feeds/models.py:350
 msgid "Permalink"
 msgstr "Lien permanent"
 
-#: feeds/models.py:350
+#: feeds/models.py:352
 msgid "Date"
 msgstr "Date"
 
-#: feeds/models.py:356
+#: feeds/models.py:358
 msgid "Read"
 msgstr "Lu"
 
-#: feeds/models.py:358
+#: feeds/models.py:360
 msgid "Read later URL"
 msgstr "URL de lecture"
 
-#: feeds/models.py:521
+#: feeds/models.py:523
 msgid "Domain URL"
 msgstr "URL du domaine"
 
@@ -298,8 +298,10 @@ msgid "NoScript users"
 msgstr "Utilisateurs de NoScript"
 
 #: feeds/templates/feeds/bookmarklet.html:18
-msgid "If you use <a href=\\"
-msgstr ""
+msgid ""
+"If you use <a href=\"http://noscript.net/\">NoScript</a>, you need to add "
+"this line to your NoScript preferences &gt; Advanced &gt; XSS:"
+msgstr "Si vous utilisez <a href=\"http://noscript.net/\">NoScript</a>, il vous faut ajouter cette ligne dans les préférences NoScript, section \"Avancé &gt; XSS\"&nbsp;:"
 
 #: feeds/templates/feeds/bookmarklet_subscribe.html:3
 #: feeds/templates/feeds/bookmarklet_subscribe.html:7
@@ -375,6 +377,7 @@ msgstr "Supprimer"
 #: profiles/templates/profiles/services/none.html:12
 #: profiles/templates/profiles/services/readability.html:14
 #: profiles/templates/profiles/services/readitlater.html:12
+#: rq/templates/rq/job.html:23
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -505,8 +508,11 @@ msgid "Got an OPML dump? Import it!"
 msgstr "Vous avez une sauvegarde OPML&nbsp;? Importez-la&nbsp;!"
 
 #: feeds/templates/feeds/feed_list.html:17
-msgid "If you're a Google Reader user, you can get your OPML dump <a href=\\"
-msgstr ""
+msgid ""
+"If you're a Google Reader user, you can get your OPML dump <a "
+"href=\"http://www.google.com/reader/subscriptions/export\">here</a>. Just "
+"download it and import it on FeedHQ."
+msgstr "Si vous utilisez Google Reader, vous pouvez télécharger un export OPML <a href=\"http://www.google.com/reader/subscriptions/export\">ici</a>. Sauvegardez-le puis importez-le dans FeedHQ."
 
 #: feeds/templates/feeds/feed_list.html:19
 msgid ""
@@ -887,6 +893,113 @@ msgstr "Merci d'entrer vos identifiants Readability. Readability utilise xAuth, 
 msgid "Read It Later settings"
 msgstr "Configuration de Read It Later"
 
+#: rq/views.py:89
+#, python-format
+msgid "Job %s"
+msgstr "Tâche %s"
+
+#: rq/views.py:105
+#, python-format
+msgid "Worker %s"
+msgstr "Exécuteur %s"
+
+#: rq/templates/rq/job.html:10 rq/templates/rq/queue.html:14
+#: rq/templates/rq/worker.html:7 templates/base.html:4
+msgid "Home"
+msgstr "Accueil"
+
+#: rq/templates/rq/job.html:11 rq/templates/rq/queue.html:15
+#: rq/templates/rq/worker.html:8
+msgid "RQ Status"
+msgstr "Statut de RQ"
+
+#: rq/templates/rq/job.html:22
+msgid "Requeue"
+msgstr "Rejouer"
+
+#: rq/templates/rq/job.html:29 rq/templates/rq/queue.html:27
+msgid "Job ID"
+msgstr "ID de la tâche"
+
+#: rq/templates/rq/job.html:32 rq/templates/rq/queue.html:28
+msgid "Description"
+msgstr "Description"
+
+#: rq/templates/rq/job.html:35 rq/templates/rq/stats.html:19
+msgid "Queue"
+msgstr "File"
+
+#: rq/templates/rq/job.html:38 rq/templates/rq/queue.html:29
+msgid "Date created"
+msgstr "Date de création"
+
+#: rq/templates/rq/job.html:39 rq/templates/rq/job.html.py:42
+#: rq/templates/rq/job.html:45
+#, python-format
+msgid "%(ago)s ago"
+msgstr "il y a %(ago)s"
+
+#: rq/templates/rq/job.html:41 rq/templates/rq/queue.html:30
+msgid "Date enqueued"
+msgstr "Date d'exécution"
+
+#: rq/templates/rq/job.html:44 rq/templates/rq/queue.html:31
+msgid "Date ended"
+msgstr "Date de fin"
+
+#: rq/templates/rq/job.html:47 rq/templates/rq/queue.html:33
+msgid "Result"
+msgstr "Résultat"
+
+#: rq/templates/rq/job.html:51
+msgid "Exception"
+msgstr "Exception"
+
+#: rq/templates/rq/queue.html:16
+#, python-format
+msgid "'%(name)s' queue"
+msgstr "File '%(name)s'"
+
+#: rq/templates/rq/queue.html:24 rq/templates/rq/stats.html:20
+msgid "Jobs"
+msgstr "Tâches"
+
+#: rq/templates/rq/queue.html:32
+msgid "Origin"
+msgstr "Origine"
+
+#: rq/templates/rq/queue.html:45
+msgid "failed"
+msgstr "échec"
+
+#: rq/templates/rq/queue_actions.html:5
+msgid "Requeue all"
+msgstr "Rejouer tous"
+
+#: rq/templates/rq/queue_actions.html:7
+msgid "Compact queue"
+msgstr "Compacter la file"
+
+#: rq/templates/rq/queue_actions.html:8
+msgid "Empty queue"
+msgstr "Vider la file"
+
+#: rq/templates/rq/stats.html:16 rq/templates/rq/stats.html.py:40
+msgid "Queues"
+msgstr "Files"
+
+#: rq/templates/rq/stats.html:36
+msgid "Workers"
+msgstr "Éxécuteurs"
+
+#: rq/templates/rq/stats.html:39
+msgid "Worker"
+msgstr "Éxécuteur"
+
+#: rq/templates/rq/stats.html:41
+msgid "State"
+msgstr "État"
+
 #: templates/404.html:6
 msgid "404 - Page not found"
 msgstr "404 - Page non trouvée"
@@ -894,10 +1007,6 @@ msgstr "404 - Page non trouvée"
 #: templates/500.html:6
 msgid "500 - Server error"
 msgstr "500 - Erreur du serveur"
-
-#: templates/base.html:4
-msgid "Home"
-msgstr "Accueil"
 
 #: templates/base.html:21
 msgid "Unread entries"
