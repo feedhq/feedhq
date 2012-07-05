@@ -20,7 +20,7 @@ def read_later(entry_pk):
 
 @raven
 def update_unique_feed(feed_url):
-    from .models import UniqueFeed, Feed
+    from .models import UniqueFeed, Feed, Favicon
     feed, created = UniqueFeed.objects.get_or_create(
         url=feed_url,
         defaults={'subscribers': 1},
@@ -28,6 +28,7 @@ def update_unique_feed(feed_url):
     if not created:
         feed.subscribers = Feed.objects.filter(url=feed_url).count()
         feed.save()
+    Favicon.objects.update_favicon(feed.link)
 
 
 def close_connection():
