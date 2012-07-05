@@ -318,7 +318,7 @@ class Feed(models.Model):
         if update:
             enqueue(update_feed, self.url, use_etags=False, timeout=20,
                     queue='high')
-        enqueue(update_unique_feed, self.url, timeout=40)
+        enqueue(update_unique_feed, self.url, timeout=20)
 
     def favicon_img(self):
         if not self.favicon:
