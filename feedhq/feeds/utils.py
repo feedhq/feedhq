@@ -85,7 +85,7 @@ class FeedUpdater(object):
 
         subscriptions = Subscription.objects.filter(topic=topic_url)
         if not subscriptions.exists():
-            logger.info("Subscribing to %s: %s" % (topic_url, hub_url))
+            logger.debug("Subscribing to %s: %s" % (topic_url, hub_url))
             subscriptions = [Subscription.objects.subscribe(topic_url,
                                                             hub=hub_url)]
 
