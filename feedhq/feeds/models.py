@@ -9,6 +9,7 @@ import urllib
 import urlparse
 import random
 import requests
+import socket
 
 from django.db import models
 from django.db.models import F
@@ -146,7 +147,7 @@ class UniqueFeedManager(models.Manager):
 
         try:
             response = requests.get(url, headers=headers, timeout=10)
-        except requests.RequestException:
+        except (requests.RequestException, socket.timeout):
             logger.debug("Error fetching %s" % obj.url)
             obj.failed_attempts += 1
             if obj.failed_attempts >= 20:
@@ -175,9 +176,6 @@ class UniqueFeedManager(models.Manager):
             obj.muted = True
             obj.muted_reason = 'gone'
 
-        elif response.status_code == 304:
-            logger.debug("Feed not modified, %s" % obj.url)
-
         elif response.status_code != 200:
             logger.debug("%s returned %s" % (obj.url, response.status_code))
 
@@ -187,7 +185,17 @@ class UniqueFeedManager(models.Manager):
         if 'last-modified' in response.headers:
             obj.modified = response.headers['last-modified']
 
-        parsed = feedparser.parse(response.content)
+        if response.status_code == 304:
+            logger.debug("Feed not modified, %s" % obj.url)
+            if save:
+                obj.save()
+            return
+
+        if not response.content:
+            content = ' '  # chardet won't detect encoding on empty strings
+        else:
+            content = response.content
+        parsed = feedparser.parse(content)
 
         if 'link' in parsed.feed:
             obj.link = parsed.feed.link
@@ -310,7 +318,7 @@ class Feed(models.Model):
         if update:
             enqueue(update_feed, self.url, use_etags=False, timeout=20,
                     queue='high')
-        enqueue(update_unique_feed, self.url, timeout=20)
+        enqueue(update_unique_feed, self.url, timeout=40)
 
     def favicon_img(self):
         if not self.favicon:
@@ -459,7 +467,20 @@ class FaviconManager(models.Manager):
         if not parsed[0].startswith('http'):
             return
         favicon, created = self.get_or_create(url=link)
+        urls = UniqueFeed.objects.filter(link=link).values_list('url',
+                                                                flat=True)
+        feeds = Feed.objects.filter(url__in=urls, favicon='')
         if not created and not force_update:
+            # Still, add to existing
+            favicon_url = self.filter(url=link).values_list('favicon',
+                                                            flat=True)[0]
+            if not favicon_url:
+                return favicon
+
+            if not feeds.exists():
+                return
+
+            feeds.update(favicon=favicon_url)
             return favicon
 
         ua = {'User-Agent': FAVICON_FETCHER}
@@ -502,7 +523,13 @@ class FaviconManager(models.Manager):
             ext = 'jpg'
         elif 'PC bitmap' in icon_type:
             ext = 'bmp'
-        elif 'HTML' in icon_type or icon_type == 'empty':
+        elif icon_type == 'data':
+            ext = 'ico'
+        elif ('HTML' in icon_type or
+              icon_type == 'empty' or
+              'Photoshop' in icon_type or
+              'ASCII' in icon_type):
+            logger.debug("Ignored content type for %s: %s" % (link, icon_type))
             return favicon
         else:
             logger.info("Unknown content type for %s: %s" % (link, icon_type))
@@ -512,7 +539,6 @@ class FaviconManager(models.Manager):
         filename = '%s.%s' % (urlparse.urlparse(favicon.url).netloc, ext)
         favicon.favicon.save(filename, icon_file)
 
-        feeds = Feed.objects.filter(link=link)
         for feed in feeds:
             feed.favicon.save(filename, icon_file)
         feeds.update(no_favicon=False)
