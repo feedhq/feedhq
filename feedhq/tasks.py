@@ -24,6 +24,7 @@ import rq
 
 from django.conf import settings
 from raven import Client
+from rq.timeouts import JobTimeoutException
 
 
 def enqueue(function, *args, **kwargs):
@@ -45,9 +46,10 @@ def raven(function):
     def ravenify(*args, **kwargs):
         try:
             function(*args, **kwargs)
-        except Exception:
+        except Exception as e:
             if not settings.DEBUG and hasattr(settings, 'SENTRY_DSN'):
-                client = Client(dsn=settings.SENTRY_DSN)
-                client.captureException()
+                if not isinstance(e, JobTimeoutException):
+                    client = Client(dsn=settings.SENTRY_DSN)
+                    client.captureException()
             raise
     return ravenify
