@@ -125,6 +125,8 @@ class UniqueFeedManager(models.Manager):
 
         feeds = Feed.objects.filter(url=url)
 
+        obj.subscribers = feeds.count()
+
         if obj.subscribers == 1:
             subscribers = '(1 subscriber)'
         else:
