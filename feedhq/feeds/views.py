@@ -395,9 +395,7 @@ def save_outline(user, category, outline, existing):
     for entry in outline:
         count += save_outline(user, category, entry, existing)
 
-    if (hasattr(outline, 'type') and
-        outline.type == 'rss' and
-        hasattr(outline, 'xmlUrl')):
+    if (hasattr(outline, 'xmlUrl')):
         if outline.xmlUrl not in existing:
             existing.add(outline.xmlUrl)
             category.feeds.create(url=outline.xmlUrl,

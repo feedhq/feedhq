@@ -594,7 +594,7 @@ class TestFeeds(TestCase):
             data = {'file': opml_file}
             response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
-        self.assertContains(response, '15 feeds have been imported')
+        self.assertContains(response, '20 feeds have been imported')
         self.assertEqual(self.user.categories.count(), 8)
         self.assertEqual(self.user.categories.get(
             name='Imported',
