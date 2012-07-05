@@ -2,7 +2,6 @@ import datetime
 import logging
 import lxml.html
 import pytz
-import requests
 import urllib2
 import urlparse
 
@@ -19,7 +18,6 @@ USER_AGENT = (
     'FeedHQ/%s +https://github.com/feedhq/feedhq %%s - https://github.com/'
     'feedhq/feedhq/wiki/User-Agent'
 ) % __version__
-LINK_CHECKER = USER_AGENT % '(link checker)'
 FEED_CHECKER = USER_AGENT % '(feed checker)'
 FAVICON_FETCHER = USER_AGENT % '(favicon fetcher)'
 
@@ -158,26 +156,8 @@ class FeedUpdater(object):
 
                 if db_entry.permalink:
                     entry.permalink = db_entry.permalink
-                else:
-                    if entry.permalink:
-                        db_entry.permalink = entry.permalink
-                    elif not settings.TESTS:
-                        # Try to use guid if possible
-                        if (hasattr(entry, 'guid') and
-                            entry.guid != entry.permalink):
-                            ua = {'User-Agent': LINK_CHECKER}
-                            try:
-                                response = requests.head(entry.guid,
-                                                         headers=ua,
-                                                         allow_redirects=True,
-                                                         timeout=10)
-                            except requests.RequestException:
-                                pass
-                            else:
-                                if response.status_code == 200:
-                                    resolved = response.url or ''
-                                    db_entry.permalink = resolved
-                                    entry.permalink = resolved
+                elif entry.permalink:
+                    db_entry.permalink = entry.permalink
 
                 if not db_entry.permalink:
                     db_entry.permalink = entry.permalink = entry.link
