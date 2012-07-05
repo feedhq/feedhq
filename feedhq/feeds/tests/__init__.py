@@ -24,7 +24,8 @@ from ..utils import FEED_CHECKER, FAVICON_FETCHER, USER_AGENT
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
-def responses(code, path=None, redirection=None, headers={}):
+def responses(code, path=None, redirection=None,
+              headers={'Content-Type': 'text/xml'}):
     response = _Response()
     response.status_code = code
     if path is not None:
@@ -145,6 +146,22 @@ class TestFeeds(TestCase):
         # Setting permalink
         entry.permalink = 'http://example.com/some-url'
         self.assertEqual(entry.get_link(), entry.permalink)
+
+    @patch('requests.get')
+    def test_ctype(self, get):
+        # Updatefeed doesn't fail if content-type is missing
+        get.return_value = responses(200, self.feed.url, headers={})
+        update_feed(self.feed.url, use_etags=False)
+        get.assert_called_with(
+            self.feed.url,
+            headers={'User-Agent': USER_AGENT % '(1 subscriber)'}, timeout=10)
+
+        get.return_value = responses(200, self.feed.url,
+                                     headers={'Content-Type': None})
+        update_feed(self.feed.url, use_etags=False)
+        get.assert_called_with(
+            self.feed.url,
+            headers={'User-Agent': USER_AGENT % '(1 subscriber)'}, timeout=10)
 
     @patch('requests.get')
     def test_permanent_redirects(self, get):

@@ -191,6 +191,14 @@ class UniqueFeedManager(models.Manager):
                 obj.save()
             return
 
+        ctype = response.headers.get('Content-Type', None)
+        if not ctype:
+            ctype = ''  # for startswith
+        if (not ctype.startswith('application') and
+            not ctype.startswith('text/xml')):
+            logger.debug("%s returned content-type '%s'" % (obj.url, ctype))
+            return
+
         if not response.content:
             content = ' '  # chardet won't detect encoding on empty strings
         else:
