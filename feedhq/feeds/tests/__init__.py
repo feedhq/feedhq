@@ -189,6 +189,37 @@ class TestFeeds(TestCase):
         feed = UniqueFeed.objects.get(url='gone.xml')
         self.assertTrue(feed.muted)
 
+    @patch('requests.get')
+    def test_errors(self, get):
+        for code in [400, 401, 403, 404, 500, 502, 503]:
+            get.return_value = responses(code)
+            self.assertFalse(UniqueFeed.objects.get(url=self.feed.url).muted)
+            for i in range(4):
+                update_feed(self.feed.url, use_etags=False)
+            self.assertFalse(UniqueFeed.objects.get(url=self.feed.url).muted)
+            update_feed(self.feed.url, use_etags=False)
+            feed = UniqueFeed.objects.get(url=self.feed.url)
+            self.assertTrue(feed.muted)
+            self.assertEqual(feed.muted_reason, str(code))
+            feed.muted = False
+            feed.failed_attempts = 0
+            feed.save()
+
+    @patch('requests.get')
+    def test_ephemeral_errors(self, get):
+        for code in [200, 204, 304]:
+            UniqueFeed.objects.filter(url=self.feed.url).update(
+                failed_attempts=4,  # One more and it's muted
+            )
+            get.return_value = responses(code)
+            update_feed(self.feed.url, use_etags=False)
+            get.assert_called_with(
+                self.feed.url, timeout=10,
+                headers={'User-Agent': USER_AGENT % '(1 subscriber)'},
+            )
+            feed = UniqueFeed.objects.get(url=self.feed.url)
+            self.assertEqual(feed.failed_attempts, 0)
+
     @patch("requests.head")
     def test_feed_resurrection(self, head):
         head.return_value = responses(200)

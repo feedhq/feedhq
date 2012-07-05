@@ -158,8 +158,6 @@ class UniqueFeedManager(models.Manager):
                 obj.save()
             return
 
-        obj.failed_attempts = 0
-
         if (response.history and
             obj.url != response.url and 'Content-Type' in response.headers and
             response.headers['Content-Type'].startswith('application')):
@@ -176,8 +174,24 @@ class UniqueFeedManager(models.Manager):
             obj.muted = True
             obj.muted_reason = 'gone'
 
-        elif response.status_code != 200:
+        elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
+            obj.failed_attempts += 1
+            if obj.failed_attempts >= 5:
+                obj.muted = True
+                logger.debug("%s returned %s, muting" % (
+                    obj.url, response.status_code,
+                ))
+                obj.muted_reason = str(response.status_code)
+            if save:
+                obj.save()
+            return
+
+        elif response.status_code not in [200, 204, 304]:
             logger.debug("%s returned %s" % (obj.url, response.status_code))
+
+        else:
+            obj.failed_attempts = 0
+            obj.muted_reason = None
 
         if 'etag' in response.headers:
             obj.etag = response.headers['etag']
