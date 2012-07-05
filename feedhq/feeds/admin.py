@@ -45,6 +45,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 class FaviconAdmin(admin.ModelAdmin):
     list_display = ('url', 'favicon_img')
+    search_fields = ('url',)
 
 
 admin.site.register(Category, CategoryAdmin)
