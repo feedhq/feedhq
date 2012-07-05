@@ -5,7 +5,7 @@
 {% block content %}
 	<h1>{% trans "Readability settings" %}</h1>
 
-	<p>{% trans "Please enter your Readability credentials. Note that Readability uses xAuth so we won't store your raw credentials but exchange them for a toekn that you can revoke at any time." %}</p>
+	<p>{% trans "Please enter your Readability credentials. Note that Readability uses xAuth so we won't store your raw credentials but exchange them for a token that you can revoke at any time." %}</p>
 
 	<form method="post" action="{% url "services" "readability" %}" class="no">
 		{% include "form.html" %}
