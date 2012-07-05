@@ -163,13 +163,15 @@ class FeedUpdater(object):
                         db_entry.permalink = entry.permalink
                     elif not settings.TESTS:
                         # Try to use guid if possible
-                        if hasattr(entry, 'guid'):
+                        if (hasattr(entry, 'guid') and
+                            entry.guid != entry.permalink):
                             ua = {'User-Agent': LINK_CHECKER}
                             try:
                                 response = requests.head(entry.guid,
                                                          headers=ua,
-                                                         allow_redirects=True)
-                            except requests.ConnectionError:
+                                                         allow_redirects=True,
+                                                         timeout=10)
+                            except requests.RequestException:
                                 pass
                             else:
                                 if response.status_code == 200:
