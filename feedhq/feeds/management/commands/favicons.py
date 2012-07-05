@@ -6,7 +6,7 @@ from django.db import connection
 
 from raven import Client
 
-from ...models import Feed, Favicon
+from ...models import UniqueFeed, Favicon
 
 
 class Command(BaseCommand):
@@ -22,7 +22,7 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **kwargs):
-        links = Feed.objects.values_list('link', flat=True).distinct()
+        links = UniqueFeed.objects.values_list('link', flat=True).distinct()
         for link in links:
             try:
                 Favicon.objects.update_favicon(link,
