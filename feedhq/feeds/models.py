@@ -238,6 +238,13 @@ class UniqueFeedManager(models.Manager):
 MUTE_CHOICES = (
     ('gone', 'Feed gone (410)'),
     ('timeout', 'Feed timed out'),
+    ('400', 'HTTP 400'),
+    ('401', 'HTTP 401'),
+    ('403', 'HTTP 403'),
+    ('404', 'HTTP 404'),
+    ('500', 'HTTP 500'),
+    ('502', 'HTTP 502'),
+    ('503', 'HTTP 503'),
 )
 
 
