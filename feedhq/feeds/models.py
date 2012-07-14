@@ -175,6 +175,8 @@ class UniqueFeedManager(models.Manager):
             logger.info("Feed gone, %s" % obj.url)
             obj.muted = True
             obj.muted_reason = 'gone'
+            obj.save()
+            return
 
         elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
             obj.failed_attempts += 1
