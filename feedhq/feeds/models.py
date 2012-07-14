@@ -273,7 +273,7 @@ class UniqueFeed(models.Model):
             return
         ua = {'User-Agent': FEED_CHECKER}
         try:
-            response = requests.head(self.url, headers=ua)
+            response = requests.head(self.url, headers=ua, timeout=20)
         except requests.exceptions.RequestException:
             logger.debug("Feed still dead, raised exception. %s" % self.url)
         else:

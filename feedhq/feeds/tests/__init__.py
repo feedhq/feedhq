@@ -229,7 +229,8 @@ class TestFeeds(TestCase):
         unique.save()
         unique.resurrect()
         head.assert_called_with('sw-all.xml',
-                                headers={'User-Agent': FEED_CHECKER})
+                                headers={'User-Agent': FEED_CHECKER},
+                                timeout=20)
         feed = UniqueFeed.objects.get(url=self.feed.url)
         self.assertFalse(feed.muted)
         self.assertEqual(feed.failed_attempts, 0)
@@ -243,7 +244,8 @@ class TestFeeds(TestCase):
         unique.save()
         unique.resurrect()
         head.assert_called_with('sw-all.xml',
-                                headers={'User-Agent': FEED_CHECKER})
+                                headers={'User-Agent': FEED_CHECKER},
+                                timeout=20)
         feed = UniqueFeed.objects.get(url=self.feed.url)
         self.assertTrue(feed.muted)
         self.assertEqual(feed.failed_attempts, 1)
@@ -259,7 +261,8 @@ class TestFeeds(TestCase):
         unique.save()
         unique.resurrect()
         head.assert_called_with('sw-all.xml',
-                                headers={'User-Agent': FEED_CHECKER})
+                                headers={'User-Agent': FEED_CHECKER},
+                                timeout=20)
         feed = UniqueFeed.objects.get(url=self.feed.url)
         self.assertTrue(feed.muted)
         self.assertEqual(feed.failed_attempts, self.feed.failed_attempts + 1)
