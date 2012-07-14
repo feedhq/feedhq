@@ -231,7 +231,7 @@ class UniqueFeedManager(models.Manager):
         if save:
             obj.save()
 
-        updater = FeedUpdater(parsed=parsed, feeds=feeds)
+        updater = FeedUpdater(parsed=parsed, feeds=feeds, hub=obj.hub)
         updater.update()
 
 

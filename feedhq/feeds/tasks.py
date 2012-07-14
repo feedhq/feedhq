@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import connection
 
+from django_push.subscriber.models import Subscription
+
 from ..tasks import raven
 
 
@@ -29,6 +31,11 @@ def update_unique_feed(feed_url):
         feed.subscribers = Feed.objects.filter(url=feed_url).count()
         feed.save()
     Favicon.objects.update_favicon(feed.link)
+
+
+@raven
+def subscribe(topic_url, hub_url):
+    Subscription.objects.subscribe(topic_url, hub_url)
 
 
 def close_connection():

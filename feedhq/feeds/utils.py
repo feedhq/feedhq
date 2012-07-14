@@ -2,7 +2,6 @@ import datetime
 import logging
 import lxml.html
 import pytz
-import urllib2
 import urlparse
 
 from django.conf import settings
@@ -11,6 +10,8 @@ from django.utils import timezone
 
 from django_push.subscriber.models import Subscription
 
+from .tasks import subscribe
+from ..tasks import enqueue
 from .. import __version__
 
 
@@ -25,15 +26,17 @@ logger = logging.getLogger('feedupdater')
 
 
 class FeedUpdater(object):
-    def __init__(self, parsed, feeds):
+    def __init__(self, parsed, feeds, hub=None):
         self.parsed = parsed
         self.feeds = feeds
+        self.hub = hub
 
     def update(self):
         self.get_entries()
         self.add_entries_to_feeds()
         self.remove_old_stuff()
         self.update_counts()
+        self.handle_hub()
 
     def get_entries(self):
         """Populates self.entries: a list of Entry objects"""
@@ -74,7 +77,7 @@ class FeedUpdater(object):
 
             self.entries.append(parsed_entry)
 
-    def handle_hub(self, topic_url, hub_url):
+    def handle_hub(self):
         """
         Initiates a PubSubHubbub subscription and
         renews the lease if necessary.
@@ -83,25 +86,23 @@ class FeedUpdater(object):
             # Do not use PubSubHubbub on local development
             return
 
-        subscriptions = Subscription.objects.filter(topic=topic_url)
+        if not 'link' in self.parsed or not self.parsed.link or not self.hub:
+            return
+
+        subscriptions = Subscription.objects.filter(topic=self.parsed.link)
         if not subscriptions.exists():
-            logger.debug("Subscribing to %s: %s" % (topic_url, hub_url))
-            subscriptions = [Subscription.objects.subscribe(topic_url,
-                                                            hub=hub_url)]
+            logger.debug("Subscribing to %s: %s" % (self.parsed.link,
+                                                    self.hub))
+            enqueue(subscribe, self.parsed.link, self.hub)
 
         for subscription in subscriptions:
             if subscription.lease_expiration is None:
                 continue
 
             if subscription.lease_expiration < timezone.now():
-                logger.info("Renewing lease for %s: %s" % (topic_url, hub_url))
-                try:
-                    subscription = Subscription.objects.subscribe(
-                        subscription.topic,
-                        subscription.hub
-                    )
-                except urllib2.URLError:
-                    pass
+                logger.debug("Renewing lease for %s: %s" % (self.parsed.link,
+                                                           self.hub))
+                enqueue(subscribe, self.parsed.link, self.hub)
 
     def get_date(self, entry):
         if 'published_parsed' in entry and entry.published_parsed is not None:
