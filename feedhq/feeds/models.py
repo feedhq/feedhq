@@ -149,8 +149,8 @@ class UniqueFeedManager(models.Manager):
 
         try:
             response = requests.get(url, headers=headers, timeout=10)
-        except (requests.RequestException, socket.timeout):
-            logger.debug("Error fetching %s" % obj.url)
+        except (requests.RequestException, socket.timeout) as e:
+            logger.debug("Error fetching %s, %s" % (obj.url, str(e)))
             obj.failed_attempts += 1
             if obj.failed_attempts >= 20:
                 logger.info("%s failed 20 times, muting" % obj.url)
@@ -180,7 +180,7 @@ class UniqueFeedManager(models.Manager):
             obj.failed_attempts += 1
             if obj.failed_attempts >= 5:
                 obj.muted = True
-                logger.debug("%s returned %s, muting" % (
+                logger.info("%s returned %s, muting" % (
                     obj.url, response.status_code,
                 ))
                 obj.muted_reason = str(response.status_code)
@@ -207,18 +207,14 @@ class UniqueFeedManager(models.Manager):
                 obj.save()
             return
 
-        ctype = response.headers.get('Content-Type', None)
-        if not ctype:
-            ctype = ''  # for startswith
-        if (not ctype.startswith('application') and
-            not ctype.startswith('text/xml')):
-            logger.debug("%s returned content-type '%s'" % (obj.url, ctype))
+        try:
+            if not response.content:
+                content = ' '  # chardet won't detect encoding on empty strings
+            else:
+                content = response.content
+        except socket.timeout:
+            logger.debug('%s timed out' % obj.url)
             return
-
-        if not response.content:
-            content = ' '  # chardet won't detect encoding on empty strings
-        else:
-            content = response.content
         parsed = feedparser.parse(content)
 
         if 'link' in parsed.feed:
