@@ -128,9 +128,9 @@ class UniqueFeedManager(models.Manager):
         obj.subscribers = feeds.count()
 
         if obj.subscribers == 1:
-            subscribers = '(1 subscriber)'
+            subscribers = '1 subscriber'
         else:
-            subscribers = '(%s subscribers)' % obj.subscribers
+            subscribers = '%s subscribers' % obj.subscribers
 
         headers = {
             'User-Agent': USER_AGENT % subscribers,

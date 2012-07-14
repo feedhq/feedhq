@@ -15,11 +15,11 @@ from .. import __version__
 
 
 USER_AGENT = (
-    'FeedHQ/%s +https://github.com/feedhq/feedhq %%s - https://github.com/'
-    'feedhq/feedhq/wiki/User-Agent'
+    'FeedHQ/%s (https://github.com/feedhq/feedhq; %%s; https://github.com/'
+    'feedhq/feedhq/wiki/User-Agent)'
 ) % __version__
-FEED_CHECKER = USER_AGENT % '(feed checker)'
-FAVICON_FETCHER = USER_AGENT % '(favicon fetcher)'
+FEED_CHECKER = USER_AGENT % 'feed checker'
+FAVICON_FETCHER = USER_AGENT % 'favicon fetcher'
 
 logger = logging.getLogger('feedupdater')
 
