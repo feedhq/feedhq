@@ -335,6 +335,12 @@ class TestFeeds(TestCase):
         update_feed(self.feed.url, use_etags=False)
         self.assertEqual(self.feed.entries.count(), 30)
 
+    def test_uniquefeed_deletion(self):
+        f = UniqueFeed.objects.create(url='example.com')
+        self.assertEqual(UniqueFeed.objects.count(), 2)
+        UniqueFeed.objects.update_feed(f.url, use_etags=False)
+        self.assertEqual(UniqueFeed.objects.count(), 1)
+
     def test_entry_model_behaviour(self):
         """Behaviour of the `Entry` model"""
         entry = Entry(feed=self.feed, title='My title', user=self.user,

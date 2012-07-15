@@ -127,6 +127,11 @@ class UniqueFeedManager(models.Manager):
 
         obj.subscribers = feeds.count()
 
+        if obj.subscribers == 0:
+            logger.debug("%s has no subscribers, deleting" % obj.url)
+            obj.delete()
+            return
+
         if obj.subscribers == 1:
             subscribers = '1 subscriber'
         else:
