@@ -32,7 +32,10 @@ def responses(code, path=None, redirection=None,
         with open(os.path.join(ROOT, path), 'r') as f:
             response.raw = StringIO(f.read())
     if redirection is not None:
-        response.history.append('yo')
+        temp = _Response()
+        temp.status_code = 301 if 'permanent' in redirection else 302
+        temp.url = path
+        response.history.append(temp)
         response.url = redirection
     response.headers = headers
     return response
@@ -167,11 +170,25 @@ class TestFeeds(TestCase):
     def test_permanent_redirects(self, get):
         """Updating the feed if there's a permanent redirect"""
         get.return_value = responses(
-            301, redirection='atom10.xml',
+            200, redirection='permanent-atom10.xml',
             headers={'Content-Type': 'application/rss+xml'})
         feed = self.cat.feeds.create(name='Permanent', url='permanent.xml')
         feed = Feed.objects.get(pk=feed.id)
-        self.assertEqual(feed.url, 'atom10.xml')
+        self.assertEqual(feed.url, 'permanent-atom10.xml')
+
+    @patch('requests.get')
+    def test_temporary_redirect(self, get):
+        """Don't update the feed if the redirect is not 301"""
+        get.return_value = responses(
+            200, redirection='atom10.xml',
+            headers={'Content-Type': 'application/rss+xml'})
+        feed = self.cat.feeds.create(name='Temp', url='temp.xml')
+        feed = Feed.objects.get(pk=feed.id)
+        self.assertEqual(feed.url, 'temp.xml')
+        get.assert_called_with(
+            'temp.xml', timeout=10,
+            headers={'User-Agent': USER_AGENT % '1 subscriber'},
+        )
 
     @patch('requests.get')
     def test_content_handling(self, get):

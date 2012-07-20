@@ -165,16 +165,31 @@ class UniqueFeedManager(models.Manager):
                 obj.save()
             return
 
+        ctype = response.headers.get('Content-Type', None)
         if (response.history and
-            obj.url != response.url and 'Content-Type' in response.headers and
-            response.headers['Content-Type'].startswith('application')):
-            logger.info("%s moved to %s" % (obj.url, response.url))
-            Feed.objects.filter(url=obj.url).update(url=response.url)
-            if self.filter(url=response.url).exists():
-                obj.delete()
-                save = False
-            else:
-                obj.url = response.url
+            obj.url != response.url and ctype is not None and (
+                ctype.startswith('application') or
+                ctype.startswith('text/xml') or
+                ctype.startswith('text/rss')
+            )):
+            redirection = None
+            for index, redirect in enumerate(response.history):
+                if redirect.status_code != 301:
+                    break
+                # Actual redirection is next request's url
+                try:
+                    redirection = response.history[index+1].url
+                except IndexError:  # next request is final request
+                    redirection = response.url
+
+            if redirection is not None and redirection != obj.url:
+                logger.info("%s moved to %s" % (obj.url, redirection))
+                Feed.objects.filter(url=obj.url).update(url=redirection)
+                if self.filter(url=redirection).exists():
+                    obj.delete()
+                    save = False
+                else:
+                    obj.url = redirection
 
         if response.status_code == 410:
             logger.info("Feed gone, %s" % obj.url)
