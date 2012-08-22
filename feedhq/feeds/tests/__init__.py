@@ -282,7 +282,7 @@ class TestFeeds(TestCase):
                                 timeout=20)
         feed = UniqueFeed.objects.get(url=self.feed.url)
         self.assertTrue(feed.muted)
-        self.assertEqual(feed.failed_attempts, self.feed.failed_attempts + 1)
+        self.assertEqual(feed.failed_attempts, 1)
 
     @patch('requests.get')
     def test_no_date_and_304(self, get):

@@ -178,7 +178,7 @@ class UniqueFeedManager(models.Manager):
                     break
                 # Actual redirection is next request's url
                 try:
-                    redirection = response.history[index+1].url
+                    redirection = response.history[index + 1].url
                 except IndexError:  # next request is final request
                     redirection = response.url
 
@@ -333,24 +333,15 @@ class Feed(models.Model):
         Category, verbose_name=_('Category'), related_name='feeds',
         help_text=_('<a href="/category/add/">Add a category</a>'),
     )
-    # The next 2 are RSS/ATOM attributes
-    title = models.CharField(_('Title'), max_length=255)
-    link = models.URLField(_('Link'), verify_exists=False, max_length=1023)
     # Mute a feed when we don't want the updates to show up in the timeline
     muted = models.BooleanField(_('Muted'), default=False,
                                 help_text=_('Check this if you want to stop '
                                            'checking updates for this feed'))
-    etag = models.CharField(_('Etag'), max_length=1023, null=True, blank=True)
-    modified = models.CharField(_('Modified'), max_length=255, null=True,
-                                blank=True)
     unread_count = models.PositiveIntegerField(_('Unread count'), default=0)
     favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True,
                                 storage=OverwritingStorage())
-    no_favicon = models.BooleanField(_('No favicon'), default=False)
     img_safe = models.BooleanField(_('Display images by default'),
                                    default=False)
-    failed_attempts = models.IntegerField(_('Failed fetching attempts'),
-                                          default=0)
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -590,7 +581,6 @@ class FaviconManager(models.Manager):
 
         for feed in feeds:
             feed.favicon.save(filename, icon_file)
-        feeds.update(no_favicon=False)
         return favicon
 
 

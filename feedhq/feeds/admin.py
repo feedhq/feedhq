@@ -29,7 +29,7 @@ class UniqueFeedAdmin(admin.ModelAdmin):
 
 class FeedAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'unread_count', 'favicon_img')
-    search_fields = ('name', 'title', 'url')
+    search_fields = ('name', 'url')
 
 
 class EntryAdmin(admin.ModelAdmin):
