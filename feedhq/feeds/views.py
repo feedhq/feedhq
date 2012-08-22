@@ -214,8 +214,9 @@ def add_feed(request):
     """Adds a Feed object"""
     if request.method == 'POST':
         form = FeedForm(data=request.POST)
-        form.fields['category'].queryset = Category.objects.filter(\
-                user=request.user)
+        form.fields['category'].queryset = Category.objects.filter(
+            user=request.user,
+        )
         if form.is_valid():
             form.save()
             name = form.cleaned_data['name']
@@ -225,8 +226,9 @@ def add_feed(request):
             return redirect(category.get_absolute_url())
     else:
         form = FeedForm()
-        form.fields['category'].queryset = Category.objects.filter(\
-                user=request.user)
+        form.fields['category'].queryset = Category.objects.filter(
+            user=request.user,
+        )
 
     context = {
         'form': form,
