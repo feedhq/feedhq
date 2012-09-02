@@ -192,11 +192,11 @@ input, select {
 			&.unread {
 				margin-right: 10px;
 				padding: 0px 7px;
-				background: lighten($text, 75%);
+				background: lighten($text, 80%);
 				color: lighten($text, 25%);
 				display: inline-block;
 				height: 24px;
-				border-radius: 5px;
+				border-radius: 3px;
 				font-size: 16px;
 
 				&:hover {
