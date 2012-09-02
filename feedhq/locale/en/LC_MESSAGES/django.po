@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-04 06:52-0500\n"
+"POT-Creation-Date: 2012-09-02 07:27-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,245 +26,241 @@ msgstr ""
 msgid "Invalid URL."
 msgstr ""
 
-#: feeds/forms.py:78
+#: feeds/forms.py:76
 msgid "Subscribe?"
 msgstr ""
 
-#: feeds/forms.py:79 feeds/models.py:79 feeds/models.py:273
+#: feeds/forms.py:77 feeds/models.py:84 feeds/models.py:335
 msgid "Name"
 msgstr ""
 
-#: feeds/forms.py:80 feeds/models.py:217 feeds/models.py:274
-#: feeds/models.py:347
+#: feeds/forms.py:78 feeds/models.py:279 feeds/models.py:336
+#: feeds/models.py:404
 msgid "URL"
 msgstr ""
 
-#: feeds/forms.py:81 feeds/models.py:276
+#: feeds/forms.py:79 feeds/models.py:338
 msgid "Category"
 msgstr ""
 
-#: feeds/models.py:32
+#: feeds/models.py:37
 msgid "Red"
 msgstr ""
 
-#: feeds/models.py:33
+#: feeds/models.py:38
 msgid "Dark Red"
 msgstr ""
 
-#: feeds/models.py:34
+#: feeds/models.py:39
 msgid "Pale Green"
 msgstr ""
 
-#: feeds/models.py:35
+#: feeds/models.py:40
 msgid "Green"
 msgstr ""
 
-#: feeds/models.py:36
+#: feeds/models.py:41
 msgid "Army Green"
 msgstr ""
 
-#: feeds/models.py:37
+#: feeds/models.py:42
 msgid "Pale Blue"
 msgstr ""
 
-#: feeds/models.py:38
+#: feeds/models.py:43
 msgid "Blue"
 msgstr ""
 
-#: feeds/models.py:39
+#: feeds/models.py:44
 msgid "Dark Blue"
 msgstr ""
 
-#: feeds/models.py:40
+#: feeds/models.py:45
 msgid "Orange"
 msgstr ""
 
-#: feeds/models.py:41
+#: feeds/models.py:46
 msgid "Dark Orange"
 msgstr ""
 
-#: feeds/models.py:42
+#: feeds/models.py:47
 msgid "Black"
 msgstr ""
 
-#: feeds/models.py:43
+#: feeds/models.py:48
 msgid "Gray"
 msgstr ""
 
-#: feeds/models.py:52
+#: feeds/models.py:57
 msgid "One day"
 msgstr ""
 
-#: feeds/models.py:53
+#: feeds/models.py:58
 msgid "Two days"
 msgstr ""
 
-#: feeds/models.py:54
+#: feeds/models.py:59
 msgid "One week"
 msgstr ""
 
-#: feeds/models.py:55
+#: feeds/models.py:60
 msgid "One month"
 msgstr ""
 
-#: feeds/models.py:56
+#: feeds/models.py:61
 msgid "One year"
 msgstr ""
 
-#: feeds/models.py:80
+#: feeds/models.py:85
 msgid "Slug"
 msgstr ""
 
-#: feeds/models.py:81 feeds/models.py:355
+#: feeds/models.py:86 feeds/models.py:412
 msgid "User"
 msgstr ""
 
-#: feeds/models.py:87
+#: feeds/models.py:92
 msgid "Color"
 msgstr ""
 
-#: feeds/models.py:92
+#: feeds/models.py:97
 msgid "Delete after"
 msgstr ""
 
-#: feeds/models.py:93
+#: feeds/models.py:98
 msgid ""
 "Period of time after which entries are deleted, whether they've been read or "
 "not."
 msgstr ""
 
-#: feeds/models.py:219 feeds/models.py:280 feeds/models.py:345
+#: feeds/models.py:281 feeds/models.py:402
 msgid "Title"
 msgstr ""
 
-#: feeds/models.py:220 feeds/models.py:281
+#: feeds/models.py:282
 msgid "Link"
 msgstr ""
 
-#: feeds/models.py:222 feeds/models.py:286
+#: feeds/models.py:284
 msgid "Etag"
 msgstr ""
 
-#: feeds/models.py:223 feeds/models.py:287
+#: feeds/models.py:285
 msgid "Modified"
 msgstr ""
 
-#: feeds/models.py:226
+#: feeds/models.py:288
 msgid "Last update"
 msgstr ""
 
-#: feeds/models.py:228 feeds/models.py:283
+#: feeds/models.py:290 feeds/models.py:342
 msgid "Muted"
 msgstr ""
 
-#: feeds/models.py:229
+#: feeds/models.py:291
 msgid "Muting reason"
 msgstr ""
 
-#: feeds/models.py:232
+#: feeds/models.py:294
 msgid "Failed fetch attempts"
 msgstr ""
 
-#: feeds/models.py:234
+#: feeds/models.py:296
 msgid "Hub"
 msgstr ""
 
-#: feeds/models.py:277
+#: feeds/models.py:339
 msgid "<a href=\"/category/add/\">Add a category</a>"
 msgstr ""
 
-#: feeds/models.py:284
+#: feeds/models.py:343
 msgid "Check this if you want to stop checking updates for this feed"
 msgstr ""
 
-#: feeds/models.py:289
+#: feeds/models.py:345
 msgid "Unread count"
 msgstr ""
 
-#: feeds/models.py:290
+#: feeds/models.py:346
 msgid "Favicon"
 msgstr ""
 
-#: feeds/models.py:292
-msgid "No favicon"
-msgstr ""
-
-#: feeds/models.py:293
+#: feeds/models.py:348
 msgid "Display images by default"
 msgstr ""
 
-#: feeds/models.py:295
-msgid "Failed fetching attempts"
-msgstr ""
-
-#: feeds/models.py:343
+#: feeds/models.py:400
 msgid "Feed"
 msgstr ""
 
-#: feeds/models.py:346
+#: feeds/models.py:403
 msgid "Abstract"
 msgstr ""
 
-#: feeds/models.py:350
+#: feeds/models.py:407
 msgid "Permalink"
 msgstr ""
 
-#: feeds/models.py:352
+#: feeds/models.py:409
 msgid "Date"
 msgstr ""
 
-#: feeds/models.py:358
+#: feeds/models.py:415
 msgid "Read"
 msgstr ""
 
-#: feeds/models.py:360
+#: feeds/models.py:417
 msgid "Read later URL"
 msgstr ""
 
-#: feeds/models.py:523
+#: feeds/models.py:440
+msgid "(No title)"
+msgstr ""
+
+#: feeds/models.py:632
 msgid "Domain URL"
 msgstr ""
 
-#: feeds/views.py:105
+#: feeds/views.py:108
 #, python-format
 msgid "%s entries have been marked as read"
 msgstr ""
 
-#: feeds/views.py:181
+#: feeds/views.py:184
 #, python-format
 msgid "%(category)s has been successfully updated"
 msgstr ""
 
-#: feeds/views.py:222
+#: feeds/views.py:226
 #, python-format
 msgid "%(feed)s has been successfully added"
 msgstr ""
 
-#: feeds/views.py:248
+#: feeds/views.py:253
 #, python-format
 msgid "%(feed)s has been successfully updated"
 msgstr ""
 
-#: feeds/views.py:366
+#: feeds/views.py:374
 msgid "Article successfully added to your reading list"
 msgstr ""
 
-#: feeds/views.py:421
+#: feeds/views.py:427
 msgid "Imported"
 msgstr ""
 
-#: feeds/views.py:430
+#: feeds/views.py:436
 #, python-format
 msgid ""
 "%(num)s feeds have been imported, new content will appear in a moment when "
 "you refresh the page."
 msgstr ""
 
-#: feeds/views.py:548
+#: feeds/views.py:554
 msgid "1 feed has been added"
 msgstr ""
 
-#: feeds/views.py:550
+#: feeds/views.py:556
 #, python-format
 msgid "%s feeds have been added"
 msgstr ""
@@ -380,16 +376,16 @@ msgid "Cancel"
 msgstr ""
 
 #: feeds/templates/feeds/category_form.html:3
-#: feeds/templates/feeds/category_form.html:6 templates/base.html:26
+#: feeds/templates/feeds/category_form.html:6 templates/base.html:27
 msgid "Add a category"
 msgstr ""
 
-#: feeds/templates/feeds/category_form.html:10 templates/base.html:26
+#: feeds/templates/feeds/category_form.html:10 templates/base.html:27
 msgid "Add category"
 msgstr ""
 
 #: feeds/templates/feeds/dashboard.html:3
-#: feeds/templates/feeds/dashboard.html:6 templates/base.html:25
+#: feeds/templates/feeds/dashboard.html:6 templates/base.html:26
 msgid "Dashboard"
 msgstr ""
 
@@ -428,10 +424,6 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: feeds/templates/feeds/entry_detail.html:17
-msgid "No title"
-msgstr ""
-
 #: feeds/templates/feeds/entry_detail.html:18
 msgid "Edit this feed"
 msgstr ""
@@ -449,20 +441,37 @@ msgstr ""
 msgid "Unread"
 msgstr ""
 
-#: feeds/templates/feeds/entry_detail.html:39
-msgid "Show images"
-msgstr ""
-
-#: feeds/templates/feeds/entry_detail.html:46
-msgid "Always show images for this feed"
-msgstr ""
-
-#: feeds/templates/feeds/entry_detail.html:53
-msgid "Hide images for this feed"
-msgstr ""
-
-#: feeds/templates/feeds/entry_detail.html:57
+#: feeds/templates/feeds/entry_detail.html:36
 msgid "Email"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:64
+msgid "External media is always displayed for this feed."
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:65
+msgid "Disable external media"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:68
+msgid "External media is only displayed this time."
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:69
+msgid "Always display external media for this feed"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:71
+msgid ""
+"External media is hidden by default to protect your privacy. Show media:"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:72
+msgid "once"
+msgstr ""
+
+#: feeds/templates/feeds/entry_detail.html:73
+msgid "always"
 msgstr ""
 
 #: feeds/templates/feeds/feed_confirm_delete.html:8
@@ -475,11 +484,12 @@ msgid "There is no undo."
 msgstr ""
 
 #: feeds/templates/feeds/feed_form.html:3
-#: feeds/templates/feeds/feed_form.html:6 templates/base.html:27
+#: feeds/templates/feeds/feed_form.html:6
+#: feeds/templates/feeds/feed_list.html:16 templates/base.html:28
 msgid "Add a feed"
 msgstr ""
 
-#: feeds/templates/feeds/feed_form.html:10 templates/base.html:27
+#: feeds/templates/feeds/feed_form.html:10 templates/base.html:28
 msgid "Add feed"
 msgstr ""
 
@@ -494,11 +504,7 @@ msgid ""
 msgstr ""
 
 #: feeds/templates/feeds/feed_list.html:15
-msgid "Create a category:"
-msgstr ""
-
-#: feeds/templates/feeds/feed_list.html:16
-msgid "Add a feed:"
+msgid "Create a category"
 msgstr ""
 
 #: feeds/templates/feeds/feed_list.html:17
@@ -543,7 +549,7 @@ msgstr ""
 msgid "Import data from an OPML file"
 msgstr ""
 
-#: feeds/templates/feeds/import_feeds.html:10 templates/base.html:28
+#: feeds/templates/feeds/import_feeds.html:10 templates/base.html:29
 msgid "Import"
 msgstr ""
 
@@ -880,7 +886,7 @@ msgstr ""
 #: profiles/templates/profiles/services/readability.html:8
 msgid ""
 "Please enter your Readability credentials. Note that Readability uses xAuth "
-"so we won't store your raw credentials but exchange them for a toekn that "
+"so we won't store your raw credentials but exchange them for a token that "
 "you can revoke at any time."
 msgstr ""
 
@@ -1004,15 +1010,15 @@ msgstr ""
 msgid "500 - Server error"
 msgstr ""
 
-#: templates/base.html:21
+#: templates/base.html:22
 msgid "Unread entries"
 msgstr ""
 
-#: templates/base.html:28
+#: templates/base.html:29
 msgid "Import feeds"
 msgstr ""
 
-#: templates/base.html:130
+#: templates/base.html:131
 #, python-format
 msgid "Are you sure you want to mark %(unread_count)s items as read?"
 msgstr ""
