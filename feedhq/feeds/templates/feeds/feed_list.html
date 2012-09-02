@@ -22,11 +22,11 @@
 		<div class="figures{% if not category %} full{% endif %}">
 			<div class="count">{% spaceless %}
 				{% if category %}
-					<a class="cat {{ category.color }} left" href="{% url "feeds:category" category.slug %}">{{ category }}</a>
+					<a class="cat {{ category.color }} left" href="{% if only_unread %}{% url "feeds:unread_category" category.slug %}{% else %}{% url "feeds:category" category.slug %}{% endif %}">{{ category }}</a>
 					<a class="edit {{ category.color }} cat" href="{% url "feeds:edit_category" category.slug %}"><span class="icon pen"></span></a>
 				{% endif %}
 				{% if feed %}
-					<a class="cat {{ feed.category.color }} left" href="{% url "feeds:feed" feed.pk %}">{{ feed }}</a>
+					<a class="cat {{ feed.category.color }} left" href="{% if only_unread %}{% url "feeds:unread_feed" feed.pk %}{% else %}{% url "feeds:feed" feed.pk %}{% endif %}">{{ feed }}</a>
 					<a class="edit {{ feed.category.color }} cat right" href="{% url "feeds:edit_feed" feed.pk %}"><span class="icon pen"></span></a>
 				{% endif %}{% endspaceless %}
 				<div class="navlist">{% spaceless %}

@@ -1,6 +1,6 @@
 <li class="entry{% if not entry.read %} new{% endif%}">
 	<div class="title ellipsis"{% if entry.feed.favicon %} style="background-image: url('{{ entry.feed.favicon.url }}');"{% endif %}>
-		<a href="{% url "feeds:feed" entry.feed.pk %}" class="cat {{ entry.feed.category.color }}">{{ entry.feed }}</a>
+		<a href="{% if only_unread %}{% url "feeds:unread_feed" entry.feed.pk %}{% else %}{% url "feeds:feed" entry.feed.pk %}{% endif %}" class="cat {{ entry.feed.category.color }}">{{ entry.feed }}</a>
 		<a href="{% url "feeds:item" entry.id %}">{{ entry.sanitized_title|safe }}</a>
 	</div>
 	<div class="date">{{ entry.date|timezone:user.timezone|date }}</div>
