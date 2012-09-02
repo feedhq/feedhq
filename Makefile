@@ -24,9 +24,6 @@ dbshell:
 updatefeeds:
 	django-admin.py updatefeeds $(settings)
 
-check_defunct:
-	django-admin.py check_defunct $(settings)
-
 favicons:
 	django-admin.py favicons $(settings)
 

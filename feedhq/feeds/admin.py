@@ -22,7 +22,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class UniqueFeedAdmin(admin.ModelAdmin):
     list_display = ('url', 'subscribers', 'last_update', 'muted',
-                    'muted_reason', 'failed_attempts')
+                    'muted_reason', 'backoff_factor')
     list_filter = ('muted', 'muted_reason', 'hub')
     search_fields = ('url', 'title', 'link')
 

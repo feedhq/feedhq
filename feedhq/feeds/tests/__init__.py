@@ -2,14 +2,12 @@
 import feedparser
 import json
 import os
-import requests
 
 from StringIO import StringIO
 
 from django_push.subscriber.signals import updated
 from httplib2 import Response
 from mock import patch
-from requests.exceptions import ConnectionError
 from requests import Response as _Response
 
 from django.test import TestCase
@@ -19,7 +17,7 @@ from django.utils import timezone
 
 from ..models import Category, Feed, Entry, Favicon, UniqueFeed
 from ..tasks import update_feed
-from ..utils import FEED_CHECKER, FAVICON_FETCHER, USER_AGENT
+from ..utils import FAVICON_FETCHER, USER_AGENT
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -215,80 +213,36 @@ class TestFeeds(TestCase):
     def test_errors(self, get):
         for code in [400, 401, 403, 404, 500, 502, 503]:
             get.return_value = responses(code)
-            self.assertFalse(UniqueFeed.objects.get(url=self.feed.url).muted)
-            for i in range(4):
-                update_feed(self.feed.url, use_etags=False)
-            self.assertFalse(UniqueFeed.objects.get(url=self.feed.url).muted)
-            update_feed(self.feed.url, use_etags=False)
             feed = UniqueFeed.objects.get(url=self.feed.url)
-            self.assertTrue(feed.muted)
+            self.assertFalse(feed.muted)
+            self.assertEqual(feed.muted_reason, None)
+            self.assertEqual(feed.backoff_factor, 1)
+
+            update_feed(self.feed.url, use_etags=False)
+
+            feed = UniqueFeed.objects.get(url=self.feed.url)
+            self.assertFalse(feed.muted)
             self.assertEqual(feed.muted_reason, str(code))
-            feed.muted = False
-            feed.failed_attempts = 0
+            self.assertEqual(feed.backoff_factor, 2)
+
+            # Restore status for next iteration
+            feed.backoff_factor = 1
+            feed.muted_reason = None
             feed.save()
 
     @patch('requests.get')
-    def test_ephemeral_errors(self, get):
-        for code in [200, 204, 304]:
-            UniqueFeed.objects.filter(url=self.feed.url).update(
-                failed_attempts=4,  # One more and it's muted
-            )
-            get.return_value = responses(code)
+    def test_backoff(self, get):
+        get.return_value = responses(502)
+        feed = UniqueFeed.objects.get(url=self.feed.url)
+        self.assertEqual(feed.muted_reason, None)
+        self.assertEqual(feed.backoff_factor, 1)
+
+        for i in range(12):
             update_feed(self.feed.url, use_etags=False)
-            get.assert_called_with(
-                self.feed.url, timeout=10,
-                headers={'User-Agent': USER_AGENT % '1 subscriber',
-                         'Accept': feedparser.ACCEPT_HEADER},
-            )
             feed = UniqueFeed.objects.get(url=self.feed.url)
-            self.assertEqual(feed.failed_attempts, 0)
-
-    @patch("requests.head")
-    def test_feed_resurrection(self, head):
-        head.return_value = responses(200)
-        unique = UniqueFeed.objects.get()
-
-        unique.muted = True
-        unique.save()
-        unique.resurrect()
-        head.assert_called_with('sw-all.xml',
-                                headers={'User-Agent': FEED_CHECKER},
-                                timeout=20)
-        feed = UniqueFeed.objects.get(url=self.feed.url)
-        self.assertFalse(feed.muted)
-        self.assertEqual(feed.failed_attempts, 0)
-
-    @patch("requests.head")
-    def test_no_resurrection(self, head):
-        head.return_value = responses(500)
-        unique = UniqueFeed.objects.get()
-
-        unique.muted = True
-        unique.save()
-        unique.resurrect()
-        head.assert_called_with('sw-all.xml',
-                                headers={'User-Agent': FEED_CHECKER},
-                                timeout=20)
-        feed = UniqueFeed.objects.get(url=self.feed.url)
-        self.assertTrue(feed.muted)
-        self.assertEqual(feed.failed_attempts, 1)
-
-    @patch("requests.head")
-    def test_resurection_exception(self, head):
-        def side_effect(*args, **kwargs):
-            raise ConnectionError()
-        head.side_effect = side_effect
-        unique = UniqueFeed.objects.get()
-
-        unique.muted = True
-        unique.save()
-        unique.resurrect()
-        head.assert_called_with('sw-all.xml',
-                                headers={'User-Agent': FEED_CHECKER},
-                                timeout=20)
-        feed = UniqueFeed.objects.get(url=self.feed.url)
-        self.assertTrue(feed.muted)
-        self.assertEqual(feed.failed_attempts, 1)
+            self.assertFalse(feed.muted)
+            self.assertEqual(feed.muted_reason, '502')
+            self.assertEqual(feed.backoff_factor, min(i + 2, 10))
 
     @patch('requests.get')
     def test_no_date_and_304(self, get):
@@ -308,27 +262,6 @@ class TestFeeds(TestCase):
         count2 = feed2.entries.count()
 
         self.assertEqual(count1, count2)
-
-    @patch('requests.get')
-    def test_auto_mute_feed(self, get):
-        """Auto-muting feeds with no status for too long"""
-        self.feed.url = 'no-status.xml'
-        self.feed.save()
-
-        def raise_timeout(*args, **kwargs):
-            raise requests.Timeout()
-        get.side_effect = raise_timeout
-
-        update_feed(self.feed.url, use_etags=False)
-
-        self.assertEqual(Entry.objects.count(), 0)
-        feed = UniqueFeed.objects.get(url=self.feed.url)
-        self.assertEqual(feed.failed_attempts, 1)
-        for i in range(20):
-            update_feed(self.feed.url, use_etags=False)
-        feed = UniqueFeed.objects.get(url=self.feed.url)
-        self.assertEqual(feed.failed_attempts, 20)
-        self.assertTrue(feed.muted)
 
     @patch('requests.get')
     def test_no_link(self, get):

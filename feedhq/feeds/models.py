@@ -13,7 +13,6 @@ import requests
 import socket
 
 from django.db import models
-from django.db.models import F
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
@@ -24,7 +23,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 
 from .tasks import update_feed, update_unique_feed
-from .utils import FeedUpdater, FAVICON_FETCHER, FEED_CHECKER, USER_AGENT
+from .utils import FeedUpdater, FAVICON_FETCHER, USER_AGENT
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
 
@@ -161,11 +160,12 @@ class UniqueFeedManager(models.Manager):
             response = requests.get(url, headers=headers, timeout=10)
         except (requests.RequestException, socket.timeout) as e:
             logger.debug("Error fetching %s, %s" % (obj.url, str(e)))
-            obj.failed_attempts += 1
-            if obj.failed_attempts >= 20:
-                logger.info("%s failed 20 times, muting" % obj.url)
-                obj.muted = True
-                obj.muted_reason = 'timeout'
+            if obj.backoff_factor == obj.MAX_BACKOFF - 1:
+                logger.info(
+                    "%s reached max backoff period (timeout)" % obj.url
+                )
+            obj.backoff()
+            obj.muted_reason = 'timeout'
             if save:
                 obj.save()
             return
@@ -204,13 +204,12 @@ class UniqueFeedManager(models.Manager):
             return
 
         elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
-            obj.failed_attempts += 1
-            if obj.failed_attempts >= 5:
-                obj.muted = True
-                logger.info("%s returned %s, muting" % (
+            if obj.backoff_factor == obj.MAX_BACKOFF - 1:
+                logger.info("%s reached max backoff period (%s)" % (
                     obj.url, response.status_code,
                 ))
-                obj.muted_reason = str(response.status_code)
+            obj.backoff()
+            obj.muted_reason = str(response.status_code)
             if save:
                 obj.save()
             return
@@ -219,7 +218,7 @@ class UniqueFeedManager(models.Manager):
             logger.debug("%s returned %s" % (obj.url, response.status_code))
 
         else:
-            obj.failed_attempts = 0
+            obj.backoff_factor = 1
             obj.muted_reason = None
 
         if 'etag' in response.headers:
@@ -288,45 +287,33 @@ class UniqueFeed(models.Model):
     last_update = models.DateTimeField(_('Last update'), default=timezone.now,
                                        db_index=True)
     muted = models.BooleanField(_('Muted'), default=False, db_index=True)
+    # Muted is only for 410, this is populated even when the feed is not
+    # muted. It's more an indicator of the reason the backoff factor isn't 1.
     muted_reason = models.CharField(_('Muting reason'), max_length=50,
                                     null=True, blank=True,
                                     choices=MUTE_CHOICES)
-    failed_attempts = models.PositiveIntegerField(_('Failed fetch attempts'),
-                                                  default=0)
     hub = models.URLField(_('Hub'), max_length=1023, null=True, blank=True)
+    backoff_factor = models.PositiveIntegerField(_('Backoff factor'),
+                                                 default=1)
 
     objects = UniqueFeedManager()
+
+    MAX_BACKOFF = 10  # Approx. 24 hours
 
     def __unicode__(self):
         if self.title:
             return u'%s' % self.title
         return u'%s' % self.url
 
-    def resurrect(self):
-        if not self.muted:
-            return
-        ua = {'User-Agent': FEED_CHECKER}
-        try:
-            response = requests.head(self.url, headers=ua, timeout=20)
-        except requests.exceptions.RequestException:
-            logger.debug("Feed still dead, raised exception. %s" % self.url)
-        else:
-            if response.status_code == 200:
-                logger.info("Unmuting %s" % self.url)
-                self.muted = False
-                self.muted_reason = None
-                self.failed_attempts = 0
-                self.save()
-                return
-            else:
-                logger.debug("Feed still dead, status %s, %s" % (
-                    response.status_code, self.url))
-        UniqueFeed.objects.filter(pk=self.pk).update(
-            failed_attempts=F('failed_attempts') + 1
-        )
+    def backoff(self):
+        self.backoff_factor = min(self.MAX_BACKOFF, self.backoff_factor + 1)
 
     def should_update(self):
-        delay = datetime.timedelta(minutes=45)
+        # Exponential backoff: max backoff factor is 10, which is approx. 24
+        # hours. This way we avoid muting and resurrecting feeds, failing
+        # feeds stay at a backoff factor of 10.
+        minutes = 45 * (self.backoff_factor ** 1.5)
+        delay = datetime.timedelta(minutes=minutes)
         return self.last_update + delay < timezone.now()
 
 

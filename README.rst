@@ -28,6 +28,8 @@ FeedHQ is a simple, lightweight web-based feed reader. Main features:
 
 * Handles HTTP status codes nicely (permanent redirects, gone, not-modified…)
 
+* Exponential backoff support
+
 * Hides images by default (and therefore filters ads and tracking stuff)
 
 * Multiple user support
@@ -126,11 +128,6 @@ A cron job should also be set up for picking and updating favicons (the
 
     @daily /path/to/env/bin/django-admin.py favicons --settings=feedhq.settings
     @monthly /path/to/env/bin/django-admin.py favicons --all --settings=feedhq.settings
-
-And another job for checking feeds that have been muted because they were
-failing too much::
-
-    @daily /path/to/env/bin/django-admin.py check_defunct --settings=feedhq.settings
 
 And a final one to purge expired sessions from the DB::
 
