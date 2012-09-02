@@ -368,7 +368,7 @@ def item(request, entry_id):
                 entry.feed.update_unread_count()
                 return redirect(back_url)
             elif action == 'read_later':
-                enqueue(read_later, entry.pk, timeout=20, queue='high')
+                enqueue(read_later, args=[entry.pk], timeout=20, queue='high')
                 messages.success(
                     request,
                     _('Article successfully added to your reading list'),

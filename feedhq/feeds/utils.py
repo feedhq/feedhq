@@ -93,7 +93,7 @@ class FeedUpdater(object):
         if not subscriptions.exists():
             logger.debug("Subscribing to %s: %s" % (self.parsed.link,
                                                     self.hub))
-            enqueue(subscribe, self.parsed.link, self.hub)
+            enqueue(subscribe, args=[self.parsed.link, self.hub])
 
         for subscription in subscriptions:
             if subscription.lease_expiration is None:
@@ -102,7 +102,7 @@ class FeedUpdater(object):
             if subscription.lease_expiration < timezone.now():
                 logger.debug("Renewing lease for %s: %s" % (self.parsed.link,
                                                            self.hub))
-                enqueue(subscribe, self.parsed.link, self.hub)
+                enqueue(subscribe, args=[self.parsed.link, self.hub])
 
     def get_date(self, entry):
         if 'published_parsed' in entry and entry.published_parsed is not None:

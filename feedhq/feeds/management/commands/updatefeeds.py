@@ -32,7 +32,7 @@ class Command(BaseCommand):
         for unique in uniques:
             try:
                 if unique.should_update():
-                    enqueue(update_feed, unique.url, timeout=20)
+                    enqueue(update_feed, args=[unique.url], timeout=20)
             except Exception:  # We don't know what to expect, and anyway
                                # we're reporting the exception
                 if settings.DEBUG or not hasattr(settings, 'SENTRY_DSN'):

@@ -27,18 +27,24 @@ from raven import Client
 from rq.timeouts import JobTimeoutException
 
 
-def enqueue(function, *args, **kwargs):
+def enqueue(function, args=None, kwargs=None, timeout=None, queue='default'):
     opts = getattr(settings, 'RQ', {})
     eager = opts.get('eager', False)
-    queue_name = kwargs.pop('queue', 'default')
-    if eager:
-        kwargs.pop('timeout', None)  # timeout is for RQ only
-        return function(*args, **kwargs)
+    async = not eager
 
-    else:
-        conn = redis.Redis(**opts)
-        queue = rq.Queue(queue_name, connection=conn)
-        return queue.enqueue(function, *args, **kwargs)
+    if args is None:
+        args = ()
+    if kwargs is None:
+        kwargs = {}
+
+    if 'eager' in opts:
+        opts = opts.copy()
+        opts.pop('eager')
+
+    conn = redis.Redis(**opts)
+    queue = rq.Queue(queue, connection=conn, async=async)
+    return queue.enqueue_call(func=function, args=tuple(args), kwargs=kwargs,
+                              timeout=timeout)
 
 
 def raven(function):
