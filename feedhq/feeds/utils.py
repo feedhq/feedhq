@@ -138,9 +138,9 @@ class FeedUpdater(object):
                     continue
 
                 if not entry.link:
-                    params = {'title__iexact': entry.title, 'feed': feed}
+                    params = {'title__iexact': entry.title}
                 else:
-                    params = {'link__iexact': entry.link, 'feed': feed}
+                    params = {'link__iexact': entry.link}
                 params['feed'] = feed
 
                 create = False
@@ -167,6 +167,15 @@ class FeedUpdater(object):
                 db_entry.user = feed.category.user
                 if create:
                     db_entry.pk = None
+
+                    # If the user already has the entry, add it but as a read
+                    # entry. This is useful for people following a blog and a
+                    # planet that aggregates the same blog.
+                    if (db_entry.link and
+                        db_entry.user.entries.exclude(pk=db_entry.pk).filter(
+                            link=db_entry.link,
+                        ).exists()):
+                        db_entry.read = True
                 db_entry.save()
                 feed.update_unread_count()
 

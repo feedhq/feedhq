@@ -813,6 +813,23 @@ class TestFeeds(TestCase):
         self.assertContains(response, 'No feed found')
         self.assertContains(response, 'Return to the site')
 
+    @patch('requests.get')
+    def test_duplicate(self, get):
+        """Adding an entry the user already has marks it as read"""
+        get.return_value = responses(200, 'rss20.xml')
+
+        # Creating a feed will update it and assign the entry
+        self.cat.feeds.create(url='http://exampleexample.com')
+
+        # Update another feed with the same entry
+        update_feed(self.feed.url, use_etags=False)
+
+        self.assertEqual(Entry.objects.count(), 2)
+        # One entry is unread
+        Entry.objects.get(link="http://example.org/item/1", read=False)
+        # Other is read
+        Entry.objects.get(link="http://example.org/item/1", read=True)
+
 
 class FaviconTests(TestCase):
     @patch("requests.get")
