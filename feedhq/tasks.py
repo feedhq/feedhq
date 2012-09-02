@@ -54,8 +54,7 @@ def raven(function):
             function(*args, **kwargs)
         except Exception as e:
             if not settings.DEBUG and hasattr(settings, 'SENTRY_DSN'):
-                if not isinstance(e, JobTimeoutException):
-                    client = Client(dsn=settings.SENTRY_DSN)
-                    client.captureException()
+                client = Client(dsn=settings.SENTRY_DSN)
+                client.captureException()
             raise
     return ravenify
