@@ -442,7 +442,7 @@ class Entry(models.Model):
     def sanitized_nomedia_content(self):
         return bleach.clean(
             self.subtitle,
-            tags=self.ELEMENTS | set(['img', 'audio', 'video']),
+            tags=self.ELEMENTS - set(['img', 'audio', 'video']),
             attributes=self.ATTRIBUTES,
             styles=self.CSS_PROPERTIES,
             strip=True,

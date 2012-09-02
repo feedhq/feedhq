@@ -517,13 +517,16 @@ class TestFeeds(TestCase):
         url = reverse('feeds:item', args=[entry.pk])
         response = self.client.get(url)
         self.assertContains(response, 'External media is hidden')
+        self.assertNotContains(response, '<img src="/favicon.png">')
         self.assertEqual(Feed.objects.get(pk=self.feed.pk).media_safe, False)
         response = self.client.post(url, {'action': 'images', 'once': 'once'})
         self.assertContains(response, 'Always display external media')
+        self.assertContains(response, '<img src="/favicon.png">')
         self.assertEqual(Feed.objects.get(pk=self.feed.pk).media_safe, False)
         response = self.client.post(url, {'action': 'images',
                                           'always': 'always'})
         self.assertContains(response, 'Disable external media')
+        self.assertContains(response, '<img src="/favicon.png">')
         self.assertEqual(Feed.objects.get(pk=self.feed.pk).media_safe, True)
         response = self.client.post(url, {'action': 'images',
                                           'never': 'never'})
