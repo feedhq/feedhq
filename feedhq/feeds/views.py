@@ -399,6 +399,8 @@ def save_outline(user, category, outline, existing):
         )
         for entry in outline._outlines:
             count += save_outline(user, cat, entry, existing)
+        if created and cat.feeds.count() == 0:
+            cat.delete()
 
     for entry in outline:
         count += save_outline(user, category, entry, existing)
@@ -430,6 +432,9 @@ def import_feeds(request):
             entries = opml.parse(request.FILES['file'])
             imported = save_outline(request.user, category, entries,
                                     existing_feeds)
+
+            if created and category.feeds.count() == 0:
+                category.delete()
 
             messages.success(
                 request,

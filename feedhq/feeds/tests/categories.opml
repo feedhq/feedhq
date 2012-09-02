@@ -4,6 +4,9 @@
     <title>Liferea Feed List Export</title>
   </head>
   <body>
+      <outline title="empty" text="empty" description="empty" type="folder">
+        <outline title="subfolder" text="subfolder" description="subfolder" type="folder"></outline>
+      </outline>
       <outline title="&lt;Glazblog/&gt;" text="&lt;Glazblog/&gt;" description="&lt;Glazblog/&gt;" type="rss" xmlUrl="http://www.glazman.org/weblog/dotclear/index.php?feed/rss2" htmlUrl=""/>
       <outline title="Accessibilit&#xE9; num&#xE9;rique, CSS et standards du web - Fairytells - Commentaires" text="Accessibilit&#xE9; num&#xE9;rique, CSS et standards du web - Fairytells - Commentaires" description="Accessibilit&#xE9; num&#xE9;rique, CSS et standards du web - Fairytells - Commentaires" type="rss" xmlUrl="http://www.fairytells.net/rss.php?type=co" htmlUrl=""/>
       <outline title="Accessibilit&#xE9;Web" text="Accessibilit&#xE9;Web" description="Accessibilit&#xE9;Web" type="rss" xmlUrl="http://accessibiliteweb.com/spip.php?page=rss&amp;id_rubrique=3" htmlUrl=""/>
