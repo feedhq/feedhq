@@ -88,7 +88,8 @@ class TestFeeds(TestCase):
         self.feed = self.cat.feeds.create(name='Test Feed', url='sw-all.xml')
         get.assert_called_with(
             'sw-all.xml',
-            headers={'User-Agent': USER_AGENT % '1 subscriber'}, timeout=10)
+            headers={'User-Agent': USER_AGENT % '1 subscriber',
+                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
 
         # The user is logged in
         self.client.login(username='testuser', password='pass')
@@ -157,14 +158,16 @@ class TestFeeds(TestCase):
         update_feed(self.feed.url, use_etags=False)
         get.assert_called_with(
             self.feed.url,
-            headers={'User-Agent': USER_AGENT % '1 subscriber'}, timeout=10)
+            headers={'User-Agent': USER_AGENT % '1 subscriber',
+                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
 
         get.return_value = responses(200, self.feed.url,
                                      headers={'Content-Type': None})
         update_feed(self.feed.url, use_etags=False)
         get.assert_called_with(
             self.feed.url,
-            headers={'User-Agent': USER_AGENT % '1 subscriber'}, timeout=10)
+            headers={'User-Agent': USER_AGENT % '1 subscriber',
+                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
 
     @patch('requests.get')
     def test_permanent_redirects(self, get):
@@ -187,7 +190,8 @@ class TestFeeds(TestCase):
         self.assertEqual(feed.url, 'temp.xml')
         get.assert_called_with(
             'temp.xml', timeout=10,
-            headers={'User-Agent': USER_AGENT % '1 subscriber'},
+            headers={'User-Agent': USER_AGENT % '1 subscriber',
+                     'Accept': feedparser.ACCEPT_HEADER},
         )
 
     @patch('requests.get')
@@ -196,7 +200,8 @@ class TestFeeds(TestCase):
         get.return_value = responses(200, 'atom10.xml')
         self.cat.feeds.create(name='Content', url='atom10.xml')
         entry = Entry.objects.get()
-        self.assertTrue('Watch out for <span> nasty tricks' in entry.subtitle)
+        self.assertEqual(entry.sanitized_content(),
+                         "<div>Watch out for <span> nasty tricks</span></div>")
 
     @patch('requests.get')
     def test_gone(self, get):
@@ -232,7 +237,8 @@ class TestFeeds(TestCase):
             update_feed(self.feed.url, use_etags=False)
             get.assert_called_with(
                 self.feed.url, timeout=10,
-                headers={'User-Agent': USER_AGENT % '1 subscriber'},
+                headers={'User-Agent': USER_AGENT % '1 subscriber',
+                         'Accept': feedparser.ACCEPT_HEADER},
             )
             feed = UniqueFeed.objects.get(url=self.feed.url)
             self.assertEqual(feed.failed_attempts, 0)
@@ -577,13 +583,19 @@ class TestFeeds(TestCase):
         )
         url = reverse('feeds:item', args=[entry.pk])
         response = self.client.get(url)
-        self.assertContains(response, 'Show images')
-        response = self.client.post(url, {'action': 'images'})
-        self.assertContains(response, 'Always show images')
-        response = self.client.post(url, {'action': 'images_always'})
-        self.assertContains(response, 'Hide images')
-        response = self.client.post(url, {'action': 'images_never'})
-        self.assertNotContains(response, 'Hide images')
+        self.assertContains(response, 'External media is hidden')
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).media_safe, False)
+        response = self.client.post(url, {'action': 'images', 'once': 'once'})
+        self.assertContains(response, 'Always display external media')
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).media_safe, False)
+        response = self.client.post(url, {'action': 'images',
+                                          'always': 'always'})
+        self.assertContains(response, 'Disable external media')
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).media_safe, True)
+        response = self.client.post(url, {'action': 'images',
+                                          'never': 'never'})
+        self.assertNotContains(response, 'Disable external media')
+        self.assertEqual(Feed.objects.get(pk=self.feed.pk).media_safe, False)
 
     @patch('requests.get')
     def test_opml_import(self, get):
@@ -690,7 +702,8 @@ class TestFeeds(TestCase):
         update_feed(self.feed.url, use_etags=False)
         get.assert_called_with(
             'sw-all.xml',
-            headers={'User-Agent': USER_AGENT % '1 subscriber'}, timeout=10)
+            headers={'User-Agent': USER_AGENT % '1 subscriber',
+                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
 
         entry_pk = Entry.objects.all()[0].pk
         url = reverse('feeds:item', args=[entry_pk])
@@ -723,7 +736,8 @@ class TestFeeds(TestCase):
         update_feed(self.feed.url, use_etags=False)
         get.assert_called_with(
             'sw-all.xml',
-            headers={'User-Agent': USER_AGENT % '1 subscriber'}, timeout=10)
+            headers={'User-Agent': USER_AGENT % '1 subscriber',
+                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
 
         self.user.read_later = 'instapaper'
         self.user.read_later_credentials = json.dumps({
@@ -763,7 +777,8 @@ class TestFeeds(TestCase):
         update_feed(self.feed.url, use_etags=False)
         get.assert_called_with(
             'sw-all.xml',
-            headers={'User-Agent': USER_AGENT % '1 subscriber'}, timeout=10)
+            headers={'User-Agent': USER_AGENT % '1 subscriber',
+                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
 
         url = reverse('feeds:item', args=[Entry.objects.all()[0].pk])
         response = self.client.get(url)
@@ -788,7 +803,8 @@ class TestFeeds(TestCase):
         get.return_value = responses(304)
         feed = self.cat.feeds.create(url=url, name='Bruno')
         get.assert_called_with(
-            url, headers={'User-Agent': USER_AGENT % '1 subscriber'},
+            url, headers={'User-Agent': USER_AGENT % '1 subscriber',
+                          'Accept': feedparser.ACCEPT_HEADER},
             timeout=10)
 
         self.assertEqual(feed.entries.count(), 0)

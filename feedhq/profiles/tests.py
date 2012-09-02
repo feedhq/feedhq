@@ -1,3 +1,4 @@
+import feedparser
 import json
 
 from django.contrib.auth.models import User
@@ -115,7 +116,8 @@ class ProfilesTest(TestCase):
                          url='http://example.com/test.atom')
         get.assert_called_with(
             'http://example.com/test.atom',
-            headers={"User-Agent": USER_AGENT % '1 subscriber'}, timeout=10)
+            headers={"User-Agent": USER_AGENT % '1 subscriber',
+                     "Accept": feedparser.ACCEPT_HEADER}, timeout=10)
         response = self.client.get(url)
         self.assertContains(response, 'xmlUrl="http://example.com/test.atom"')
 

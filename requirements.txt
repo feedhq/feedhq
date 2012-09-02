@@ -1,6 +1,7 @@
 Django==1.4.1
 Logbook==0.3
 Pillow==1.7.7
+bleach==1.1.5
 certifi==0.0.8
 chardet==1.0.1
 django-classy-tags==0.3.4.1
@@ -11,6 +12,7 @@ django-ratelimit-backend==0.1
 django-redis-cache==0.9.4
 django-sekizai==0.6.1
 feedparser==5.1.2
+html5lib==0.95
 httplib2==0.7.4
 lxml==2.3.3
 oauth2==1.5.211

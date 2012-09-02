@@ -1,7 +1,7 @@
 {% extends "feeds/feed_list.html" %}
 {% load staticfiles sekizai_tags %}
 
-{% block title %}{{ object.title|striptags|safe }}{% endblock %}
+{% block title %}{{ object.sanitized_title|safe }}{% endblock %}
 
 {% block content %}
 	<div class="figures detail">
@@ -14,7 +14,7 @@
 		</div>
 	</div>
 	<div id="entry">
-		<h2>{% if object.title %}{{ object.title|safe }}{% else %}({% trans "No title" %}){% endif %}
+		<h2>{{ object.sanitized_title|safe }}
 			<a href="{% url "feeds:feed" object.feed.pk %}" class="cat {{ object.feed.category.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}"><span class="icon pen"></span></a>
 			<a href="{% url "feeds:category" object.feed.category.slug %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}"><span class="icon pen"></span></a>
 		</h2>
@@ -30,29 +30,8 @@
 			<form method="post" action="{% url "feeds:item" object.id %}">
 				{% csrf_token %}
 				<input type="hidden" name="action" value="unread">
-				<input class="tultip icon" type="submit" title="{% trans "Unread" %}" value="&#xe01f;">
+				<input class="tultip icon" type="submit" title="{% trans "Unread" %}" value="&#xe025;">
 			</form>
-			{% if has_img and not img_safe and not object.feed.img_safe %}
-				<form method="post" action="{% url "feeds:item" object.id %}" class="images">
-					{% csrf_token %}
-					<input type="hidden" name="action" value="images">
-					<input class="tultip icon" type="submit" title="{% trans "Show images" %}" value="&#xe027;">
-				</form>
-			{% endif %}
-			{% if img_safe and not object.feed.img_safe %}
-				<form method="post" action="{% url "feeds:item" object.id %}" class="images_always">
-					{% csrf_token %}
-					<input type="hidden" name="action" value="images_always">
-					<input class="tultip icon" type="submit" title="{% blocktrans %}Always show images for this feed{% endblocktrans %}" value="&#xe027;">
-				</form>
-			{% endif %}
-			{% if object.feed.img_safe %}
-				<form method="post" action="{% url "feeds:item" object.id %}" class="images_never">
-					{% csrf_token %}
-					<input type="hidden" name="action" value="images_never">
-					<input class="tultip icon" type="submit" title="{% trans "Hide images for this feed" %}" value="&#xe027;">
-				</form>
-			{% endif %}
 			{% if user.sharing_email %}
 				<a class="tultip icon" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.get_link }}">&#x2709;</a>
 			{% endif %}
@@ -76,11 +55,32 @@
 {% endaddtoblock %}
 			{% endif %}
 		</div>
+		{% if has_media %}
+			<div class="externalmedia">
+				<form method="post" action="{% url "feeds:item" object.id %}" class="images">
+					{% csrf_token %}
+					<input type="hidden" name="action" value="images">
+					{% if object.feed.media_safe %}
+						{% trans "External media is always displayed for this feed." %}
+						<input type="submit" value="{% trans "Disable external media" %}" name="never">
+					{% else %}
+						{% if media_safe %}
+							{% trans "External media is only displayed this time." %}
+							<input type="submit" value="{% trans "Always display external media for this feed" %}" name="always">
+						{% else %}
+							{% trans "External media is hidden by default to protect your privacy. Show media:" %}
+							<input type="submit" value="{% trans "once" %}" name="once">
+							<input type="submit" value="{% trans "always" %}" name="always">
+						{% endif %}
+					{% endif %}
+				</form>
+			</div>
+		{% endif %}
 		<div class="content">
-			{% if img_safe or object.feed.img_safe %}
-				{{ object.subtitle|removetags:"script applet embed object meta onload onunload link style div span frameset frame iframe font form label input textarea"|safe }}
+			{% if media_safe or object.feed.media_safe %}
+				{{ object.sanitized_content|safe }}
 			{% else %}
-				{{ object.subtitle|removetags:"script applet embed object meta onload onunload link style div span frameset frame iframe img font form label input textarea"|safe }}
+				{{ object.sanitized_nomedia_content|safe }}
 			{% endif %}
 		</div>
 		{% include "feeds/entry_links.html" %}

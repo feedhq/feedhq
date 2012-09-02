@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 import logging
 import lxml.html
@@ -45,9 +46,9 @@ class FeedUpdater(object):
         for entry in self.parsed.entries:
             if not 'link' in entry:
                 continue
-            title = entry.title if 'title' in entry else '(No title)'
+            title = entry.title if 'title' in entry else u''
             if len(title) > 255:
-                title = title[:252] + '...'
+                title = title[:254] + u'…'
             parsed_entry = Entry(title=title)
             if 'description' in entry:
                 parsed_entry.subtitle = entry.description

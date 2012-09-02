@@ -1,3 +1,4 @@
+import bleach
 import datetime
 import feedparser
 import json
@@ -28,6 +29,9 @@ from ..storage import OverwritingStorage
 from ..tasks import enqueue
 
 logger = logging.getLogger('feedupdater')
+
+feedparser.PARSE_MICROFORMATS = False
+feedparser.SANITIZE_HTML = False
 
 COLORS = (
         ('red', _('Red')),
@@ -139,6 +143,7 @@ class UniqueFeedManager(models.Manager):
 
         headers = {
             'User-Agent': USER_AGENT % subscribers,
+            'Accept': feedparser.ACCEPT_HEADER,
         }
 
         if use_etags:
@@ -360,6 +365,10 @@ class Feed(models.Model):
                     queue='high')
         enqueue(update_unique_feed, self.url, timeout=20)
 
+    @property
+    def media_safe(self):
+        return self.img_safe
+
     def favicon_img(self):
         if not self.favicon:
             return ''
@@ -410,8 +419,43 @@ class Entry(models.Model):
 
     objects = EntryManager()
 
+    ELEMENTS = (
+        feedparser._HTMLSanitizer.acceptable_elements |
+        feedparser._HTMLSanitizer.mathml_elements |
+        feedparser._HTMLSanitizer.svg_elements
+    )
+    ATTRIBUTES = (
+        feedparser._HTMLSanitizer.acceptable_attributes |
+        feedparser._HTMLSanitizer.mathml_attributes |
+        feedparser._HTMLSanitizer.svg_attributes
+    )
+    CSS_PROPERTIES = feedparser._HTMLSanitizer.acceptable_css_properties
+
     def __unicode__(self):
         return u'%s' % self.title
+
+    def sanitized_title(self):
+        if self.title:
+            return bleach.clean(self.title, tags=[], strip=True)
+        return _('(No title)')
+
+    def sanitized_content(self):
+        return bleach.clean(
+            self.subtitle,
+            tags=self.ELEMENTS,
+            attributes=self.ATTRIBUTES,
+            styles=self.CSS_PROPERTIES,
+            strip=True,
+        )
+
+    def sanitized_nomedia_content(self):
+        return bleach.clean(
+            self.subtitle,
+            tags=self.ELEMENTS | set(['img', 'audio', 'video']),
+            attributes=self.ATTRIBUTES,
+            styles=self.CSS_PROPERTIES,
+            strip=True,
+        )
 
     class Meta:
         # Display most recent entries first

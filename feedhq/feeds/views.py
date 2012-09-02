@@ -1,5 +1,6 @@
 import lxml.html
 import opml
+import re
 import urllib
 
 from django.contrib import messages
@@ -32,6 +33,8 @@ Each view displays a list of entries, with a level of filtering:
 
 Entries are paginated.
 """
+
+MEDIA_RE = re.compile(r'.*<(img|audio|video)\s+.*', re.UNICODE | re.DOTALL)
 
 
 def paginate(object_list, page=1, nb_items=25, force_count=None):
@@ -341,26 +344,29 @@ def item(request, entry_id):
 
     # if there is an image in the entry, don't show it. We need user
     # intervention to display the image.
-    has_img = img_safe = False
-    if '<img ' in entry.subtitle:
-        has_img = True
+    has_media = media_safe = False
+    if MEDIA_RE.match(entry.subtitle):
+        has_media = True
 
     if request.method == 'POST':
         form = ActionForm(data=request.POST)
         if form.is_valid():
             action = form.cleaned_data['action']
             if action == 'images':
-                img_safe = True
+                if 'never' in request.POST:
+                    Feed.objects.filter(pk=entry.feed.pk).update(
+                        img_safe=False
+                    )
+                    entry.feed.img_safe = False
+                elif 'once' in request.POST:
+                    media_safe = True
+                elif 'always' in request.POST:
+                    Feed.objects.filter(pk=entry.feed.pk).update(img_safe=True)
+                    entry.feed.img_safe = True
             elif action == 'unread':
                 Entry.objects.filter(pk=entry.pk).update(read=False)
                 entry.feed.update_unread_count()
                 return redirect(back_url)
-            elif action == 'images_always':
-                Feed.objects.filter(pk=entry.feed.pk).update(img_safe=True)
-                entry.feed.img_safe = True
-            elif action == 'images_never':
-                Feed.objects.filter(pk=entry.feed.pk).update(img_safe=False)
-                entry.feed.img_safe = False
             elif action == 'read_later':
                 enqueue(read_later, entry.pk, timeout=20, queue='high')
                 messages.success(
@@ -375,8 +381,8 @@ def item(request, entry_id):
         'showing_unread': showing_unread,
         'previous': previous,
         'next': next,
-        'has_img': has_img,
-        'img_safe': img_safe,
+        'has_media': has_media,
+        'media_safe': media_safe,
         'object': entry,
     }
     return render(request, 'feeds/entry_detail.html', context)

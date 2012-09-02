@@ -667,7 +667,7 @@ code, tt {
 }
 
 pre, code, tt {
-	font: 0.8em Inconsolata, Monaco, monospace;
+	font: 1rem Inconsolata, Monaco, monospace;
 }
 
 pre code {
@@ -689,6 +689,24 @@ pre code {
 		line-height: 1.2em;
 		padding: 0.25em 0;
 		border-bottom: 1px solid #ddd;
+	}
+
+	.externalmedia {
+		clear: both;
+		color: lighten($text, 20%);
+		border: 1px solid #ddd;
+		padding: 5px;
+		font-size: 0.9rem;
+
+		input {
+			font-size: inherit;
+			font-family: inherit;
+		}
+
+		form {
+			margin: 0;
+			padding: 0;
+		}
 	}
 
 	.content {
@@ -737,14 +755,6 @@ pre code {
 		form {
 			margin: 0;
 			display: inline-block;
-
-			&.images_always {
-				color: $green;
-			}
-
-			&.images_never {
-				color: $dark_red;
-			}
 		}
 
 		input {
