@@ -6,15 +6,9 @@ from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 from django.views import generic
 
-from rq import Queue, Worker, get_failed_queue, use_connection
+from rq import Queue, Worker, get_failed_queue
 from rq.exceptions import NoSuchJobError
 from rq.job import Job
-
-
-def get_connection():
-    opts = getattr(settings, 'RQ', {})
-    opts.pop('eager', None)
-    return redis.Redis(**opts)
 
 
 def serialize_job(job):
@@ -34,7 +28,11 @@ class SuperUserMixin(object):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_superuser:
             raise PermissionDenied
-        use_connection(redis=get_connection())
+
+        opts = getattr(settings, 'RQ', {}).copy()
+        opts.pop('eager', None)
+        self.connection = redis.Redis(**opts)
+
         return super(SuperUserMixin, self).dispatch(request, *args, **kwargs)
 
 
@@ -44,8 +42,8 @@ class Stats(SuperUserMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super(Stats, self).get_context_data(**kwargs)
         ctx.update({
-            'queues': Queue.all(),
-            'workers': Worker.all(),
+            'queues': Queue.all(connection=self.connection),
+            'workers': Worker.all(connection=self.connection),
             'title': 'RQ Status',
         })
         return ctx
@@ -57,7 +55,7 @@ class QueueDetails(SuperUserMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super(QueueDetails, self).get_context_data(**kwargs)
-        queue = Queue(self.kwargs['queue'])
+        queue = Queue(self.kwargs['queue'], connection=self.connection)
         ctx.update({
             'queue': queue,
             'jobs': [serialize_job(job) for job in queue.jobs],
@@ -74,15 +72,15 @@ class JobDetails(SuperUserMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super(JobDetails, self).get_context_data(**kwargs)
         try:
-            job = Job.fetch(self.kwargs['job'])
+            job = Job.fetch(self.kwargs['job'], connection=self.connection)
         except NoSuchJobError:
             raise Http404
         if job.exc_info:
             failed = True
-            queue = get_failed_queue()
+            queue = get_failed_queue(connection=self.connection)
         else:
             failed = False
-            queue = Queue(job.origin)
+            queue = Queue(job.origin, connection=self.connection)
         ctx.update({
             'job': job,
             'queue': queue,
@@ -99,7 +97,7 @@ class WorkerDetails(SuperUserMixin, generic.TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super(WorkerDetails, self).get_context_data(**kwargs)
         key = Worker.redis_worker_namespace_prefix + self.kwargs['worker']
-        worker = Worker.find_by_key(key)
+        worker = Worker.find_by_key(key, connection=self.connection)
         ctx.update({
             'worker': worker,
             'title': _('Worker %s') % worker.name,
