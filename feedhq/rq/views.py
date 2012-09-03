@@ -8,7 +8,7 @@ from django.http import Http404
 from django.utils.translation import ugettext_lazy as _, ugettext as __
 from django.views import generic
 
-from rq import Queue, Worker, get_failed_queue
+from rq import Queue, Worker, get_failed_queue, push_connection
 from rq.exceptions import NoSuchJobError
 from rq.job import Job
 
@@ -36,6 +36,7 @@ class SuperUserMixin(object):
         opts = getattr(settings, 'RQ', {}).copy()
         opts.pop('eager', None)
         self.connection = redis.Redis(**opts)
+        push_connection(self.connection)
 
         return super(SuperUserMixin, self).dispatch(request, *args, **kwargs)
 
