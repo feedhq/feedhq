@@ -215,33 +215,33 @@ class TestFeeds(TestCase):
             get.return_value = responses(code)
             feed = UniqueFeed.objects.get(url=self.feed.url)
             self.assertFalse(feed.muted)
-            self.assertEqual(feed.muted_reason, None)
+            self.assertEqual(feed.error, None)
             self.assertEqual(feed.backoff_factor, 1)
 
             update_feed(self.feed.url, use_etags=False)
 
             feed = UniqueFeed.objects.get(url=self.feed.url)
             self.assertFalse(feed.muted)
-            self.assertEqual(feed.muted_reason, str(code))
+            self.assertEqual(feed.error, str(code))
             self.assertEqual(feed.backoff_factor, 2)
 
             # Restore status for next iteration
             feed.backoff_factor = 1
-            feed.muted_reason = None
+            feed.error = None
             feed.save()
 
     @patch('requests.get')
     def test_backoff(self, get):
         get.return_value = responses(502)
         feed = UniqueFeed.objects.get(url=self.feed.url)
-        self.assertEqual(feed.muted_reason, None)
+        self.assertEqual(feed.error, None)
         self.assertEqual(feed.backoff_factor, 1)
 
         for i in range(12):
             update_feed(self.feed.url, use_etags=False)
             feed = UniqueFeed.objects.get(url=self.feed.url)
             self.assertFalse(feed.muted)
-            self.assertEqual(feed.muted_reason, '502')
+            self.assertEqual(feed.error, '502')
             self.assertEqual(feed.backoff_factor, min(i + 2, 10))
 
     @patch('requests.get')

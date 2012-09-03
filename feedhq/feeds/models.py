@@ -165,7 +165,7 @@ class UniqueFeedManager(models.Manager):
                     "%s reached max backoff period (timeout)" % obj.url
                 )
             obj.backoff()
-            obj.muted_reason = 'timeout'
+            obj.error = 'timeout'
             if save:
                 obj.save()
             return
@@ -199,7 +199,7 @@ class UniqueFeedManager(models.Manager):
         if response.status_code == 410:
             logger.info("Feed gone, %s" % obj.url)
             obj.muted = True
-            obj.muted_reason = 'gone'
+            obj.error = 'gone'
             obj.save()
             return
 
@@ -209,7 +209,7 @@ class UniqueFeedManager(models.Manager):
                     obj.url, response.status_code,
                 ))
             obj.backoff()
-            obj.muted_reason = str(response.status_code)
+            obj.error = str(response.status_code)
             if save:
                 obj.save()
             return
@@ -221,10 +221,10 @@ class UniqueFeedManager(models.Manager):
             if obj.backoff_factor > 2:
                 logger.info(
                     "%s back to normal backoff factor (was %s, error %s)" % (
-                        obj.url, obj.backoff_factor, obj.muted_reason,
+                        obj.url, obj.backoff_factor, obj.error,
                 ))
             obj.backoff_factor = 1
-            obj.muted_reason = None
+            obj.error = None
 
         if 'etag' in response.headers:
             obj.etag = response.headers['etag']
@@ -294,9 +294,8 @@ class UniqueFeed(models.Model):
     muted = models.BooleanField(_('Muted'), default=False, db_index=True)
     # Muted is only for 410, this is populated even when the feed is not
     # muted. It's more an indicator of the reason the backoff factor isn't 1.
-    muted_reason = models.CharField(_('Muting reason'), max_length=50,
-                                    null=True, blank=True,
-                                    choices=MUTE_CHOICES)
+    error = models.CharField(_('Error'), max_length=50, null=True, blank=True,
+                             choices=MUTE_CHOICES, db_column='muted_reason')
     hub = models.URLField(_('Hub'), max_length=1023, null=True, blank=True)
     backoff_factor = models.PositiveIntegerField(_('Backoff factor'),
                                                  default=1)
