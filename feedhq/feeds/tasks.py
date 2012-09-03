@@ -1,3 +1,5 @@
+from rq.timeouts import JobTimeoutException
+
 from django.conf import settings
 from django.db import connection
 
@@ -9,7 +11,12 @@ from ..tasks import raven
 @raven
 def update_feed(feed_url, use_etags=True):
     from .models import UniqueFeed
-    UniqueFeed.objects.update_feed(feed_url, use_etags)
+    try:
+        UniqueFeed.objects.update_feed(feed_url, use_etags)
+    except JobTimeoutException:
+        feed = UniqueFeed.objects.get(url=feed_url)
+        feed.backoff()
+        feed.save()
     close_connection()
 
 

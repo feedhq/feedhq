@@ -9,6 +9,7 @@ from django_push.subscriber.signals import updated
 from httplib2 import Response
 from mock import patch
 from requests import Response as _Response
+from rq.timeouts import JobTimeoutException
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -308,6 +309,13 @@ class TestFeeds(TestCase):
 
         # get_absolute_url()
         self.assertEqual('/entries/%s/' % entry.id, entry.get_absolute_url())
+
+    @patch('requests.get')
+    def test_task_timeout_handling(self, get):
+        get.side_effect = JobTimeoutException
+        self.assertEqual(UniqueFeed.objects.get().backoff_factor, 1)
+        update_feed(self.feed.url, use_etags=False)
+        self.assertEqual(UniqueFeed.objects.get().backoff_factor, 2)
 
     ### Views ###
     def test_homepage(self):
