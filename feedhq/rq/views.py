@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _, ugettext as __
 from django.views import generic
 
@@ -95,13 +96,6 @@ class JobDetails(SuperUserMixin, generic.FormView):
     template_name = 'rq/job.html'
     form_class = JobForm
 
-    def get_success_url(self):
-        if self.job.is_failed:
-            queue_name = 'failed'
-        else:
-            queue_name = self.job.origin
-        return reverse('rq_queue', args=[queue_name])
-
     def get_form_kwargs(self):
         kwargs = super(JobDetails, self).get_form_kwargs()
         self.job = Job.fetch(self.kwargs['job'], connection=self.connection)
@@ -114,28 +108,26 @@ class JobDetails(SuperUserMixin, generic.FormView):
             job = Job.fetch(self.kwargs['job'], connection=self.connection)
         except NoSuchJobError:
             raise Http404
-        if job.exc_info:
-            failed = True
+        if job.is_failed:
             queue = get_failed_queue(connection=self.connection)
         else:
-            failed = False
             queue = Queue(job.origin, connection=self.connection)
         ctx.update({
             'job': job,
             'queue': queue,
             'title': _('Job %s') % job.id,
-            'failed': failed,
         })
         return ctx
 
     def form_valid(self, form):
+        queue = 'failed' if form.job.is_failed else form.job.origin
         form.save()
         msgs = {
             'requeue': __('Job requeued'),
             'cancel': __('Job canceled'),
         }
         messages.success(self.request, msgs[form.cleaned_data])
-        return super(JobDetails, self).form_valid(form)
+        return redirect(reverse('rq_queue', args=[queue]))
 job = JobDetails.as_view()
 
 
