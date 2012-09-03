@@ -12,7 +12,7 @@ from rq import Queue, Worker, get_failed_queue
 from rq.exceptions import NoSuchJobError
 from rq.job import Job
 
-from .forms import QueueForm
+from .forms import QueueForm, JobForm
 
 
 def serialize_job(job):
@@ -90,8 +90,18 @@ class QueueDetails(SuperUserMixin, generic.FormView):
 queue = QueueDetails.as_view()
 
 
-class JobDetails(SuperUserMixin, generic.TemplateView):
+class JobDetails(SuperUserMixin, generic.FormView):
     template_name = 'rq/job.html'
+    form_class = JobForm
+
+    def get_success_url(self):
+        return reverse('rq_queue', args=[self.job.origin])
+
+    def get_form_kwargs(self):
+        kwargs = super(JobDetails, self).get_form_kwargs()
+        self.job = Job.fetch(self.kwargs['job'], connection=self.connection)
+        kwargs['job'] = self.job
+        return kwargs
 
     def get_context_data(self, **kwargs):
         ctx = super(JobDetails, self).get_context_data(**kwargs)
@@ -112,6 +122,15 @@ class JobDetails(SuperUserMixin, generic.TemplateView):
             'failed': failed,
         })
         return ctx
+
+    def form_valid(self, form):
+        form.save()
+        msgs = {
+            'requeue': __('Job requeued'),
+            'cancel': __('Job canceled'),
+        }
+        messages.success(self.request, msgs[form.cleaned_data])
+        return super(JobDetails, self).form_valid(form)
 job = JobDetails.as_view()
 
 
