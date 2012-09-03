@@ -299,6 +299,8 @@ class UniqueFeed(models.Model):
     hub = models.URLField(_('Hub'), max_length=1023, null=True, blank=True)
     backoff_factor = models.PositiveIntegerField(_('Backoff factor'),
                                                  default=1)
+    last_loop = models.DateTimeField(_('Last loop'), default=timezone.now,
+                                     db_index=True)
 
     objects = UniqueFeedManager()
 

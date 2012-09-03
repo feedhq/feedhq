@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import connection
+from django.utils import timezone
 from raven import Client
 
 from ....tasks import enqueue
@@ -27,10 +28,12 @@ class Command(BaseCommand):
 
         uniques = UniqueFeed.objects.filter(
             muted=False,
-        ).order_by('last_update')[:limit]
+        ).order_by('last_loop')[:limit]
 
         for unique in uniques:
             try:
+                unique.last_loop = timezone.now()
+                unique.save()
                 if unique.should_update():
                     enqueue(update_feed, args=[unique.url], timeout=20)
             except Exception:  # We don't know what to expect, and anyway
