@@ -1,14 +1,18 @@
 import redis
 
+from django.contrib import messages
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.http import Http404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext as __
 from django.views import generic
 
 from rq import Queue, Worker, get_failed_queue
 from rq.exceptions import NoSuchJobError
 from rq.job import Job
+
+from .forms import QueueForm
 
 
 def serialize_job(job):
@@ -50,8 +54,12 @@ class Stats(SuperUserMixin, generic.TemplateView):
 stats = Stats.as_view()
 
 
-class QueueDetails(SuperUserMixin, generic.TemplateView):
+class QueueDetails(SuperUserMixin, generic.FormView):
     template_name = 'rq/queue.html'
+    form_class = QueueForm
+
+    def get_success_url(self):
+        return reverse('rq_queue', kwargs=self.kwargs)
 
     def get_context_data(self, **kwargs):
         ctx = super(QueueDetails, self).get_context_data(**kwargs)
@@ -63,6 +71,22 @@ class QueueDetails(SuperUserMixin, generic.TemplateView):
             'failed': queue.name == 'failed',
         })
         return ctx
+
+    def get_form_kwargs(self):
+        kwargs = super(QueueDetails, self).get_form_kwargs()
+        kwargs['queue'] = Queue(self.kwargs['queue'],
+                                connection=self.connection)
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        msgs = {
+            'compact': __('Queue compacted'),
+            'empty': __('Queue emptied'),
+            'requeue': __('Jobs requeued'),
+        }
+        messages.success(self.request, msgs[form.cleaned_data])
+        return super(QueueDetails, self).form_valid(form)
 queue = QueueDetails.as_view()
 
 

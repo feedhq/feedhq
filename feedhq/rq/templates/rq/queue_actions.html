@@ -2,9 +2,9 @@
 	{% csrf_token %}
 	<div class="submit-row">
 		{% if failed %}
-			<input type="submit" name="_requeue" value="{% trans "Requeue all" %}">
+			<input type="submit" name="requeue" value="{% trans "Requeue all" %}">
 		{% endif %}
-		<input type="submit" name="_compact" value="{% trans "Compact queue" %}">
-		<input type="submit" name="_empty" value="{% trans "Empty queue" %}">
+		<input type="submit" name="compact" value="{% trans "Compact queue" %}">
+		<input type="submit" name="empty" value="{% trans "Empty queue" %}">
 	</div>
 </form>
