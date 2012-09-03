@@ -12,17 +12,19 @@
 
 {% block content %}
 	<div id="content-main">
-		<dl>
-			<dt>{% trans "State" %}</dt>
-			<dd>{{ worker.state }}</dd>
-			<dt>{% trans "Queue names" %}</dt>
-			<dd><ul>{% for name in worker.queue_names %}
-				<li>{{ name }}</li>
-			{% endfor %}</ul></dd>
-			<dt>{% trans "Redis key" %}</dt>
-			<dd>{{ worker.key }}</dd>
-			<dt>{% trans "PID" %}</dt>
-			<dd>{{ worker.pid }}</dd>
-		</dl>
+		<div class="module">
+			<dl>
+				<dt>{% trans "State" %}</dt>
+				<dd>{{ worker.state }}</dd>
+				<dt>{% trans "Queue names" %}</dt>
+				<dd><ul>{% for name in worker.queue_names %}
+					<li>{{ name }}</li>
+				{% endfor %}</ul></dd>
+				<dt>{% trans "Redis key" %}</dt>
+				<dd>{{ worker.key }}</dd>
+				<dt>{% trans "PID" %}</dt>
+				<dd>{{ worker.pid }}</dd>
+			</dl>
+		</div>
 	</div>
 {% endblock %}
