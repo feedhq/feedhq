@@ -50,10 +50,12 @@
 		</div>
 		<form method="post" action="{% url "rq_job" job.id %}">
 			{% csrf_token %}
-			{% if job.is_failed %}
-				<input type="submit" name="requeue" value="{% trans "Requeue" %}">
-			{% endif %}
-			<input type="submit" name="cancel" value="{% trans "Cancel" %}">
+			<div class="submit-row">
+				{% if job.is_failed %}
+					<input type="submit" name="requeue" value="{% trans "Requeue" %}">
+				{% endif %}
+				<input type="submit" name="cancel" value="{% trans "Cancel" %}">
+			</div>
 		</form>
 	</div>
 {% endblock %}
