@@ -218,9 +218,10 @@ class UniqueFeedManager(models.Manager):
             logger.debug("%s returned %s" % (obj.url, response.status_code))
 
         else:
-            if obj.backoff_factor > 1:
-                logger.info("%s back to normal backoff factor (was %s)" % (
-                    obj.url, obj.backoff_factor,
+            if obj.backoff_factor > 2:
+                logger.info(
+                    "%s back to normal backoff factor (was %s, error %s)" % (
+                        obj.url, obj.backoff_factor, obj.muted_reason,
                 ))
             obj.backoff_factor = 1
             obj.muted_reason = None
