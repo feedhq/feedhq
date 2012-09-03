@@ -35,7 +35,8 @@ class Command(BaseCommand):
                 unique.last_loop = timezone.now()
                 unique.save()
                 if unique.should_update():
-                    enqueue(update_feed, args=[unique.url], timeout=20)
+                    enqueue(update_feed, args=[unique.url],
+                            timeout=unique.task_timeout)
             except Exception:  # We don't know what to expect, and anyway
                                # we're reporting the exception
                 if settings.DEBUG or not hasattr(settings, 'SENTRY_DSN'):

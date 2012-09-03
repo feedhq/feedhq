@@ -156,8 +156,10 @@ class UniqueFeedManager(models.Manager):
             if str(type(requests.get)) != "<class 'mock.MagicMock'>":
                 raise ValueError("Not Mocked")
 
+        start = datetime.datetime.now()
         try:
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, headers=headers,
+                                    timeout=obj.request_timeout)
         except (requests.RequestException, socket.timeout) as e:
             logger.debug("Error fetching %s, %s" % (obj.url, str(e)))
             if obj.backoff_factor == obj.MAX_BACKOFF - 1:
@@ -169,6 +171,8 @@ class UniqueFeedManager(models.Manager):
             if save:
                 obj.save()
             return
+
+        elapsed = (datetime.datetime.now() - start).seconds
 
         ctype = response.headers.get('Content-Type', None)
         if (response.history and
@@ -218,12 +222,10 @@ class UniqueFeedManager(models.Manager):
             logger.debug("%s returned %s" % (obj.url, response.status_code))
 
         else:
-            if obj.backoff_factor > 2:
-                logger.info(
-                    "%s back to normal backoff factor (was %s, error %s)" % (
-                        obj.url, obj.backoff_factor, obj.error,
-                ))
-            obj.backoff_factor = 1
+            # Avoid going back to 1 directly if it isn't safe given the
+            # actual response time.
+            obj.backoff_factor = min(obj.backoff_factor,
+                                     obj.safe_backoff(elapsed))
             obj.error = None
 
         if 'etag' in response.headers:
@@ -313,6 +315,23 @@ class UniqueFeed(models.Model):
 
     def backoff(self):
         self.backoff_factor = min(self.MAX_BACKOFF, self.backoff_factor + 1)
+
+    @property
+    def task_timeout(self):
+        return 20 * self.backoff_factor
+
+    @property
+    def request_timeout(self):
+        return 10 * self.backoff_factor
+
+    def safe_backoff(self, response_time):
+        """
+        Returns the backoff factor that should be used to keep the feed
+        working given the last response time. Keep a margin. Backoff time
+        shouldn't increase, this is only used to avoid returning back to 10s
+        if the response took more than that.
+        """
+        return int((response_time * 1.2) / 10) + 1
 
     def should_update(self):
         # Exponential backoff: max backoff factor is 10, which is approx. 24
