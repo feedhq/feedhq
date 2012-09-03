@@ -19,6 +19,7 @@ Everything's optional, these are just the default values.
 from __future__ import absolute_import
 from functools import wraps
 
+import os
 import redis
 import rq
 
@@ -52,8 +53,15 @@ def raven(function):
         try:
             function(*args, **kwargs)
         except Exception:
-            if not settings.DEBUG and hasattr(settings, 'SENTRY_DSN'):
+            if settings.DEBUG:
+                raise
+
+            if 'SENTRY_DSN' in os.environ:
+                client = Client()
+            elif hasattr(settings, 'SENTRY_DSN'):
                 client = Client(dsn=settings.SENTRY_DSN)
-                client.captureException()
+            else:
+                raise
+            client.captureException()
             raise
     return ravenify
