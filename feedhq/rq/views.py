@@ -95,7 +95,11 @@ class JobDetails(SuperUserMixin, generic.FormView):
     form_class = JobForm
 
     def get_success_url(self):
-        return reverse('rq_queue', args=[self.job.origin])
+        if self.job.is_failed:
+            queue_name = 'failed'
+        else:
+            queue_name = self.job.origin
+        return reverse('rq_queue', args=[queue_name])
 
     def get_form_kwargs(self):
         kwargs = super(JobDetails, self).get_form_kwargs()
