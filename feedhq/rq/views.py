@@ -1,3 +1,4 @@
+import json
 import pytz
 import redis
 
@@ -5,7 +6,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _, ugettext as __
@@ -36,6 +37,23 @@ def serialize_job(job):
     )
 
 
+def serialize_queue(queue):
+    return dict(
+        name=queue.name,
+        count=queue.count,
+        url=reverse('rq_queue', args=[queue.name]),
+    )
+
+
+def serialize_worker(worker):
+    return dict(
+        name=worker.name,
+        queues=[q.name for q in worker.queues],
+        state=worker.state,
+        url=reverse('rq_worker', args=[worker.name]),
+    )
+
+
 class SuperUserMixin(object):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_superuser:
@@ -60,6 +78,18 @@ class Stats(SuperUserMixin, generic.TemplateView):
             'title': 'RQ Status',
         })
         return ctx
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.is_ajax():
+            data = json.dumps({
+                'queues': [serialize_queue(q) for q in context['queues']],
+                'workers': [serialize_worker(w) for w in context['workers']],
+            })
+            return HttpResponse(
+                data, content_type='application/json; charset=UTF-8',
+            )
+        return super(Stats, self).render_to_response(context,
+                                                     **response_kwargs)
 stats = Stats.as_view()
 
 
