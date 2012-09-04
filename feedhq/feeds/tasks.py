@@ -1,3 +1,5 @@
+import logging
+
 from rq.timeouts import JobTimeoutException
 
 from django.conf import settings
@@ -6,6 +8,8 @@ from django.db import connection
 from django_push.subscriber.models import Subscription
 
 from ..tasks import raven
+
+logger = logging.getLogger('feedupdater')
 
 
 @raven
@@ -17,6 +21,9 @@ def update_feed(feed_url, use_etags=True):
         feed = UniqueFeed.objects.get(url=feed_url)
         feed.backoff()
         feed.save()
+        logger.info("Job timed out, backing off %s to %s" % (
+            feed.url, feed.backoff_factor,
+        ))
     close_connection()
 
 
