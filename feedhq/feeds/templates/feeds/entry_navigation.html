@@ -1,0 +1,9 @@
+<div class="figures detail">
+	<div class="back">
+		<a href="{{ back_url }}">⇠ {% trans "Back" %}</a>
+	</div>
+	<div class="pagination">
+		{% if previous %}<a href="{{ previous }}">← {% trans "Previous" %}</a>{% endif %}
+		{% if next %}<a href="{{ next }}">{% trans "Next" %} →</a>{% endif %}
+	</div>
+</div>
