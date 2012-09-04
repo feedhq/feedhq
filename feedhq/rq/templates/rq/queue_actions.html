@@ -1,4 +1,4 @@
-<form method="post" action="{% url "rq_queue" queue.name %}">
+{% if jobs %}<form method="post" action="{% url "rq_queue" queue.name %}">
 	{% csrf_token %}
 	<div class="submit-row">
 		{% if failed %}
@@ -7,4 +7,4 @@
 		<input type="submit" name="compact" value="{% trans "Compact queue" %}">
 		<input type="submit" name="empty" value="{% trans "Empty queue" %}">
 	</div>
-</form>
+</form>{% endif %}
