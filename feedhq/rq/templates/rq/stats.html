@@ -26,6 +26,8 @@
 							<td><a href="{% url "rq_queue" queue.name %}">{{ queue.name }}</a></td>
 							<td>{{ queue.count }}</td>
 						</tr>
+					{% empty %}
+						<tr><td colspan="2">{% trans "No queues" %}</td></tr>
 					{% endfor %}
 				</tbody>
 			</table>
@@ -48,6 +50,8 @@
 							<td>{% for queue in worker.queues %}{{ queue.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
 							<td>{{ worker.state }}</td>
 						</tr>
+					{% empty %}
+						<tr><td colspan="3">{% trans "No workers" %}</td></tr>
 					{% endfor %}
 				</tbody>
 			</table>
