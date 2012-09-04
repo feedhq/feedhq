@@ -478,7 +478,6 @@ class TestFeeds(TestCase):
         url = reverse('feeds:item', args=[e.pk])
         response = self.client.get(url)
         self.assertContains(response, "jacobian's django-deployment-workshop")
-        self.assertContains(response, '<a href="%s">⇠ Back</a>' % from_url)
 
     @patch('requests.get')
     def test_entry(self, get):
