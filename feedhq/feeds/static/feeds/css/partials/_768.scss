@@ -20,7 +20,7 @@
 			padding-left: column-width(6) + $em;
 		}
 
-		.count, .back {
+		.count {
 			@include cols(6);
 			white-space: inherit;
 		}

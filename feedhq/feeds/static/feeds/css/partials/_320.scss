@@ -93,12 +93,20 @@
 		padding: 0;
 	}
 
+	.pagination {
+		font-size: 0.9em;
+		a {
+			padding-top: 2px;
+			padding-bottom: 2px;
+		}
+	}
+
 	.figures {
 		&.bottom {
 			padding-left: 0;
 		}
 
-		.count, .back {
+		.count {
 			width: 100%;
 			margin: 0;
 			white-space: inherit;
@@ -106,15 +114,6 @@
 			input {
 				font-size: 0.8rem;
 			}
-		}
-
-		.back {
-			@include cols(1);
-			white-space: nowrap;
-		}
-
-		.pagination {
-			float: right;
 		}
 	}
 

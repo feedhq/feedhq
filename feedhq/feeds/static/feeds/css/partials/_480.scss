@@ -17,7 +17,7 @@
 		@include cols(6);
 		margin-right: 0;
 
-		.count, .back, .pagination {
+		.count {
 			@include cols(6);
 			margin: 0;
 		}
@@ -28,16 +28,6 @@
 
 		&.detail {
 			margin-left: 0;
-
-			.back {
-				@include cols(2);
-				margin-left: 0;
-			}
-
-			.pagination {
-				@include cols(4);
-				margin-right: 0;
-			}
 		}
 
 		&.full {

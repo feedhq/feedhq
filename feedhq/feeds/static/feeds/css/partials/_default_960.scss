@@ -33,11 +33,8 @@ h2 {
 		padding-left: column-width(9) + $em;
 	}
 
-	.count, .back {
+	.count {
 		@include cols(9);
-	}
-	.pagination {
-		@include cols(3);
 	}
 }
 
