@@ -34,10 +34,10 @@
 				<dd>{{ job.enqueued_at }} ({% blocktrans with job.enqueued_at|timesince as ago %}{{ ago }} ago{% endblocktrans %})</dd>
 
 				<dt>{% trans "Date ended" %}</dt>
-				<dd>{{ job.ended_at }} ({% blocktrans with job.ended_at|timesince as ago %}{{ ago }} ago{% endblocktrans %})</dd>
+				<dd>{{ job.ended_at }}{% if job.ended_at %} ({% blocktrans with job.ended_at|timesince as ago %}{{ ago }} ago{% endblocktrans %}){% endif %}</dd>
 
 				<dt>{% trans "Result" %}</dt>
-				<dd>{{ job.return_value }}</dd>
+				<dd>{{ job.result }}</dd>
 
 				<dt>{% trans "Redis key" %}</dt>
 				<dd>{{ job.key }}</dd>

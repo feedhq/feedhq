@@ -1,3 +1,4 @@
+import pytz
 import redis
 
 from django.contrib import messages
@@ -6,6 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _, ugettext as __
 from django.views import generic
 
@@ -16,14 +18,19 @@ from rq.job import Job
 from .forms import QueueForm, JobForm
 
 
+utc = pytz.timezone('UTC')
+
+
 def serialize_job(job):
     return dict(
         id=job.id,
-        created_at=job.created_at,
-        enqueued_at=job.enqueued_at,
-        ended_at=job.ended_at,
+        key=job.key,
+        created_at=timezone.make_aware(job.created_at, utc),
+        enqueued_at=timezone.make_aware(job.enqueued_at, utc),
+        ended_at=timezone.make_aware(job.ended_at,
+                                     utc) if job.ended_at else None,
         origin=job.origin,
-        result=job._result,
+        result=job.result,
         exc_info=job.exc_info,
         description=job.description,
     )
@@ -113,7 +120,7 @@ class JobDetails(SuperUserMixin, generic.FormView):
         else:
             queue = Queue(job.origin, connection=self.connection)
         ctx.update({
-            'job': job,
+            'job': serialize_job(job),
             'queue': queue,
             'title': _('Job %s') % job.id,
         })

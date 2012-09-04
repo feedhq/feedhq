@@ -38,9 +38,9 @@
 						<tr class="{% cycle "row2" "row1" %}">
 							<td><a href="{% url "rq_job" job.id %}">{{ job.id }}</a></td>
 							<td>{{ job.description }}</td>
-							<td>{{ job.created_at }}</td>
-							<td>{{ job.enqueued_at }}</td>
-							<td>{{ job.ended_at }}</td>
+							<td title="{{ job.created_at }}">{% blocktrans with time=job.created_at|timesince %}{{ time }} ago{% endblocktrans %}</td>
+							<td title="{{ job.enqueued_at }}">{% blocktrans with time=job.enqueued_at|timesince %}{{ time }} ago{% endblocktrans %}</td>
+							<td title="{{ job.ended_at }}">{% if job.ended_at %}{% blocktrans with time=job.ended_at|timesince %}{{ time }} ago{% endblocktrans %}{% endif %}</td>
 							<td>{{ job.origin }}</td>
 							<td>{% if job.exc_info %}{% trans "failed" %}{% else %}{{ job.result }}{% endif %}</td>
 						</tr>
