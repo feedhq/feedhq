@@ -22,10 +22,10 @@
 		tbody.empty();
 
 		if (data.queues.length > 0) {
-			var template = _.template($('script[name=queue-row]'));
+			var template = _.template($('script[name=queue-row]').html());
 
 			$.each(data.queues, function(i, queue) {
-				queue.class = i % 2 == 0 ? 'row2' : 'row1';
+				queue.klass = i % 2 == 0 ? 'row2' : 'row1';
 				var html = template(queue);
 				tbody.append($(html));
 			});
