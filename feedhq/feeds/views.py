@@ -299,7 +299,7 @@ def item(request, entry_id):
 
     # This way the user has nice 'previous' and 'next' buttons that are
     # dynamically changed
-    showing_unread = False
+    only_unread = False
     bits = back_url.split('/')
     # FIXME: The kw thing currently doesn't work with paginated content.
     kw = {'user': request.user}
@@ -311,7 +311,7 @@ def item(request, entry_id):
     elif bits[1] == 'unread':
         # Homepage too, but only unread
         kw = {'user': request.user, 'read': False}
-        showing_unread = True
+        only_unread = True
 
     elif bits[1] == 'feed':
         # Entries in self.feed
@@ -325,7 +325,7 @@ def item(request, entry_id):
 
     if len(bits) > 3 and bits[3] == 'unread':
         kw['read'] = False
-        showing_unread = True
+        only_unread = True
 
     # The previous is actually the next by date, and vice versa
     try:
@@ -378,7 +378,7 @@ def item(request, entry_id):
         'category': entry.feed.category,
         'categories': request.user.categories.with_unread_counts(),
         'back_url': back_url,
-        'showing_unread': showing_unread,
+        'only_unread': only_unread,
         'previous': previous,
         'next': next,
         'has_media': has_media,
