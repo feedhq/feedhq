@@ -8,6 +8,7 @@ django-password-reset==0.2
 django-push==0.4
 django-ratelimit-backend==0.2
 django-redis-cache==0.9.5
+django-rq-dashboard==0.2
 django-sekizai==0.6.1
 feedparser==5.1.2
 html5lib==0.95

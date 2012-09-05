@@ -83,10 +83,10 @@ INSTALLED_APPS = (
     'floppyforms',
     'raven.contrib.django',
     'sekizai',
+    'django_rq_dashboard',
 
     'feedhq.feeds',
     'feedhq.profiles',
-    'feedhq.rq',
 
     'password_reset',
 )
