@@ -18,6 +18,7 @@ class CategoryAdmin(admin.ModelAdmin):
             }),
     )
     inlines = [FeedInline]
+    raw_id_fields = ('user',)
 
 
 class UniqueFeedAdmin(admin.ModelAdmin):
@@ -30,11 +31,13 @@ class UniqueFeedAdmin(admin.ModelAdmin):
 class FeedAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'unread_count', 'favicon_img')
     search_fields = ('name', 'url')
+    raw_id_fields = ('category',)
 
 
 class EntryAdmin(admin.ModelAdmin):
     list_display = ('title', 'date')
     search_fields = ('title', 'link', 'permalink')
+    raw_id_fields = ('feed', 'user')
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
