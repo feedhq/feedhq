@@ -167,12 +167,13 @@ class FeedUpdater(object):
                 db_entry.user = feed.category.user
                 if create:
                     db_entry.pk = None
+                    db_entry.read = False
 
                     # If the user already has the entry, add it but as a read
                     # entry. This is useful for people following a blog and a
                     # planet that aggregates the same blog.
                     if (db_entry.link and
-                        db_entry.user.entries.exclude(pk=db_entry.pk).filter(
+                        db_entry.user.entries.filter(
                             link=db_entry.link,
                         ).exists()):
                         db_entry.read = True
