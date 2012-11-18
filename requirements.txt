@@ -1,4 +1,4 @@
-Django==1.4.1
+Django==1.4.2
 Logbook==0.3
 Pillow==1.7.7
 bleach==1.1.5
