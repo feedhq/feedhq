@@ -107,75 +107,16 @@
 {% addtoblock "js" %}
 <script>
 	$(function() {
-		var events = ['scroll', 'feedhq-loaded', 'mousemove']
 		var timer;
-		for (var index in events) {
-			$(document).bind(events[index], function() {
-				$('.feedhq-image .imgmenu').fadeIn(function() {
-					if (timer) {
-						window.clearTimeout(timer);
-					}
-					var self = this;
-
-					timer = window.setTimeout(function() {
-						$(self).fadeOut();
-					}, 2000);
-				});
-			});
-		}
-
-		var entry_width = function() {
-			return $('#entry').width();
-		};
-
-		var retina = window.devicePixelRatio >= 1.5;
-
-		var images = $('.content img');
-
-		var count = images.length;
-		images.each(function() {
-			$(this).load(function() {
-				var image = $(this);
-				var tmp = new Image();
-				tmp.src = image.attr('src');
-				if (tmp.width <= entry_width()) {
-					return;
+		$(document).on('scroll feedhq-loaded mousemove', function() {
+			$('.feedhq-image .imgmenu').fadeIn(function() {
+				if (timer) {
+					window.clearTimeout(timer);
 				}
 
-				var menu_items = [$('<a class="zoom1"><span class="text">1:1</span></a>'), $('<a class="fit selected"><span class="icon fit"></span></a>')];
-
-				if (retina) {
-					menu_items.push($('<a class="retina"><span class="icon retina"></span></a>'));
-				}
-
-				// create element w/ menu items and shit.
-				var parent = image.parents().filter(function() {
-					return $(this).css("display") === "block";
-				}).first()
-
-				var inner = parent.html();
-
-				var container = $('<div class="feedhq-image"></div>');
-				var menu = $('<div class="imgmenu"></div>');
-				for (var index in menu_items) {
-					menu.append(menu_items[index]);
-				}
-				container.append(menu);
-				container.append(inner);
-				container.find('img').each(function() {
-					var image = $(this);
-					image.removeAttr('width');
-					image.removeAttr('height');
-					var tmp = new Image();
-					tmp.src = image.attr('src');
-					$(tmp).load(function() {
-						image.attr('data-width', this.width);
-					});
-					image.width('100%');
-					--count;
-				});
-				parent.replaceWith(container);
-				$(document).trigger('feedhq-loaded');
+				timer = window.setTimeout(function() {
+					$('.feedhq-image .imgmenu').fadeOut();
+				}, 2000);
 			});
 		});
 
@@ -203,6 +144,67 @@
 				});
 			});
 		});
+
+		var entry_width = function() {
+			return $('#entry').width();
+		};
+
+		var retina = window.devicePixelRatio >= 1.5;
+
+		var images = $('.content img');
+		var count = images.length;
+
+		images.one('load', function() {
+			var image = $(this);
+			var tmp = new Image();
+			tmp.src = image.attr('src');
+			if (tmp.width <= entry_width()) {
+				--count;
+				return;
+			}
+
+			var menu_items = [$('<a class="zoom1"><span class="text">1:1</span></a>'), $('<a class="fit selected"><span class="icon fit"></span></a>')];
+
+			if (retina) {
+				menu_items.push($('<a class="retina"><span class="icon retina"></span></a>'));
+			}
+
+			// create element w/ menu items and shit.
+			var parent = image.parents().filter(function() {
+				return $(this).css("display") === "block";
+			}).first()
+
+			var inner = parent.html();
+
+			var container = $('<div class="feedhq-image"></div>');
+			var menu = $('<div class="imgmenu"></div>');
+			for (var index in menu_items) {
+				menu.append(menu_items[index]);
+			}
+			container.append(menu);
+			container.append(inner);
+			container.find('img').each(function() {
+				var image = $(this);
+				image.removeAttr('width');
+				image.removeAttr('height');
+				var tmp = new Image();
+				tmp.src = image.attr('src');
+				$(tmp).load(function() {
+					image.attr('data-width', this.width);
+				});
+				image.width('100%');
+				--count;
+			});
+			parent.replaceWith(container);
+			if (!count) {
+				$(document).trigger('feedhq-loaded');
+			}
+		}).each(function() {
+			if (this.complete) {
+				$(this).load();
+			}
+		});
+
 	});
 </script>
 {% endaddtoblock %}
