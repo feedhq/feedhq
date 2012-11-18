@@ -119,6 +119,10 @@ LOGGING = {
             'level': 'INFO',
             'class': 'raven.contrib.django.handlers.SentryHandler',
         },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
     },
     'loggers': {
         'django.request': {
@@ -133,6 +137,9 @@ LOGGING = {
         'ratelimitbackend': {
             'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
+        },
+        'bleach': {
+            'handlers': ['null'],
         },
         'raven': {
             'handlers': ['console'],
