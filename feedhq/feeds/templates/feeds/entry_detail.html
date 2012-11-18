@@ -159,7 +159,9 @@
 			var tmp = new Image();
 			tmp.src = image.attr('src');
 			if (tmp.width <= entry_width()) {
-				--count;
+				if (!--count) {
+					$(document).trigger('feedhq-loaded');
+				}
 				return;
 			}
 
