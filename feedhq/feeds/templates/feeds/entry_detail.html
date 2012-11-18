@@ -107,60 +107,101 @@
 {% addtoblock "js" %}
 <script>
 	$(function() {
-		if ($('#content').css('overflow') != 'hidden') {
-			return;
+		var events = ['scroll', 'feedhq-loaded', 'mousemove']
+		var timer;
+		for (var index in events) {
+			$(document).bind(events[index], function() {
+				$('.feedhq-image .imgmenu').fadeIn(function() {
+					if (timer) {
+						window.clearTimeout(timer);
+					}
+					var self = this;
+
+					timer = window.setTimeout(function() {
+						$(self).fadeOut();
+					}, 2000);
+				});
+			});
 		}
 
-		$('.content a img').each(function() {
-			var img = $(this);
-			var alt = img.attr('alt');
-			var a = img.closest('a');
-			if (alt) {
-				var legend = alt;
-			} else {
-				var legend = a.attr('href');
-			}
-			var newa = $('<a href="' + a.attr('href') + '"></a>');
-			newa.text(legend);
-			var new_content = img.parent().html() + '<p class="legend">' + newa.clone().wrap('<p>').parent().html() + '</p>';
+		var entry_width = function() {
+			return $('#entry').width();
+		};
 
-			if (newa.attr('href').indexOf('http://feedads.g.doubleclick.net') != 0) {
-				a.replaceWith(new_content);
-			} else {
-				img.remove();
-			}
+		var retina = window.devicePixelRatio >= 1.5;
+
+		var images = $('.content img');
+
+		var count = images.length;
+		images.each(function() {
+			$(this).load(function() {
+				var image = $(this);
+				var tmp = new Image();
+				tmp.src = image.attr('src');
+				if (tmp.width <= entry_width()) {
+					return;
+				}
+
+				var menu_items = [$('<a class="zoom1"><span class="text">1:1</span></a>'), $('<a class="fit selected"><span class="icon fit"></span></a>')];
+
+				if (retina) {
+					menu_items.push($('<a class="retina"><span class="icon retina"></span></a>'));
+				}
+
+				// create element w/ menu items and shit.
+				var parent = image.parents().filter(function() {
+					return $(this).css("display") === "block";
+				}).first()
+
+				var inner = parent.html();
+
+				var container = $('<div class="feedhq-image"></div>');
+				var menu = $('<div class="imgmenu"></div>');
+				for (var index in menu_items) {
+					menu.append(menu_items[index]);
+				}
+				container.append(menu);
+				container.append(inner);
+				container.find('img').each(function() {
+					var image = $(this);
+					image.removeAttr('width');
+					image.removeAttr('height');
+					var tmp = new Image();
+					tmp.src = image.attr('src');
+					$(tmp).load(function() {
+						image.attr('data-width', this.width);
+					});
+					image.width('100%');
+					--count;
+				});
+				parent.replaceWith(container);
+				$(document).trigger('feedhq-loaded');
+			});
 		});
 
-		var imgs = $('.content img');
-		var count = imgs.length;
-		imgs.each(function() {
-			var image = $(this);
-			var content_width = $('.content').width();
-			image.load(function() {
-				if (this.clientWidth <= 1 && this.clientHeight <= 1) {
-					$(this).remove();
-				} else {
-					if (this.clientWidth > content_width) {
-						$(this).wrap('<div class="overflow">');
-					}
+		$(document).bind('feedhq-loaded', function() {
+			$('.feedhq-image .imgmenu a').click(function() {
+				var link = $(this);
+				if (link.hasClass('selected')) {
+					return;
 				}
-			});
+				link.parent().find('.selected').removeClass('selected');
+				link.addClass('selected');
+				link.parent().parent().find('img').each(function() {
+					var image = $(this);
+					if (link.hasClass('zoom1')) {
+						image.width('auto');
+					};
 
-			if (!--count && window.devicePixelRatio) {
-				if (window.devicePixelRatio > 1) {
-					$('.content img').click(function() {
-						var img = $(this);
-						if (img.hasClass('ratio')) {
-							img.removeAttr('width');
-							img.removeClass('ratio');
-						} else {
-							img.addClass('ratio');
-							img.removeAttr('height');
-							img.attr("width", this.clientWidth / window.devicePixelRatio);
-						}
-					});
-				}
-			}
+					if (link.hasClass('fit')) {
+						image.width('100%');
+					};
+
+					if (link.hasClass('retina')) {
+						image.width(parseInt(image.attr('data-width')) / 2);
+					};
+				});
+			});
 		});
 	});
 </script>
