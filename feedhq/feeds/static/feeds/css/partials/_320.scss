@@ -30,7 +30,7 @@
 			top: 8px;
 			right: 0;
 
-			background: lighten($text, 75%);
+			background: lighten($text, 80%);
 			& > span {
 				display: inline;
 				position: absolute;
@@ -46,7 +46,7 @@
 
 		#add-menu {
 			position: relative;
-			background: lighten($text, 75%);
+			background: lighten($text, 80%);
 			margin-right: 32px;
 
 			&:hover, &.active {
@@ -75,7 +75,7 @@
 			float: right;
 			width: 24px;
 			height: 24px;
-			border-radius: 5px;
+			border-radius: 3px;
 
 			&:hover, &.active {
 				background-color: $text;
