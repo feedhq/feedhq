@@ -14,7 +14,6 @@ feedparser==5.1.2
 html5lib==0.95
 httplib2==0.7.5
 lxml==2.3.3
-mock==1.0b1
 oauth2==1.5.211
 opml==0.5
 procname==0.3

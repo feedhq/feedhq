@@ -16,7 +16,7 @@ DATABASES = {
 TESTS = True
 
 PASSWORD_HASHERS = [
-    'feedhq.hashers.NotHashingHasher',
+    'tests.hashers.NotHashingHasher',
 ]
 
 RQ = {

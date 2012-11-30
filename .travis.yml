@@ -5,9 +5,9 @@ python:
 install:
   - pip install -q -r requirements.txt --use-mirrors
   - pip install -q -r requirements-dev.txt --use-mirrors
-  - pip install -q -e . --use-mirrors
 before_script:
   - flake8 feedhq
+  - flake8 tests
 script:
   - psql -c 'CREATE DATABASE feedhq;' -U postgres
-  - make test
+  - PYTHONPATH=. make test

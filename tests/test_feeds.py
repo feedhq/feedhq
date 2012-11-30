@@ -16,11 +16,15 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from ..models import Category, Feed, Entry, Favicon, UniqueFeed
-from ..tasks import update_feed
-from ..utils import FAVICON_FETCHER, USER_AGENT
+from feedhq.feeds.models import Category, Feed, Entry, Favicon, UniqueFeed
+from feedhq.feeds.tasks import update_feed
+from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT
 
-ROOT = os.path.abspath(os.path.dirname(__file__))
+TEST_DATA = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
+
+
+def test_file(name):
+    return os.path.join(TEST_DATA, name)
 
 
 def responses(code, path=None, redirection=None,
@@ -28,7 +32,7 @@ def responses(code, path=None, redirection=None,
     response = _Response()
     response.status_code = code
     if path is not None:
-        with open(os.path.join(ROOT, path), 'r') as f:
+        with open(test_file(path), 'r') as f:
             response.raw = StringIO(f.read())
     if redirection is not None:
         temp = _Response()
@@ -548,7 +552,7 @@ class TestFeeds(TestCase):
 
         get.return_value = responses(304)
 
-        with open(os.path.join(ROOT, 'sample.opml'), 'r') as opml_file:
+        with open(test_file('sample.opml'), 'r') as opml_file:
             data = {'file': opml_file}
             response = self.client.post(url, data, follow=True)
 
@@ -557,7 +561,7 @@ class TestFeeds(TestCase):
         self.assertEqual(Category.objects.filter(name='Imported').count(), 1)
 
         # Re-import
-        with open(os.path.join(ROOT, 'sample.opml'), 'r') as opml_file:
+        with open(test_file('sample.opml'), 'r') as opml_file:
             data = {'file': opml_file}
             response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
@@ -571,7 +575,7 @@ class TestFeeds(TestCase):
 
         get.return_value = responses(304)
 
-        with open(os.path.join(ROOT, 'categories.opml'), 'r') as opml_file:
+        with open(test_file('categories.opml'), 'r') as opml_file:
             data = {'file': opml_file}
             response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
@@ -750,7 +754,7 @@ class TestFeeds(TestCase):
             timeout=10)
 
         self.assertEqual(feed.entries.count(), 0)
-        path = os.path.join(ROOT, 'bruno.im.atom')
+        path = test_file('bruno.im.atom')
         parsed = feedparser.parse(path)
         updated.send(sender=None, notification=parsed)
         self.assertEqual(feed.entries.count(), 5)
@@ -766,7 +770,7 @@ class TestFeeds(TestCase):
     @patch('requests.get')
     def test_bookmarklet_post(self, get):
         url = '/subscribe/'  # hardcoded in the JS file
-        with open(os.path.join(ROOT, 'bruno-head.html'), 'r') as f:
+        with open(test_file('bruno-head.html'), 'r') as f:
             data = {
                 'source': 'http://bruno.im/',
                 'html': f.read(),
@@ -797,7 +801,7 @@ class TestFeeds(TestCase):
     def test_bookmarklet_parsing(self):
         url = reverse('feeds:bookmarklet_subscribe')
         for name, count in [('figaro', 15), ('github', 2), ('techcrunch', 3)]:
-            with open(os.path.join(ROOT, '%s-head.html' % name), 'r') as f:
+            with open(test_file('%s-head.html' % name), 'r') as f:
                 response = self.client.post(url, {'html': f.read(),
                                                   'source': 'http://t.com'})
             self.assertContains(response, name)
@@ -841,7 +845,7 @@ class TestFeeds(TestCase):
 class FaviconTests(TestCase):
     @patch("requests.get")
     def test_declared_favicon(self, get):
-        with open(os.path.join(ROOT, 'bruno.im.png'), 'r') as f:
+        with open(test_file('bruno.im.png'), 'r') as f:
             fav = f.read()
 
         class Response:

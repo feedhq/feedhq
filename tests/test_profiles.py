@@ -9,7 +9,7 @@ from httplib2 import Response as _Response
 from mock import patch
 from requests import Response
 
-from ..feeds.utils import USER_AGENT
+from feedhq.feeds.utils import USER_AGENT
 
 
 class ProfilesTest(TestCase):

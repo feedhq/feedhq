@@ -11,6 +11,10 @@ TEMPLATE_DEBUG = DEBUG
 # Are we running the tests or a real server?
 TESTS = False
 
+TEST_RUNNER = 'discover_runner.DiscoverRunner'
+TEST_DISCOVER_TOP_LEVEL = os.path.join(HERE, os.pardir)
+TEST_DISCOVER_ROOT = os.path.join(TEST_DISCOVER_TOP_LEVEL, 'tests')
+
 ADMINS = ()
 MANAGERS = ADMINS
 
