@@ -2,7 +2,8 @@ from django.conf.urls import url, patterns
 
 from . import views
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$', views.feed_list, name='home'),
     url(r'^(?P<page>\d+)/$', views.feed_list, name='home'),
     url(r'^unread/$', views.feed_list,

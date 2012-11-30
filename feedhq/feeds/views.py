@@ -155,11 +155,11 @@ def add_category(request):
         form.user = request.user
         if form.is_valid():
             category = Category(
-                    name=form.cleaned_data['name'],
-                    slug=form.slug,
-                    user=request.user,
-                    color=form.cleaned_data['color'],
-                    delete_after=form.cleaned_data['delete_after'],
+                name=form.cleaned_data['name'],
+                slug=form.slug,
+                user=request.user,
+                color=form.cleaned_data['color'],
+                delete_after=form.cleaned_data['delete_after'],
             )
             category.save()
             return redirect(reverse('feeds:category', args=[category.slug]))
@@ -263,7 +263,7 @@ def edit_feed(request, feed):
     context = {
         'feed': feed,
         'form': form,
-}
+    }
     return render(request, 'feeds/edit_feed.html', context)
 
 
@@ -390,9 +390,11 @@ def item(request, entry_id):
 
 def save_outline(user, category, outline, existing):
     count = 0
-    if (not hasattr(outline, 'xmlUrl') and
+    if (
+        not hasattr(outline, 'xmlUrl') and
         hasattr(outline, 'title') and
-        outline._outlines):
+        outline._outlines
+    ):
         slug = slugify(outline.title)
         cat, created = user.categories.get_or_create(
             slug=slug, defaults={'name': outline.title},
@@ -499,7 +501,7 @@ def bookmarklet_js(request):
     site = RequestSite(request)
     scheme = 'https' if request.is_secure() else 'http'
     response = render(request, "feeds/bookmarklet.js",
-                  {'scheme': scheme, 'site': site})
+                      {'scheme': scheme, 'site': site})
     response['Content-Type'] = 'text/javascript; charset=utf-8'
     return response
 

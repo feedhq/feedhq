@@ -2,7 +2,8 @@ from django.conf.urls import url, patterns, include
 
 from . import views
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^export/$', views.export, name='export'),
     url(r'^readlater/(?P<service>readability|readitlater|instapaper|none)/$',

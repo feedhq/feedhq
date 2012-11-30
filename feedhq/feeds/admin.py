@@ -13,9 +13,9 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
     prepopulated_fields = {'slug': ('name',)}
     fieldsets = (
-            (None, {
-                'fields': (('name', 'slug'), 'user', 'order'),
-            }),
+        (None, {
+            'fields': (('name', 'slug'), 'user', 'order'),
+        }),
     )
     inlines = [FeedInline]
     raw_id_fields = ('user',)

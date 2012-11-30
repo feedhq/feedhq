@@ -67,8 +67,10 @@ class FeedUpdater(object):
             if 'guid' in entry:
                 parsed_guid = urlparse.urlparse(entry.guid)
                 parsed_link = urlparse.urlparse(self.parsed.feed.link)
-                if (parsed_guid.scheme in ('http', 'https') and
-                    parsed_guid.netloc == parsed_link.netloc):
+                if (
+                    parsed_guid.scheme in ('http', 'https') and
+                    parsed_guid.netloc == parsed_link.netloc
+                ):
                     parsed_entry.guid = entry.guid
 
             if not parsed_entry.id:
@@ -101,7 +103,7 @@ class FeedUpdater(object):
 
             if subscription.lease_expiration < timezone.now():
                 logger.debug("Renewing lease for %s: %s" % (self.parsed.link,
-                                                           self.hub))
+                                                            self.hub))
                 enqueue(subscribe, args=[self.parsed.link, self.hub])
 
     def get_date(self, entry):
@@ -174,8 +176,7 @@ class FeedUpdater(object):
                     # planet that aggregates the same blog.
                     if (db_entry.link and
                         db_entry.user.entries.filter(
-                            link=db_entry.link,
-                        ).exists()):
+                            link=db_entry.link).exists()):
                         db_entry.read = True
                 db_entry.save()
                 feed.update_unread_count()
@@ -183,8 +184,8 @@ class FeedUpdater(object):
     def clean_content(self, content):
         page = lxml.html.fromstring('<div>%s</div>' % content)
         for element in page.iter('img'):
-            if ('width="1"' in lxml.etree.tostring(element) or
-                'width="0"' in lxml.etree.tostring(element)):
+            el_str = lxml.etree.tostring(element)
+            if 'width="1"' in el_str or 'width="0"' in el_str:
                 # Tracking image -- deleting
                 element.drop_tree()
         return lxml.etree.tostring(page)

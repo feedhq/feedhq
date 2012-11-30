@@ -36,7 +36,8 @@ touch_icon = lambda _: HttpResponsePermanentRedirect(
     '%sfeeds/img/touch-icon-114.png' % settings.STATIC_URL
 )
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     (r'^admin/rq/', include('django_rq_dashboard.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^subscriber/', include('django_push.subscriber.urls')),
@@ -48,11 +49,13 @@ urlpatterns = patterns('',
     (r'^', include('feedhq.feeds.urls', namespace='feeds')),
 )
 
-urlpatterns += patterns('ratelimitbackend.views',
+urlpatterns += patterns(
+    'ratelimitbackend.views',
     url(r'^login/$', 'login', {'authentication_form': AuthForm}, name='login'),
 )
 
-urlpatterns += patterns('django.contrib.auth.views',
+urlpatterns += patterns(
+    'django.contrib.auth.views',
     url(r'^logout/$', 'logout', name='logout'),
 )
 

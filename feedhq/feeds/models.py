@@ -33,18 +33,18 @@ feedparser.PARSE_MICROFORMATS = False
 feedparser.SANITIZE_HTML = False
 
 COLORS = (
-        ('red', _('Red')),
-        ('dark-red', _('Dark Red')),
-        ('pale-green', _('Pale Green')),
-        ('green', _('Green')),
-        ('army-green', _('Army Green')),
-        ('pale-blue', _('Pale Blue')),
-        ('blue', _('Blue')),
-        ('dark-blue', _('Dark Blue')),
-        ('orange', _('Orange')),
-        ('dark-orange', _('Dark Orange')),
-        ('black', _('Black')),
-        ('gray', _('Gray')),
+    ('red', _('Red')),
+    ('dark-red', _('Dark Red')),
+    ('pale-green', _('Pale Green')),
+    ('green', _('Green')),
+    ('army-green', _('Army Green')),
+    ('pale-blue', _('Pale Blue')),
+    ('blue', _('Blue')),
+    ('dark-blue', _('Dark Blue')),
+    ('orange', _('Orange')),
+    ('dark-orange', _('Dark Orange')),
+    ('black', _('Black')),
+    ('gray', _('Gray')),
 )
 
 
@@ -53,11 +53,11 @@ def random_color():
 
 
 DURATIONS = (
-        ('1day', _('One day')),
-        ('2days', _('Two days')),
-        ('1week', _('One week')),
-        ('1month', _('One month')),
-        ('1year', _('One year')),
+    ('1day', _('One day')),
+    ('2days', _('Two days')),
+    ('1week', _('One week')),
+    ('1month', _('One month')),
+    ('1year', _('One year')),
 )
 
 
@@ -179,8 +179,7 @@ class UniqueFeedManager(models.Manager):
             obj.url != response.url and ctype is not None and (
                 ctype.startswith('application') or
                 ctype.startswith('text/xml') or
-                ctype.startswith('text/rss')
-            )):
+                ctype.startswith('text/rss'))):
             redirection = None
             for index, redirect in enumerate(response.history):
                 if redirect.status_code != 301:
@@ -353,7 +352,7 @@ class Feed(models.Model):
     # Mute a feed when we don't want the updates to show up in the timeline
     muted = models.BooleanField(_('Muted'), default=False,
                                 help_text=_('Check this if you want to stop '
-                                           'checking updates for this feed'))
+                                            'checking updates for this feed'))
     unread_count = models.PositiveIntegerField(_('Unread count'), default=0)
     favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True,
                                 storage=OverwritingStorage())
@@ -427,7 +426,7 @@ class Entry(models.Model):
     read = models.BooleanField(_('Read'), default=False, db_index=True)
     # Read later: store the URL
     read_later_url = models.URLField(_('Read later URL'), verify_exists=False,
-                                 max_length=1023, blank=True)
+                                     max_length=1023, blank=True)
 
     objects = EntryManager()
 
