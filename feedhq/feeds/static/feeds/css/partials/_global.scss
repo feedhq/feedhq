@@ -753,6 +753,10 @@ pre code {
 			border-left: 5px solid lighten($text, 75%);
 			padding-left: 10px;
 			color: lighten($text, 20%);
+
+			ul, ol {
+				margin-left: 1em;
+			}
 		}
 
 		.feedhq-image {
