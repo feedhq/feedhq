@@ -124,7 +124,7 @@
 			$('.feedhq-image .imgmenu a').click(function() {
 				var link = $(this);
 				if (link.hasClass('selected')) {
-					return;
+					return false;
 				}
 				link.parent().find('.selected').removeClass('selected');
 				link.addClass('selected');
@@ -142,6 +142,7 @@
 						image.width(parseInt(image.attr('data-width')) / 2);
 					};
 				});
+				return false;
 			});
 		});
 
@@ -165,19 +166,16 @@
 				return;
 			}
 
-			var menu_items = [$('<a class="zoom1"><span class="text">1:1</span></a>'), $('<a class="fit selected"><span class="icon fit"></span></a>')];
+			var menu_items = [$('<a class="zoom1" href="#"><span class="text">1:1</span></a>'), $('<a class="fit selected" href="#"><span class="icon fit"></span></a>')];
 
 			if (retina) {
-				menu_items.push($('<a class="retina"><span class="icon retina"></span></a>'));
+				menu_items.push($('<a class="retina" href="#"><span class="icon retina"></span></a>'));
 			}
 
-			// create element w/ menu items and shit.
-			var parent = image.parents().filter(function() {
-				return $(this).css("display") === "block";
-			}).first()
-
-			var inner = parent.html();
-
+			if (image.parent('a').length > 0) {
+				image = image.parent('a');
+			}
+			var inner = $(image).clone().wrap('<p>').parent().html()
 			var container = $('<div class="feedhq-image"></div>');
 			var menu = $('<div class="imgmenu"></div>');
 			for (var index in menu_items) {
@@ -197,7 +195,7 @@
 				image.width('100%');
 				--count;
 			});
-			parent.replaceWith(container);
+			image.replaceWith(container);
 			if (!count) {
 				$(document).trigger('feedhq-loaded');
 			}
