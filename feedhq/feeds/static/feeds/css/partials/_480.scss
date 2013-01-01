@@ -32,12 +32,12 @@
 
 		&.full {
 			.count {
-				@include cols(3);
+				@include cols(3.5);
 				margin-left: 0;
 			}
 
 			.pagination {
-				@include cols(3);
+				@include cols(2.5);
 				margin-right: 0;
 			}
 		}

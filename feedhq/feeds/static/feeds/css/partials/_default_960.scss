@@ -29,10 +29,6 @@ h2 {
 	margin: 0;
 	padding: 5px 0;
 
-	&.bottom {
-		padding-left: column-width(9) + $em;
-	}
-
 	.count {
 		@include cols(9);
 	}

@@ -16,10 +16,6 @@
 	}
 
 	.figures {
-		&.bottom {
-			padding-left: column-width(6) + $em;
-		}
-
 		.count {
 			@include cols(6);
 			white-space: inherit;

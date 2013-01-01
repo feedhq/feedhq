@@ -102,14 +102,11 @@
 	}
 
 	.figures {
-		&.bottom {
-			padding-left: 0;
-		}
-
 		.count {
 			width: 100%;
 			margin: 0;
 			white-space: inherit;
+			float: none;
 
 			input {
 				font-size: 0.8rem;
