@@ -88,124 +88,12 @@
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-<script>
-	hljs.initHighlightingOnLoad();
-	$('pre').each(function(index, element) {
-		hljs.highlightBlock(element, '    ', false)
-	})
-	$(document).keydown(function(e) {{% if next %}
-		if (e.keyCode == 39) {
-			window.location.href = '{{ next }}';
-		}{% endif %}{% if previous %}
-		if (e.keyCode == 37) {
-			window.location.href = '{{ previous }}';
-		}{% endif %}
-	});
-</script>
+<script src="{% static "feeds/js/feedhq.js" %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
 <script>
-	$(function() {
-		var timer;
-		$(document).on('scroll feedhq-loaded mousemove', function() {
-			$('.feedhq-image .imgmenu').fadeIn(function() {
-				if (timer) {
-					window.clearTimeout(timer);
-				}
-
-				timer = window.setTimeout(function() {
-					$('.feedhq-image .imgmenu').fadeOut();
-				}, 2000);
-			});
-		});
-
-		$(document).bind('feedhq-loaded', function() {
-			$('.feedhq-image .imgmenu a').click(function() {
-				var link = $(this);
-				if (link.hasClass('selected')) {
-					return false;
-				}
-				link.parent().find('.selected').removeClass('selected');
-				link.addClass('selected');
-				link.parent().parent().find('img').each(function() {
-					var image = $(this);
-					if (link.hasClass('zoom1')) {
-						image.width('auto');
-					};
-
-					if (link.hasClass('fit')) {
-						image.width('100%');
-					};
-
-					if (link.hasClass('retina')) {
-						image.width(parseInt(image.attr('data-width')) / 2);
-					};
-				});
-				return false;
-			});
-		});
-
-		var entry_width = function() {
-			return $('#entry').width();
-		};
-
-		var retina = window.devicePixelRatio >= 1.5;
-
-		var images = $('.content img');
-		var count = images.length;
-
-		images.one('load', function() {
-			var image = $(this);
-			var tmp = new Image();
-			tmp.src = image.attr('src');
-			if (tmp.width <= entry_width()) {
-				if (!--count) {
-					$(document).trigger('feedhq-loaded');
-				}
-				return;
-			}
-
-			var menu_items = [$('<a class="zoom1" href="#"><span class="text">1:1</span></a>'), $('<a class="fit selected" href="#"><span class="icon fit"></span></a>')];
-
-			if (retina) {
-				menu_items.push($('<a class="retina" href="#"><span class="icon retina"></span></a>'));
-			}
-
-			if (image.parent('a').length > 0) {
-				image = image.parent('a');
-			}
-			var inner = $(image).clone().wrap('<p>').parent().html()
-			var container = $('<div class="feedhq-image"></div>');
-			var menu = $('<div class="imgmenu"></div>');
-			for (var index in menu_items) {
-				menu.append(menu_items[index]);
-			}
-			container.append(menu);
-			container.append(inner);
-			container.find('img').each(function() {
-				var image = $(this);
-				image.removeAttr('width');
-				image.removeAttr('height');
-				var tmp = new Image();
-				tmp.src = image.attr('src');
-				$(tmp).load(function() {
-					image.attr('data-width', this.width);
-				});
-				image.width('100%');
-				--count;
-			});
-			image.replaceWith(container);
-			if (!count) {
-				$(document).trigger('feedhq-loaded');
-			}
-		}).each(function() {
-			if (this.complete) {
-				$(this).load();
-			}
-		});
-
-	});
+	$(document).hl().images().keys('{{ previous }}', '{{ next }}');
 </script>
 {% endaddtoblock %}
 
