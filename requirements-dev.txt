@@ -1,6 +1,6 @@
 django-debug-toolbar==0.9.4
 django-discover-runner==0.2.2
-flake8==1.6.2
-mock==1.0b1
+flake8==1.7.0
+mock==1.0.1
 transifex-client==0.8
 virtualenv==1.8
