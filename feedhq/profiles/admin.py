@@ -1,10 +1,8 @@
 from ratelimitbackend import admin
 
-from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
-from django.contrib.auth.models import User, Group
-from django.contrib.sites.admin import SiteAdmin
-from django.contrib.sites.models import Site
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -24,5 +22,3 @@ class ProfileUserAdmin(UserAdmin):
 
 
 admin.site.register(User, ProfileUserAdmin)
-admin.site.register(Group, GroupAdmin)
-admin.site.register(Site, SiteAdmin)
