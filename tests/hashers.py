@@ -1,5 +1,3 @@
-# TODO move tests to a standalone structure and this to tests as well.
-# Should not appear in deployed code.
 from django.contrib.auth.hashers import BasePasswordHasher
 
 
