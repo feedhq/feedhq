@@ -1,9 +1,9 @@
 FeedHQ
 ======
 
-.. image:: https://secure.travis-ci.org/feedhq/feedhq.png
+.. image:: https://travis-ci.org/feedhq/feedhq.png?branch=master
    :alt: Build Status
-   :target: https://secure.travis-ci.org/feedhq/feedhq
+   :target: https://travis-ci.org/feedhq/feedhq
 
 FeedHQ is a simple, lightweight web-based feed reader. Main features:
 
