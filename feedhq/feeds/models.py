@@ -281,11 +281,9 @@ MUTE_CHOICES = (
 
 
 class UniqueFeed(models.Model):
-    url = models.URLField(_('URL'), verify_exists=False, max_length=1023,
-                          unique=True)
+    url = models.URLField(_('URL'), max_length=1023, unique=True)
     title = models.CharField(_('Title'), max_length=1023, blank=True)
-    link = models.URLField(_('Link'), verify_exists=False, max_length=1023,
-                           blank=True)
+    link = models.URLField(_('Link'), max_length=1023, blank=True)
     etag = models.CharField(_('Etag'), max_length=1023, null=True, blank=True)
     modified = models.CharField(_('Modified'), max_length=1023, null=True,
                                 blank=True)
@@ -344,7 +342,7 @@ class UniqueFeed(models.Model):
 class Feed(models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=255)
-    url = models.URLField(_('URL'), verify_exists=False, max_length=1023)
+    url = models.URLField(_('URL'), max_length=1023)
     category = models.ForeignKey(
         Category, verbose_name=_('Category'), related_name='feeds',
         help_text=_('<a href="/category/add/">Add a category</a>'),
@@ -412,11 +410,10 @@ class Entry(models.Model):
                              related_name='entries')
     title = models.CharField(_('Title'), max_length=255)
     subtitle = models.TextField(_('Abstract'))
-    link = models.URLField(_('URL'), verify_exists=False, max_length=1023)
+    link = models.URLField(_('URL'), max_length=1023)
     # We also have a permalink for feed proxies (like FeedBurner). If the link
     # points to feedburner, the redirection (=real feed link) is put here
-    permalink = models.URLField(_('Permalink'), verify_exists=False,
-                                max_length=1023, blank=True)
+    permalink = models.URLField(_('Permalink'), max_length=1023, blank=True)
     date = models.DateTimeField(_('Date'), db_index=True)
     # The User FK is redundant but this may be better for performance and if
     # want to allow user input.
@@ -425,8 +422,8 @@ class Entry(models.Model):
     # Mark something as read or unread
     read = models.BooleanField(_('Read'), default=False, db_index=True)
     # Read later: store the URL
-    read_later_url = models.URLField(_('Read later URL'), verify_exists=False,
-                                     max_length=1023, blank=True)
+    read_later_url = models.URLField(_('Read later URL'), max_length=1023,
+                                     blank=True)
 
     objects = EntryManager()
 
