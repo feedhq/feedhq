@@ -7,13 +7,18 @@
 			});
 			return this;
 		},
-		keys: function(previous, next) {
+		keys: function() {
 			$(document).keydown(function(e) {
-				if (next && e.keyCode == 39) {
-					window.location.href = next;
+				if (e.keyCode == 39) {
+					var link = $('.feedhq-next');
+				} else if (e.keyCode == 37) {
+					var link = $('.feedhq-previous');
+				} else {
+					return;
 				}
-				if (previous && e.keyCode == 37) {
-					window.location.href = previous;
+				var href = link.attr('href');
+				if (href) {
+					window.location.href = href;
 				}
 			});
 			return this;
