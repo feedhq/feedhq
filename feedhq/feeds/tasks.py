@@ -55,5 +55,5 @@ def subscribe(topic_url, hub_url):
 def close_connection():
     """Close the connection only if not in eager mode"""
     if hasattr(settings, 'RQ'):
-        if not settings.RQ.get('eager', True):
+        if not settings.RQ.get('eager', False):
             connection.close()
