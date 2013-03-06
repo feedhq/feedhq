@@ -1,6 +1,10 @@
+-r requirements.txt
 django-debug-toolbar==0.9.4
-django-discover-runner==0.2.2
-flake8==1.7.0
+django-discover-runner==0.3
+flake8==2.0
+mccabe==0.2
 mock==1.0.1
+pep8==1.4.4
+pyflakes==0.6.1
 transifex-client==0.8
 virtualenv==1.8
