@@ -17,7 +17,7 @@
 
 	<h2>{% trans "Edit your profile" %}</h2>
 
-	<form method="post" action="{% url "profile" %}" class="no">
+	<form method="post" action="{% url "profile" %}" class="no" id="profile">
 		{% with profile_form as form %}
 			{% include "form.html" %}
 		{% endwith %}
@@ -38,7 +38,7 @@
 
 	<h2>{% trans "Change your password" %}</h2>
 
-	<form method="post" action="{% url "profile" %}" class="no">
+	<form method="post" action="{% url "profile" %}" class="no" id="password">
 		{% with password_form as form %}
 			{% include "form.html" %}
 		{% endwith %}

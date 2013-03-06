@@ -69,7 +69,7 @@ def export(request):
     response = render(request, 'profiles/opml_export.opml',
                       {'categories': request.user.categories.all()})
     response['Content-Disposition'] = 'attachment; filename=feedhq-export.opml'
-    ctype = 'text/xml; charset=%s' % settings.DEFAULT_CONTENT_TYPE
+    ctype = 'text/xml; charset=utf-8'
     response['Content-Type'] = ctype
     return response
 

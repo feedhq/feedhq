@@ -7,7 +7,7 @@
 
 	<p>{% trans "Please enter your Instapaper credentials. Note that Instapaper uses xAuth so we won't store your raw credentials but exchange them for a token that you can revoke at any time." %}</p>
 
-	<form method="post" action="{% url "services" "instapaper" %}" class="no">
+	<form method="post" action="{% url "services" "instapaper" %}" class="no" id="instapaper">
 		{% include "form.html" %}
 		<div class="submit">
 			<input type="submit" value="{% trans "Check credentials" %}">

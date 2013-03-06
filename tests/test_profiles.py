@@ -4,92 +4,106 @@ import json
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
+from django_webtest import WebTest, DjangoTestApp, DjangoWebtestResponse
 from httplib2 import Response as _Response
 from mock import patch
 from requests import Response
 
 from feedhq.feeds.utils import USER_AGENT
 
-from . import FeedHQTestCase as TestCase
+
+class MyResponse(DjangoWebtestResponse):
+    def __getitem__(self, item):
+        print self.headerlist
+        return super(MyResponse, self).__getitem__(item)
 
 
-class ProfilesTest(TestCase):
+class MyApp(DjangoTestApp):
+    response_class = MyResponse
+
+
+class Mytest(WebTest):
+    app_class = MyApp
+
+
+class ProfilesTest(WebTest):
     def setUp(self):
         self.user = User.objects.create_user('test', 'test@example.com',
                                              'pass')
-        self.client.login(username=self.user.username, password='pass')
 
     def test_profile(self):
         url = reverse('profile')
-        response = self.client.get(url)
+        response = self.app.get(url, user='test')
         self.assertContains(response, 'Stats')
         self.assertContains(response, '0 feeds')
 
     def test_change_password(self):
         url = reverse('profile')
-        response = self.client.get(url)
+        response = self.app.get(url, user='test')
         self.assertContains(response, 'Change your password')
 
+        form = response.forms['password']
+
         data = {
-            'action': 'password',
             'current_password': 'lol',
             'new_password': 'foo',
             'new_password2': 'bar',
         }
-        response = self.client.post(url, data)
+        for key, value in data.items():
+            form[key] = value
+        response = form.submit()
         self.assertFormError(response, 'password_form', 'current_password',
                              'Incorrect password')
         self.assertFormError(response, 'password_form', 'new_password2',
                              "The two passwords didn't match")
 
-        data['current_password'] = 'pass'
-        data['new_password2'] = 'foo'
+        form['current_password'] = 'pass'
+        form['new_password2'] = 'foo'
 
-        response = self.client.post(url, data, follow=True)
-        self.assertEqual(len(response.redirect_chain), 1)
+        response = form.submit().follow()
         self.assertContains(response, 'Your password was changed')
 
     def test_change_profile(self):
         url = reverse('profile')
-        response = self.client.get(url)
+        response = self.app.get(url, user='test')
         self.assertContains(response, 'Edit your profile')
         self.assertContains(response,
                             '<option value="UTC" selected="selected">')
+        form = response.forms['profile']
         data = {
             'username': 'test',
-            'action': 'profile',
-            'timezone': 'Foo/Bar',
             'entries_per_page': 25,
         }
-        response = self.client.post(url, data)
+        for key, value in data.items():
+            form[key] = value
+        form['timezone'].force_value('Foo/Bar')
+        response = form.submit()
         self.assertFormError(
             response, 'profile_form', 'timezone', (
                 'Select a valid choice. Foo/Bar is not one of the '
                 'available choices.'),
         )
 
-        data['timezone'] = 'Europe/Paris'
-        response = self.client.post(url, data, follow=True)
-        self.assertEqual(len(response.redirect_chain), 1)
+        form['timezone'] = 'Europe/Paris'
+        response = form.submit().follow()
         self.assertEqual(User.objects.get().timezone, 'Europe/Paris')
 
-        data['entries_per_page'] = 12
-        response = self.client.post(url, data)
+        form['entries_per_page'].force_value(12)
+        response = form.submit()
         self.assertFormError(
             response, 'profile_form', 'entries_per_page', (
                 'Select a valid choice. 12 is not one of the '
                 'available choices.'),
         )
-        data['entries_per_page'] = 50
-        response = self.client.post(url, data, follow=True)
-        self.assertEqual(len(response.redirect_chain), 1)
+        form['entries_per_page'] = 50
+        response = form.submit().follow()
         self.assertEqual(User.objects.get().entries_per_page, 50)
 
         # changing a username
         new = User.objects.create_user('foobar', 'foo@bar.com', 'pass')
 
-        data['username'] = 'foobar'
-        response = self.client.post(url, data)
+        form['username'] = 'foobar'
+        response = form.submit()
         self.assertFormError(response, 'profile_form', 'username',
                              'This username is already taken.')
 
@@ -97,15 +111,19 @@ class ProfilesTest(TestCase):
         new.save()
 
         self.assertEqual(User.objects.get(pk=self.user.pk).username, 'test')
-        response = self.client.post(url, data)
+        response = form.submit()
         self.assertEqual(User.objects.get(pk=self.user.pk).username, 'foobar')
 
     @patch("requests.get")
     def test_opml_export(self, get):
         url = reverse('export')
-        response = self.client.get(url)
+        response = self.app.get(url, user='test')
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('attachment' in response['Content-Disposition'])
+        value = None
+        for header, value in response.headerlist:
+            if header == 'Content-Disposition':
+                found = value
+        self.assertTrue('attachment' in found)
         self.assertEqual(len(response.content), 126)  # No feed yet
 
         cat = self.user.categories.create(name='Test', slug='test')
@@ -119,12 +137,12 @@ class ProfilesTest(TestCase):
             'http://example.com/test.atom',
             headers={"User-Agent": USER_AGENT % '1 subscriber',
                      "Accept": feedparser.ACCEPT_HEADER}, timeout=10)
-        response = self.client.get(url)
+        response = self.app.get(url, user='test')
         self.assertContains(response, 'xmlUrl="http://example.com/test.atom"')
 
     def test_read_later(self):
         url = reverse('profile')
-        response = self.client.get(url)
+        response = self.app.get(url, user='test')
 
         self.assertContains(
             response,
@@ -134,16 +152,15 @@ class ProfilesTest(TestCase):
     @patch("requests.get")
     def test_valid_readitlater_credentials(self, get):
         url = reverse('services', args=['readitlater'])
-        response = self.client.get(url)
+        response = self.app.get(url, user='test')
         self.assertContains(response, 'Read It Later')
 
-        data = {
-            'username': 'example',
-            'password': 'samplepassword',
-        }
+        form = response.forms['readitlater']
+        form['username'] = 'example'
+        form['password'] = 'samplepassword'
 
         get.return_value.status_code = 200
-        response = self.client.post(url, data, follow=True)
+        response = form.submit().follow()
         get.assert_called_with(
             'https://readitlaterlist.com/v2/auth',
             params={'username': u'example',
@@ -151,7 +168,6 @@ class ProfilesTest(TestCase):
                     'password': u'samplepassword'},
         )
 
-        self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, ' as your reading list service')
         self.assertContains(response, ('Your current read-it-later service '
                                        'is: <strong>Read it later</strong>'))
@@ -163,14 +179,14 @@ class ProfilesTest(TestCase):
     @patch("requests.get")
     def test_invalid_readitlater_credentials(self, get):
         url = reverse("services", args=['readitlater'])
+        response = self.app.get(url, user='test')
+        form = response.forms['readitlater']
 
-        data = {
-            'username': 'example',
-            'password': 'wrong password',
-        }
+        form['username'] = 'example'
+        form['password'] = 'wrong password'
 
         get.return_value.status_code = 401
-        response = self.client.post(url, data)
+        response = form.submit()
         self.assertContains(
             response,
             'Unable to verify your readitlaterlist credentials',
@@ -186,12 +202,11 @@ class ProfilesTest(TestCase):
         ]
 
         url = reverse("services", args=['readability'])
-        data = {
-            'username': 'example',
-            'password': 'correct password',
-        }
-        response = self.client.post(url, data, follow=True)
-        self.assertEqual(len(response.redirect_chain), 1)
+        response = self.app.get(url, user='test')
+        form = response.forms['readability']
+        form['username'] = 'example'
+        form['password'] = 'correct password'
+        response = form.submit().follow()
         self.assertContains(
             response,
             "You have successfully added Readability",
@@ -218,11 +233,15 @@ class ProfilesTest(TestCase):
                                        "xAuth error"]
 
         url = reverse("services", args=['instapaper'])
+        response = self.app.get(url, user='test')
+        form = response.forms['instapaper']
         data = {
             'username': 'example',
             'password': 'incorrect password',
         }
-        response = self.client.post(url, data)
+        for key, value in data.items():
+            form[key] = value
+        response = form.submit()
         self.assertContains(response, "Unable to verify")
         client.request.assert_called_with(
             'https://www.instapaper.com/api/1/oauth/access_token',
@@ -238,14 +257,14 @@ class ProfilesTest(TestCase):
         self.user.read_later_credentials = '{"foo":"bar","baz":"bah"}'
         self.user.save()
 
-        response = self.client.get(reverse('profile'))
+        response = self.app.get(reverse('profile'), user='test')
         url = reverse('services', args=['none'])
         self.assertContains(response, url)
 
-        response = self.client.get(url)
+        response = self.app.get(url, user='test')
         self.assertEqual(response.status_code, 200)
-        response = self.client.post(url, {}, follow=True)
-        self.assertEqual(len(response.redirect_chain), 1)
+        form = response.forms['disable']
+        response = form.submit().follow()
         self.assertContains(response, "disabled reading list integration")
         self.assertNotContains(response, url)
 
@@ -256,14 +275,16 @@ class ProfilesTest(TestCase):
     def test_delete_account(self):
         self.assertEqual(User.objects.count(), 1)
         url = reverse('destroy_account')
-        response = self.client.get(url)
+        response = self.app.get(url, user='test')
         self.assertContains(response, 'Delete your account')
 
-        response = self.client.post(url, {'password': 'test'})
+        form = response.forms['delete']
+        form['password'] = 'test'
+        response = form.submit()
         self.assertContains(response, 'The password you entered was incorrect')
 
-        response = self.client.post(url, {'password': 'pass'}, follow=True)
-        self.assertEqual(len(response.redirect_chain), 1)
+        form['password'] = 'pass'
+        response = form.submit().follow()
         self.assertContains(response, "Good bye")
 
     def test_login_via_username_or_email(self):

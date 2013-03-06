@@ -5,7 +5,7 @@
 {% block content %}
 	<h1>{% trans "Read It Later settings" %}</h1>
 
-	<form method="post" action="{% url "services" "readitlater" %}" class="no">
+	<form method="post" action="{% url "services" "readitlater" %}" class="no" id="readitlater">
 		{% include "form.html" %}
 		<div class="submit">
 			<input type="submit" value="{% trans "Check credentials" %}">
