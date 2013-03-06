@@ -11,7 +11,6 @@ from mock import patch
 from requests import Response as _Response
 from rq.timeouts import JobTimeoutException
 
-from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -19,6 +18,8 @@ from django.utils import timezone
 from feedhq.feeds.models import Category, Feed, Entry, Favicon, UniqueFeed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT
+
+from . import FeedHQTestCase as TestCase
 
 TEST_DATA = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 

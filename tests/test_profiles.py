@@ -3,13 +3,14 @@ import json
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 
 from httplib2 import Response as _Response
 from mock import patch
 from requests import Response
 
 from feedhq.feeds.utils import USER_AGENT
+
+from . import FeedHQTestCase as TestCase
 
 
 class ProfilesTest(TestCase):
