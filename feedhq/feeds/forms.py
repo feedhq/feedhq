@@ -23,15 +23,21 @@ class CategoryForm(forms.ModelForm):
     def clean_name(self):
         """Generates a slug and ensures it is unique for this user"""
         self.slug = slugify(self.cleaned_data['name'])
+        if not self.slug:
+            self.slug = 'unknown'
         valid = False
+        candidate = self.slug
+        num = 1
         while not valid:
-            if self.slug in ('add', 'import'):  # gonna conflict
-                self.slug = '%s-' % self.slug
+            if candidate in ('add', 'import'):  # gonna conflict
+                candidate = '{0}-{1}'.format(self.slug, num)
             try:  # Maybe a category with this slug already exists...
-                Category.objects.get(user=self.user, slug=self.slug)
-                self.slug = self.slug + '-'
+                Category.objects.get(user=self.user, slug=candidate)
+                candidate = '{0}-{1}'.format(self.slug, num)
+                num += 1
             except Category.DoesNotExist:  # ... or not
                 valid = True
+        self.slug = candidate
         return self.cleaned_data['name']
 
 

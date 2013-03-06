@@ -370,19 +370,25 @@ class TestFeeds(TestCase):
 
         data = {'name': 'New Name', 'color': 'red', 'delete_after': '1day'}
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue('/category/new-name/' in response['Location'])
+        self.assertRedirects(response, '/category/new-name/')
 
         # Adding a category with the same name. The slug will be different
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue('/category/new-name-/' in response['Location'])
+        self.assertRedirects(response, '/category/new-name-1/')
 
         # Now we add a category named 'add', which is a conflicting URL
         data = {'name': 'Add', 'color': 'red', 'delete_after': '1day'}
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue('/category/add-/' in response['Location'])
+        self.assertRedirects(response, '/category/add-1/')
+
+        # Add a category with non-ASCII names, slugify should cope
+        data = {'name': u'北京', 'color': 'red', 'delete_after': '1day'}
+        response = self.client.post(url, data)
+        self.assertRedirects(response, '/category/unknown/')
+        response = self.client.post(url, data)
+        self.assertRedirects(response, '/category/unknown-1/')
+        response = self.client.post(url, data)
+        self.assertRedirects(response, '/category/unknown-2/')
 
     def test_delete_category(self):
         url = reverse('feeds:delete_category', args=['cat'])
@@ -418,8 +424,7 @@ class TestFeeds(TestCase):
                 'category': self.cat.id}
         get.return_value = responses(304)
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue('/category/cat/' in response['Location'])
+        self.assertRedirects(response, '/category/cat/')
 
     def test_feed_url_validation(self):
         url = reverse('feeds:add_feed')
