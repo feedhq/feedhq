@@ -119,11 +119,7 @@ class ProfilesTest(WebTest):
         url = reverse('export')
         response = self.app.get(url, user='test')
         self.assertEqual(response.status_code, 200)
-        value = None
-        for header, value in response.headerlist:
-            if header == 'Content-Disposition':
-                found = value
-        self.assertTrue('attachment' in found)
+        self.assertTrue('attachment' in response['Content-Disposition'])
         self.assertEqual(len(response.content), 126)  # No feed yet
 
         cat = self.user.categories.create(name='Test', slug='test')
