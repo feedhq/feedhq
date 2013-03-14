@@ -22,7 +22,7 @@
         <outline title="Django foo" text="Django foo" description="Django foo" type="rss" xmlUrl="http://www.djangofoo.com/feed" htmlUrl="http://www.djangofoo.com"/>
         <outline title="JeffCroft.com: Latest blog entries" text="JeffCroft.com: Latest blog entries" description="JeffCroft.com: Latest blog entries" type="rss" xmlUrl="http://jeffcroft.com/feeds/blog/" htmlUrl="http://jeffcroft.com/"/>
       </outline>
-      <outline title="snippet" text="snippet" description="snippet" type="folder">
+      <outline title="北京" text="snippet" description="snippet" type="folder">
         <outline title="Latest snippets" text="Latest snippets" description="Latest snippets" type="pie" xmlUrl="http://snippets.prendreuncafe.com/rss/list" htmlUrl=""/>
       </outline>
       <outline title="architecture" text="architecture" description="architecture" type="folder">
@@ -32,8 +32,10 @@
         <outline title="INHABITAT" text="INHABITAT" description="INHABITAT" type="rss" xmlUrl="http://feeds.feedburner.com/Inhabitat" htmlUrl=""/>
         <outline title="Interactive Architecture dot Org" text="Interactive Architecture dot Org" description="Interactive Architecture dot Org" type="rss" xmlUrl="http://feeds.feedburner.com/InteractiveArchitectureDotOrg" htmlUrl=""/>
       </outline>
+      <outline title="other" description="architecture" type="folder">
+        <outline text="Joe McNally's Blog" description="Joe McNally's Blog" type="rss" xmlUrl="http://feeds.feedburner.com/joemcnally" htmlUrl=""/>
+      </outline>
       <outline title="photography" text="photography" description="photography">
-        <outline title="Joe McNally's Blog" text="Joe McNally's Blog" description="Joe McNally's Blog" type="rss" xmlUrl="http://feeds.feedburner.com/joemcnally" htmlUrl=""/>
         <outline title="Laurence Kim Photographer" text="Laurence Kim Photographer" description="Laurence Kim Photographer" type="rss" xmlUrl="http://laurencekim.com/feed/" htmlUrl=""/>
         <outline title="VirusPhoto - [articles] Tutoriaux sur la retouche photo" text="VirusPhoto - [articles] Tutoriaux sur la retouche photo" description="VirusPhoto - [articles] Tutoriaux sur la retouche photo" type="rss" xmlUrl="http://www.virusphoto.com/external.php?type=RSS2&amp;forumids=23" htmlUrl=""/>
       </outline>
