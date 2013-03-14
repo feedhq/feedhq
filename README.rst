@@ -187,6 +187,20 @@ to enable the `django-debug-toolbar`_::
 
 .. _django-debug-toolbar: https://github.com/django-debug-toolbar/django-debug-toolbar
 
+`Foreman`_ is used in development to start a lightweight Django server, run
+one `RQ`_ worker and interactively preprocess changes in SCSS files to CSS
+with `Compass`_. A running `Redis`_ server, Ruby, and `Bundler`_ are
+prerequisites for this workflow::
+
+    bundle install
+    make run
+
+.. _Foreman: http://ddollar.github.com/foreman/
+.. _RQ: http://python-rq.org/
+.. _Compass: http://compass-style.org/
+.. _Redis: http://redis.io/
+.. _Bundler: http://gembundler.com/
+
 When running ``django-admin.py updatefeeds`` on your development machine,
 make sure you have ``DEBUG = True`` in your settings to avoid making
 PubSubHubbub subscription requests without any valid callback URL.
