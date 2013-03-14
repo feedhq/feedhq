@@ -396,6 +396,8 @@ def save_outline(user, category, outline, existing):
         outline._outlines
     ):
         slug = slugify(outline.title)
+        if not slug:
+            slug = 'unknown'
         cat, created = user.categories.get_or_create(
             slug=slug, defaults={'name': outline.title},
         )
@@ -410,8 +412,10 @@ def save_outline(user, category, outline, existing):
     if (hasattr(outline, 'xmlUrl')):
         if outline.xmlUrl not in existing:
             existing.add(outline.xmlUrl)
+            title = getattr(outline, 'title',
+                            getattr(outline, 'text', _('No title')))
             category.feeds.create(url=outline.xmlUrl,
-                                  name=outline.title)
+                                  name=title)
             count += 1
     return count
 
