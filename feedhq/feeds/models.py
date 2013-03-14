@@ -191,7 +191,7 @@ class UniqueFeedManager(models.Manager):
                     redirection = response.url
 
             if redirection is not None and redirection != obj.url:
-                logger.info("%s moved to %s" % (obj.url, redirection))
+                logger.debug("%s moved to %s" % (obj.url, redirection))
                 Feed.objects.filter(url=obj.url).update(url=redirection)
                 if self.filter(url=redirection).exists():
                     obj.delete()
