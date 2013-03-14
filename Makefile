@@ -38,3 +38,6 @@ txpush:
 
 txpull:
 	@tx pull -a
+
+.PHONY: test run db user shell dbshell updatefeeds favicons \
+	      makemessages compilemessages txpush txpull
