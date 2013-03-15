@@ -114,7 +114,7 @@ Once your application is deployed (you've run ``django-admin.py syncdb`` to
 create the database tables and ``django-admin.py collectstatic`` to collect
 your static files), you can add users to the application. On the admin
 interface, add as many users as you want. Then add some some categories and
-feeds to your account using the regular interface,
+feeds to your account using the regular interface.
 
 Crawl for updates::
 
@@ -152,8 +152,8 @@ Run the tests::
     make test
 
 Or if you want to run the tests with ``django-admin.py`` directly, make sure
-you use ``feedhq.test_settings`` to avoid making network calls while running
-the tests.
+you use ``feedhq.test_settings`` as the ``DJANGO_SETTINGS_MODULE`` environment
+variable to avoid making network calls while running the tests.
 
 The Django debug toolbar is enabled when the ``DEBUG`` environment variable is
 true and the ``django-debug-toolbar`` package is installed.
