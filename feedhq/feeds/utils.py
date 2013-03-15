@@ -64,7 +64,7 @@ class FeedUpdater(object):
             )
 
             parsed_entry.link = entry.link
-            if 'guid' in entry:
+            if 'guid' in entry and hasattr(self.parsed.feed, 'link'):
                 parsed_guid = urlparse.urlparse(entry.guid)
                 parsed_link = urlparse.urlparse(self.parsed.feed.link)
                 if (
