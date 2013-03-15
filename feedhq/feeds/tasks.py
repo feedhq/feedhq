@@ -7,7 +7,7 @@ from django.db import connection
 
 from django_push.subscriber.models import Subscription
 
-from ..tasks import raven
+from ..tasks import raven, enqueue
 
 logger = logging.getLogger('feedupdater')
 
@@ -36,15 +36,22 @@ def read_later(entry_pk):
 
 @raven
 def update_unique_feed(feed_url):
-    from .models import UniqueFeed, Feed, Favicon
+    from .models import UniqueFeed, Feed
     feed, created = UniqueFeed.objects.get_or_create(
         url=feed_url,
         defaults={'subscribers': 1},
     )
-    if not created:
+    if created:
+        enqueue(update_favicon, args=[feed_url], queue='high')
+    else:
         feed.subscribers = Feed.objects.filter(url=feed_url).count()
-        feed.save()
-    Favicon.objects.update_favicon(feed.link)
+        feed.save(update_fields=['subscribers'])
+
+
+@raven
+def update_favicon(feed_url):
+    from .models import Favicon
+    Favicon.objects.update_favicon(feed_url)
 
 
 @raven
