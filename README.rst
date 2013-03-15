@@ -105,7 +105,8 @@ For integration with external services:
 .. _Readability: https://www.readability.com/
 
 Then deploy the Django app using the recipe that fits your installation. More
-documentation on the `Django deployment guide`_.
+documentation on the `Django deployment guide`_. The WSGI application is
+located at ``feedhq.wsgi.application``.
 
 .. _Django deployment guide: http://docs.djangoproject.com/en/dev/howto/deployment/
 
