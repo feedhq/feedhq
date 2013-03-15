@@ -1,17 +1,9 @@
 import warnings
 warnings.simplefilter('always')
 
-from default_settings import *  # noqa
+from .settings import *  # noqa
 
 SECRET_KEY = 'test secret key'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'feedhq',
-        'USER': 'postgres',
-    },
-}
 
 TESTS = True
 
@@ -40,4 +32,4 @@ INSTAPAPER = READABILITY = {
 LOGGING['loggers']['feedupdater']['level'] = 'ERROR'
 LOGGING['loggers']['ratelimitbackend']['level'] = 'ERROR'
 
-MEDIA_ROOT = os.path.join(HERE, 'test_media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media')

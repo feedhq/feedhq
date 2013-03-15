@@ -67,70 +67,62 @@ Getting the code::
 Configuration
 -------------
 
-Create ``feedhq/settings.py`` and put the minimal stuff in it::
+FeedHQ relies on environment variables for its configuration. The required
+environment variables are:
 
-    from .default_settings import *
+* ``DJANGO_SETTINGS_MODULE``: set it to ``feedhq.settings``.
+* ``SECRET_KEY``: set to a long random string.
+* ``ALLOWED_HOSTS``: space-separated list of hosts which serve the web app.
+  E.g. ``www.feedhq.org feedhq.org``.
+* ``REDIS_URL``: a URL for configuring redis. E.g.
+  ``redis://localhost:6354/1``.
+* ``DATABASE_URL``: a heroku-like database URL. E.g.
+  ``postgres://user:password@host:port/database``.
 
-    ADMINS = (
-        ('Your name', 'email@example.com'),
-    )
-    MANAGERS = ADMINS
+Optionally you can customize:
 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'feedhq',
-            'USER': 'postgres',
-        },
-    }
+* ``DEBUG``: set it to a non-empty value to enable the Django debug mode.
+* ``MEDIA_ROOT``: the absolute location where media files (user-generated) are
+  stored. This must be a public directory on your webserver available under
+  the ``/media/`` URL.
+* ``STATIC_ROOT``: the absolute location where static files (CSS/JS files) are
+  stored. This must be a public directory on your webserver available under
+  the ``/static/`` URL.
+* ``SENTRY_DSN``: a DSN to enable `Sentry`_ debugging.
 
-    SECRET_KEY = 'something secret'
+.. _Sentry: https://www.getsentry.com/
 
-    # For development, don't do cache-busting
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+For integration with external services:
 
-    TIME_ZONE = 'Europe/Paris'
+* ``READITLATER_API_KEY``: your `Pocket`_ API key.
+* ``INSTAPAPER_CONSUMER_KEY``, ``INSTAPAPER_CONSUMER_SECRET``: your
+  `Instapaper`_ API keys.
+* ``READABILITY_CONSUMER_KEY``, ``READABILITY_CONSUMER_SECRET``: your
+  `Readability`_ API keys.
 
-    EMAIL_HOST = 'mail.your_domain.com'
-    EMAIL_SUBJECT_PREFIX = '[FeedHQ] '
-
-For Readability, Instapaper and Pocket support, you'll need a couple of
-additional settings::
-
-    API_KEYS = {
-        'readitlater': 'your readitlater (pocket) key',
-    }
-
-    INSTAPAPER = {
-        'CONSUMER_KEY': 'yay isntappaper',
-        'CONSUMER_SECRET': 'secret',
-    }
-
-    READABILITY = {
-        'CONSUMER_KEY': 'yay readability',
-        'CONSUMER_SECRET': 'othersecret',
-    }
+.. _Pocket: http://getpocket.com/
+.. _Instapaper: http://www.instapaper.com/
+.. _Readability: https://www.readability.com/
 
 Then deploy the Django app using the recipe that fits your installation. More
 documentation on the `Django deployment guide`_.
 
 .. _Django deployment guide: http://docs.djangoproject.com/en/dev/howto/deployment/
 
-Once your application is deployed (you've run ``django-admin.py
-syncdb --settings=feedhq.settings`` to create the database tables and
-``django-admin.py collectstatic --settings=feedhq.settings`` to collect your
-static files), you can add users to the application. On the admin interface,
-add as many users as you want. Then add some some categories and feeds to
-your account using the regular interface,
+Once your application is deployed (you've run ``django-admin.py syncdb`` to
+create the database tables and ``django-admin.py collectstatic`` to collect
+your static files), you can add users to the application. On the admin
+interface, add as many users as you want. Then add some some categories and
+feeds to your account using the regular interface,
 
 Crawl for updates::
 
-    django-admin.py updatefeeds --settings=feedhq.settings
+    django-admin.py updatefeeds
 
 Set up a cron job to update your feeds on a regular basis. This puts the
 oldest-updated feeds in the update queue::
 
-    */5 * * * * /path/to/env/django-admin.py updatefeeds --settings=feedhq.settings
+    */5 * * * * /path/to/env/django-admin.py updatefeeds
 
 The ``updatefeeds`` command puts 1/9th of the feeds in the update queue. Feeds
 won't update if they've been updated in the past 45 minutes, so the 5-minute
@@ -141,11 +133,11 @@ A cron job should also be set up for picking and updating favicons (the
 ``--all`` switch processes existing favicons in case they have changed, which
 you should probably do every month or so)::
 
-    @monthly /path/to/env/bin/django-admin.py favicons --all --settings=feedhq.settings
+    @monthly /path/to/env/bin/django-admin.py favicons --all
 
 And a final one to purge expired sessions from the DB::
 
-    @daily /path/to/env/bin/django-admin.py cleanup --settings=feedhq.settings
+    @daily /path/to/env/bin/django-admin.py cleanup
 
 Development
 -----------
@@ -162,35 +154,14 @@ Or if you want to run the tests with ``django-admin.py`` directly, make sure
 you use ``feedhq.test_settings`` to avoid making network calls while running
 the tests.
 
-If you want to contribute and need an environment more suited for development,
-you can use the ``settings.py`` file to alter default settings. For example,
-to enable the `django-debug-toolbar`_::
-
-    from .default_settings import *
-
-    # Your regular settings here
-
-    MIDDLEWARE_CLASSES += (
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    )
-
-    INTERNAL_IPS = ('127.0.0.1',)
-
-    INSTALLED_APPS += (
-        'debug_toolbar',
-    )
-
-    DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS': False,
-        'HIDE_DJANGO_SQL': False,
-    }
-
-.. _django-debug-toolbar: https://github.com/django-debug-toolbar/django-debug-toolbar
+The Django debug toolbar is enabled when the ``DEBUG`` environment variable is
+true and the ``django-debug-toolbar`` package is installed.
 
 `Foreman`_ is used in development to start a lightweight Django server, run
 one `RQ`_ worker and interactively preprocess changes in SCSS files to CSS
-with `Compass`_. A running `Redis`_ server, Ruby, and `Bundler`_ are
-prerequisites for this workflow::
+with `Compass`_. Environment variables are managed using Daemontools'
+``envdir`` utility. A running `Redis`_ server, Ruby, `Bundler`_ and
+`Daemontools`_ are prerequisites for this workflow::
 
     bundle install
     make run
@@ -200,7 +171,11 @@ prerequisites for this workflow::
 .. _Compass: http://compass-style.org/
 .. _Redis: http://redis.io/
 .. _Bundler: http://gembundler.com/
+.. _Daemontools: http://cr.yp.to/daemontools.html
 
 When running ``django-admin.py updatefeeds`` on your development machine,
-make sure you have ``DEBUG = True`` in your settings to avoid making
+make sure you have the ``DEBUG`` environment variable present to avoid making
 PubSubHubbub subscription requests without any valid callback URL.
+
+Environment variables for development are set in the ``envdir`` directory. For
+tests, they are located in the ``tests/envdir`` directory.

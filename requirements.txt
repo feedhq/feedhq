@@ -2,6 +2,7 @@ Django==1.5
 Pillow==1.7.8
 bleach==1.2.1
 django-classy-tags==0.3.4.1
+dj-database-url==0.2.1
 django-floppyforms==1.1
 django-password-reset==0.4
 django-push==0.4

@@ -1,37 +1,37 @@
 proj = feedhq
-settings = --settings=$(proj).settings
-test_settings = --settings=$(proj).test_settings
+django = envdir $(CURDIR)/envdir django-admin.py
+testdjango = envdir $(CURDIR)/tests/envdir django-admin.py
 
 
 test:
-	@django-admin.py test $(test_settings) --failfast --noinput
+	@$(testdjango) test --failfast --noinput
 
 run:
 	@foreman start
 
 db:
-	@django-admin.py syncdb --noinput $(settings)
+	@$(django) syncdb --noinput
 
 user:
-	@django-admin.py createsuperuser $(settings)
+	@$(django) createsuperuser
 
 shell:
-	@django-admin.py shell $(settings)
+	@$(django) shell
 
 dbshell:
-	@django-admin.py dbshell $(settings)
+	@$(django) dbshell
 
 updatefeeds:
-	@django-admin.py updatefeeds $(settings)
+	@$(django) updatefeeds
 
 favicons:
-	@django-admin.py favicons $(settings)
+	@$(django) favicons
 
 makemessages:
-	@cd $(proj) && django-admin.py makemessages -a $(settings)
+	@cd $(proj) && $(django) makemessages -a
 
 compilemessages:
-	@cd $(proj) && django-admin.py compilemessages $(settings)
+	@cd $(proj) && $(django) compilemessages
 
 txpush:
 	@tx push -s

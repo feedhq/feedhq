@@ -1,41 +1,54 @@
-# Django settings for feedhq project.
+import dj_database_url
 import os
+import urlparse
 
 from django.core.urlresolvers import reverse_lazy
 
-HERE = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(__file__)
 
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 
 # Are we running the tests or a real server?
 TESTS = False
 
 TEST_RUNNER = 'discover_runner.DiscoverRunner'
-TEST_DISCOVER_TOP_LEVEL = os.path.join(HERE, os.pardir)
+TEST_DISCOVER_TOP_LEVEL = os.path.join(BASE_DIR, os.pardir)
 TEST_DISCOVER_ROOT = os.path.join(TEST_DISCOVER_TOP_LEVEL, 'tests')
 
-ADMINS = ()
-MANAGERS = ADMINS
+ADMINS = MANAGERS = ()
 
-TIME_ZONE = 'America/Chicago'
+DATABASES = {
+    'default': dj_database_url.config(
+        default='postgres://postgres@localhost:5432/feedhq',
+    ),
+}
+
+TIME_ZONE = 'UTC'
 
 LANGUAGE_CODE = 'en-us'
-
-SITE_ID = 1
 
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-MEDIA_ROOT = os.path.join(HERE, 'media')
+SITE_ID = 1
+
+MEDIA_ROOT = os.environ.get('MEDIA_ROOT', os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = '/media/'
 
-STATIC_ROOT = os.path.join(HERE, 'static')
+STATIC_ROOT = os.environ.get('STATIC_ROOT', os.path.join(BASE_DIR, 'static'))
 STATIC_URL = '/static/'
 
-STATICFILES_STORAGE = ('django.contrib.staticfiles.storage.'
-                       'CachedStaticFilesStorage')
+SECRET_KEY = os.environ['SECRET_KEY']
+
+ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split()
+
+if not DEBUG:
+    STATICFILES_STORAGE = ('django.contrib.staticfiles.storage.'
+                           'CachedStaticFilesStorage')
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
     'feedhq.backends.RateLimitMultiBackend',
@@ -47,6 +60,8 @@ TEMPLATE_LOADERS = (
         'django.template.loaders.app_directories.Loader',
     )),
 )
+if DEBUG:
+    TEMPLATE_LOADERS = TEMPLATE_LOADERS[0][1]
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -58,6 +73,23 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'sekizai.context_processors.sekizai',
 )
 
+parsed_redis = urlparse.urlparse(os.environ['REDIS_URL'])
+path, q, querystring = parsed_redis.path.partition('?')
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': parsed_redis.netloc,
+        'OPTIONS': {
+            'DB': int(path[1:])
+        },
+    },
+}
+
+RQ = {
+    'eager': bool(urlparse.parse_qs(querystring).get('eager', False)),
+}
+
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -66,27 +98,29 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'raven.contrib.django.middleware.Sentry404CatchMiddleware',
 )
+
+if 'SENTRY_DSN' in os.environ:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+        'raven.contrib.django.middleware.Sentry404CatchMiddleware',
+    )
 
 ROOT_URLCONF = 'feedhq.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(HERE, 'templates'),
+    os.path.join(BASE_DIR, 'templates'),
 )
 
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.messages',
 
     'django_push.subscriber',
     'floppyforms',
-    'raven.contrib.django',
     'sekizai',
     'django_rq_dashboard',
 
@@ -96,8 +130,13 @@ INSTALLED_APPS = (
     'password_reset',
 )
 
+if 'SENTRY_DSN' in os.environ:
+    INSTALLED_APPS += (
+        'raven.contrib.django',
+    )
+
 LOCALE_PATHS = (
-    os.path.join(HERE, 'locale'),
+    os.path.join(BASE_DIR, 'locale'),
 )
 
 LOGIN_URL = reverse_lazy('login')
@@ -157,3 +196,54 @@ LOGGING = {
         },
     },
 }
+
+if 'READITLATER_API_KEY' in os.environ:
+    API_KEYS = {
+        'readitlater': os.environ['READITLATER_API_KEY']
+    }
+
+if 'INSTAPAPER_CONSUMER_KEY' in os.environ:
+    INSTAPAPER = {
+        'CONSUMER_KEY': os.environ['INSTAPAPER_CONSUMER_KEY'],
+        'CONSUMER_SECRET': os.environ['INSTAPAPER_CONSUMER_SECRET'],
+    }
+
+if 'READABILITY_CONSUMER_KEY' in os.environ:
+    READABILITY = {
+        'CONSUMER_KEY': os.environ['READABILITY_CONSUMER_KEY'],
+        'CONSUMER_SECRET': os.environ['READABILITY_CONSUMER_SECRET'],
+    }
+
+try:
+    import debug_toolbar  # noqa
+except ImportError:
+    pass
+else:
+    INTERNAL_IPS = (
+        '127.0.0.1',
+    )
+
+    INSTALLED_APPS += (
+        'debug_toolbar',
+    )
+
+    MIDDLEWARE_CLASSES += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+        'HIDE_DJANGO_SQL': False,
+    }
+
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+    )
