@@ -9,10 +9,7 @@ from .profiles.forms import AuthForm
 
 def login_required(view_callable):
     def check_login(request, *args, **kwargs):
-        if (request.user.is_authenticated() or
-            ('HTTP_ACCEPT' in request.META and
-             'text/html' not in request.META['HTTP_ACCEPT'] and
-             '*/*' not in request.META['HTTP_ACCEPT'])):
+        if request.user.is_authenticated():
             return view_callable(request, *args, **kwargs)
 
         assert hasattr(request, 'session'), "Session middleware needed."

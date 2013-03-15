@@ -70,6 +70,11 @@ class BaseTests(TestCase):
         response = self.client.get(url)
         self.assertContains(response, 'Subscribe on FeedHQ')
 
+    def test_login_required(self):
+        url = reverse('feeds:home')
+        response = self.client.get(url, HTTP_ACCEPT='text/*')
+        self.assertEqual(response.status_code, 200)
+
 
 class TestFeeds(TestCase):
     @patch("requests.get")
