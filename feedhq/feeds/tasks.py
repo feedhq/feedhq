@@ -21,7 +21,7 @@ def update_feed(feed_url, use_etags=True):
         feed = UniqueFeed.objects.get(url=feed_url)
         feed.backoff()
         feed.save()
-        logger.info("Job timed out, backing off %s to %s" % (
+        logger.debug("Job timed out, backing off %s to %s" % (
             feed.url, feed.backoff_factor,
         ))
     close_connection()
