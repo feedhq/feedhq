@@ -50,8 +50,61 @@ if not DEBUG:
     STATICFILES_STORAGE = ('django.contrib.staticfiles.storage.'
                            'CachedStaticFilesStorage')
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+def parse_email_url():
+    parsed = urlparse.urlparse(os.environ['EMAIL_URL'])
+    if '?' in parsed.path:
+        querystring = urlparse.parse_qs(parsed.path.split('?', 1)[1])
+        for key in querystring.keys():
+            querystring[key] = querystring[key][0]
+    else:
+        querystring = {}
+    if '@' in parsed.netloc:
+        creds, at, netloc = parsed.netloc.partition('@')
+        username, colon, password = creds.partition(':')
+        host, colon, port = netloc.partition(':')
+    else:
+        username = password = None
+        host, colon, port = parsed.netloc.partition(':')
+    # Django defaults
+    config = {
+        'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
+        'HOST': 'localhost',
+        'USER': '',
+        'PASSWORD': '',
+        'PORT': 25,
+        'SUBJECT_PREFIX': '[FeedHQ] ',
+        'USE_TLS': False,
+    }
+    if host:
+        config['HOST'] = host
+    if username:
+        config['USER'] = username
+    if password:
+        config['PASSWORD'] = password
+    if port:
+        config['PORT'] = int(port)
+    if 'subject_prefix' in querystring:
+        config['SUBJECT_PREFIX'] = querystring['subject_prefix'][0]
+    if 'backend' in querystring:
+        config['BACKEND'] = querystring['backend']
+    if 'use_tls' in querystring:
+        config['USE_TLS'] = True
+    return config
+
 DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ['FROM_EMAIL']
+
+if 'EMAIL_URL' in os.environ:
+    email_config = parse_email_url()
+    EMAIL_BACKEND = email_config['BACKEND']
+    EMAIL_HOST = email_config['HOST']
+    EMAIL_HOST_PASSWORD = email_config['PASSWORD']
+    EMAIL_HOST_USER = email_config['USER']
+    EMAIL_PORT = email_config['PORT']
+    EMAIL_SUBJECT_PREFIX = email_config.get('SUBJECT_PREFIX', '[FeedHQ] ')
+    EMAIL_USE_TLS = email_config['USE_TLS']
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = (
     'feedhq.backends.RateLimitMultiBackend',

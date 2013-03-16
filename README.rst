@@ -92,6 +92,10 @@ Optionally you can customize:
   the ``/static/`` URL.
 * ``SENTRY_DSN``: a DSN to enable `Sentry`_ debugging.
 * ``HTTPS``: set-it to a non-empty value to configure FeedHQ for SSL access.
+* ``EMAIL_URL``: a URL for configuring email. E.g.
+  ``smtp://user:password@host:port/?backend=my.EmailBackend&use_tls=true``.
+  The ``backend`` querystring parameter sets the Django ``EMAIL_BACKEND``
+  setting. By default emails only go to the development console.
 
 .. _Sentry: https://www.getsentry.com/
 
