@@ -129,26 +129,45 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'sekizai.context_processors.sekizai',
 )
 
-parsed_redis = urlparse.urlparse(os.environ['REDIS_URL'])
-path, q, querystring = parsed_redis.path.partition('?')
+
+def parse_redis_url():
+    config = {
+        'host': 'localhost',
+        'port': 6379,
+        'password': None,
+        'db': 0,
+    }
+    parsed_redis = urlparse.urlparse(os.environ['REDIS_URL'])
+    path, q, querystring = parsed_redis.path.partition('?')
+    if path[1:]:
+        config['db'] = int(path[1:])
+    querystring = urlparse.parse_qs(querystring)
+    for key in querystring.keys():
+        querystring[key] = querystring[key][0]
+    for key in config.keys():
+        querystring.pop(key, None)
+    host, colon, port = parsed_redis.netloc.partition(':')
+    if '@' in host:
+        password, at, host = host.partition('@')
+        config['password'] = password
+    config['host'] = host
+    config['port'] = int(port)
+    return config, True if 'eager' in querystring else False
+
+REDIS, RQ_EAGER = parse_redis_url()
+RQ = REDIS
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': parsed_redis.netloc,
+        'LOCATION': '{host}:{port}'.format(**REDIS),
         'OPTIONS': {
-            'DB': int(path[1:])
+            'DB': REDIS['db'],
         },
     },
 }
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
-
-RQ = {
-    'eager': bool(urlparse.parse_qs(querystring).get('eager', False)),
-    'db': int(path[1:]),
-}
-
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',

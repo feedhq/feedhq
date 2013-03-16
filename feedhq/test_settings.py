@@ -11,9 +11,7 @@ PASSWORD_HASHERS = [
     'tests.hashers.NotHashingHasher',
 ]
 
-RQ = {
-    'eager': True,
-}
+RQ_EAGER = True
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
