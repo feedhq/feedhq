@@ -88,8 +88,12 @@ CACHES = {
     },
 }
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
 RQ = {
     'eager': bool(urlparse.parse_qs(querystring).get('eager', False)),
+    'db': int(path[1:]),
 }
 
 
