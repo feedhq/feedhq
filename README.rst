@@ -91,6 +91,7 @@ Optionally you can customize:
   stored. This must be a public directory on your webserver available under
   the ``/static/`` URL.
 * ``SENTRY_DSN``: a DSN to enable `Sentry`_ debugging.
+* ``HTTPS``: set-it to a non-empty value to configure FeedHQ for SSL access.
 
 .. _Sentry: https://www.getsentry.com/
 

@@ -216,6 +216,14 @@ if 'READABILITY_CONSUMER_KEY' in os.environ:
         'CONSUMER_SECRET': os.environ['READABILITY_CONSUMER_SECRET'],
     }
 
+SESSION_COOKIE_HTTPONLY = True
+
+if 'HTTPS' in os.environ:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTOCOL', 'https')
+    PUSH_SSL_CALLBACK = True
+
 try:
     import debug_toolbar  # noqa
 except ImportError:
