@@ -24,14 +24,12 @@ def update_feed(feed_url, use_etags=True):
         logger.debug("Job timed out, backing off %s to %s" % (
             feed.url, feed.backoff_factor,
         ))
-    close_connection()
 
 
 @raven
 def read_later(entry_pk):
     from .models import Entry  # circular imports
     Entry.objects.get(pk=entry_pk).read_later()
-    close_connection()
 
 
 @raven
@@ -57,10 +55,3 @@ def update_favicon(feed_url):
 @raven
 def subscribe(topic_url, hub_url):
     Subscription.objects.subscribe(topic_url, hub_url)
-
-
-def close_connection():
-    """Close the connection only if not in eager mode"""
-    if hasattr(settings, 'RQ'):
-        if not settings.RQ.get('eager', False):
-            connection.close()
