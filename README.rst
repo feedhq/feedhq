@@ -74,6 +74,8 @@ environment variables are:
 * ``SECRET_KEY``: set to a long random string.
 * ``ALLOWED_HOSTS``: space-separated list of hosts which serve the web app.
   E.g. ``www.feedhq.org feedhq.org``.
+* ``FROM_EMAIL``: the email address that sends automated emails (password
+  lost, etc.). E.g. ``FeedHQ <feedhq@example.com>``.
 * ``REDIS_URL``: a URL for configuring redis. E.g.
   ``redis://localhost:6354/1``.
 * ``DATABASE_URL``: a heroku-like database URL. E.g.

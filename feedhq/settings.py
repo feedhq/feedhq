@@ -51,6 +51,7 @@ if not DEBUG:
                            'CachedStaticFilesStorage')
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ['FROM_EMAIL']
 
 AUTHENTICATION_BACKENDS = (
     'feedhq.backends.RateLimitMultiBackend',
