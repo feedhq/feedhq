@@ -21,6 +21,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from django_push.subscriber.signals import updated
+from requests.packages.urllib3.exceptions import LocationParseError
 
 from .tasks import update_feed, update_unique_feed
 from .utils import FeedUpdater, FAVICON_FETCHER, USER_AGENT
@@ -167,9 +168,16 @@ class UniqueFeedManager(models.Manager):
                     "%s reached max backoff period (timeout)" % obj.url
                 )
             obj.backoff()
-            obj.error = 'timeout'
+            obj.error = obj.TIMEOUT
             if save:
-                obj.save()
+                obj.save(update_fields=['backoff_factor', 'error'])
+            return
+        except LocationParseError:
+            logger.debug("Failed to parse URL for {0}".format(obj.url))
+            obj.muted = True
+            obj.error = obj.PARSE_ERROR
+            if save:
+                obj.save(update_fields=['muted', 'error'])
             return
 
         elapsed = (datetime.datetime.now() - start).seconds
@@ -267,20 +275,32 @@ class UniqueFeedManager(models.Manager):
         updater.update()
 
 
-MUTE_CHOICES = (
-    ('gone', 'Feed gone (410)'),
-    ('timeout', 'Feed timed out'),
-    ('400', 'HTTP 400'),
-    ('401', 'HTTP 401'),
-    ('403', 'HTTP 403'),
-    ('404', 'HTTP 404'),
-    ('500', 'HTTP 500'),
-    ('502', 'HTTP 502'),
-    ('503', 'HTTP 503'),
-)
 
 
 class UniqueFeed(models.Model):
+    GONE = 'gone'
+    TIMEOUT = 'timeout'
+    PARSE_ERROR = 'parseerror'
+    HTTP_400 = '400'
+    HTTP_401 = '401'
+    HTTP_403 = '403'
+    HTTP_404 = '404'
+    HTTP_500 = '500'
+    HTTP_502 = '502'
+    HTTP_503 = '503'
+    MUTE_CHOICES = (
+        (GONE, 'Feed gone (410)'),
+        (TIMEOUT, 'Feed timed out'),
+        (PARSE_ERROR, 'Location parse error'),
+        (HTTP_400, 'HTTP 400'),
+        (HTTP_401, 'HTTP 401'),
+        (HTTP_403, 'HTTP 403'),
+        (HTTP_404, 'HTTP 404'),
+        (HTTP_500, 'HTTP 500'),
+        (HTTP_502, 'HTTP 502'),
+        (HTTP_503, 'HTTP 503'),
+    )
+
     url = models.URLField(_('URL'), max_length=1023, unique=True)
     title = models.CharField(_('Title'), max_length=1023, blank=True)
     link = models.URLField(_('Link'), max_length=1023, blank=True)

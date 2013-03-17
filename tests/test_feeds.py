@@ -9,6 +9,7 @@ from django_push.subscriber.signals import updated
 from httplib2 import Response
 from mock import patch
 from requests import Response as _Response
+from requests.packages.urllib3.exceptions import LocationParseError
 from rq.timeouts import JobTimeoutException
 
 from django.core.urlresolvers import reverse
@@ -74,6 +75,20 @@ class BaseTests(TestCase):
         url = reverse('feeds:home')
         response = self.client.get(url, HTTP_ACCEPT='text/*')
         self.assertEqual(response.status_code, 200)
+
+    @patch("requests.get")
+    def test_parse_error(self, get):
+        get.side_effect = LocationParseError("Failed to parse url")
+        u = User.objects.create_user('foobar', 'test@example.com', 'pass')
+        c = Category.objects.create(name='foo', slug='foo', user=u)
+        f = Feed.objects.create(
+            url='http://www.rubycocoa.com/syndicate/rss/feed.xml',
+            category=c,
+        )
+        UniqueFeed.objects.update_feed(f.url)
+        f = UniqueFeed.objects.get()
+        self.assertTrue(f.muted)
+        self.assertEqual(f.error, 'parseerror')
 
 
 class TestFeeds(TestCase):
