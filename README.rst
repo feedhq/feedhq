@@ -117,6 +117,16 @@ located at ``feedhq.wsgi.application``.
 
 .. _Django deployment guide: http://docs.djangoproject.com/en/dev/howto/deployment/
 
+Note that additionally to the web server, you need to run one or more
+consumers for the task queue. This is done with the ``rqworker`` management
+command::
+
+    django-admin.py rqworker high default low
+
+The arguments are queue names. FeedHQ only uses the ``high`` and ``default``
+queues but this is the pattern advertised by RQ and the low queue may be used
+in the future.
+
 Once your application is deployed (you've run ``django-admin.py syncdb`` to
 create the database tables and ``django-admin.py collectstatic`` to collect
 your static files), you can add users to the application. On the admin
