@@ -16,9 +16,7 @@ class Command(BaseCommand):
     help = "Run a RQ worker on selected queues."
 
     def handle(self, *args, **options):
-        print settings.REDIS
         conn = Redis(**settings.REDIS)
-        print conn
         with Connection(conn):
             queues = map(Queue, args)
             worker = Worker(queues)

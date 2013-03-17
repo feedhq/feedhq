@@ -4,26 +4,12 @@ import json
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from django_webtest import WebTest, DjangoTestApp, DjangoWebtestResponse
+from django_webtest import WebTest
 from httplib2 import Response as _Response
 from mock import patch
 from requests import Response
 
 from feedhq.feeds.utils import USER_AGENT
-
-
-class MyResponse(DjangoWebtestResponse):
-    def __getitem__(self, item):
-        print self.headerlist
-        return super(MyResponse, self).__getitem__(item)
-
-
-class MyApp(DjangoTestApp):
-    response_class = MyResponse
-
-
-class Mytest(WebTest):
-    app_class = MyApp
 
 
 class ProfilesTest(WebTest):

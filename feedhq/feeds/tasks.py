@@ -2,9 +2,6 @@ import logging
 
 from rq.timeouts import JobTimeoutException
 
-from django.conf import settings
-from django.db import connection
-
 from django_push.subscriber.models import Subscription
 
 from ..tasks import raven, enqueue
