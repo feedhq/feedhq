@@ -164,7 +164,7 @@ class UniqueFeedManager(models.Manager):
         except (requests.RequestException, socket.timeout) as e:
             logger.debug("Error fetching %s, %s" % (obj.url, str(e)))
             if obj.backoff_factor == obj.MAX_BACKOFF - 1:
-                logger.info(
+                logger.debug(
                     "%s reached max backoff period (timeout)" % obj.url
                 )
             obj.backoff()
@@ -216,7 +216,7 @@ class UniqueFeedManager(models.Manager):
 
         elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
             if obj.backoff_factor == obj.MAX_BACKOFF - 1:
-                logger.info("%s reached max backoff period (%s)" % (
+                logger.debug("%s reached max backoff period (%s)" % (
                     obj.url, response.status_code,
                 ))
             obj.backoff()
