@@ -412,9 +412,7 @@ class Feed(models.Model):
 
     def update_unread_count(self):
         self.unread_count = self.entries.filter(read=False).count()
-        Feed.objects.filter(pk=self.pk).update(
-            unread_count=self.unread_count,
-        )
+        self.save(update_fields=['unread_count'])
 
 
 class EntryManager(models.Manager):

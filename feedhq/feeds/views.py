@@ -288,7 +288,8 @@ def item(request, entry_id):
     )
     entry = get_object_or_404(qs, pk=entry_id)
     if not entry.read:
-        Entry.objects.filter(pk=entry.pk).update(read=True)
+        entry.read = True
+        entry.save(update_fields=['read'])
         entry.feed.update_unread_count()
 
     back_url = request.session.get('back_url',
@@ -354,17 +355,16 @@ def item(request, entry_id):
             action = form.cleaned_data['action']
             if action == 'images':
                 if 'never' in request.POST:
-                    Feed.objects.filter(pk=entry.feed.pk).update(
-                        img_safe=False
-                    )
                     entry.feed.img_safe = False
+                    entry.feed.save(update_fields=['img_safe'])
                 elif 'once' in request.POST:
                     media_safe = True
                 elif 'always' in request.POST:
-                    Feed.objects.filter(pk=entry.feed.pk).update(img_safe=True)
                     entry.feed.img_safe = True
+                    entry.feed.save(update_fields=['img_safe'])
             elif action == 'unread':
-                Entry.objects.filter(pk=entry.pk).update(read=False)
+                entry.read = False
+                entry.save(update_fields=['read'])
                 entry.feed.update_unread_count()
                 return redirect(back_url)
             elif action == 'read_later':
