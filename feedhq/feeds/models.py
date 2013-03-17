@@ -210,8 +210,8 @@ class UniqueFeedManager(models.Manager):
         if response.status_code == 410:
             logger.info("Feed gone, %s" % obj.url)
             obj.muted = True
-            obj.error = 'gone'
-            obj.save()
+            obj.error = obj.GONE
+            obj.save(update_fields=['muted', 'error'])
             return
 
         elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
@@ -222,7 +222,7 @@ class UniqueFeedManager(models.Manager):
             obj.backoff()
             obj.error = str(response.status_code)
             if save:
-                obj.save()
+                obj.save(update_fields=['backoff_factor', 'error'])
             return
 
         elif response.status_code not in [200, 204, 304]:
@@ -273,8 +273,6 @@ class UniqueFeedManager(models.Manager):
 
         updater = FeedUpdater(parsed=parsed, feeds=feeds, hub=obj.hub)
         updater.update()
-
-
 
 
 class UniqueFeed(models.Model):
@@ -532,7 +530,7 @@ class Entry(models.Model):
         response, data = client.request(response['location'], method='GET')
         url = 'https://www.readability.com/articles/%s'
         self.read_later_url = url % json.loads(data)['article']['id']
-        self.save()
+        self.save(update_fields=['read_later_url'])
 
     def add_to_instapaper(self):
         url = 'https://www.instapaper.com/api/1/bookmarks/add'
@@ -543,7 +541,7 @@ class Entry(models.Model):
         url = 'https://www.instapaper.com/read/%s'
         url = url % json.loads(data)[0]['bookmark_id']
         self.read_later_url = url
-        self.save()
+        self.save(update_fields=['read_later_url'])
 
     def oauth_client(self, service):
         service_settings = getattr(settings, service.upper())
