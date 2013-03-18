@@ -2,8 +2,10 @@ import urlparse
 
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from lxml.etree import XMLSyntaxError
 
 import floppyforms as forms
+import opml
 
 from .models import Category, Feed
 
@@ -60,8 +62,29 @@ class FeedForm(forms.ModelForm):
         return url
 
 
+class OPMLField(forms.FileField):
+    def to_python(self, data):
+        f = super(OPMLField, self).to_python(data)
+        if f is None:
+            return
+
+        if hasattr(data, 'read'):
+            content = data.read()
+        else:
+            content = data['content']
+        try:
+            opml.from_string(content)
+        except XMLSyntaxError:
+            raise forms.ValidationError(
+                _("This file doesn't seem to be a valid OPML file."))
+
+        if hasattr(f, 'seek') and callable(f.seek):
+            f.seek(0)
+        return f
+
+
 class OPMLImportForm(forms.Form):
-    file = forms.FileField()
+    file = OPMLField()
 
 
 class ActionForm(forms.Form):

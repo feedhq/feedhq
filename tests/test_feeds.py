@@ -3,7 +3,7 @@ import feedparser
 import json
 import os
 
-from StringIO import StringIO
+from io import StringIO, BytesIO
 
 from django_push.subscriber.signals import updated
 from httplib2 import Response
@@ -35,7 +35,7 @@ def responses(code, path=None, redirection=None,
     response.status_code = code
     if path is not None:
         with open(test_file(path), 'r') as f:
-            response.raw = StringIO(f.read())
+            response.raw = StringIO(f.read().decode('utf-8'))
     if redirection is not None:
         temp = _Response()
         temp.status_code = 301 if 'permanent' in redirection else 302
@@ -592,6 +592,22 @@ class TestFeeds(TestCase):
             response = self.client.post(url, data, follow=True)
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertContains(response, '0 feeds have been imported')
+
+        # Import an invalid thing
+        data = {'file': BytesIO("foobar")}
+        data['file'].name = 'data.not-opml'
+        response = self.client.post(url, data)
+        self.assertFormError(response, 'form', 'file', [
+            "This file doesn't seem to be a valid OPML file."
+        ])
+
+        # Empty file
+        data = {'file': BytesIO()}
+        data['file'].name = 'otherdata.not-opml'
+        response = self.client.post(url, data)
+        self.assertFormError(response, 'form', 'file', [
+            "The submitted file is empty."
+        ])
 
     @patch('requests.get')
     def test_categories_in_opml(self, get):
