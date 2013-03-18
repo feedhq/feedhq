@@ -21,6 +21,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from django_push.subscriber.signals import updated
+from lxml.etree import ParserError
 from requests.packages.urllib3.exceptions import LocationParseError
 
 from .tasks import update_feed, update_unique_feed
@@ -600,9 +601,12 @@ class FaviconManager(models.Manager):
         if not page:
             return favicon
 
-        icon_path = lxml.html.fromstring(page.lower()).xpath(
-            '//link[@rel="icon" or @rel="shortcut icon"]/@href'
-        )
+        try:
+            icon_path = lxml.html.fromstring(page.lower()).xpath(
+                '//link[@rel="icon" or @rel="shortcut icon"]/@href'
+            )
+        except ParserError:
+            return favicon
 
         if not icon_path:
             parsed[2] = '/favicon.ico'  # 'path' element
