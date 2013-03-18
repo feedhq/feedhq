@@ -21,6 +21,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from django_push.subscriber.signals import updated
+from httplib import IncompleteRead
 from lxml.etree import ParserError
 from requests.packages.urllib3.exceptions import LocationParseError
 
@@ -162,14 +163,18 @@ class UniqueFeedManager(models.Manager):
         try:
             response = requests.get(url, headers=headers,
                                     timeout=obj.request_timeout)
-        except (requests.RequestException, socket.timeout) as e:
+        except (requests.RequestException, socket.timeout, socket.error,
+                IncompleteRead) as e:
             logger.debug("Error fetching %s, %s" % (obj.url, str(e)))
             if obj.backoff_factor == obj.MAX_BACKOFF - 1:
                 logger.debug(
-                    "%s reached max backoff period (timeout)" % obj.url
+                    "%s reached max backoff period (%s)" % (obj.url, str(e))
                 )
             obj.backoff()
-            obj.error = obj.TIMEOUT
+            if isinstance(e, IncompleteRead):
+                obj.error = obj.CONNECTION_ERROR
+            else:
+                obj.error = obj.TIMEOUT
             if save:
                 obj.save(update_fields=['backoff_factor', 'error'])
             return
@@ -280,6 +285,7 @@ class UniqueFeed(models.Model):
     GONE = 'gone'
     TIMEOUT = 'timeout'
     PARSE_ERROR = 'parseerror'
+    CONNECTION_ERROR = 'connerror'
     HTTP_400 = '400'
     HTTP_401 = '401'
     HTTP_403 = '403'
@@ -291,6 +297,7 @@ class UniqueFeed(models.Model):
         (GONE, 'Feed gone (410)'),
         (TIMEOUT, 'Feed timed out'),
         (PARSE_ERROR, 'Location parse error'),
+        (CONNECTION_ERROR, 'Connection error'),
         (HTTP_400, 'HTTP 400'),
         (HTTP_401, 'HTTP 401'),
         (HTTP_403, 'HTTP 403'),
@@ -597,6 +604,8 @@ class FaviconManager(models.Manager):
         try:
             page = requests.get(link, headers=ua, timeout=10).content
         except requests.RequestException:
+            return favicon
+        except LocationParseError:
             return favicon
         if not page:
             return favicon

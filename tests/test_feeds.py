@@ -3,6 +3,7 @@ import feedparser
 import json
 import os
 
+from httplib import IncompleteRead
 from io import StringIO, BytesIO
 
 from django_push.subscriber.signals import updated
@@ -88,7 +89,21 @@ class BaseTests(TestCase):
         UniqueFeed.objects.update_feed(f.url)
         f = UniqueFeed.objects.get()
         self.assertTrue(f.muted)
-        self.assertEqual(f.error, 'parseerror')
+        self.assertEqual(f.error, f.PARSE_ERROR)
+
+    @patch("requests.get")
+    def test_incomplete_read(self, get):
+        get.side_effect = IncompleteRead("0 bytes read")
+        u = User.objects.create_user('foobar', 'test@example.com', 'pass')
+        c = Category.objects.create(name='foo', slug='foo', user=u)
+        f = Feed.objects.create(
+            url='http://www.rubycocoa.com/syndicate/rss/feed.xml',
+            category=c,
+        )
+        UniqueFeed.objects.update_feed(f.url)
+        f = UniqueFeed.objects.get()
+        self.assertFalse(f.muted)
+        self.assertEqual(f.error, f.CONNECTION_ERROR)
 
 
 class TestFeeds(TestCase):
@@ -917,4 +932,9 @@ class FaviconTests(TestCase):
             content = '<?xml version="1.0" encoding="iso-8859-1"?>'
             headers = {}
         get.return_value = Response()
+        Favicon.objects.update_favicon('http://example.com')
+
+    @patch("requests.get")
+    def test_favicon_parse_error(self, get):
+        get.side_effect = LocationParseError("Failed to parse url")
         Favicon.objects.update_favicon('http://example.com')
