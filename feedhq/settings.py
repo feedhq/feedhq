@@ -212,6 +212,11 @@ INSTALLED_APPS = (
     'password_reset',
 )
 
+if 'SENTRY_DSN' in os.environ:
+    INSTALLED_APPS += (
+        'raven.contrib.django',
+    )
+
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
