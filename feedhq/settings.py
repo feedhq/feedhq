@@ -55,10 +55,13 @@ def parse_email_url():
     parsed = urlparse.urlparse(os.environ['EMAIL_URL'])
     if '?' in parsed.path:
         querystring = urlparse.parse_qs(parsed.path.split('?', 1)[1])
-        for key in querystring.keys():
-            querystring[key] = querystring[key][0]
+    elif parsed.query:
+        querystring = urlparse.parse_qs(parsed.query)
     else:
         querystring = {}
+    if querystring:
+        for key in querystring.keys():
+            querystring[key] = querystring[key][0]
     if '@' in parsed.netloc:
         creds, at, netloc = parsed.netloc.partition('@')
         username, colon, password = creds.partition(':')
