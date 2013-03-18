@@ -121,7 +121,7 @@ Note that additionally to the web server, you need to run one or more
 consumers for the task queue. This is done with the ``rqworker`` management
 command::
 
-    django-admin.py rqworker high default low
+    django-admin.py rqworker favicons high default low
 
 The arguments are queue names. FeedHQ only uses the ``high`` and ``default``
 queues but this is the pattern advertised by RQ and the low queue may be used

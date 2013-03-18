@@ -1,8 +1,9 @@
 import logging
 
-from rq.timeouts import JobTimeoutException
+from django.db import DatabaseError
 
 from django_push.subscriber.models import Subscription
+from rq.timeouts import JobTimeoutException
 
 from ..tasks import raven, enqueue
 
@@ -37,10 +38,15 @@ def update_unique_feed(feed_url):
         defaults={'subscribers': 1},
     )
     if created:
-        enqueue(update_favicon, args=[feed_url], queue='high')
+        enqueue(update_favicon, args=[feed_url], queue='favicons')
     else:
         feed.subscribers = Feed.objects.filter(url=feed_url).count()
-        feed.save(update_fields=['subscribers'])
+        try:
+            feed.save(update_fields=['subscribers'])
+        except DatabaseError as e:
+            # Possible concurrent update with a different UniqueFeed
+            if "Save with update_fields did not affect any rows" not in str(e):
+                raise
 
 
 @raven
