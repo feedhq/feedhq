@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.sites.models import RequestSite
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.db import transaction
 from django.db.models import Sum
 from django.forms.formsets import formset_factory
 from django.http import HttpResponseNotAllowed
@@ -421,6 +422,7 @@ def save_outline(user, category, outline, existing):
 
 
 @login_required
+@transaction.commit_on_success
 def import_feeds(request):
     """Import feeds from an OPML source"""
     if request.method == 'POST':
