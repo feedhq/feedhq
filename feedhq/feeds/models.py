@@ -623,7 +623,8 @@ class FaviconManager(models.Manager):
         icon_type = m.from_buffer(response.content)
         if 'PNG' in icon_type:
             ext = 'png'
-        elif 'MS Windows icon' in icon_type:
+        elif ('MS Windows icon' in icon_type or
+              'Claris clip art' in icon_type):
             ext = 'ico'
         elif 'GIF' in icon_type:
             ext = 'gif'
@@ -636,7 +637,10 @@ class FaviconManager(models.Manager):
         elif ('HTML' in icon_type or
               icon_type == 'empty' or
               'Photoshop' in icon_type or
-              'ASCII' in icon_type):
+              'ASCII' in icon_type or
+              'XML' in icon_type or
+              'Unicode text' in icon_type or
+              'SGML' in icon_type):
             logger.debug("Ignored content type for %s: %s" % (link, icon_type))
             return favicon
         else:
