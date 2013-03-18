@@ -208,7 +208,7 @@ class UniqueFeedManager(models.Manager):
                     obj.url = redirection
 
         if response.status_code == 410:
-            logger.info("Feed gone, %s" % obj.url)
+            logger.debug("Feed gone, %s" % obj.url)
             obj.muted = True
             obj.error = obj.GONE
             obj.save(update_fields=['muted', 'error'])
