@@ -100,7 +100,6 @@ class BaseTests(TestCase):
             url='http://www.rubycocoa.com/syndicate/rss/feed.xml',
             category=c,
         )
-        UniqueFeed.objects.update_feed(f.url)
         f = UniqueFeed.objects.get()
         self.assertFalse(f.muted)
         self.assertEqual(f.error, f.CONNECTION_ERROR)

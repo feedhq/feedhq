@@ -1,11 +1,9 @@
 import logging
 
-from django.db import DatabaseError
-
 from django_push.subscriber.models import Subscription
 from rq.timeouts import JobTimeoutException
 
-from ..tasks import raven, enqueue
+from ..tasks import raven
 
 logger = logging.getLogger('feedupdater')
 
@@ -26,27 +24,8 @@ def update_feed(feed_url, use_etags=True):
 
 @raven
 def read_later(entry_pk):
-    from .models import Entry  # circular imports
+    from .models import Entry
     Entry.objects.get(pk=entry_pk).read_later()
-
-
-@raven
-def update_unique_feed(feed_url):
-    from .models import UniqueFeed, Feed
-    feed, created = UniqueFeed.objects.get_or_create(
-        url=feed_url,
-        defaults={'subscribers': 1},
-    )
-    if created:
-        enqueue(update_favicon, args=[feed_url], queue='favicons')
-    else:
-        feed.subscribers = Feed.objects.filter(url=feed_url).count()
-        try:
-            feed.save(update_fields=['subscribers'])
-        except DatabaseError as e:
-            # Possible concurrent update with a different UniqueFeed
-            if "Save with update_fields did not affect any rows" not in str(e):
-                raise
 
 
 @raven

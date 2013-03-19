@@ -12,7 +12,7 @@ import random
 import requests
 import socket
 
-from django.db import models
+from django.db import models, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
@@ -25,7 +25,7 @@ from httplib import IncompleteRead
 from lxml.etree import ParserError
 from requests.packages.urllib3.exceptions import LocationParseError
 
-from .tasks import update_feed, update_unique_feed
+from .tasks import update_feed, update_favicon
 from .utils import FeedUpdater, FAVICON_FETCHER, USER_AGENT
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
@@ -116,32 +116,35 @@ class Category(models.Model):
 
 class UniqueFeedManager(models.Manager):
     def update_feed(self, url, use_etags=True):
-        obj, created = self.get_or_create(url=url)
+        try:
+            obj, created = self.get_or_create(url=url)
+        except IntegrityError as e:
+            if not 'already exists' in str(e):
+                raise
+        if created and not settings.TESTS:
+            enqueue(update_favicon, args=[url], queue='favicons')
         save = True
 
-        if not created and use_etags:
-            if not obj.should_update():
-                logger.debug("Last update too recent, skipping %s" % obj.url)
-                return
+        if not created and use_etags and not obj.should_update():
+            logger.debug("Last update too recent, skipping %s" % obj.url)
+            return
         obj.last_update = timezone.now()
 
         if obj.muted:
             logger.debug("%s is muted" % obj.url)
             return
 
-        feeds = Feed.objects.filter(url=url)
+        feeds = list(Feed.objects.filter(url=url))
 
-        obj.subscribers = feeds.count()
-
-        if obj.subscribers == 0:
+        if not feeds:
             logger.debug("%s has no subscribers, deleting" % obj.url)
             obj.delete()
             return
 
-        if obj.subscribers == 1:
+        if len(feeds) == 1:
             subscribers = '1 subscriber'
         else:
-            subscribers = '%s subscribers' % obj.subscribers
+            subscribers = '%s subscribers' % len(feeds)
 
         headers = {
             'User-Agent': USER_AGENT % subscribers,
@@ -313,7 +316,6 @@ class UniqueFeed(models.Model):
     etag = models.CharField(_('Etag'), max_length=1023, null=True, blank=True)
     modified = models.CharField(_('Modified'), max_length=1023, null=True,
                                 blank=True)
-    subscribers = models.PositiveIntegerField(default=1, db_index=True)
     last_update = models.DateTimeField(_('Last update'), default=timezone.now,
                                        db_index=True)
     muted = models.BooleanField(_('Muted'), default=False, db_index=True)
@@ -330,6 +332,9 @@ class UniqueFeed(models.Model):
     objects = UniqueFeedManager()
 
     MAX_BACKOFF = 10  # Approx. 24 hours
+    UPDATE_PERIOD = 45  # in minutes
+    BACKOFF_EXPONENT = 1.5
+    TIMEOUT_BASE = 20
 
     def __unicode__(self):
         if self.title:
@@ -341,7 +346,7 @@ class UniqueFeed(models.Model):
 
     @property
     def task_timeout(self):
-        return 20 * self.backoff_factor
+        return self.TIMEOUT_BASE * self.backoff_factor
 
     @property
     def request_timeout(self):
@@ -360,7 +365,9 @@ class UniqueFeed(models.Model):
         # Exponential backoff: max backoff factor is 10, which is approx. 24
         # hours. This way we avoid muting and resurrecting feeds, failing
         # feeds stay at a backoff factor of 10.
-        minutes = 45 * (self.backoff_factor ** 1.5)
+        minutes = self.UPDATE_PERIOD * (
+            self.backoff_factor ** self.BACKOFF_EXPONENT
+        )
         delay = datetime.timedelta(minutes=minutes)
         return self.last_update + delay < timezone.now()
 
@@ -395,10 +402,10 @@ class Feed(models.Model):
     def save(self, *args, **kwargs):
         update = self.pk is None
         super(Feed, self).save(*args, **kwargs)
+        # Queue update on feed creation
         if update:
             enqueue(update_feed, args=[self.url], kwargs={'use_etags': False},
                     timeout=20, queue='high')
-        enqueue(update_unique_feed, args=[self.url], timeout=20)
 
     @property
     def media_safe(self):
