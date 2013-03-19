@@ -399,8 +399,12 @@ def save_outline(user, category, outline, existing):
         slug = slugify(outline.title)
         if not slug:
             slug = 'unknown'
+        title = outline.title
+        if len(title) > 1023:
+            title = title[:1020] + '...'
+        slug = slug[:50]
         cat, created = user.categories.get_or_create(
-            slug=slug, defaults={'name': outline.title},
+            slug=slug, defaults={'name': title},
         )
         for entry in outline._outlines:
             count += save_outline(user, cat, entry, existing)

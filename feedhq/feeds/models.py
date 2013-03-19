@@ -83,7 +83,7 @@ class CategoryManager(models.Manager):
 
 class Category(models.Model):
     """Used to sort our feeds"""
-    name = models.CharField(_('Name'), max_length=50)
+    name = models.CharField(_('Name'), max_length=1023)
     slug = models.SlugField(_('Slug'), db_index=True)
     user = models.ForeignKey(User, verbose_name=_('User'),
                              related_name='categories')
