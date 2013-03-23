@@ -659,7 +659,8 @@ class FaviconManager(models.Manager):
               'ASCII' in icon_type or
               'XML' in icon_type or
               'Unicode text' in icon_type or
-              'SGML' in icon_type):
+              'SGML' in icon_type or
+              'PHP' in icon_type):
             logger.debug("Ignored content type for %s: %s" % (link, icon_type))
             return favicon
         else:
