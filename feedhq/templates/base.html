@@ -4,12 +4,12 @@
 		<title>{% block title %}{% trans "Home" %}{% endblock %} &mdash; FeedHQ</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
-		<link rel="shortcut icon" href="{% static "feeds/img/icon-rss.png" %}">
-		<link rel="stylesheet" type="text/css" href="{% static "feeds/css/screen.css" %}">
-		<link rel="apple-touch-icon-precomposed" href="{% static "feeds/img/touch-icon-57.png" %}">
-		<link rel="apple-touch-icon-precomposed" href="{% static "feeds/img/touch-icon-72.png" %}" sizes="72x72">
-		<link rel="apple-touch-icon-precomposed" href="{% static "feeds/img/touch-icon-114.png" %}" sizes="114x114">
-		<link rel="apple-touch-icon-precomposed" href="{% static "feeds/img/touch-icon-144.png" %}" sizes="144x144">
+		<link rel="shortcut icon" href="{% static "core/img/icon-rss.png" %}">
+		<link rel="stylesheet" type="text/css" href="{% static "core/css/screen.css" %}">
+		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-57.png" %}">
+		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-72.png" %}" sizes="72x72">
+		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-114.png" %}" sizes="114x114">
+		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-144.png" %}" sizes="144x144">
 		{% render_block "css" %}
 	</head>
 	<body id="{% block bodyid %}default{% endblock %}">
@@ -70,7 +70,7 @@
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-<script src="{% static "feeds/js/fastclick.js" %}"></script>
+<script src="{% static "core/js/fastclick.js" %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
@@ -82,15 +82,15 @@
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-<script src="{% static "feeds/js/jquery.min.js" %}"></script>
+<script src="{% static "core/js/jquery.min.js" %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-<script src="{% static "feeds/js/bootstrap-tooltip.js" %}"></script>
+<script src="{% static "core/js/bootstrap-tooltip.js" %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-<script src="{% static "feeds/js/bootstrap-popover.js" %}"></script>
+<script src="{% static "core/js/bootstrap-popover.js" %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}

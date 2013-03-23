@@ -206,6 +206,7 @@ INSTALLED_APPS = (
     'sekizai',
     'django_rq_dashboard',
 
+    'feedhq.core',
     'feedhq.feeds',
     'feedhq.profiles',
 
