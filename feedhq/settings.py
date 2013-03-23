@@ -263,6 +263,10 @@ LOGGING = {
             'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
         },
+        'rq.worker': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
         'bleach': {
             'handlers': ['null'],
         },
