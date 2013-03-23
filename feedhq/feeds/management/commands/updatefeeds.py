@@ -37,9 +37,11 @@ class Command(BaseCommand):
             feed = UniqueFeed.objects.get(pk=pk)
             return update_feed(feed.url, use_etags=False)
 
+        ratio = UniqueFeed.UPDATE_PERIOD // 5
+
         uniques = UniqueFeed.objects.raw(
             TO_UPDATE,
-            [max(1, UniqueFeed.objects.filter(muted=False).count() // 9)])
+            [max(1, UniqueFeed.objects.filter(muted=False).count() // ratio)])
         queued = set()
 
         try:

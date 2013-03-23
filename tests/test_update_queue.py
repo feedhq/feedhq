@@ -36,7 +36,7 @@ class UpdateTests(TestCase):
 
         u = UniqueFeed.objects.create(
             url='http://example.com/backoff',
-            last_update=timezone.now() - timedelta(hours=23),
+            last_update=timezone.now() - timedelta(hours=28),
             backoff_factor=10,
         )
         with self.assertNumQueries(1):
@@ -66,12 +66,12 @@ class UpdateTests(TestCase):
 
         UniqueFeed.objects.create(
             url='http://example.com/foo',
-            last_update=timezone.now() - timedelta(hours=1),
+            last_update=timezone.now() - timedelta(hours=2),
         )
         UniqueFeed.objects.create(
             url='http://example.com/bar',
-            last_update=timezone.now() - timedelta(hours=1),
-            last_loop=timezone.now() - timedelta(hours=1),
+            last_update=timezone.now() - timedelta(hours=2),
+            last_loop=timezone.now() - timedelta(hours=2),
         )
         feeds = list(UniqueFeed.objects.raw(to_update))
         self.assertEqual(len(feeds), 2)

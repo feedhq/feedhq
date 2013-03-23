@@ -123,7 +123,6 @@ class UniqueFeedManager(models.Manager):
                 raise
         if created and not settings.TESTS:
             enqueue(update_favicon, args=[url], queue='favicons')
-        save = True
 
         if not created and use_etags and not obj.should_update():
             logger.debug("Last update too recent, skipping %s" % obj.url)
@@ -178,19 +177,18 @@ class UniqueFeedManager(models.Manager):
                 obj.error = obj.CONNECTION_ERROR
             else:
                 obj.error = obj.TIMEOUT
-            if save:
-                obj.save(update_fields=['backoff_factor', 'error'])
+            obj.save(update_fields=['backoff_factor', 'error', 'last_update'])
             return
         except LocationParseError:
             logger.debug("Failed to parse URL for {0}".format(obj.url))
             obj.muted = True
             obj.error = obj.PARSE_ERROR
-            if save:
-                obj.save(update_fields=['muted', 'error'])
+            obj.save(update_fields=['muted', 'error', 'last_update'])
             return
 
         elapsed = (datetime.datetime.now() - start).seconds
 
+        save = True
         ctype = response.headers.get('Content-Type', None)
         if (response.history and
             obj.url != response.url and ctype is not None and (
@@ -220,7 +218,7 @@ class UniqueFeedManager(models.Manager):
             logger.debug("Feed gone, %s" % obj.url)
             obj.muted = True
             obj.error = obj.GONE
-            obj.save(update_fields=['muted', 'error'])
+            obj.save(update_fields=['muted', 'error', 'last_update'])
             return
 
         elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
@@ -231,7 +229,8 @@ class UniqueFeedManager(models.Manager):
             obj.backoff()
             obj.error = str(response.status_code)
             if save:
-                obj.save(update_fields=['backoff_factor', 'error'])
+                obj.save(update_fields=['backoff_factor', 'error',
+                                        'last_update'])
             return
 
         elif response.status_code not in [200, 204, 304]:
@@ -244,17 +243,17 @@ class UniqueFeedManager(models.Manager):
                                      obj.safe_backoff(elapsed))
             obj.error = None
 
+        if response.status_code == 304:
+            logger.debug("Feed not modified, %s" % obj.url)
+            if save:
+                obj.save(update_fields=['last_update'])
+            return
+
         if 'etag' in response.headers:
             obj.etag = response.headers['etag']
 
         if 'last-modified' in response.headers:
             obj.modified = response.headers['last-modified']
-
-        if response.status_code == 304:
-            logger.debug("Feed not modified, %s" % obj.url)
-            if save:
-                obj.save()
-            return
 
         try:
             if not response.content:
@@ -332,7 +331,7 @@ class UniqueFeed(models.Model):
     objects = UniqueFeedManager()
 
     MAX_BACKOFF = 10  # Approx. 24 hours
-    UPDATE_PERIOD = 45  # in minutes
+    UPDATE_PERIOD = 60  # in minutes
     BACKOFF_EXPONENT = 1.5
     TIMEOUT_BASE = 20
 

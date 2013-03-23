@@ -142,9 +142,9 @@ oldest-updated feeds in the update queue::
 
     */5 * * * * /path/to/env/django-admin.py updatefeeds
 
-The ``updatefeeds`` command puts 1/9th of the feeds in the update queue. Feeds
-won't update if they've been updated in the past 45 minutes, so the 5-minute
-period for cron jobs distributes nicely the updates along the 45-minute
+The ``updatefeeds`` command puts 1/12th of the feeds in the update queue. Feeds
+won't update if they've been updated in the past 60 minutes, so the 5-minute
+period for cron jobs distributes nicely the updates along the 1-hour
 period.
 
 A cron job should also be set up for picking and updating favicons (the
