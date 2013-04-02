@@ -9,7 +9,6 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
 from django.db.models import Sum
-from django.forms.formsets import formset_factory
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.defaultfilters import slugify
@@ -22,7 +21,7 @@ from ..utils import manual_csrf_check
 from ..tasks import enqueue
 from .models import Category, Feed, Entry
 from .forms import (CategoryForm, FeedForm, OPMLImportForm, ActionForm,
-                    ReadForm, SubscriptionForm)
+                    ReadForm, SubscriptionFormSet)
 from .tasks import read_later
 
 """
@@ -527,7 +526,6 @@ def subscribe(request):
         return redirect(reverse('login') + '?from=bookmarklet')
 
     if 'source' in request.POST and 'html' in request.POST:
-        SubscriptionFormSet = formset_factory(SubscriptionForm, extra=0)
 
         xml = lxml.html.fromstring(request.POST['html'])
         xml.make_links_absolute(request.POST['source'])  # lxml FTW
@@ -552,7 +550,6 @@ def subscribe(request):
         if response is not None:
             return response
 
-        SubscriptionFormSet = formset_factory(SubscriptionForm, extra=0)
         formset = SubscriptionFormSet(data=request.POST)
         cats = [(str(c.pk), c.name) for c in request.user.categories.all()]
         for form in formset:

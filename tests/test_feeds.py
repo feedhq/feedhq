@@ -107,7 +107,7 @@ class BaseTests(TestCase):
 
 class TestFeeds(TestCase):
     @patch("requests.get")
-    def setUp(self, get):
+    def setUp(self, get):  # noqa
         """Main stuff we need for testing the app - this is mainly for signed
         in users."""
         # We'll need a user...
@@ -479,7 +479,9 @@ class TestFeeds(TestCase):
             response = self.client.post(url, data)
             self.assertFormError(response, 'form', 'url', "Invalid URL.")
 
-    def test_edit_feed(self):
+    @patch("requests.get")
+    def test_edit_feed(self, get):
+        get.return_value = responses(304)
         url = reverse('feeds:edit_feed', args=[self.feed.id])
         response = self.client.get(url)
         self.assertContains(response, 'Test Feed')
@@ -691,7 +693,7 @@ class TestFeeds(TestCase):
 
     @patch('requests.get')
     @patch('oauth2.Client')
-    def test_add_to_readability(self, Client, get):
+    def test_add_to_readability(self, Client, get):  # noqa
         client = Client.return_value
         r = Response({
             'status': 202,
@@ -731,7 +733,7 @@ class TestFeeds(TestCase):
 
     @patch("requests.get")
     @patch('oauth2.Client')
-    def test_add_to_instapaper(self, Client, get):
+    def test_add_to_instapaper(self, Client, get):  # noqa
         client = Client.return_value
         r = Response({'status': 200})
         client.request.return_value = [

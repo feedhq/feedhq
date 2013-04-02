@@ -7,13 +7,14 @@ from django.core.urlresolvers import reverse
 from django_webtest import WebTest
 from httplib2 import Response as _Response
 from mock import patch
-from requests import Response
 
 from feedhq.feeds.utils import USER_AGENT
 
+from .test_feeds import responses
+
 
 class ProfilesTest(WebTest):
-    def setUp(self):
+    def setUp(self):  # noqa
         self.user = User.objects.create_user('test', 'test@example.com',
                                              'pass')
 
@@ -110,9 +111,7 @@ class ProfilesTest(WebTest):
 
         cat = self.user.categories.create(name='Test', slug='test')
 
-        response = Response()
-        response.status_code = 304
-        get.return_value = response
+        get.return_value = responses(304)
         cat.feeds.create(name='Test Feed',
                          url='http://example.com/test.atom')
         get.assert_called_with(
@@ -175,7 +174,7 @@ class ProfilesTest(WebTest):
         )
 
     @patch("oauth2.Client")
-    def test_valid_oauth_credentials(self, Client):
+    def test_valid_oauth_credentials(self, Client):  # noqa
         client = Client.return_value
 
         client.request.return_value = [
@@ -209,7 +208,7 @@ class ProfilesTest(WebTest):
         })
 
     @patch("oauth2.Client")
-    def test_invalid_oauth_credentials(self, Client):
+    def test_invalid_oauth_credentials(self, Client):  # noqa
         client = Client.return_value
         client.request.return_value = [_Response({'status': 401}),
                                        "xAuth error"]

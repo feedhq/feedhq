@@ -1,5 +1,6 @@
 import urlparse
 
+from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
@@ -106,3 +107,5 @@ class SubscriptionForm(forms.Form):
     name = forms.CharField(label=_('Name'))
     url = forms.URLField(label=_('URL'))
     category = forms.ChoiceField(label=_('Category'))
+
+SubscriptionFormSet = formset_factory(SubscriptionForm, extra=0)
