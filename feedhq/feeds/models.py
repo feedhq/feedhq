@@ -453,8 +453,9 @@ class Entry(models.Model):
     # Read later: store the URL
     read_later_url = models.URLField(_('Read later URL'), max_length=1023,
                                      blank=True)
-    starred = models.BooleanField(_('Starred'), default=False)
-    broadcast = models.BooleanField(_('Broadcast'), default=False)
+    starred = models.BooleanField(_('Starred'), default=False, db_index=True)
+    broadcast = models.BooleanField(_('Broadcast'), default=False,
+                                    db_index=True)
 
     objects = EntryManager()
 
@@ -462,11 +463,6 @@ class Entry(models.Model):
         # Display most recent entries first
         ordering = ('-date', 'title')
         verbose_name_plural = 'entries'
-        index_together = [
-            ('user', 'read'),
-            ('user', 'starred'),
-            ('user', 'broadcast'),
-        ]
 
     ELEMENTS = (
         feedparser._HTMLSanitizer.acceptable_elements |
