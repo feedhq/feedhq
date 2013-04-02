@@ -45,6 +45,7 @@ urlpatterns = patterns(
     url(r'^humans.txt$', humans),
     url(r'^favicon.ico$', favicon),
     url(r'^apple-touch-icon-precomposed.png$', touch_icon),
+    (r'^', include('feedhq.reader.urls', namespace='reader')),
     (r'^accounts/', include('feedhq.profiles.urls')),
     (r'^', include('feedhq.feeds.urls', namespace='feeds')),
 )

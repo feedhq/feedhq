@@ -209,6 +209,7 @@ INSTALLED_APPS = (
     'feedhq.core',
     'feedhq.feeds',
     'feedhq.profiles',
+    'feedhq.reader',
 
     'password_reset',
 )
@@ -282,6 +283,10 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+REST_FRAMEWORK = {
+    "URL_FORMAT_OVERRIDE": "output",
 }
 
 if 'READITLATER_API_KEY' in os.environ:
