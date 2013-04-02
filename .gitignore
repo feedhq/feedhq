@@ -6,3 +6,5 @@ feedhq/test_media
 dist
 feedhq.egg-info
 artwork
+.coverage
+htmlcov

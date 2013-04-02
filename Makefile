@@ -39,5 +39,9 @@ txpush:
 txpull:
 	@tx pull -a
 
+coverage:
+	@envdir tests/envdir coverage run --source=feedhq `which django-admin.py` test
+	@coverage html
+
 .PHONY: test run db user shell dbshell updatefeeds favicons \
-	      makemessages compilemessages txpush txpull
+	      makemessages compilemessages txpush txpull coverage
