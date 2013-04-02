@@ -399,10 +399,9 @@ class Feed(models.Model):
         return reverse('feeds:feed', args=[self.id])
 
     def save(self, *args, **kwargs):
-        update = self.pk is None
         super(Feed, self).save(*args, **kwargs)
-        # Queue update on feed creation
-        if update:
+        # Queue update on feed creation/edition
+        if not 'update_fields' in kwargs:
             enqueue(update_feed, args=[self.url], kwargs={'use_etags': False},
                     timeout=20, queue='high')
 
