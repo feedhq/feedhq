@@ -29,7 +29,7 @@ humans = lambda _: HttpResponse(u"""/* TEAM */
 """, mimetype='text/plain; charset=UTF-8')
 
 favicon = lambda _: HttpResponsePermanentRedirect(
-    '%sfeeds/img/icon-rss.png' % settings.STATIC_URL
+    '%score/img/icon-rss.png' % settings.STATIC_URL
 )
 
 touch_icon = lambda _: HttpResponsePermanentRedirect(

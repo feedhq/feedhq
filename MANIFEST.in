@@ -1,13 +1,8 @@
 include README.rst requirements.txt LICENSE
-recursive-include feedhq/templates *
-recursive-include feedhq/locale *
-recursive-include feedhq/feeds/static *
-recursive-include feedhq/feeds/templates *
-recursive-include feedhq/feeds/tests *
-recursive-include feedhq/profiles/templates *
-recursive-include feedhq/rq/templates *
-recursive-include feedhq/rq/static *
+recursive-include feedhq *
 recursive-exclude feedhq *.pyc
 recursive-exclude feedhq *.scss
 recursive-exclude feedhq/test_media *
+recursive-exclude feedhq/static *
+recursive-exclude feedhq/media *
 recursive-exclude tests *
