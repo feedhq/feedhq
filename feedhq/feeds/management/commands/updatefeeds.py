@@ -1,4 +1,5 @@
 import logging
+import os
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -13,7 +14,9 @@ logger = logging.getLogger('feedupdater')
 
 
 TO_UPDATE = """
-    SELECT id, url, backoff_factor * {timeout_base} as tm
+    SELECT
+        id, url, modified, etag, backoff_factor, muted_reason, link, title,
+        hub, subscribers, backoff_factor * {timeout_base} as tm
     FROM feeds_uniquefeed
     WHERE
         muted='false' AND
@@ -35,7 +38,15 @@ class Command(BaseCommand):
         if args:
             pk = args[0]
             feed = UniqueFeed.objects.get(pk=pk)
-            return update_feed(feed.url, use_etags=False)
+            feed.last_loop = timezone.now()
+            feed.save(update_fields=['last_loop'])
+            return update_feed(
+                feed.url, etag=feed.etag, last_modified=feed.modified,
+                subscribers=feed.subscribers,
+                request_timeout=feed.request_timeout,
+                backoff_factor=feed.backoff_factor, error=feed.error,
+                link=feed.link, title=feed.title, hub=feed.hub,
+            )
 
         ratio = UniqueFeed.UPDATE_PERIOD // 5
 
@@ -46,12 +57,21 @@ class Command(BaseCommand):
 
         try:
             for unique in uniques:
-                enqueue(update_feed, args=[unique.url],
-                        timeout=unique.tm)
+                enqueue(update_feed, args=[unique.url], kwargs={
+                    'etag': unique.etag,
+                    'last_modified': unique.modified,
+                    'subscribers': unique.subscribers,
+                    'request_timeout': unique.backoff_factor * 10,
+                    'backoff_factor': unique.backoff_factor,
+                    'error': unique.error,
+                    'link': unique.link,
+                    'title': unique.title,
+                    'hub': unique.hub,
+                }, timeout=unique.tm)
                 queued.add(unique.pk)
         except Exception:  # We don't know what to expect, and anyway
                            # we're reporting the exception
-            if settings.DEBUG or not hasattr(settings, 'SENTRY_DSN'):
+            if settings.DEBUG or not 'SENTRY_DSN' in os.environ:
                 raise
             else:
                 client = Client(dsn=settings.SENTRY_DSN)

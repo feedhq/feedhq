@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import bleach
 import datetime
 import feedparser
 import json
 import logging
-import lxml
+import lxml.html
 import magic
 import oauth2 as oauth
 import urllib
@@ -12,21 +13,22 @@ import random
 import requests
 import socket
 
-from django.db import models, IntegrityError
+from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-
 from django_push.subscriber.signals import updated
 from httplib import IncompleteRead
 from lxml.etree import ParserError
 from requests.packages.urllib3.exceptions import LocationParseError
 
-from .tasks import update_feed, update_favicon
-from .utils import FeedUpdater, FAVICON_FETCHER, USER_AGENT
+import pytz
+
+from .tasks import update_feed, update_favicon, store_entries
+from .utils import FAVICON_FETCHER, USER_AGENT
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
 
@@ -115,46 +117,23 @@ class Category(models.Model):
 
 
 class UniqueFeedManager(models.Manager):
-    def update_feed(self, url, use_etags=True):
-        try:
-            obj, created = self.get_or_create(url=url)
-        except IntegrityError as e:
-            if not 'already exists' in str(e):
-                raise
-        if created and not settings.TESTS:
-            enqueue(update_favicon, args=[url], queue='favicons')
-
-        if not created and use_etags and not obj.should_update():
-            logger.debug("Last update too recent, skipping %s" % obj.url)
-            return
-        obj.last_update = timezone.now()
-
-        if obj.muted:
-            logger.debug("%s is muted" % obj.url)
-            return
-
-        feeds = list(Feed.objects.filter(url=url))
-
-        if not feeds:
-            logger.debug("%s has no subscribers, deleting" % obj.url)
-            obj.delete()
-            return
-
-        if len(feeds) == 1:
-            subscribers = '1 subscriber'
+    def update_feed(self, url, etag=None, last_modified=None, subscribers=1,
+                    request_timeout=10, backoff_factor=1, previous_error=None,
+                    link=None, title=None, hub=None):
+        if subscribers == 1:
+            subscribers_text = '1 subscriber'
         else:
-            subscribers = '%s subscribers' % len(feeds)
+            subscribers_text = '{0} subscribers'.format(subscribers)
 
         headers = {
-            'User-Agent': USER_AGENT % subscribers,
+            'User-Agent': USER_AGENT % subscribers_text,
             'Accept': feedparser.ACCEPT_HEADER,
         }
 
-        if use_etags:
-            if obj.modified:
-                headers['If-Modified-Since'] = obj.modified
-            if obj.etag:
-                headers['If-None-Match'] = obj.etag
+        if last_modified:
+            headers['If-Modified-Since'] = last_modified
+        if etag:
+            headers['If-None-Match'] = etag
 
         if settings.TESTS:
             # Make sure requests.get is properly mocked during tests
@@ -162,36 +141,33 @@ class UniqueFeedManager(models.Manager):
                 raise ValueError("Not Mocked")
 
         start = datetime.datetime.now()
+        error = None
         try:
             response = requests.get(url, headers=headers,
-                                    timeout=obj.request_timeout)
+                                    timeout=request_timeout)
         except (requests.RequestException, socket.timeout, socket.error,
                 IncompleteRead) as e:
-            logger.debug("Error fetching %s, %s" % (obj.url, str(e)))
-            if obj.backoff_factor == obj.MAX_BACKOFF - 1:
+            logger.debug("Error fetching %s, %s" % (url, str(e)))
+            if backoff_factor == UniqueFeed.MAX_BACKOFF - 1:
                 logger.debug(
-                    "%s reached max backoff period (%s)" % (obj.url, str(e))
+                    "%s reached max backoff period (%s)" % (url, str(e))
                 )
-            obj.backoff()
             if isinstance(e, IncompleteRead):
-                obj.error = obj.CONNECTION_ERROR
+                error = UniqueFeed.CONNECTION_ERROR
             else:
-                obj.error = obj.TIMEOUT
-            obj.save(update_fields=['backoff_factor', 'error', 'last_update'])
+                error = UniqueFeed.TIMEOUT
+            self.backoff_feed(url, error, backoff_factor)
             return
         except LocationParseError:
-            logger.debug("Failed to parse URL for {0}".format(obj.url))
-            obj.muted = True
-            obj.error = obj.PARSE_ERROR
-            obj.save(update_fields=['muted', 'error', 'last_update'])
+            logger.debug("Failed to parse URL for {0}".format(url))
+            self.mute_feed(url, UniqueFeed.PARSE_ERROR)
             return
 
         elapsed = (datetime.datetime.now() - start).seconds
 
-        save = True
         ctype = response.headers.get('Content-Type', None)
         if (response.history and
-            obj.url != response.url and ctype is not None and (
+            url != response.url and ctype is not None and (
                 ctype.startswith('application') or
                 ctype.startswith('text/xml') or
                 ctype.startswith('text/rss'))):
@@ -205,55 +181,50 @@ class UniqueFeedManager(models.Manager):
                 except IndexError:  # next request is final request
                     redirection = response.url
 
-            if redirection is not None and redirection != obj.url:
-                logger.debug("%s moved to %s" % (obj.url, redirection))
-                Feed.objects.filter(url=obj.url).update(url=redirection)
-                if self.filter(url=redirection).exists():
-                    obj.delete()
-                    save = False
-                else:
-                    obj.url = redirection
+            if redirection is not None and redirection != url:
+                self.handle_redirection(url, redirection, subscribers)
+
+        update = {'last_update': timezone.now()}
 
         if response.status_code == 410:
-            logger.debug("Feed gone, %s" % obj.url)
-            obj.muted = True
-            obj.error = obj.GONE
-            obj.save(update_fields=['muted', 'error', 'last_update'])
+            logger.debug("Feed gone, {0}".format(url))
+            self.mute_feed(url, UniqueFeed.GONE)
             return
 
         elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
-            if obj.backoff_factor == obj.MAX_BACKOFF - 1:
-                logger.debug("%s reached max backoff period (%s)" % (
-                    obj.url, response.status_code,
+            if backoff_factor == UniqueFeed.MAX_BACKOFF - 1:
+                logger.debug("{0} reached max backoff period ({1})".format(
+                    url, response.status_code,
                 ))
-            obj.backoff()
-            obj.error = str(response.status_code)
-            if save:
-                obj.save(update_fields=['backoff_factor', 'error',
-                                        'last_update'])
+            self.backoff_feed(url, str(response.status_code), backoff_factor)
             return
 
         elif response.status_code not in [200, 204, 304]:
-            logger.debug("%s returned %s" % (obj.url, response.status_code))
+            logger.debug("{0} returned {1}".format(url, response.status_code))
 
         else:
             # Avoid going back to 1 directly if it isn't safe given the
             # actual response time.
-            obj.backoff_factor = min(obj.backoff_factor,
-                                     obj.safe_backoff(elapsed))
-            obj.error = None
+            if previous_error and error is None:
+                update['error'] = ''
+            new_backoff = min(backoff_factor, self.safe_backoff(elapsed))
+            if new_backoff != backoff_factor:
+                update['backoff_factor'] = new_backoff
 
         if response.status_code == 304:
-            logger.debug("Feed not modified, %s" % obj.url)
-            if save:
-                obj.save(update_fields=['last_update'])
+            logger.debug("Feed not modified, {0}".format(url))
+            self.filter(url=url).update(**update)
             return
 
         if 'etag' in response.headers:
-            obj.etag = response.headers['etag']
+            update['etag'] = response.headers['etag']
+        else:
+            update['etag'] = ''
 
         if 'last-modified' in response.headers:
-            obj.modified = response.headers['last-modified']
+            update['modified'] = response.headers['last-modified']
+        else:
+            update['modified'] = ''
 
         try:
             if not response.content:
@@ -261,26 +232,103 @@ class UniqueFeedManager(models.Manager):
             else:
                 content = response.content
         except socket.timeout:
-            logger.debug('%s timed out' % obj.url)
+            logger.debug('{0} timed out'.format(url))
+            self.backoff_feed(url, UniqueFeed.TIMEOUT, backoff_factor)
             return
         parsed = feedparser.parse(content)
 
-        if 'link' in parsed.feed:
-            obj.link = parsed.feed.link
+        if 'link' in parsed.feed and parsed.feed.link != link:
+            update['link'] = parsed.feed.link
 
-        if 'title' in parsed.feed:
-            obj.title = parsed.feed.title
+        if 'title' in parsed.feed and parsed.feed.title != title:
+            update['title'] = parsed.feed.title
 
         if 'links' in parsed.feed:
             for link in parsed.feed.links:
-                if link.rel == 'hub':
-                    obj.hub = link.href
+                if link.rel == 'hub' and link.href != hub:
+                    update['hub'] = link.href
+                    # TODO actually subscribe
 
-        if save:
-            obj.save()
+        self.filter(url=url).update(**update)
 
-        updater = FeedUpdater(parsed=parsed, feeds=feeds, hub=obj.hub)
-        updater.update()
+        entries = filter(
+            None,
+            [self.entry_data(entry, parsed) for entry in parsed.entries]
+        )
+        enqueue(store_entries, args=[url, entries], queue='store')
+
+    @classmethod
+    def entry_data(cls, entry, parsed):
+        if not 'link' in entry:
+            return
+        title = entry.title if 'title' in entry else u''
+        if len(title) > 255:  # FIXME this is gross
+            title = title[:254] + u'…'
+        data = {
+            'title': title,
+            'link': entry.link,
+            'date': cls.entry_date(entry),
+        }
+        if 'description' in entry:
+            data['subtitle'] = entry.description
+        if 'summary' in entry:
+            data['subtitle'] = entry.summary
+        if 'content' in entry:
+            data['subtitle'] = ''
+            for content in entry.content:
+                data['subtitle'] += content.value
+        if 'subtitle' in data:
+            data['subtitle'] = u'<div>{0}</div>'.format(data['subtitle'])
+        return data
+
+    @classmethod
+    def entry_date(cls, entry):
+        if 'published_parsed' in entry and entry.published_parsed is not None:
+            field = entry.published_parsed
+        elif 'updated_parsed' in entry and entry.updated_parsed is not None:
+            field = entry.updated_parsed
+        else:
+            field = None
+
+        if field is None:
+            entry_date = timezone.now()
+        else:
+            entry_date = timezone.make_aware(
+                datetime.datetime(*field[:6]),
+                pytz.utc,
+            )
+            # Sometimes entries are published in the future. If they're
+            # published, it's probably safe to adjust the date.
+            if entry_date > timezone.now():
+                entry_date = timezone.now()
+        return entry_date
+
+    def handle_redirection(self, old_url, new_url, subscribers):
+        logger.debug("{0} moved to {1}".format(old_url, new_url))
+        Feed.objects.filter(url=old_url).update(url=new_url)
+        unique, created = self.get_or_create(
+            url=new_url, defaults={'subscribers': subscribers})
+        if created and not settings.TESTS:
+            enqueue(update_favicon, args=[new_url])
+        self.filter(url=old_url).delete()
+
+    def mute_feed(self, url, reason):
+        self.filter(url=url).update(muted=True, error=reason,
+                                    last_update=timezone.now())
+
+    def backoff_feed(self, url, error, backoff_factor):
+        self.filter(url=url).update(error=error, last_update=timezone.now(),
+                                    backoff_factor=min(UniqueFeed.MAX_BACKOFF,
+                                                       backoff_factor + 1))
+
+    def safe_backoff(self, response_time):
+        """
+        Returns the backoff factor that should be used to keep the feed
+        working given the last response time. Keep a margin. Backoff time
+        shouldn't increase, this is only used to avoid returning back to 10s
+        if the response took more than that.
+        """
+        return int((response_time * 1.2) / 10) + 1
 
 
 class UniqueFeed(models.Model):
@@ -327,6 +375,8 @@ class UniqueFeed(models.Model):
                                                  default=1)
     last_loop = models.DateTimeField(_('Last loop'), default=timezone.now,
                                      db_index=True)
+    subscribers = models.PositiveIntegerField(_('Subsribers'), default=1,
+                                              db_index=True)
 
     objects = UniqueFeedManager()
 
@@ -344,31 +394,8 @@ class UniqueFeed(models.Model):
         self.backoff_factor = min(self.MAX_BACKOFF, self.backoff_factor + 1)
 
     @property
-    def task_timeout(self):
-        return self.TIMEOUT_BASE * self.backoff_factor
-
-    @property
     def request_timeout(self):
         return 10 * self.backoff_factor
-
-    def safe_backoff(self, response_time):
-        """
-        Returns the backoff factor that should be used to keep the feed
-        working given the last response time. Keep a margin. Backoff time
-        shouldn't increase, this is only used to avoid returning back to 10s
-        if the response took more than that.
-        """
-        return int((response_time * 1.2) / 10) + 1
-
-    def should_update(self):
-        # Exponential backoff: max backoff factor is 10, which is approx. 24
-        # hours. This way we avoid muting and resurrecting feeds, failing
-        # feeds stay at a backoff factor of 10.
-        minutes = self.UPDATE_PERIOD * (
-            self.backoff_factor ** self.BACKOFF_EXPONENT
-        )
-        delay = datetime.timedelta(minutes=minutes)
-        return self.last_update + delay < timezone.now()
 
 
 class Feed(models.Model):
@@ -400,10 +427,21 @@ class Feed(models.Model):
 
     def save(self, *args, **kwargs):
         super(Feed, self).save(*args, **kwargs)
-        # Queue update on feed creation/edition
-        if not 'update_fields' in kwargs:
-            enqueue(update_feed, args=[self.url], kwargs={'use_etags': False},
-                    timeout=20, queue='high')
+        # FIXME maybe find another way to ensure consistency
+        unique, created = UniqueFeed.objects.get_or_create(url=self.url)
+        if created and not unique.muted:
+            enqueue(update_feed, kwargs={
+                'url': self.url,
+                'subscribers': unique.subscribers,
+                'request_timeout': unique.backoff_factor * 10,
+                'backoff_factor': unique.backoff_factor,
+                'error': unique.error,
+                'link': unique.link,
+                'title': unique.title,
+                'hub': unique.hub,
+            }, queue='high', timeout=20)
+            if not settings.TESTS:
+                enqueue(update_favicon, args=[self.url])
 
     @property
     def media_safe(self):
@@ -414,14 +452,6 @@ class Feed(models.Model):
             return ''
         return '<img src="%s" width="16" height="16" />' % self.favicon.url
     favicon_img.allow_tags = True
-
-    def get_treshold(self):
-        """Returns the date after which the entries can be ignored / deleted"""
-        del_after = self.category.delete_after
-
-        if del_after == 'never':
-            return None
-        return timezone.now() - TIMEDELTAS[del_after]
 
     def update_unread_count(self):
         self.unread_count = self.entries.filter(read=False).count()
@@ -570,16 +600,19 @@ class Entry(models.Model):
 
 
 def pubsubhubbub_update(notification, **kwargs):
-    parsed = notification
     url = None
-    for link in parsed.feed.links:
+    for link in notification.feed.links:
         if link['rel'] == 'self':
             url = link['href']
     if url is None:
         return
-    feeds = Feed.objects.filter(url=url)
-    updater = FeedUpdater(parsed, feeds)
-    updater.update()
+
+    entries = filter(
+        None,
+        [UniqueFeedManager.entry_data(
+            entry, notification) for entry in notification.entries]
+    )
+    enqueue(store_entries, args=[url, entries], queue='store')
 updated.connect(pubsubhubbub_update)
 
 

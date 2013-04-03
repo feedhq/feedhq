@@ -3,19 +3,20 @@ import feedparser
 import json
 import os
 
-from httplib import IncompleteRead
 from io import StringIO, BytesIO
 
-from django_push.subscriber.signals import updated
-from httplib2 import Response
-from mock import patch
-from requests import Response as _Response
-from requests.packages.urllib3.exceptions import LocationParseError
-from rq.timeouts import JobTimeoutException
-
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django_push.subscriber.signals import updated
+from httplib import IncompleteRead
+from httplib2 import Response
+from mock import patch
+from requests import Response as _Response, RequestException
+from requests.packages.urllib3.exceptions import LocationParseError
+from rq.timeouts import JobTimeoutException
+
 
 from feedhq.feeds.models import Category, Feed, Entry, Favicon, UniqueFeed
 from feedhq.feeds.tasks import update_feed
@@ -163,7 +164,7 @@ class TestFeeds(TestCase):
         self.assertEqual('/feed/%s/' % feed.id, feed.get_absolute_url())
 
         # update()
-        update_feed(feed.url, use_etags=False)
+        update_feed(feed.url)
 
         unique_feed = UniqueFeed.objects.get(url=feed.url)
         self.assertEqual(unique_feed.title, 'Sample Feed')
@@ -176,7 +177,7 @@ class TestFeeds(TestCase):
     @patch('requests.get')
     def test_entry_model(self, get):
         get.return_value = responses(200, self.feed.url)
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
         title = 'RE2: a principled approach to regular expression matching'
         entry = Entry.objects.get(title=title)
 
@@ -193,7 +194,7 @@ class TestFeeds(TestCase):
     def test_ctype(self, get):
         # Updatefeed doesn't fail if content-type is missing
         get.return_value = responses(200, self.feed.url, headers={})
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
         get.assert_called_with(
             self.feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
@@ -201,7 +202,7 @@ class TestFeeds(TestCase):
 
         get.return_value = responses(200, self.feed.url,
                                      headers={'Content-Type': None})
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
         get.assert_called_with(
             self.feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
@@ -258,7 +259,7 @@ class TestFeeds(TestCase):
             self.assertEqual(feed.error, None)
             self.assertEqual(feed.backoff_factor, 1)
 
-            update_feed(self.feed.url, use_etags=False)
+            update_feed(feed.url, backoff_factor=feed.backoff_factor)
 
             feed = UniqueFeed.objects.get(url=self.feed.url)
             self.assertFalse(feed.muted)
@@ -278,11 +279,51 @@ class TestFeeds(TestCase):
         self.assertEqual(feed.backoff_factor, 1)
 
         for i in range(12):
-            update_feed(self.feed.url, use_etags=False)
+            update_feed(self.feed.url, backoff_factor=feed.backoff_factor)
             feed = UniqueFeed.objects.get(url=self.feed.url)
             self.assertFalse(feed.muted)
             self.assertEqual(feed.error, '502')
             self.assertEqual(feed.backoff_factor, min(i + 2, 10))
+
+        get.side_effect = RequestException
+        feed = UniqueFeed.objects.get()
+        feed.error = None
+        feed.backoff_factor = 1
+        feed.save()
+        for i in range(12):
+            update_feed(self.feed.url, backoff_factor=feed.backoff_factor)
+            feed = UniqueFeed.objects.get(url=self.feed.url)
+            self.assertFalse(feed.muted)
+            self.assertEqual(feed.error, 'timeout')
+            self.assertEqual(feed.backoff_factor, min(i + 2, 10))
+
+    @patch("requests.get")
+    def test_etag_modified(self, get):
+        get.return_value = responses(304)
+        update_feed(self.feed.url, etag='etag', last_modified='1234',
+                    subscribers=2)
+        get.assert_called_with(
+            'sw-all.xml',
+            headers={
+                'User-Agent': USER_AGENT % '2 subscribers',
+                'Accept': feedparser.ACCEPT_HEADER,
+                'If-None-Match': 'etag',
+                'If-Modified-Since': '1234',
+            }, timeout=10)
+
+    @patch("requests.get")
+    def test_restore_backoff(self, get):
+        get.return_value = responses(304)
+        feed = UniqueFeed.objects.get()
+        feed.error = 'timeout'
+        feed.backoff_factor = 5
+        feed.save()
+        update_feed(feed.url, error=feed.error,
+                    backoff_factor=feed.backoff_factor)
+
+        feed = UniqueFeed.objects.get()
+        self.assertEqual(feed.backoff_factor, 1)
+        self.assertEqual(feed.error, '')
 
     @patch('requests.get')
     def test_no_date_and_304(self, get):
@@ -293,11 +334,11 @@ class TestFeeds(TestCase):
                                      url='no-date.xml')
 
         # Update the feed twice and make sure we don't index the content twice
-        update_feed(feed.url, use_etags=False)
+        update_feed(feed.url)
         feed1 = Feed.objects.get(pk=feed.id)
         count1 = feed1.entries.count()
 
-        update_feed(feed1.url, use_etags=False)
+        update_feed(feed1.url)
         feed2 = Feed.objects.get(pk=feed1.id)
         count2 = feed2.entries.count()
 
@@ -308,33 +349,22 @@ class TestFeeds(TestCase):
         get.return_value = responses(200, 'rss20.xml')
         self.feed.url = 'rss20.xml'
         self.feed.save()
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
         self.assertEqual(Entry.objects.count(), 1)
 
         get.return_value = responses(200, 'no-link.xml')
         self.feed.url = 'no-link.xml'
         self.feed.save()
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
         self.assertEqual(Entry.objects.count(), 1)
 
-    @patch('requests.get')
-    def test_multiple_objects(self, get):
-        """Duplicates are removed at the next update"""
-        get.return_value = responses(200, self.feed.url)
-        update_feed(self.feed.url, use_etags=False)
-        entry = self.feed.entries.all()[0]
-        entry.id = None
-        entry.save()
-        entry.id = None
-        entry.save()
-        self.assertEqual(self.feed.entries.count(), 32)
-        update_feed(self.feed.url, use_etags=False)
-        self.assertEqual(self.feed.entries.count(), 30)
-
-    def test_uniquefeed_deletion(self):
+    @patch("requests.get")
+    def test_uniquefeed_deletion(self, get):
+        get.return_value = responses(304)
         f = UniqueFeed.objects.create(url='example.com')
         self.assertEqual(UniqueFeed.objects.count(), 2)
-        UniqueFeed.objects.update_feed(f.url, use_etags=False)
+        call_command('delete_unsubscribed')
+        UniqueFeed.objects.update_feed(f.url)
         self.assertEqual(UniqueFeed.objects.count(), 1)
 
     def test_entry_model_behaviour(self):
@@ -353,7 +383,7 @@ class TestFeeds(TestCase):
     def test_task_timeout_handling(self, get):
         get.side_effect = JobTimeoutException
         self.assertEqual(UniqueFeed.objects.get().backoff_factor, 1)
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
         self.assertEqual(UniqueFeed.objects.get().backoff_factor, 2)
 
     ### Views ###
@@ -509,7 +539,9 @@ class TestFeeds(TestCase):
         self.assertEqual(Feed.objects.count(), 0)
         # Redirects to home so useless to test
 
-    def test_invalid_page(self):
+    @patch("requests.get")
+    def test_invalid_page(self, get):
+        get.return_value = responses(304)
         # We need more than 25 entries
         update_feed(self.feed.url)
         url = reverse('feeds:home', args=[12000])  # that page doesn't exist
@@ -528,7 +560,7 @@ class TestFeeds(TestCase):
     @patch('requests.get')
     def test_entry(self, get):
         get.return_value = responses(200, self.feed.url)
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
 
         url = reverse('feeds:home')
         self._test_entry(url)
@@ -551,12 +583,29 @@ class TestFeeds(TestCase):
     @patch('requests.get')
     def test_last_entry(self, get):
         get.return_value = responses(200, self.feed.url)
-        update_feed(self.feed.url, use_etags=False)
+
+        with self.assertNumQueries(6):
+            update_feed(self.feed.url)
+        self.assertEqual(Feed.objects.get().unread_count,
+                         self.user.entries.filter(read=False).count())
 
         last_item = self.user.entries.order_by('date')[0]
         url = reverse('feeds:item', args=[last_item.id])
         response = self.client.get(url)
         self.assertNotContains(response, 'Next →')
+
+    def test_not_mocked(self):
+        with self.assertRaises(ValueError):
+            update_feed(self.feed.url)
+
+    @patch("requests.get")
+    def test_handle_etag(self, get):
+        get.return_value = responses(200, headers={'etag': 'foo',
+                                                   'last-modified': 'bar'})
+        update_feed(self.feed.url)
+        feed = UniqueFeed.objects.get()
+        self.assertEqual(feed.etag, 'foo')
+        self.assertEqual(feed.modified, 'bar')
 
     def test_img(self):
         entry = Entry.objects.create(
@@ -666,7 +715,7 @@ class TestFeeds(TestCase):
         )
 
         get.return_value = responses(200, self.feed.url)
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
 
         response = self.client.get(url)
         self.assertContains(
@@ -681,7 +730,7 @@ class TestFeeds(TestCase):
         self.assertNotContains(response, 'Mark all as read')
 
         get.return_value = responses(200, self.feed.url)
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
 
         response = self.client.get(url)
         self.assertContains(response, 'Mark all as read')
@@ -711,7 +760,7 @@ class TestFeeds(TestCase):
         self.user.save()
 
         get.return_value = responses(200, self.feed.url)
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
         get.assert_called_with(
             'sw-all.xml',
             headers={'User-Agent': USER_AGENT % '1 subscriber',
@@ -745,7 +794,7 @@ class TestFeeds(TestCase):
 
         get.return_value = responses(200, self.feed.url)
 
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
         get.assert_called_with(
             'sw-all.xml',
             headers={'User-Agent': USER_AGENT % '1 subscriber',
@@ -786,7 +835,7 @@ class TestFeeds(TestCase):
         self.user.save()
 
         get.return_value = responses(200, self.feed.url)
-        update_feed(self.feed.url, use_etags=False)
+        update_feed(self.feed.url)
         get.assert_called_with(
             'sw-all.xml',
             headers={'User-Agent': USER_AGENT % '1 subscriber',
@@ -889,23 +938,6 @@ class TestFeeds(TestCase):
         })
         self.assertContains(response, 'No feed found')
         self.assertContains(response, 'Return to the site')
-
-    @patch('requests.get')
-    def test_duplicate(self, get):
-        """Adding an entry the user already has marks it as read"""
-        get.return_value = responses(200, 'rss20.xml')
-
-        # Creating a feed will update it and assign the entry
-        self.cat.feeds.create(url='http://exampleexample.com')
-
-        # Update another feed with the same entry
-        update_feed(self.feed.url, use_etags=False)
-
-        self.assertEqual(Entry.objects.count(), 2)
-        # One entry is unread
-        Entry.objects.get(link="http://example.org/item/1", read=False)
-        # Other is read
-        Entry.objects.get(link="http://example.org/item/1", read=True)
 
 
 class FaviconTests(TestCase):
