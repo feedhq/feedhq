@@ -426,10 +426,11 @@ class Feed(models.Model):
         return reverse('feeds:feed', args=[self.id])
 
     def save(self, *args, **kwargs):
+        feed_created = self.pk is None
         super(Feed, self).save(*args, **kwargs)
         # FIXME maybe find another way to ensure consistency
         unique, created = UniqueFeed.objects.get_or_create(url=self.url)
-        if created and not unique.muted:
+        if feed_created or created:
             enqueue(update_feed, kwargs={
                 'url': self.url,
                 'subscribers': unique.subscribers,
