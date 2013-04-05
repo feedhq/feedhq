@@ -375,7 +375,7 @@ class UniqueFeed(models.Model):
                                                  default=1)
     last_loop = models.DateTimeField(_('Last loop'), default=timezone.now,
                                      db_index=True)
-    subscribers = models.PositiveIntegerField(_('Subsribers'), default=1,
+    subscribers = models.PositiveIntegerField(_('Subscribers'), default=1,
                                               db_index=True)
 
     objects = UniqueFeedManager()
