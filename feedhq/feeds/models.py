@@ -359,7 +359,7 @@ class UniqueFeed(models.Model):
 
     url = models.URLField(_('URL'), max_length=1023, unique=True)
     title = models.CharField(_('Title'), max_length=2048, blank=True)
-    link = models.URLField(_('Link'), max_length=1023, blank=True)
+    link = models.URLField(_('Link'), max_length=2048, blank=True)
     etag = models.CharField(_('Etag'), max_length=1023, null=True, blank=True)
     modified = models.CharField(_('Modified'), max_length=1023, null=True,
                                 blank=True)
