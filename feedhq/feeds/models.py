@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.utils import timezone
+from django.utils.text import unescape_entities
 from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 from httplib import IncompleteRead
@@ -512,7 +513,8 @@ class Entry(models.Model):
 
     def sanitized_title(self):
         if self.title:
-            return bleach.clean(self.title, tags=[], strip=True)
+            return unescape_entities(bleach.clean(self.title, tags=[],
+                                                  strip=True))
         return _('(No title)')
 
     def sanitized_content(self):
