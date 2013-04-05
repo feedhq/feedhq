@@ -55,6 +55,12 @@ Developer- / Sysadmin-facing features
 Installation
 ------------
 
+Requirements:
+
+* Python 2.7
+* Redis
+* PostgreSQL (preferred) or another django-compatible database server
+
 Getting the code::
 
     git clone https://github.com/feedhq/feedhq.git
@@ -121,11 +127,9 @@ Note that additionally to the web server, you need to run one or more
 consumers for the task queue. This is done with the ``rqworker`` management
 command::
 
-    django-admin.py rqworker favicons high default low
+    django-admin.py rqworker store high default favicons
 
-The arguments are queue names. FeedHQ only uses the ``high`` and ``default``
-queues but this is the pattern advertised by RQ and the low queue may be used
-in the future.
+The arguments are queue names.
 
 Once your application is deployed (you've run ``django-admin.py syncdb`` to
 create the database tables and ``django-admin.py collectstatic`` to collect
