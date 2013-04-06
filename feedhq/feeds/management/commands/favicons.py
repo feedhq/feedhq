@@ -1,12 +1,8 @@
 from optparse import make_option
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.db import connection
 
-from raven import Client
-
-from ...models import UniqueFeed, Favicon
+from ...models import UniqueFeed, enqueue_favicon
 
 
 class Command(BaseCommand):
@@ -24,13 +20,4 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         links = UniqueFeed.objects.values_list('link', flat=True).distinct()
         for link in links:
-            try:
-                Favicon.objects.update_favicon(link,
-                                               force_update=kwargs['all'])
-            except Exception:
-                if settings.DEBUG or not hasattr(settings, 'SENTRY_DSN'):
-                    raise
-                else:
-                    client = Client(dsn=settings.SENTRY_DSN)
-                    client.captureException()
-        connection.close()
+            enqueue_favicon(link, force_update=kwargs['all'])

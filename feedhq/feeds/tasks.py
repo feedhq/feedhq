@@ -37,9 +37,9 @@ def read_later(entry_pk):
 
 
 @raven
-def update_favicon(feed_url):
+def update_favicon(feed_url, force_update=False):
     from .models import Favicon
-    Favicon.objects.update_favicon(feed_url)
+    Favicon.objects.update_favicon(feed_url, force_update=force_update)
 
 
 @raven

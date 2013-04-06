@@ -77,8 +77,12 @@ TIMEDELTAS = {
 }
 
 
-class CategoryManager(models.Manager):
+def enqueue_favicon(url, force_update=False):
+    enqueue(update_favicon, args=[url], kwargs={'force_update': force_update},
+            queue='favicons')
 
+
+class CategoryManager(models.Manager):
     def with_unread_counts(self):
         return self.values('id', 'name', 'slug', 'color').annotate(
             unread_count=models.Sum('feeds__unread_count'))
@@ -310,7 +314,7 @@ class UniqueFeedManager(models.Manager):
         unique, created = self.get_or_create(
             url=new_url, defaults={'subscribers': subscribers})
         if created and not settings.TESTS:
-            enqueue(update_favicon, args=[new_url])
+            enqueue_favicon(new_url)
         self.filter(url=old_url).delete()
 
     def mute_feed(self, url, reason):
@@ -443,7 +447,7 @@ class Feed(models.Model):
                 'hub': unique.hub,
             }, queue='high', timeout=20)
             if not settings.TESTS:
-                enqueue(update_favicon, args=[self.url])
+                enqueue_favicon(unique.link)
 
     @property
     def media_safe(self):
@@ -630,17 +634,17 @@ class FaviconManager(models.Manager):
         urls = UniqueFeed.objects.filter(link=link).values_list('url',
                                                                 flat=True)
         feeds = Feed.objects.filter(url__in=urls, favicon='')
-        if not created and not force_update:
+        if (not created and not force_update) and favicon.favicon:
             # Still, add to existing
-            favicon_url = self.filter(url=link).values_list('favicon',
-                                                            flat=True)[0]
-            if not favicon_url:
+            favicon_urls = list(self.filter(url=link).exclude(
+                favicon='').values_list('favicon', flat=True))
+            if not favicon_urls:
                 return favicon
 
             if not feeds.exists():
                 return
 
-            feeds.update(favicon=favicon_url)
+            feeds.update(favicon=favicon_urls[0])
             return favicon
 
         ua = {'User-Agent': FAVICON_FETCHER}
