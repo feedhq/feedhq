@@ -6,9 +6,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from raven import Client
 
-from ...models import Feed, UniqueFeed
-from ...tasks import update_favicon
-from ....tasks import enqueue
+from ...models import Feed, UniqueFeed, enqueue_favicon
 
 
 class Command(BaseCommand):
@@ -29,8 +27,18 @@ class Command(BaseCommand):
             UniqueFeed.objects.bulk_create(uniques)
 
             if not settings.TESTS:
-                for url in urls:
-                    enqueue(update_favicon, args=[url])
+                missing_favicons = UniqueFeed.objects.raw(
+                    """
+                    select id, link from feeds_uniquefeed u
+                    where
+                        u.link != '' and
+                        not exists (
+                            select 1 from feeds_favicon f
+                            where f.url = u.link
+                        )
+                    """)
+                for feed in missing_favicons:
+                    enqueue_favicon(feed.link)
         except Exception:
             if settings.DEBUG or not 'SENTRY_DSN' in os.environ:
                 raise
