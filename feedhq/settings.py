@@ -263,7 +263,7 @@ LOGGING = {
         },
         'ratelimitbackend': {
             'handlers': ['console', 'sentry'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
         },
         'rq.worker': {
             'handlers': ['console'],
