@@ -23,13 +23,11 @@ User-facing features
 * Reading list management with Instapaper, Readability or Read It Later
   support
 
-* Filter out already read entries and duplicates
+* Filter out already read entries
 
 * Hides images/media by default (and therefore filters ads and tracking stuff)
 
 * Multiple user support
-
-* Control on entries' time to live (days, weeks, months or forever)
 
 * `OPML import`_
 
