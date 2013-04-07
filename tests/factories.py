@@ -4,7 +4,8 @@ import random
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.text import slugify
-from factory import Factory, SubFactory, Sequence, lazy_attribute
+from factory import (DjangoModelFactory as Factory, SubFactory, Sequence,
+                     lazy_attribute)
 
 from feedhq.feeds.models import Category, Feed, Entry
 
