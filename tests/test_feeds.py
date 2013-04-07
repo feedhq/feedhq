@@ -117,8 +117,7 @@ class TestFeeds(TestCase):
                                              'pass')
         # ... a category...
         self.cat = Category.objects.create(name='Cat', slug='cat',
-                                           user=self.user,
-                                           delete_after='never')
+                                           user=self.user)
 
         # ... and a feed.
         response = _Response()
@@ -152,8 +151,6 @@ class TestFeeds(TestCase):
         get.return_value = responses(200, 'rss20.xml')
         feed = self.cat.feeds.create(name='RSS test', url='rss20.xml')
         feed.save()
-        self.cat.delete_after = 'never'
-        self.cat.save()
 
         feed_from_db = Feed.objects.get(pk=feed.id)
 
@@ -432,7 +429,7 @@ class TestFeeds(TestCase):
         response = self.client.post(url, bad_data)
         self.assertContains(response, 'errorlist')
 
-        data = {'name': 'New Name', 'color': 'red', 'delete_after': '1day'}
+        data = {'name': 'New Name', 'color': 'red'}
         response = self.client.post(url, data)
         self.assertRedirects(response, '/category/new-name/')
 
@@ -441,12 +438,12 @@ class TestFeeds(TestCase):
         self.assertRedirects(response, '/category/new-name-1/')
 
         # Now we add a category named 'add', which is a conflicting URL
-        data = {'name': 'Add', 'color': 'red', 'delete_after': '1day'}
+        data = {'name': 'Add', 'color': 'red'}
         response = self.client.post(url, data)
         self.assertRedirects(response, '/category/add-1/')
 
         # Add a category with non-ASCII names, slugify should cope
-        data = {'name': u'北京', 'color': 'red', 'delete_after': '1day'}
+        data = {'name': u'北京', 'color': 'red'}
         response = self.client.post(url, data)
         self.assertRedirects(response, '/category/unknown/')
         response = self.client.post(url, data)
@@ -469,7 +466,7 @@ class TestFeeds(TestCase):
         response = self.client.get(url)
         self.assertContains(response, 'Edit Cat')
 
-        data = {'name': 'New Name', 'color': 'blue', 'delete_after': '2days'}
+        data = {'name': 'New Name', 'color': 'blue'}
         response = self.client.post(url, data)
         self.assertContains(response,
                             'New Name has been successfully updated')

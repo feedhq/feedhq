@@ -102,13 +102,6 @@ class Category(models.Model):
     color = models.CharField(_('Color'), max_length=50, choices=COLORS,
                              default=random_color)
 
-    # We delete the old entries after a certain while
-    delete_after = models.CharField(
-        _('Delete after'), max_length=50, choices=DURATIONS, default='1month',
-        help_text=_("Period of time after which entries are deleted, whether "
-                    "they've been read or not."),
-    )
-
     objects = CategoryManager()
 
     def __unicode__(self):

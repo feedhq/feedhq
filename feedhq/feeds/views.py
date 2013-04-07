@@ -159,7 +159,6 @@ def add_category(request):
                 slug=form.slug,
                 user=request.user,
                 color=form.cleaned_data['color'],
-                delete_after=form.cleaned_data['delete_after'],
             )
             category.save()
             return redirect(reverse('feeds:category', args=[category.slug]))
