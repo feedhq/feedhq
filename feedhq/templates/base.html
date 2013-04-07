@@ -16,8 +16,9 @@
 		<div id="root">
 			<div id="header">
 				<div>
-					<h1>
-						<a href="{% url "feeds:home" %}">FeedHQ</a>
+					<h1>{% if user.is_authenticated and only_unread %}{% url "feeds:unread" as home_url %}
+						{% else %}{% url "feeds:home" as home_url %}{% endif %}
+						<a href="{{ home_url }}">FeedHQ</a>
 						{% if user.is_authenticated %}
 							<a class="unread" title="{% trans "Unread entries" %}" href="{% url "feeds:unread" %}">{{ user.entries.unread }}</a>
 							<div id="add-menu">
