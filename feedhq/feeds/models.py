@@ -700,6 +700,8 @@ class FaviconManager(models.Manager):
             ext = 'jpg'
         elif 'PC bitmap' in icon_type:
             ext = 'bmp'
+        elif 'TIFF' in icon_type:
+            ext = 'tiff'
         elif icon_type == 'data':
             ext = 'ico'
         elif ('HTML' in icon_type or
