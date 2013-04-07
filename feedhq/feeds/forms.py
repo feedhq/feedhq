@@ -47,7 +47,7 @@ class CategoryForm(forms.ModelForm):
 class FeedForm(forms.ModelForm):
     class Meta:
         model = Feed
-        fields = ('name', 'url', 'category', 'muted')
+        fields = ('name', 'url', 'category')
 
     def clean_url(self):
         url = self.cleaned_data['url']

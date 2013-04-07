@@ -411,10 +411,6 @@ class Feed(models.Model):
         Category, verbose_name=_('Category'), related_name='feeds',
         help_text=_('<a href="/category/add/">Add a category</a>'),
     )
-    # Mute a feed when we don't want the updates to show up in the timeline
-    muted = models.BooleanField(_('Muted'), default=False,
-                                help_text=_('Check this if you want to stop '
-                                            'checking updates for this feed'))
     unread_count = models.PositiveIntegerField(_('Unread count'), default=0)
     favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True,
                                 storage=OverwritingStorage())
