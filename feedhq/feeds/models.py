@@ -24,6 +24,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 from httplib import IncompleteRead
 from lxml.etree import ParserError
+from redis.exceptions import ResponseError
 from requests.packages.urllib3.exceptions import LocationParseError
 
 import pytz
@@ -260,7 +261,13 @@ class UniqueFeedManager(models.Manager):
             None,
             [self.entry_data(entry, parsed) for entry in parsed.entries]
         )
-        enqueue(store_entries, args=[url, entries], queue='store')
+        try:
+            enqueue(store_entries, args=[url, entries], queue='store')
+        except ResponseError:
+            # Protocol error: too big bulk count string
+            # Redis can't handle this. Enqueue synchronously for now.
+            logger.info("Synchronously storing entries for {0}".format(url))
+            store_entries(url, entries)
 
     @classmethod
     def entry_data(cls, entry, parsed):
