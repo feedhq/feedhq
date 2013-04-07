@@ -3,7 +3,6 @@ from django.conf import settings
 from django.conf.urls import url, patterns, include
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.http import HttpResponse, HttpResponsePermanentRedirect
 
 from ratelimitbackend import admin
 admin.autodiscover()
@@ -11,40 +10,19 @@ admin.autodiscover()
 # This patches User and needs to be done early
 from .profiles.models import User, DjangoUser  # noqa
 
+from . import views
 from .profiles.forms import AuthForm
 
-robots = lambda _: HttpResponse('User-agent: *\nDisallow:\n',
-                                mimetype='text/plain')
-
-humans = lambda _: HttpResponse(u"""/* TEAM */
-    Main developer: Bruno Renié
-    Contact: contact [at] feedhq.org
-    Twitter: @brutasse, @FeedHQ
-    From: Switzerland
-
-/* SITE */
-    Language: English
-    Backend: Django, PostgreSQL, Redis
-    Frontend: SCSS, Compass, Iconic
-""", mimetype='text/plain; charset=UTF-8')
-
-favicon = lambda _: HttpResponsePermanentRedirect(
-    '%score/img/icon-rss.png' % settings.STATIC_URL
-)
-
-touch_icon = lambda _: HttpResponsePermanentRedirect(
-    '%sfeeds/img/touch-icon-114.png' % settings.STATIC_URL
-)
 
 urlpatterns = patterns(
     '',
     (r'^admin/rq/', include('django_rq_dashboard.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^subscriber/', include('django_push.subscriber.urls')),
-    url(r'^robots.txt$', robots),
-    url(r'^humans.txt$', humans),
-    url(r'^favicon.ico$', favicon),
-    url(r'^apple-touch-icon-precomposed.png$', touch_icon),
+    url(r'^robots.txt$', views.robots),
+    url(r'^humans.txt$', views.humans),
+    url(r'^favicon.ico$', views.favicon),
+    url(r'^apple-touch-icon-precomposed.png$', views.touch_icon),
     (r'^', include('feedhq.reader.urls', namespace='reader')),
     (r'^accounts/', include('feedhq.profiles.urls')),
     (r'^', include('feedhq.feeds.urls', namespace='feeds')),
@@ -53,11 +31,7 @@ urlpatterns = patterns(
 urlpatterns += patterns(
     'ratelimitbackend.views',
     url(r'^login/$', 'login', {'authentication_form': AuthForm}, name='login'),
-)
-
-urlpatterns += patterns(
-    'django.contrib.auth.views',
-    url(r'^logout/$', 'logout', name='logout'),
+    url(r'^logout/$', views.logout, name='logout'),
 )
 
 urlpatterns += staticfiles_urlpatterns()

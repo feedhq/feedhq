@@ -9,7 +9,10 @@
 			<li><a href="{% url "feeds:add_feed" %}" class="add" title="{% trans "Add a feed" %}"><span class="icon feed"></span>{% trans "Add feed" %}</a></li>
 			<li class="sep"><a href="{% url "feeds:import_feeds" %}" class="add" title="{% trans "Import feeds" %}"><span class="icon import"></span>{% trans "Import" %}</a></li>
 			<li><a href="{% url "profile" %}">{% trans "Account settings" %}</a></li>
-			<li><a href="{% url "logout" %}">{% trans "Logout" %}</a></li>
+			<li><form method="post" action="{% url "logout" %}" id="logout">
+				{% csrf_token %}
+				<input type="submit" value="{% trans "Logout" %}"></form>
+			</li>
 		</ul>
 	</li>
 {% endif %}

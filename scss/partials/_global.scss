@@ -293,7 +293,7 @@ input, select {
 						border-bottom: 1px solid lighten($text, 80%);
 					}
 
-					a {
+					a, input {
 						display: block;
 						text-decoration: none;
 						padding: 0 5px;
@@ -308,6 +308,25 @@ input, select {
 				display: inline-table;
 			}
 		}
+	}
+
+	form {
+		display: block;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+	}
+
+	input {
+		margin: 0;
+		padding: 0;
+		border: none;
+		background: inherit;
+		font: inherit;
+		display: block;
+		width: 100%;
+		text-align: right;
+		cursor: pointer;
 	}
 }
 
