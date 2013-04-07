@@ -568,6 +568,14 @@ form {
 
 .errorlist {
 	color: lighten(red, 10%);
+	a {
+		&:not(.dismiss) {
+			color: inherit;
+		}
+		&.dismiss {
+			text-decoration: none;
+		}
+	}
 }
 
 .input .errorlist {
