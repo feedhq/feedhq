@@ -4,7 +4,6 @@ python:
 before_install:
   - sudo apt-get install daemontools
 install:
-  - pip install -q -r requirements.txt --use-mirrors
   - pip install -q -r requirements-dev.txt --use-mirrors
 before_script:
   - flake8 feedhq
