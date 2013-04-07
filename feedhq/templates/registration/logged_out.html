@@ -6,6 +6,6 @@
 	<h2>{% trans "Logged out" %}</h2>
 	<div class="notice">
 		{% url "login" as login_url %}
-		<p>{% blocktrans %}You have been logged out, see you soon! Do you want to <a href="{{ login_url }}">login</a> again?{% endblocktrans %}</p>
+		<p>{% trans "You have been successfully logged out, see you soon!" %}</p>
 	</div>
 {% endblock %}
