@@ -21,26 +21,30 @@ class AuthForm(AuthenticationForm):
 
 class ProfileForm(forms.ModelForm):
     success_message = _('Your profile was updated successfully')
-    action = forms.CharField(widget=forms.HiddenInput, initial='profile')
 
     class Meta:
         model = User
-        fields = ['username', 'timezone', 'entries_per_page',
-                  'sharing_twitter', 'sharing_gplus', 'sharing_email']
+        fields = ['username', 'timezone', 'entries_per_page']
 
     def clean_username(self):
         username = self.cleaned_data['username']
         if User.objects.exclude(pk=self.instance.pk).filter(
-            username=username,
+            username__iexact=username,
         ).exists():
             raise forms.ValidationError(_('This username is already taken.'))
         return username
 
 
+class SharingForm(forms.ModelForm):
+    success_message = _('Your sharing preferences were updated successfully')
+
+    class Meta:
+        model = User
+        fields = ['sharing_twitter', 'sharing_gplus', 'sharing_email']
+
+
 class ChangePasswordForm(forms.Form):
     success_message = _('Your password was changed successfully')
-
-    action = forms.CharField(widget=forms.HiddenInput, initial='password')
     current_password = forms.CharField(label=_('Current password'),
                                        widget=forms.PasswordInput)
     new_password = forms.CharField(label=_('New password'),

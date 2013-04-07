@@ -1,0 +1,14 @@
+{% extends "profiles/profile_base.html" %}
+
+{% block sharing_selected %}current{% endblock %}
+
+{% block profile_content %}
+	<h2>{% trans "Sharing preferences" %}</h2>
+
+	<form method="post" action="{% url "sharing" %}" class="no" id="sharing">
+		{% include "form.html" %}
+		<div class="submit">
+			<input type="submit" value="{% trans "Update preferences" %}">
+		</div>
+	</form>
+{% endblock %}

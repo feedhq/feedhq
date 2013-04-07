@@ -1,15 +1,15 @@
-{% extends "base.html" %}
+{% extends "profiles/read_later.html" %}
 
 {% block title %}{% trans "Read It Later settings" %}{% endblock %}
 
-{% block content %}
+{% block profile_content %}
 	<h1>{% trans "Read It Later settings" %}</h1>
 
 	<form method="post" action="{% url "services" "readitlater" %}" class="no" id="readitlater">
 		{% include "form.html" %}
 		<div class="submit">
 			<input type="submit" value="{% trans "Check credentials" %}">
-			<a href="{% url "profile" %}">{% trans "Cancel" %}</a>
+			<a href="{% url "read_later" %}">{% trans "Cancel" %}</a>
 		</div>
 	</form>
 {% endblock %}

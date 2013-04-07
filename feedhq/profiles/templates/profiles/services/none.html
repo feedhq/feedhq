@@ -1,14 +1,14 @@
-{% extends "base.html" %}
+{% extends "profiles/read_later.html" %}
 
 {% block title %}{% trans "Disable read later settings" %}{% endblock %}
 
-{% block content %}
+{% block profile_content %}
 	<h1>{% trans "Disable read later settings" %}</h1>
 	<p>{% trans "You are about to disable your current read later service. This will remove your credentials from the FeedHQ server and you won't be able to add items to your reading list from FeedHQ anymore." %}</p>
 	<p>{% trans "Are you sure you want to proceed?" %}</p>
 	<form method="post" action="{% url "services" "none" %}" class="no" id="disable">
 		{% include "form.html" %}
 		<input type="submit" value="{% trans "Yes" %}">
-		<a href="{% url "profile" %}">{% trans "Cancel" %}</a>
+		<a href="{% url "read_later" %}">{% trans "Cancel" %}</a>
 	</form>
 {% endblock %}

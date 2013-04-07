@@ -1,53 +1,15 @@
-{% extends "base.html" %}
+{% extends "profiles/profile_base.html" %}
 
-{% block title %}{% trans "Profile" %}{% endblock %}
+{% block stats_selected %}current{% endblock %}
 
-{% block content %}
-	<h1>{% trans "Your profile" %}</h1>
+{% block profile_content %}
 	<h2>{% trans "Stats" %}</h2>
+
+	<p>{% blocktrans with since=user.date_joined|timesince %}You've been a FeedHQ user for <strong>{{ since }}</strong>.{% endblocktrans %}</p>
 
 	<ul>
 		<li>{% blocktrans count counter=categories %}{{ counter }} category{% plural %}{{ counter }} categories{% endblocktrans %}</li>
 		<li>{% blocktrans count counter=feeds %}{{ counter }} feed{% plural %}{{ counter }} feeds{% endblocktrans %}</li>
 		<li>{% blocktrans count counter=entries %}{{ counter }} entry{% plural %}{{ counter }} entries{% endblocktrans %}</li>
 	</ul>
-
-	<h2>{% trans "Export" %}</h2>
-	<p><a href="{% url "export" %}">{% trans "Export your feeds as OPML" %}</a></p>
-
-	<h2>{% trans "Edit your profile" %}</h2>
-
-	<form method="post" action="{% url "profile" %}" class="no" id="profile">
-		{% with profile_form as form %}
-			{% include "form.html" %}
-		{% endwith %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Update profile" %}">
-		</div>
-	</form>
-
-	<h2>{% trans "Read later" %}</h2>
-	<p>{% trans "Your current read-it-later service is:" %} <strong>{{ user.get_read_later_display }}</strong></p>
-	<p>
-		{% trans "Select the service you want for reading list management." %}
-		<a href="{% url "services" "readability" %}">Readability</a>,
-		<a href="{% url "services" "readitlater" %}">Read It Later</a>,
-		<a href="{% url "services" "instapaper" %}">Instapaper</a>{% if user.read_later %},
-		<a href="{% url "services" "none" %}">{% trans "None" %}</a>{% endif %}
-	</p>
-
-	<h2>{% trans "Change your password" %}</h2>
-
-	<form method="post" action="{% url "profile" %}" class="no" id="password">
-		{% with password_form as form %}
-			{% include "form.html" %}
-		{% endwith %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Change password" %}">
-		</div>
-	</form>
-
-	<h2>{% trans "Danger zone" %}</h2>
-	{% url "destroy_account" as destroy_url %}
-	<p>{% blocktrans %}If you don't want to use FeedHQ anymore, you can <a href="{{ destroy_url }}">delete your account</a>.{% endblocktrans %}</p>
 {% endblock %}

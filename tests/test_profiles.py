@@ -19,13 +19,13 @@ class ProfilesTest(WebTest):
                                              'pass')
 
     def test_profile(self):
-        url = reverse('profile')
+        url = reverse('stats')
         response = self.app.get(url, user='test')
         self.assertContains(response, 'Stats')
         self.assertContains(response, '0 feeds')
 
     def test_change_password(self):
-        url = reverse('profile')
+        url = reverse('password')
         response = self.app.get(url, user='test')
         self.assertContains(response, 'Change your password')
 
@@ -39,9 +39,9 @@ class ProfilesTest(WebTest):
         for key, value in data.items():
             form[key] = value
         response = form.submit()
-        self.assertFormError(response, 'password_form', 'current_password',
+        self.assertFormError(response, 'form', 'current_password',
                              'Incorrect password')
-        self.assertFormError(response, 'password_form', 'new_password2',
+        self.assertFormError(response, 'form', 'new_password2',
                              "The two passwords didn't match")
 
         form['current_password'] = 'pass'
@@ -66,7 +66,7 @@ class ProfilesTest(WebTest):
         form['timezone'].force_value('Foo/Bar')
         response = form.submit()
         self.assertFormError(
-            response, 'profile_form', 'timezone', (
+            response, 'form', 'timezone', (
                 'Select a valid choice. Foo/Bar is not one of the '
                 'available choices.'),
         )
@@ -78,7 +78,7 @@ class ProfilesTest(WebTest):
         form['entries_per_page'].force_value(12)
         response = form.submit()
         self.assertFormError(
-            response, 'profile_form', 'entries_per_page', (
+            response, 'form', 'entries_per_page', (
                 'Select a valid choice. 12 is not one of the '
                 'available choices.'),
         )
@@ -91,7 +91,7 @@ class ProfilesTest(WebTest):
 
         form['username'] = 'foobar'
         response = form.submit()
-        self.assertFormError(response, 'profile_form', 'username',
+        self.assertFormError(response, 'form', 'username',
                              'This username is already taken.')
 
         new.username = 'lol'
@@ -103,7 +103,7 @@ class ProfilesTest(WebTest):
 
     @patch("requests.get")
     def test_opml_export(self, get):
-        url = reverse('export')
+        url = reverse('opml_export')
         response = self.app.get(url, user='test')
         self.assertEqual(response.status_code, 200)
         self.assertTrue('attachment' in response['Content-Disposition'])
@@ -122,13 +122,21 @@ class ProfilesTest(WebTest):
         self.assertContains(response, 'xmlUrl="http://example.com/test.atom"')
 
     def test_read_later(self):
-        url = reverse('profile')
+        url = reverse('read_later')
         response = self.app.get(url, user='test')
 
         self.assertContains(
             response,
-            'Your current read-it-later service is: <strong>None</strong>'
+            "You don't have any read-it-later service configured yet."
         )
+
+    def test_sharing(self):
+        url = reverse('sharing')
+        response = self.app.get(url, user='test')
+        form = response.forms['sharing']
+        form['sharing_twitter'] = True
+        response = form.submit().follow()
+        self.assertTrue(User.objects.get().sharing_twitter)
 
     @patch("requests.get")
     def test_valid_readitlater_credentials(self, get):
@@ -238,7 +246,7 @@ class ProfilesTest(WebTest):
         self.user.read_later_credentials = '{"foo":"bar","baz":"bah"}'
         self.user.save()
 
-        response = self.app.get(reverse('profile'), user='test')
+        response = self.app.get(reverse('read_later'), user='test')
         url = reverse('services', args=['none'])
         self.assertContains(response, url)
 

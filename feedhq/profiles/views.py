@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext as _
 from django.views import generic
@@ -7,45 +7,33 @@ from django.views import generic
 from password_reset import views
 
 from .forms import (ChangePasswordForm, ProfileForm, CredentialsForm,
-                    ServiceForm, DeleteAccountForm)
+                    ServiceForm, DeleteAccountForm, SharingForm)
 from ..decorators import login_required
 from ..feeds.models import Feed
 
 
-class ProfileView(generic.FormView):
-    forms = {
-        'password': ChangePasswordForm,
-        'profile': ProfileForm,
-    }
-    template_name = 'auth/user_detail.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        self.action = 'profile'
-        if request.method == 'POST':
-            self.action = request.POST.get('action', self.action)
-        return super(ProfileView, self).dispatch(request, *args, **kwargs)
+class UserMixin(object):
+    success_url = reverse_lazy('profile')
 
     def get_object(self):
         return self.request.user
 
-    def get_form_class(self):
-        return self.forms[self.action]
-
     def get_form_kwargs(self):
-        kwargs = super(ProfileView, self).get_form_kwargs()
+        kwargs = super(UserMixin, self).get_form_kwargs()
         kwargs.update({
             'instance': self.request.user,
         })
         return kwargs
 
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, form.success_message)
+        return super(UserMixin, self).form_valid(form)
+
+
+class Stats(UserMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
-        ctx = super(ProfileView, self).get_context_data(**kwargs)
-        ctx['%s_form' % self.action] = ctx['form']
-        if self.action == 'password':
-            ctx['profile_form'] = ProfileForm(**self.get_form_kwargs())
-        else:
-            ctx['password_form'] = ChangePasswordForm(**self.get_form_kwargs())
-        del ctx['form']
+        ctx = super(Stats, self).get_context_data(**kwargs)
         ctx.update({
             'categories': self.request.user.categories.count(),
             'feeds': Feed.objects.filter(
@@ -54,22 +42,45 @@ class ProfileView(generic.FormView):
             'entries': self.request.user.entries.count(),
         })
         return ctx
+stats = login_required(Stats.as_view())
 
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, form.success_message)
-        return redirect(reverse('profile'))
+
+class ReadLater(UserMixin, generic.TemplateView):
+    template_name = 'profiles/read_later.html'
+read_later = login_required(ReadLater.as_view())
+
+
+class PasswordView(UserMixin, generic.FormView):
+    template_name = 'profiles/change_password.html'
+    form_class = ChangePasswordForm
+password = login_required(PasswordView.as_view())
+
+
+class ProfileView(UserMixin, generic.FormView):
+    form_class = ProfileForm
+    template_name = 'profiles/edit_profile.html'
 profile = login_required(ProfileView.as_view())
 
 
+class Sharing(UserMixin, generic.FormView):
+    form_class = SharingForm
+    template_name = 'profiles/sharing.html'
+    success_url = reverse_lazy('sharing')
+sharing = login_required(Sharing.as_view())
+
+
+class Export(UserMixin, generic.TemplateView):
+    template_name = 'profiles/export.html'
+export = login_required(Export.as_view())
+
+
 @login_required
-def export(request):
+def opml_export(request):
     """OPML export"""
     response = render(request, 'profiles/opml_export.opml',
                       {'categories': request.user.categories.all()})
     response['Content-Disposition'] = 'attachment; filename=feedhq-export.opml'
-    ctype = 'text/xml; charset=utf-8'
-    response['Content-Type'] = ctype
+    response['Content-Type'] = 'text/xml; charset=utf-8'
     return response
 
 
@@ -80,7 +91,7 @@ class ServiceView(generic.FormView):
         'instapaper': CredentialsForm,
         'none': ServiceForm,
     }
-    success_url = reverse_lazy('profile')
+    success_url = reverse_lazy('read_later')
 
     def get_template_names(self):
         return ['profiles/services/%s.html' % self.kwargs['service']]

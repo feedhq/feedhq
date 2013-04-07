@@ -1,0 +1,14 @@
+{% extends "profiles/profile_base.html" %}
+
+{% block profile_selected %}current{% endblock %}
+
+{% block profile_content %}
+	<h2>{% trans "Edit your profile" %}</h2>
+
+	<form method="post" action="{% url "profile" %}" class="no" id="profile">
+		{% include "form.html" %}
+		<div class="submit">
+			<input type="submit" value="{% trans "Update profile" %}">
+		</div>
+	</form>
+{% endblock %}

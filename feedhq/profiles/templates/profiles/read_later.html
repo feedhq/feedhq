@@ -1,0 +1,26 @@
+{% extends "profiles/profile_base.html" %}
+
+{% block title %}{% trans "Read later" %}{% endblock %}
+
+{% block readlater_selected %}current{% endblock %}
+
+{% block profile_content %}
+	<h2>{% trans "Read later" %}</h2>
+
+	{% if user.read_later %}
+		<p>{% trans "Your current read-it-later service is:" %} <strong>{{ user.get_read_later_display }}</strong>.</p>
+	{% else %}
+		<p>{% trans "You don't have any read-it-later service configured yet." %}</p>
+	{% endif %}
+
+	<p>{% trans "If you'd like to change that, select the service you want for reading list management:" %}</p>
+	<ul>
+		<li><a href="{% url "services" "readability" %}">Readability</a></li>
+		<li><a href="{% url "services" "readitlater" %}">Read It Later</a></li>
+		<li><a href="{% url "services" "instapaper" %}">Instapaper</a></li>
+	</ul>
+
+	{% if user.read_later %}
+		<p><a href="{% url "services" "none" %}">{% trans "Disable reading list management" %}</a></p>
+	{% endif %}
+{% endblock %}

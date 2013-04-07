@@ -1,8 +1,8 @@
-{% extends "base.html" %}
+{% extends "profiles/read_later.html" %}
 
 {% block title %}{% trans "Readability settings" %}{% endblock %}
 
-{% block content %}
+{% block profile_content %}
 	<h1>{% trans "Readability settings" %}</h1>
 
 	<p>{% trans "Please enter your Readability credentials. Note that Readability uses xAuth so we won't store your raw credentials but exchange them for a token that you can revoke at any time." %}</p>
@@ -11,7 +11,7 @@
 		{% include "form.html" %}
 		<div class="submit">
 			<input type="submit" value="{% trans "Check credentials" %}">
-			<a href="{% url "profile" %}">{% trans "Cancel" %}</a>
+			<a href="{% url "read_later" %}">{% trans "Cancel" %}</a>
 		</div>
 	</form>
 {% endblock %}

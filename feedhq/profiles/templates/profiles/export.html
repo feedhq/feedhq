@@ -1,0 +1,13 @@
+{% extends "profiles/profile_base.html" %}
+
+{% block title %}{% trans "Export your subscriptions" %}{% endblock %}
+
+{% block export_selected %}current{% endblock %}
+
+{% block profile_content %}
+	<h2>{% trans "Export your subscriptions" %}</h2>
+
+	<p>{% trans "Subscriptions can be exported in a standard format. You can download them as an OPML file and import them back into another feed reader." %}</p>
+
+	<p><a href="{% url "opml_export" %}">{% trans "Download OPML export" %}</a>.</p>
+{% endblock %}
