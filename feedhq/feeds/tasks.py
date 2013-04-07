@@ -5,12 +5,9 @@ from collections import defaultdict
 from django_push.subscriber.models import Subscription
 from rq.timeouts import JobTimeoutException
 
-from ..tasks import raven
-
 logger = logging.getLogger('feedupdater')
 
 
-@raven
 def update_feed(url, etag=None, last_modified=None, subscribers=1,
                 request_timeout=10, backoff_factor=1, error=None, link=None,
                 title=None, hub=None):
@@ -30,24 +27,20 @@ def update_feed(url, etag=None, last_modified=None, subscribers=1,
         ))
 
 
-@raven
 def read_later(entry_pk):
     from .models import Entry
     Entry.objects.get(pk=entry_pk).read_later()
 
 
-@raven
 def update_favicon(feed_url, force_update=False):
     from .models import Favicon
     Favicon.objects.update_favicon(feed_url, force_update=force_update)
 
 
-@raven
 def subscribe(topic_url, hub_url):
     Subscription.objects.subscribe(topic_url, hub_url)
 
 
-@raven
 def store_entries(feed_url, entries):
     from .models import Entry, Feed
     links = set([entry['link'] for entry in entries])
