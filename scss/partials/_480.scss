@@ -2,10 +2,6 @@
 	#header {
 		@include grid(6);
 		padding: 0;
-
-		h1 {
-			@include cols(6);
-		}
 	}
 
 	#footer, #content, #categories, #options {

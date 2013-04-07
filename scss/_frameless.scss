@@ -44,7 +44,7 @@ $gutter-em: ($gutter / $em) * 1em; // The gutter-width in ems.
 
 
 @mixin grid($cols:12, $pad:1) {
-	@include clearfix;
+	@include content-clearfix;
 	width: column-width($cols);
 	padding-left: $pad * $gutter-em;
 	padding-right: $pad * $gutter-em;

@@ -21,19 +21,9 @@
 						<a href="{{ home_url }}">FeedHQ</a>
 						{% if user.is_authenticated %}
 							<a class="unread" title="{% trans "Unread entries" %}" href="{% url "feeds:unread" %}">{{ user.entries.unread }}</a>
-							<div id="add-menu">
-								<span class="icon menu"></span>
-								<ul>
-									<li><a href="{% url "feeds:dashboard" %}" class="add" title="{% trans "Dashboard" %}"><span class="icon dashboard"></span>{% trans "Dashboard" %}</a></li>
-									<li><a href="{% url "feeds:add_category" %}" class="add" title="{% trans "Add a category" %}"><span class="icon tag"></span>{% trans "Add category" %}</a></li>
-									<li><a href="{% url "feeds:add_feed" %}" class="add" title="{% trans "Add a feed" %}"><span class="icon feed"></span>{% trans "Add feed" %}</a></li>
-									<li><a href="{% url "feeds:import_feeds" %}" class="add" title="{% trans "Import feeds" %}"><span class="icon import"></span>{% trans "Import" %}</a></li>
-								</ul>
-							</div>
 						{% endif %}
 					</h1>
 					<div id="navigation">
-						<span class="icon cog"></span>
 						<ul>{% spaceless %}
 							{% include "navigation.html" %}
 						</ul>{% endspaceless %}
@@ -91,53 +81,16 @@
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-<script src="{% static "core/js/bootstrap-popover.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
 <script type="text/javascript">
 	$(function() {
-		window.mobile = $(this).find('li').css('display') == 'none' || $(this).attr('class') == 'active';
+		window.touchDevice = 'ontouchstart' in document.documentElement;
 
-		if (!mobile) {
+		if (!touchDevice) {
 			$('.tultip').tooltip();
 		}
-		$('#add-menu, #navigation').popover({
-			trigger: "manual",
-			content: function() {
-				return $(this).find('ul').html();
-			},
-			placement: "bottom",
-		});
 
-		$('#add-menu, #navigation').click(function() {
-			if (!mobile) {
-				return;
-			}
-
-			var id = $(this).attr('id'), hide;
-			if (id == 'navigation') {
-				hide = 'add-menu';
-			} else {
-				hide = 'navigation';
-			}
-			$('#' + hide).popover('hide');
-			$('#' + hide).removeClass('active');
-			$(this).popover('toggle');
-			$(this).toggleClass('active');
-			var pop = $('.popover');
-			if (pop) {
-				var header = $('#header');
-				var top = pop.position().top;
-				pop.removeAttr('style');
-
-				pop.css('display', 'block');
-				pop.css("width", header.width() / 1.7 + 'px');
-
-				var right = (window.innerWidth - header.width()) / 2;
-				pop.css("right", right + 'px');
-				pop.css("top", top + 'px');
-			}
+		$('#navigation .profile').click(function() {
+			return false;
 		});
 
 		$('form.read').submit(function(e) {

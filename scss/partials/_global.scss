@@ -1,5 +1,16 @@
 @include sticky-footer(70px);
 
+@mixin content-clearfix {
+	&:after {
+		visibility: hidden;
+		content: " ";
+		clear: both;
+		display: block;
+		height: 0;
+		font-size: 0;
+	}
+}
+
 @font-face {
 	font-family: 'IconicFill';
 	src: url('../font/iconic_fill.eot');
@@ -187,9 +198,10 @@ input, select {
 }
 
 #header > div {
-	@include clearfix;
-	padding: 0.5em 0;
+	@include content-clearfix;
+	padding: 0.5em 0 0 0;
 	border-bottom: 1px solid #444;
+	min-height: 35px;
 
 	h1 {
 		font-weight: bold;
@@ -199,7 +211,6 @@ input, select {
 			text-decoration: none;
 
 			&.unread {
-				margin-right: 10px;
 				padding: 0px 7px;
 				background: lighten($text, 80%);
 				color: lighten($text, 25%);
@@ -226,37 +237,77 @@ input, select {
 				}
 			}
 		}
-
-		#add-menu {
-			list-style: none;
-			display: inline;
-
-			a {
-				padding-left: 12px;
-				margin-left: -12px;
-			}
-
-			ul, li {
-				display: inline;
-			}
-		}
 	}
 }
 
 #navigation {
 	text-align: right;
-	
-	li {
-		display: inline-block;
-		margin-right: 5px;
-		&:last-child {
-			margin-right: 0;
-		}
-	}
 
-	a {
-		padding-left:15px;
-		margin-left: -15px;
+	> ul {
+		position: relative;
+		@include content-clearfix;
+
+		> li {
+			display: inline-block;
+			margin-bottom: -5px;
+			padding-bottom: 5px;
+				max-width: 100%;
+
+			strong {
+				display: inline-block;
+				max-width: 100%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			> ul {
+				display: none;
+				position: absolute;
+				top: 100%;
+				right: 0;
+				background: white;
+				margin-top: 5px;
+				border: 2px solid lighten($text, 70%);
+				font-size: 1rem;
+				padding: 5px 0;
+				border-radius: 5px;
+
+				&:before {
+					border: solid;
+					border-width: 0 6px 6px 6px;
+					border-color: lighten($text, 70%) transparent;
+					top: -6px;
+					content: "";
+					display: block;
+					left: 60%;
+					position: absolute;
+					z-index: 99;
+				}
+
+				li {
+					position: relative;
+
+					&.sep {
+						margin-bottom: 5px;
+						padding-bottom: 5px;
+						border-bottom: 1px solid lighten($text, 80%);
+					}
+
+					a {
+						display: block;
+						text-decoration: none;
+						padding: 0 5px;
+						&:hover {
+							background: lighten($text, 80%);
+						}
+					}
+				}
+			}
+
+			&:hover > ul {
+				display: inline-table;
+			}
+		}
 	}
 }
 
