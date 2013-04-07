@@ -712,7 +712,8 @@ class FaviconManager(models.Manager):
               'PHP' in icon_type or
               'very short file' in icon_type or
               'gzip compressed data' in icon_type or
-              'ISO-8859 text' in icon_type):
+              'ISO-8859 text' in icon_type or
+              'PCX' in icon_type):
             logger.debug("Ignored content type for %s: %s" % (link, icon_type))
             return favicon
         else:
