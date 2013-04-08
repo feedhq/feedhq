@@ -65,33 +65,27 @@ class WebBasetests(WebTest):
         response = self.app.get(url)
         self.assertNotContains(response, 'Getting started')
 
-
-class BaseTests(TestCase):
-    """Tests that do not require specific setup"""
-
     def test_bookmarklet(self):
         url = reverse('feeds:bookmarklet')
-        response = self.client.get(url)
+        response = self.app.get(url)
         self.assertContains(response, 'Subscribe on FeedHQ')
 
     def test_login_required(self):
         url = reverse('feeds:home')
-        response = self.client.get(url, HTTP_ACCEPT='text/*')
+        response = self.app.get(url, headers={'Accept': 'text/*'})
         self.assertEqual(response.status_code, 200)
+
+
+class BaseTests(TestCase):
+    """Tests that do not require specific setup"""
 
     @patch("requests.get")
     def test_parse_error(self, get):
         get.side_effect = LocationParseError("Failed to parse url")
-        u = User.objects.create_user('foobar', 'test@example.com', 'pass')
-        c = Category.objects.create(name='foo', slug='foo', user=u)
-        f = Feed.objects.create(
-            url='http://www.rubycocoa.com/syndicate/rss/feed.xml',
-            category=c,
-        )
-        UniqueFeed.objects.update_feed(f.url)
-        f = UniqueFeed.objects.get()
-        self.assertTrue(f.muted)
-        self.assertEqual(f.error, f.PARSE_ERROR)
+        FeedFactory.create()
+        unique = UniqueFeed.objects.get()
+        self.assertTrue(unique.muted)
+        self.assertEqual(unique.error, UniqueFeed.PARSE_ERROR)
 
     @patch("requests.get")
     def test_incomplete_read(self, get):
