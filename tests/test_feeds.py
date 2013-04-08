@@ -734,7 +734,8 @@ class TestFeeds(TestCase):
 
         data = {'action': 'read'}
         response = self.client.post(url, data, follow=True)
-        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain,
+                         [('http://testserver{0}'.format(url), 302)])
         self.assertContains(response, '30 entries have been marked as read')
 
     @patch('requests.get')

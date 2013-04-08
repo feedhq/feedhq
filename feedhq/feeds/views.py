@@ -106,7 +106,10 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
             feeds.update(unread_count=0)
             messages.success(request,
                              _('%s entries have been marked as read' % count))
-            return redirect(all_url)
+            if only_unread:
+                return redirect(unread_url)
+            else:
+                return redirect(all_url)
 
     unread_count = entries.filter(read=False).count()
 
