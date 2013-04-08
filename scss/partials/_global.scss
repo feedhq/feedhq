@@ -339,9 +339,11 @@ input, select {
 		color: inherit;
 		cursor: pointer;
 		display: inline-block;
-		height: 28px;
+		height: 26px;
 		padding: 0 16px;
 		margin: 0 !important;
+		-webkit-appearance: none;
+		border-radius: 0;
 	}
 
 	a {
@@ -352,7 +354,7 @@ input, select {
 	a, input[type=submit] {
 		cursor: pointer;
 		display: inline-block;
-		min-height: 28px;
+		min-height: 26px;
 		text-decoration: none;
 		font-size: 16px;
 		border-right: 1px solid white;
@@ -404,7 +406,7 @@ input, select {
 
 	form {
 		color: $text;
-		height: 28px;
+		height: 26px;
 	}
 
 	&.profile {
