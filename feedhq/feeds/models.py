@@ -721,7 +721,7 @@ class FaviconManager(models.Manager):
 
 
 class Favicon(models.Model):
-    url = models.URLField(_('Domain URL'), db_index=True)
+    url = models.URLField(_('Domain URL'), db_index=True, max_length=2048)
     favicon = models.FileField(upload_to='favicons', blank=True,
                                storage=OverwritingStorage())
 
