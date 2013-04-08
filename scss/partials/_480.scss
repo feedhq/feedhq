@@ -52,12 +52,14 @@
 
 	#entry {
 		.date {
-			@include cols(4);
-			margin-left: 0;
+			@include cols(6);
+			margin: 0;
+			margin-bottom: 0;
 		}
 		.actions {
-			@include cols(2);
-			margin-right: 0;
+			@include cols(6);
+			margin: 0;
+			margin-bottom: 1em;
 		}
 	}
 

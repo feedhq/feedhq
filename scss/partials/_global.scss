@@ -339,24 +339,24 @@ input, select {
 		color: inherit;
 		cursor: pointer;
 		display: inline-block;
-		height: 26px;
-		padding: 0 5px;
+		height: 28px;
+		padding: 0 16px;
+		margin: 0 !important;
 	}
 
-	&.actions input {
-		display: block;
+	a {
 		padding: 0 8px;
+		color: lighten($text, 30%);
 	}
 
-	a, form {
+	a, input[type=submit] {
 		cursor: pointer;
 		display: inline-block;
-		height: 26px;
-		padding: 0 8px;
+		min-height: 28px;
 		text-decoration: none;
-		color: lighten($text, 30%);
 		font-size: 16px;
 		border-right: 1px solid white;
+		vertical-align: bottom;
 
 		&.current, .ct {
 			color: $text;
@@ -375,6 +375,11 @@ input, select {
 		form {
 			padding: 0;
 		}
+
+		a {
+			padding: 0 12px;
+		}
+
 		a, form {
 			display: block;
 			float: right;
@@ -386,10 +391,20 @@ input, select {
 		.sbutton {
 			float: right;
 		}
+
+		input {
+			display: inline-block;
+			padding: 0 12px;
+
+			&:last-child {
+				border-right: none;
+			}
+		}
 	}
 
 	form {
 		color: $text;
+		height: 28px;
 	}
 
 	&.profile {
