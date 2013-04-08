@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django_push.subscriber.signals import updated
+from django_webtest import WebTest
 from httplib import IncompleteRead
 from httplib2 import Response
 from mock import patch
@@ -17,12 +18,12 @@ from requests import Response as _Response, RequestException
 from requests.packages.urllib3.exceptions import LocationParseError
 from rq.timeouts import JobTimeoutException
 
-
 from feedhq.feeds.models import Category, Feed, Entry, Favicon, UniqueFeed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT
 
 from . import FeedHQTestCase as TestCase
+from .factories import UserFactory, FeedFactory
 
 TEST_DATA = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 
@@ -48,25 +49,25 @@ def responses(code, path=None, redirection=None,
     return response
 
 
-class BaseTests(TestCase):
-    """Tests that do not require specific setup"""
+class WebBasetests(WebTest):
     @patch('requests.get')
     def test_welcome_page(self, get):
+        get.return_value = responses(304)
+
         self.user = User.objects.create_user('testuser',
                                              'foo@example.com',
                                              'pass')
-        self.client.login(username='testuser', password='pass')
+        user = UserFactory.create()
         url = reverse('feeds:home')
-        response = self.client.get(url)
+        response = self.app.get(url, user=user.username)
         self.assertContains(response, 'Getting started')
-        cat = self.user.categories.create(name='Foo', slug='foo')
-
-        get.return_value = responses(304)
-        feed = Feed(name='yo', url='http://example.com/feed', category=cat)
-        feed.save()
-
-        response = self.client.get(url)
+        FeedFactory.create(category__user=user)
+        response = self.app.get(url)
         self.assertNotContains(response, 'Getting started')
+
+
+class BaseTests(TestCase):
+    """Tests that do not require specific setup"""
 
     def test_bookmarklet(self):
         url = reverse('feeds:bookmarklet')
