@@ -777,6 +777,7 @@ code, tt {
 pre, code, tt {
 	font: 1rem Inconsolata, Monaco, monospace;
 	overflow: auto;
+	word-wrap: normal;
 }
 
 pre code {
@@ -821,6 +822,7 @@ pre code {
 
 	.content {
 		line-height: 1.5em;
+		word-wrap: break-word;
 
 		strong, b {
 			font-weight: bold;
