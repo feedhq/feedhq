@@ -141,7 +141,11 @@ def parse_redis_url():
         'db': 0,
     }
     parsed_redis = urlparse.urlparse(os.environ['REDIS_URL'])
-    path, q, querystring = parsed_redis.path.partition('?')
+    if '?' in parsed_redis.path and not parsed_redis.query:
+        # Bug in python 2.7.3, fixed in 2.7.4
+        path, q, querystring = parsed_redis.path.partition('?')
+    else:
+        path, q, querystring = parsed_redis.path, None, parsed_redis.query
     if path[1:]:
         config['db'] = int(path[1:])
     querystring = urlparse.parse_qs(querystring)
