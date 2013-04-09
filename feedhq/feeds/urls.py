@@ -4,11 +4,11 @@ from . import views
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.feed_list, name='home'),
-    url(r'^(?P<page>\d+)/$', views.feed_list, name='home'),
-    url(r'^unread/$', views.feed_list,
+    url(r'^$', views.entries_list, name='home'),
+    url(r'^(?P<page>\d+)/$', views.entries_list, name='home'),
+    url(r'^unread/$', views.entries_list,
         {'only_unread': True}, name='unread'),
-    url(r'^unread/(?P<page>\d+)/$', views.feed_list,
+    url(r'^unread/(?P<page>\d+)/$', views.entries_list,
         {'only_unread': True}, name='unread'),
 
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
@@ -25,16 +25,16 @@ urlpatterns = patterns(
     url(r'^category/(?P<slug>[\w_-]+)/delete/$', views.delete_category,
         name='delete_category'),
 
-    url(r'^category/(?P<category>[\w_-]+)/$', views.feed_list,
+    url(r'^category/(?P<category>[\w_-]+)/$', views.entries_list,
         name='category'),
 
     url(r'^category/(?P<category>[\w_-]+)/(?P<page>\d+)/$',
-        views.feed_list, name='category'),
+        views.entries_list, name='category'),
 
-    url(r'^category/(?P<category>[\w_-]+)/unread/$', views.feed_list,
+    url(r'^category/(?P<category>[\w_-]+)/unread/$', views.entries_list,
         {'only_unread': True}, name='unread_category'),
     url(r'^category/(?P<category>[\w_-]+)/unread/(?P<page>\d+)/$',
-        views.feed_list, {'only_unread': True}, name='unread_category'),
+        views.entries_list, {'only_unread': True}, name='unread_category'),
 
     # Feeds
     url(r'^feed/add/$', views.add_feed, name='add_feed'),
@@ -42,11 +42,11 @@ urlpatterns = patterns(
     url(r'^feed/(?P<feed>\d+)/delete/$', views.delete_feed,
         name='delete_feed'),
 
-    url(r'^feed/(?P<feed>\d+)/$', views.feed_list, name='feed'),
-    url(r'^feed/(?P<feed>\d+)/(?P<page>\d+)/$', views.feed_list, name='feed'),
-    url(r'^feed/(?P<feed>\d+)/unread/$', views.feed_list,
+    url(r'^feed/(?P<feed>\d+)/$', views.entries_list, name='feed'),
+    url(r'^feed/(?P<feed>\d+)/(?P<page>\d+)/$', views.entries_list, name='feed'),
+    url(r'^feed/(?P<feed>\d+)/unread/$', views.entries_list,
         {'only_unread': True}, name='unread_feed'),
-    url(r'^feed/(?P<feed>\d+)/unread/(?P<page>\d+)/$', views.feed_list,
+    url(r'^feed/(?P<feed>\d+)/unread/(?P<page>\d+)/$', views.entries_list,
         {'only_unread': True}, name='unread_feed'),
 
     # Entries

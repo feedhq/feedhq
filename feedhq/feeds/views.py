@@ -55,7 +55,7 @@ def paginate(object_list, page=1, nb_items=25, force_count=None):
 
 
 @login_required
-def feed_list(request, page=1, only_unread=False, category=None, feed=None):
+def entries_list(request, page=1, only_unread=False, category=None, feed=None):
     """
     Displays a paginated list of entries.
 
@@ -147,7 +147,7 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
         category__in=request.user.categories.all()
     ).count() == 0:
         context['noob'] = True
-    return render(request, 'feeds/feed_list.html', context)
+    return render(request, 'feeds/entries_list.html', context)
 
 
 class SuccessMixin(object):
