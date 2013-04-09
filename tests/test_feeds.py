@@ -123,8 +123,7 @@ class WebBaseTests(WebTest):
 
         self.assertEqual(Category.objects.count(), 1)
         form = response.forms['delete']
-        response = form.submit()
-        self.assertEqual(response.status_code, 302)
+        response = form.submit().follow()
         self.assertEqual(Category.objects.count(), 0)
 
     @patch("requests.get")
@@ -151,7 +150,7 @@ class WebBaseTests(WebTest):
         form['name'] = 'New Name'
         form['color'] = 'blue'
 
-        response = form.submit()
+        response = form.submit().follow()
         self.assertContains(response,
                             'New Name has been successfully updated')
 

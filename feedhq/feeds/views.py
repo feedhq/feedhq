@@ -150,48 +150,42 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
     return render(request, 'feeds/feed_list.html', context)
 
 
-class AddCategory(generic.CreateView):
+class CategoryMixin(object):
     form_class = CategoryForm
-    template_name = 'feeds/category_form.html'
 
     def get_form_kwargs(self):
-        kwargs = super(AddCategory, self).get_form_kwargs()
+        kwargs = super(CategoryMixin, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
     def get_success_url(self):
         return reverse('feeds:category', args=[self.object.slug])
-add_category = login_required(AddCategory.as_view())
-
-
-@login_required
-def edit_category(request, slug):
-    """Edit a category's details"""
-    category = get_object_or_404(request.user.categories, slug=slug)
-    if request.method == 'POST':
-        form = CategoryForm(data=request.POST, instance=category)
-        form.user = request.user
-        if form.is_valid():
-            form.save()
-            messages.success(request, _('%(category)s has been successfully '
-                                        'updated') % {'category': category})
-
-    else:
-        form = CategoryForm(instance=category)
-
-    context = {
-        'form': form,
-        'category': category,
-    }
-    return render(request, 'feeds/edit_category.html', context)
-
-
-class DeleteCategory(generic.DeleteView):
-    success_url = reverse_lazy('feeds:home')
 
     def get_object(self):
         return get_object_or_404(self.request.user.categories,
                                  slug=self.kwargs['slug'])
+
+
+class AddCategory(CategoryMixin, generic.CreateView):
+    template_name = 'feeds/category_form.html'
+add_category = login_required(AddCategory.as_view())
+
+
+class EditCategory(CategoryMixin, generic.UpdateView):
+    template_name = 'feeds/edit_category.html'
+
+    def form_valid(self, form):
+        response = super(EditCategory, self).form_valid(form)
+        messages.success(
+            self.request, _('%(category)s has been successfully '
+                            'updated') % {'category': self.object})
+        return response
+edit_category = login_required(EditCategory.as_view())
+
+
+class DeleteCategory(CategoryMixin, generic.DeleteView):
+    def get_success_url(self):
+        return reverse('feeds:home')
 
     def get_context_data(self, **kwargs):
         kwargs.update({
