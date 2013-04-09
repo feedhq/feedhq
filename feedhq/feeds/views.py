@@ -150,28 +150,18 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
     return render(request, 'feeds/feed_list.html', context)
 
 
-@login_required
-def add_category(request):
-    """Add a category"""
-    if request.method == 'POST':
-        form = CategoryForm(data=request.POST)
-        form.user = request.user
-        if form.is_valid():
-            category = Category(
-                name=form.cleaned_data['name'],
-                slug=form.slug,
-                user=request.user,
-                color=form.cleaned_data['color'],
-            )
-            category.save()
-            return redirect(reverse('feeds:category', args=[category.slug]))
-    else:
-        form = CategoryForm()
+class AddCategory(generic.CreateView):
+    form_class = CategoryForm
+    template_name = 'feeds/category_form.html'
 
-    context = {
-        'form': form,
-    }
-    return render(request, 'feeds/category_form.html', context)
+    def get_form_kwargs(self):
+        kwargs = super(AddCategory, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('feeds:category', args=[self.object.slug])
+add_category = login_required(AddCategory.as_view())
 
 
 @login_required

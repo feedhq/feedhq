@@ -16,32 +16,42 @@ class ColorWidget(forms.Select):
 
 
 class CategoryForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(CategoryForm, self).__init__(*args, **kwargs)
+
     class Meta:
         model = Category
-        exclude = ('user', 'slug', 'order')
+        fields = ['name', 'color']
         widgets = {
             'color': ColorWidget,
         }
 
-    def clean_name(self):
-        """Generates a slug and ensures it is unique for this user"""
-        self.slug = slugify(self.cleaned_data['name'])
-        if not self.slug:
-            self.slug = 'unknown'
+    def save(self, commit=True):
+        category = super(CategoryForm, self).save(commit=False)
+
+        slug = slugify(self.cleaned_data['name'])
+        if not slug:
+            slug = 'unknown'
         valid = False
-        candidate = self.slug
+        candidate = slug
         num = 1
         while not valid:
             if candidate in ('add', 'import'):  # gonna conflict
-                candidate = '{0}-{1}'.format(self.slug, num)
+                candidate = '{0}-{1}'.format(slug, num)
             try:  # Maybe a category with this slug already exists...
                 Category.objects.get(user=self.user, slug=candidate)
-                candidate = '{0}-{1}'.format(self.slug, num)
+                candidate = '{0}-{1}'.format(slug, num)
                 num += 1
             except Category.DoesNotExist:  # ... or not
                 valid = True
-        self.slug = candidate
-        return self.cleaned_data['name']
+        slug = candidate
+
+        category.slug = slug
+        category.user = self.user
+        if commit:
+            category.save()
+        return category
 
 
 class FeedForm(forms.ModelForm):
@@ -97,9 +107,13 @@ class ActionForm(forms.Form):
 
 
 class ReadForm(forms.Form):
-    action = forms.ChoiceField(choices=(
-        ('read', 'read'),
-    ), widget=forms.HiddenInput, initial='read')
+    action = forms.ChoiceField(
+        choices=(
+            ('read', 'read'),
+        ),
+        widget=forms.HiddenInput,
+        initial='read',
+    )
 
 
 class SubscriptionForm(forms.Form):

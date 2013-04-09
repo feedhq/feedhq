@@ -88,7 +88,8 @@ class WebBaseTests(WebTest):
 
         form = response.forms['category']
         response = form.submit()
-        self.assertContains(response, 'errorlist')
+        self.assertFormError(response, 'form', 'name',
+                             ['This field is required.'])
 
         form['name'] = 'New Name'
         form['color'] = 'red'
@@ -167,7 +168,9 @@ class WebBaseTests(WebTest):
         form = response.forms['feed']
         form['name'] = 'Lulz'
         response = form.submit()  # there is no URL / category
-        self.assertContains(response, 'errorlist')
+        for field in 'url', 'category':
+            self.assertFormError(response, 'form', field,
+                                 ['This field is required.'])
 
         form['name'] = 'Bobby'
         form['url'] = 'http://example.com/feed.xml'
