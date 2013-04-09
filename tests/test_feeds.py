@@ -176,6 +176,12 @@ class WebBaseTests(WebTest):
         form['category'] = category.pk
         response = form.submit()
         self.assertRedirects(response, category.get_absolute_url())
+        response.follow()
+
+        response = form.submit()
+        self.assertFormError(
+            response, 'form', 'url',
+            ["It seems you're already subscribed to this feed."])
 
     def test_feed_url_validation(self):
         user = UserFactory.create()

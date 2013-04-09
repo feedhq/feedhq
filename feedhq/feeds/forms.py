@@ -15,11 +15,13 @@ class ColorWidget(forms.Select):
     template_name = 'forms/color_select.html'
 
 
-class CategoryForm(forms.ModelForm):
+class UserFormMixin(object):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        super(CategoryForm, self).__init__(*args, **kwargs)
+        super(UserFormMixin, self).__init__(*args, **kwargs)
 
+
+class CategoryForm(UserFormMixin, forms.ModelForm):
     class Meta:
         model = Category
         fields = ['name', 'color']
@@ -39,11 +41,13 @@ class CategoryForm(forms.ModelForm):
         while not valid:
             if candidate in ('add', 'import'):  # gonna conflict
                 candidate = '{0}-{1}'.format(slug, num)
-            try:  # Maybe a category with this slug already exists...
-                Category.objects.get(user=self.user, slug=candidate)
+            categories = self.user.categories.filter(slug=candidate)
+            if self.instance is not None:
+                categories = categories.exclude(pk=self.instance.pk)
+            if categories.exists():
                 candidate = '{0}-{1}'.format(slug, num)
                 num += 1
-            except Category.DoesNotExist:  # ... or not
+            else:
                 valid = True
         slug = candidate
 
@@ -54,7 +58,11 @@ class CategoryForm(forms.ModelForm):
         return category
 
 
-class FeedForm(forms.ModelForm):
+class FeedForm(UserFormMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(FeedForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = self.user.categories.all()
+
     class Meta:
         model = Feed
         fields = ('name', 'url', 'category')
@@ -70,6 +78,14 @@ class FeedForm(forms.ModelForm):
         netloc = parsed.netloc.split(':')[0]
         if netloc in ['localhost', '127.0.0.1', '::1']:
             raise forms.ValidationError(_("Invalid URL."))
+
+        existing = Feed.objects.filter(category__user=self.user, url=url)
+        if self.instance is not None:
+            existing = existing.exclude(pk=self.instance.pk)
+
+        if existing.exists():
+            raise forms.ValidationError(
+                _("It seems you're already subscribed to this feed."))
         return url
 
 

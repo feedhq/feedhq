@@ -150,7 +150,21 @@ def feed_list(request, page=1, only_unread=False, category=None, feed=None):
     return render(request, 'feeds/feed_list.html', context)
 
 
-class CategoryMixin(object):
+class SuccessMixin(object):
+    success_message = None
+
+    def get_success_message(self):
+        return self.success_message
+
+    def form_valid(self, form):
+        response = super(SuccessMixin, self).form_valid(form)
+        msg = self.get_success_message()
+        if msg is not None:
+            messages.success(self.request, msg)
+        return response
+
+
+class CategoryMixin(SuccessMixin):
     form_class = CategoryForm
 
     def get_form_kwargs(self):
@@ -174,17 +188,17 @@ add_category = login_required(AddCategory.as_view())
 class EditCategory(CategoryMixin, generic.UpdateView):
     template_name = 'feeds/edit_category.html'
 
-    def form_valid(self, form):
-        response = super(EditCategory, self).form_valid(form)
-        messages.success(
-            self.request, _('%(category)s has been successfully '
-                            'updated') % {'category': self.object})
-        return response
+    def get_success_message(self):
+        return _('%(category)s has been successfully '
+                 'updated') % {'category': self.object}
 edit_category = login_required(EditCategory.as_view())
 
 
 class DeleteCategory(CategoryMixin, generic.DeleteView):
     def get_success_url(self):
+        messages.success(self.request,
+                         _('%(category)s has been successfully '
+                           'deleted') % {'category': self.object})
         return reverse('feeds:home')
 
     def get_context_data(self, **kwargs):
@@ -198,63 +212,51 @@ class DeleteCategory(CategoryMixin, generic.DeleteView):
 delete_category = login_required(DeleteCategory.as_view())
 
 
-@login_required
-def add_feed(request):
-    """Adds a Feed object"""
-    if request.method == 'POST':
-        form = FeedForm(data=request.POST)
-        form.fields['category'].queryset = Category.objects.filter(
-            user=request.user,
-        )
-        if form.is_valid():
-            form.save()
-            name = form.cleaned_data['name']
-            messages.success(request, _('%(feed)s has been successfully '
-                                        'added') % {'feed': name})
-            category = form.cleaned_data['category']
-            return redirect(category.get_absolute_url())
-    else:
-        form = FeedForm()
-        form.fields['category'].queryset = Category.objects.filter(
-            user=request.user,
-        )
+class FeedMixin(SuccessMixin):
+    form_class = FeedForm
 
-    context = {
-        'form': form,
-    }
-    return render(request, 'feeds/feed_form.html', context)
+    def get_form_kwargs(self):
+        kwargs = super(FeedMixin, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def get_object(self):
+        return get_object_or_404(Feed, category__user=self.request.user,
+                                 pk=self.kwargs['feed'])
+
+    def get_success_url(self):
+        return reverse('feeds:category', args=[self.object.category.slug])
 
 
-@login_required
-def edit_feed(request, feed):
-    feed = get_object_or_404(Feed, category__user=request.user, pk=feed)
-    if request.method == 'POST':
-        form = FeedForm(data=request.POST, instance=feed)
-        form.fields['category'].queryset = Category.objects.filter(
-            user=request.user,
-        )
+class AddFeed(FeedMixin, generic.CreateView):
+    template_name = 'feeds/feed_form.html'
 
-        if form.is_valid():
-            instance = form.save()
-            messages.success(request, _('%(feed)s has been successfully '
-                                        'updated') % {'feed': feed})
-            return redirect(reverse('feeds:feed', args=[instance.pk]))
+    def form_valid(self, form):
+        response = super(AddFeed, self).form_valid(form)
+        messages.success(self.request, _('%(feed)s has been successfully '
+                                         'added') % {'feed': self.object.name})
+        return response
+add_feed = login_required(AddFeed.as_view())
 
-    else:
-        form = FeedForm(instance=feed)
-        form.fields['category'].queryset = Category.objects.filter(
-            user=request.user,
-        )
 
-    context = {
-        'feed': feed,
-        'form': form,
-    }
-    return render(request, 'feeds/edit_feed.html', context)
+class EditFeed(FeedMixin, generic.UpdateView):
+    template_name = 'feeds/edit_feed.html'
+
+    def form_valid(self, form):
+        response = super(EditFeed, self).form_valid(form)
+        messages.success(
+            self.request, _('%(feed)s has been successfully '
+                            'updated') % {'feed': self.object.name})
+        return response
+edit_feed = login_required(EditFeed.as_view())
 
 
 class DeleteFeed(generic.DeleteView):
-    success_url = reverse_lazy('feeds:home')
+    def get_success_url(self):
+        messages.success(
+            self.request, _('%(feed)s has been successfully '
+                            'deleted') % {'feed': self.object.name})
+        return reverse_lazy('feeds:home')
 
     def get_object(self):
         return get_object_or_404(Feed,
