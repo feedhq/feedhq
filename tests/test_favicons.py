@@ -4,7 +4,7 @@ from mock import patch
 from feedhq.feeds.models import UniqueFeed, Favicon, Feed
 
 from .factories import FeedFactory
-from .test_feeds import responses
+from . import responses
 
 
 class FaviconTests(TestCase):

@@ -9,7 +9,7 @@ from feedhq.feeds.models import Feed, Entry, UniqueFeed
 from feedhq.reader.views import GoogleReaderXMLRenderer
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
-from .test_feeds import responses
+from . import responses
 
 
 def clientlogin(token):

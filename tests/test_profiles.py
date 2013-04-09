@@ -10,7 +10,7 @@ from mock import patch
 
 from feedhq.feeds.utils import USER_AGENT
 
-from .test_feeds import responses
+from . import responses
 
 
 class ProfilesTest(WebTest):

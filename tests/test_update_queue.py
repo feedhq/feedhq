@@ -13,7 +13,7 @@ from feedhq.feeds.models import UniqueFeed
 from feedhq.feeds.utils import USER_AGENT
 
 from .factories import FeedFactory
-from .test_feeds import responses
+from . import responses
 
 
 class UpdateTests(TestCase):
