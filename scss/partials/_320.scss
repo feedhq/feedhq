@@ -14,6 +14,11 @@
 		background: rgba(0, 0, 0, 0.1);
 	}
 
+	@include sticky-footer(70px);
+	#root {
+		margin-bottom: -78px;
+	}
+
 	#header {
 		@include grid(4);
 		padding: 0;

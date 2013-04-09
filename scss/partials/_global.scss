@@ -1,4 +1,7 @@
-@include sticky-footer(70px);
+@include sticky-footer(46px);
+#root {
+	margin-bottom: -54px;
+}
 
 @mixin content-clearfix {
 	&:after {
