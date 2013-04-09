@@ -13,13 +13,13 @@
 		{% include "feeds/entry_links.html" %}
 		<div class="actions navlist">
 			{% if not object.read_later_url and user.read_later %}
-				<form method="post" action="{% url "feeds:item" object.id %}">
+				<form method="post" action="{% url "feeds:item" object.id %}" id="read-later">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="read_later">
 					<input class="tultip icon" type="submit" title="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}" value="&#xe069;">
 				</form>
 			{% endif %}
-			<form method="post" action="{% url "feeds:item" object.id %}">
+			<form method="post" action="{% url "feeds:item" object.id %}" id="unread">
 				{% csrf_token %}
 				<input type="hidden" name="action" value="unread">
 				<input class="tultip icon" type="submit" title="{% trans "Unread" %}" value="&#xe025;">
@@ -49,7 +49,7 @@
 		</div>
 		{% if has_media %}
 			<div class="externalmedia">
-				<form method="post" action="{% url "feeds:item" object.id %}" class="images">
+				<form method="post" action="{% url "feeds:item" object.id %}" class="images" id="images">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="images">
 					{% if object.feed.media_safe %}

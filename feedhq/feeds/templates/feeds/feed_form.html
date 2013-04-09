@@ -4,7 +4,7 @@
 
 {% block content %}
 	<h2>{% trans "Add a feed" %}</h2>
-	<form method="post" action="{% url "feeds:add_feed" %}">
+	<form method="post" action="{% url "feeds:add_feed" %}" id="feed">
 		{% include "form.html" %}
 		<div class="submit">
 			<input type="submit" value="{% trans "Add feed" %}">

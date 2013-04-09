@@ -4,7 +4,7 @@
 
 {% block content %}
 	<h2>{% trans "Import data from an OPML file" %}</h2>
-	<form enctype="multipart/form-data" method="post" action="{% url "feeds:import_feeds" %}">
+	<form enctype="multipart/form-data" method="post" action="{% url "feeds:import_feeds" %}" id="import">
 		{% include "form.html" %}
 		<div class="submit">
 			<input type="submit" value="{% trans "Import" %}">

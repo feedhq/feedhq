@@ -6,7 +6,7 @@
 	{% if formset.forms %}
 		<h1>{% trans "New feeds" %}</h1>
 		<p>{% trans "We found the following feeds. Please uncheck those you don't want to subscribe to and select the category for each one." %}</p>
-		<form method="post" action="{% url "feeds:bookmarklet_subscribe" %}">
+		<form method="post" action="{% url "feeds:bookmarklet_subscribe" %}" id="subscribe">
 			{{ formset.management_form }}
 			{% for form in formset %}
 				<div class="subscribe_form">

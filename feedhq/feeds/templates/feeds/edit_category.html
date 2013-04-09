@@ -4,7 +4,7 @@
 
 {% block content %}
 	<h2>{{ category.name }}</h2>
-	<form method="post" action="{% url "feeds:edit_category" category.slug %}">
+	<form method="post" action="{% url "feeds:edit_category" category.slug %}" id="category">
 		{% include "form.html" %}
 		<div class="submit">
 			<input type="submit" value="{% trans "Save changes" %}">
