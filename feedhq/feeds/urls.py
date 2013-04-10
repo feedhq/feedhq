@@ -43,7 +43,8 @@ urlpatterns = patterns(
         name='delete_feed'),
 
     url(r'^feed/(?P<feed>\d+)/$', views.entries_list, name='feed'),
-    url(r'^feed/(?P<feed>\d+)/(?P<page>\d+)/$', views.entries_list, name='feed'),
+    url(r'^feed/(?P<feed>\d+)/(?P<page>\d+)/$', views.entries_list,
+        name='feed'),
     url(r'^feed/(?P<feed>\d+)/unread/$', views.entries_list,
         {'only_unread': True}, name='unread_feed'),
     url(r'^feed/(?P<feed>\d+)/unread/(?P<page>\d+)/$', views.entries_list,
