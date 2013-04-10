@@ -418,6 +418,17 @@ input, select {
 	}
 }
 
+.profile {
+	ul {
+		list-style: disc;
+		padding-left: 30px;
+
+		li {
+			padding: 5px 0;
+		}
+	}
+}
+
 .popover {
 	position: absolute;
 	background: white;

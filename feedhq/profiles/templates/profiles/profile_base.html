@@ -13,5 +13,8 @@
 		<a class="{% block export_selected %}{% endblock %}" href="{% url "export" %}">{% trans "Export" %}</a>
 		<a class="{% block delete_selected %}{% endblock %}" href="{% url "destroy_account" %}">{% trans "Cancel your account" %}</a>
 	</div>
-	{% block profile_content %}{% endblock %}
+
+	<div class="profile">
+		{% block profile_content %}{% endblock %}
+	</div>
 {% endblock %}

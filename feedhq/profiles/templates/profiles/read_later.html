@@ -8,7 +8,8 @@
 	<h2>{% trans "Read later" %}</h2>
 
 	{% if user.read_later %}
-		<p>{% trans "Your current read-it-later service is:" %} <strong>{{ user.get_read_later_display }}</strong>.</p>
+		<p>{% trans "Your current read-it-later service is:" %} <strong>{{ user.get_read_later_display }}</strong>.
+		<a class="button" href="{% url "services" "none" %}">{% trans "Disable reading list management" %}</a></p>
 	{% else %}
 		<p>{% trans "You don't have any read-it-later service configured yet." %}</p>
 	{% endif %}
@@ -19,8 +20,4 @@
 		<li><a href="{% url "services" "readitlater" %}">Read It Later</a></li>
 		<li><a href="{% url "services" "instapaper" %}">Instapaper</a></li>
 	</ul>
-
-	{% if user.read_later %}
-		<p><a href="{% url "services" "none" %}">{% trans "Disable reading list management" %}</a></p>
-	{% endif %}
 {% endblock %}
