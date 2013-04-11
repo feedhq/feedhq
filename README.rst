@@ -130,10 +130,11 @@ command::
 The arguments are queue names.
 
 Once your application is deployed (you've run ``django-admin.py syncdb`` to
-create the database tables and ``django-admin.py collectstatic`` to collect
-your static files), you can add users to the application. On the admin
-interface, add as many users as you want. Then add some some categories and
-feeds to your account using the regular interface.
+create the database tables, ``django-admin.py migrate`` to run the initial
+migrations and ``django-admin.py collectstatic`` to collect your static
+files), you can add users to the application. On the admin interface, add
+as many users as you want. Then add some some categories and feeds to your
+account using the regular interface.
 
 Crawl for updates::
 
