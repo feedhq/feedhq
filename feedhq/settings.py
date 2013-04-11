@@ -209,6 +209,7 @@ INSTALLED_APPS = (
     'floppyforms',
     'sekizai',
     'django_rq_dashboard',
+    'south',
 
     'feedhq.core',
     'feedhq.feeds',
