@@ -3,33 +3,50 @@
 {% block title %}{% trans "Subscribe" %}{% endblock %}
 
 {% block content %}
-	{% if form.forms %}
+	<div class="subscribe">
 		<h1>{% trans "Subscribe" %}</h1>
-		<p>{% blocktrans count counter=feed_count %}We found the following feed. Please choose a name and a category before subscribing.{% plural %}We found the following {{ feed_count }} feeds. Please uncheck those you don't want to subscribe to and select the category for each one.{% endblocktrans %}</p>
-		<form method="post" action="{% url "feeds:subscribe" %}" id="subscribe">
-			{{ form.management_form }}
-			{% with form as formset %}
-				{% for form in formset %}
-					<div class="subscribe_form">
-						<h2>#{{ forloop.counter }}</h2>
-						{% include "form.html" %}
-					</div>
+		{% if view.existing %}
+			<p>{% blocktrans count counter=view.existing|length %}You are already subscribed to the following feed:{% plural %}You are already subscribed to the following feeds:{% endblocktrans %}</p>
+			<ul>
+				{% for feed in view.existing %}
+					<li>{{ feed.favicon_img }} {{ feed.name }} - {{ feed.url }}</li>
 				{% endfor %}
-			{% endwith %}
-			<div class="submit">
-				<input type="submit" value="{% trans "Subscribe" %}">
+			</ul>
+			{% if form.forms %}
+				<p>{% blocktrans count counter=form.forms|length %}We found an extra feed. Please choose a name and a category to subscribe to it.{% plural %}We found {{ counter }} extra feeds. Please set their names and categories to subscribe to them.{% endblocktrans %}
+			{% else %}
+				<p>{% trans "There are no other feeds available. You're all set!" %}</p>
+			{% endif %}
+		{% elif form.forms %}
+			<p>{% blocktrans count counter=form.forms|length %}We found the following feed. Please choose a name and a category before subscribing.{% plural %}We found the following {{ view.feed_count }} feeds. Please uncheck those you don't want to subscribe to and select the category for each one.{% endblocktrans %}</p>
+		{% else %}
+			<div id="entry">
+				<div class="content">
+					<h1>{% trans "No feed found" %}</h1>
+					{% if site_url %}
+						<p>{% blocktrans %}Sorry, it looks like there are no feeds available on <a href="{{ site_url }}">{{ site_url }}</a>.{% endblocktrans %}</p>
+					{% else %}
+						<p>{% trans "Sorry, it looks like there are no feeds available on this site." %}</p>
+					{% endif %}
+				</div>
 			</div>
-		</form>
-	{% else %}
-		<div id="entry">
-			<div class="content">
-				<h1>{% trans "No feed found" %}</h1>
-				{% if site_url %}
-					<p>{% blocktrans %}Sorry, it looks like there are no feeds available on <a href="{{ site_url }}">{{ site_url }}</a>.{% endblocktrans %}</p>
-				{% else %}
-					<p>{% trans "Sorry, it looks like there are no feeds available on this site." %}</p>
-				{% endif %}
-			</div>
-		</div>
-	{% endif %}
+		{% endif %}
+
+		{% if form.forms %}
+			<form method="post" action="{% url "feeds:subscribe" %}" id="subscribe">
+				{{ form.management_form }}
+				{% with form as formset %}
+					{% for form in formset %}
+						<div class="subscribe_form">
+							{% if formset.forms|length > 1 %}<h2>#{{ forloop.counter }}</h2>{% endif %}
+							{% include "form.html" %}
+						</div>
+					{% endfor %}
+				{% endwith %}
+				<div class="submit">
+					<input type="submit" value="{% trans "Subscribe" %}">
+				</div>
+			</form>
+		{% endif %}
+	</div>
 {% endblock %}

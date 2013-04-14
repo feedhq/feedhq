@@ -10,7 +10,7 @@ from django_webtest import WebTest
 from httplib2 import Response
 from mock import patch
 
-from feedhq.feeds.models import Category, Feed, Entry
+from feedhq.feeds.models import Category, Feed, Entry, UniqueFeed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.utils import USER_AGENT
 
@@ -627,6 +627,19 @@ class WebBaseTests(WebTest):
         form['form-0-subscribe'] = False
         response = form.submit().follow()
         self.assertContains(response, '0 feeds have been added')
+
+        form['form-0-name'] = 'Foo'
+        form['form-0-category'] = c.pk
+        form['form-0-subscribe'] = True
+        response = form.submit()
+        self.assertContains(response, "already subscribed")
+
+        UniqueFeed.objects.create(url='http://example.com/feed',
+                                  title='Awesome')
+        response = self.app.get(
+            url, {'feeds': ",".join(['http://bruno.im/atom/latest/',
+                                     'http://example.com/feed'])})
+        self.assertContains(response, "Awesome")
 
     def test_bookmarklet_no_feed(self):
         user = UserFactory.create()

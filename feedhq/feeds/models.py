@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.utils import timezone
+from django.utils.html import format_html
 from django.utils.text import unescape_entities
 from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
@@ -453,8 +454,8 @@ class Feed(models.Model):
     def favicon_img(self):
         if not self.favicon:
             return ''
-        return '<img src="%s" width="16" height="16" />' % self.favicon.url
-    favicon_img.allow_tags = True
+        return format_html(
+            '<img src="{0}" width="16" height="16" />', self.favicon.url)
 
     def update_unread_count(self):
         self.unread_count = self.entries.filter(read=False).count()

@@ -13,7 +13,7 @@ from django.views import generic
 
 from ..decorators import login_required
 from ..tasks import enqueue
-from .models import Category, Feed, Entry
+from .models import Category, Feed, Entry, UniqueFeed
 from .forms import (CategoryForm, FeedForm, OPMLImportForm, ActionForm,
                     ReadForm, SubscriptionFormSet)
 from .tasks import read_later
@@ -485,15 +485,28 @@ class Subscribe(generic.FormView):
     template_name = 'feeds/subscribe.html'
 
     def get_initial(self):
-        initial = []
-        for link in self.request.GET.get('feeds', '').split(','):
-            if link:
-                initial.append({
-                    'url': link,
-                    'subscribe': True,
-                })
-        self.feed_count = len(initial)
-        return initial
+        urls = [l for l in self.request.GET.get('feeds', '').split(',') if l]
+        self.feed_count = len(urls)
+
+        self.existing = Feed.objects.filter(
+            category__user=self.request.user,
+            url__in=urls)
+
+        existing_urls = set([e.url for e in self.existing])
+
+        new_urls = [url for url in urls if not url in existing_urls]
+        name_prefill = {}
+        if new_urls:
+            uniques = UniqueFeed.objects.filter(
+                url__in=new_urls).values_list('title', 'url')
+            for title, url in uniques:
+                name_prefill[url] = title
+
+        return [{
+            'name': name_prefill.get(url),
+            'url': url,
+            'subscribe': True,
+        } for url in new_urls]
 
     def get_form(self, form_class):
         formset = super(Subscribe, self).get_form(form_class)
@@ -502,12 +515,12 @@ class Subscribe(generic.FormView):
         ]
         for form in formset:
             form.fields['category'].choices = cats
+            form.user = self.request.user
         return formset
 
     def get_context_data(self, **kwargs):
         ctx = super(Subscribe, self).get_context_data(**kwargs)
         ctx['site_url'] = self.request.GET.get('url')
-        ctx['feed_count'] = len(ctx['form'].forms)
         return ctx
 
     def form_valid(self, formset):

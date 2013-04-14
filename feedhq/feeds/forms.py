@@ -138,6 +138,16 @@ class SubscriptionForm(forms.Form):
     url = forms.URLField(label=_('URL'))
     category = forms.ChoiceField(label=_('Category'), required=False)
 
+    def clean_url(self):
+        url = self.cleaned_data['url']
+        if (
+            self.cleaned_data.get('subscribe', False) and
+            Feed.objects.filter(category__user=self.user, url=url).exists()
+        ):
+            raise forms.ValidationError(
+                _("You are already subscribed to this feed."))
+        return url
+
     def clean_name(self):
         return self.require_if_subscribe('name')
 

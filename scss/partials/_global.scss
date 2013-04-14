@@ -488,6 +488,16 @@ input, select {
 	}
 }
 
+.subscribe {
+	ul {
+		margin: 1rem 0;
+	}
+
+	li {
+		padding: 5px 0;
+	}
+}
+
 .popover {
 	position: absolute;
 	background: white;
@@ -657,7 +667,7 @@ form {
 	.field {
 		padding: 5px 0;
 
-		p {
+		p, ul, li {
 			margin: 0;
 		}
 	}
