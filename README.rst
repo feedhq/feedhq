@@ -35,6 +35,8 @@ User-facing features
 
 * Keyboard navigation
 
+* `Subtome`_ support
+
 Developer- / Sysadmin-facing features
 -------------------------------------
 
@@ -49,6 +51,8 @@ Developer- / Sysadmin-facing features
 .. _PubSubHubbub: http://code.google.com/p/pubsubhubbub/
 
 .. _OPML import: http://www.opml.org/
+
+.. _Subtome: https://www.subtome.com/
 
 Installation
 ------------
