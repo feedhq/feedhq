@@ -29,6 +29,7 @@ from requests.packages.urllib3.exceptions import LocationParseError
 
 import pytz
 
+from .fields import URLField
 from .tasks import update_feed, update_favicon, store_entries
 from .utils import FAVICON_FETCHER, USER_AGENT
 from ..storage import OverwritingStorage
@@ -362,9 +363,9 @@ class UniqueFeed(models.Model):
         (HTTP_503, 'HTTP 503'),
     )
 
-    url = models.URLField(_('URL'), max_length=1023, unique=True)
+    url = URLField(_('URL'), unique=True)
     title = models.CharField(_('Title'), max_length=2048, blank=True)
-    link = models.URLField(_('Link'), max_length=2048, blank=True)
+    link = URLField(_('Link'), blank=True)
     etag = models.CharField(_('Etag'), max_length=1023, null=True, blank=True)
     modified = models.CharField(_('Modified'), max_length=1023, null=True,
                                 blank=True)
@@ -375,7 +376,7 @@ class UniqueFeed(models.Model):
     # muted. It's more an indicator of the reason the backoff factor isn't 1.
     error = models.CharField(_('Error'), max_length=50, null=True, blank=True,
                              choices=MUTE_CHOICES, db_column='muted_reason')
-    hub = models.URLField(_('Hub'), max_length=1023, null=True, blank=True)
+    hub = URLField(_('Hub'), null=True, blank=True)
     backoff_factor = models.PositiveIntegerField(_('Backoff factor'),
                                                  default=1)
     last_loop = models.DateTimeField(_('Last loop'), default=timezone.now,
@@ -406,7 +407,7 @@ class UniqueFeed(models.Model):
 class Feed(models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=255)
-    url = models.URLField(_('URL'), max_length=1023)
+    url = URLField(_('URL'))
     category = models.ForeignKey(
         Category, verbose_name=_('Category'), related_name='feeds',
         help_text=_('<a href="/category/add/">Add a category</a>'),
@@ -471,10 +472,10 @@ class Entry(models.Model):
                              related_name='entries')
     title = models.CharField(_('Title'), max_length=255)
     subtitle = models.TextField(_('Abstract'))
-    link = models.URLField(_('URL'), max_length=1023)
+    link = URLField(_('URL'))
     # We also have a permalink for feed proxies (like FeedBurner). If the link
     # points to feedburner, the redirection (=real feed link) is put here
-    permalink = models.URLField(_('Permalink'), max_length=1023, blank=True)
+    permalink = URLField(_('Permalink'), blank=True)
     date = models.DateTimeField(_('Date'), db_index=True)
     # The User FK is redundant but this may be better for performance and if
     # want to allow user input.
@@ -483,8 +484,7 @@ class Entry(models.Model):
     # Mark something as read or unread
     read = models.BooleanField(_('Read'), default=False, db_index=True)
     # Read later: store the URL
-    read_later_url = models.URLField(_('Read later URL'), max_length=1023,
-                                     blank=True)
+    read_later_url = URLField(_('Read later URL'), blank=True)
     starred = models.BooleanField(_('Starred'), default=False, db_index=True)
     broadcast = models.BooleanField(_('Broadcast'), default=False,
                                     db_index=True)
@@ -721,8 +721,7 @@ class FaviconManager(models.Manager):
 
 
 class Favicon(models.Model):
-    url = models.URLField(_('Domain URL'), db_index=True, unique=True,
-                          max_length=2048)
+    url = URLField(_('Domain URL'), db_index=True, unique=True)
     favicon = models.FileField(upload_to='favicons', blank=True,
                                storage=OverwritingStorage())
 
