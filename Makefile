@@ -40,7 +40,7 @@ txpull:
 	@tx pull -a
 
 coverage:
-	@envdir tests/envdir coverage run --source=feedhq `which django-admin.py` test
+	@envdir tests/envdir coverage run `which django-admin.py` test
 	@coverage html
 
 .PHONY: test run db user shell dbshell updatefeeds favicons \

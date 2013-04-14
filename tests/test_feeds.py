@@ -34,11 +34,6 @@ class WebBaseTests(WebTest):
         response = self.app.get(url)
         self.assertNotContains(response, 'Getting started')
 
-    def test_bookmarklet(self):
-        url = reverse('feeds:bookmarklet')
-        response = self.app.get(url)
-        self.assertContains(response, 'Subscribe on FeedHQ')
-
     def test_login_required(self):
         url = reverse('feeds:home')
         response = self.app.get(url, headers={'Accept': 'text/*'})
@@ -182,6 +177,12 @@ class WebBaseTests(WebTest):
         self.assertFormError(
             response, 'form', 'url',
             ["It seems you're already subscribed to this feed."])
+
+        # Provide initial params via ?feed=foo&name=bar
+        response = self.app.get(url, {'feed': 'https://example.com/blog/atom',
+                                      'name': 'Some Example Blog'})
+        self.assertContains(response, 'value="https://example.com/blog/atom"')
+        self.assertContains(response, 'value="Some Example Blog"')
 
     def test_feed_url_validation(self):
         user = UserFactory.create()
@@ -598,52 +599,40 @@ class WebBaseTests(WebTest):
         self.assertEqual(feed.entries.filter(date__year=2012).count(), 2)
 
     @patch('requests.get')
-    def test_bookmarklet_post(self, get):
+    def test_subscribe_url(self, get):
         get.return_value = responses(304)
 
         user = UserFactory.create()
-        CategoryFactory.create(user=user)
+        c = CategoryFactory.create(user=user)
 
-        url = '/subscribe/'  # hardcoded in the JS file
-        with open(test_file('bruno-head.html'), 'r') as f:
-            data = {
-                'source': 'http://bruno.im/',
-                'html': f.read(),
-            }
-            response = self.app.post(url, params=data, user=user.username)
+        url = reverse('feeds:subscribe')
+        response = self.app.get(url, {'feeds': "http://bruno.im/atom/latest/"},
+                                user=user.username)
 
         self.assertContains(response, 'value="http://bruno.im/atom/latest/"')
         form = response.forms['subscribe']
+
+        response = form.submit()
+        self.assertContains(response, 'This field is required.', 2)
+
+        form['form-0-name'] = "Bruno's awesome blog"
+        form['form-0-category'] = c.pk
 
         self.assertEqual(Feed.objects.count(), 0)
         response = form.submit().follow()
         self.assertEqual(Feed.objects.count(), 1)
 
-    def test_bookmarklet_parsing(self):
-        user = UserFactory.create()
-        url = reverse('feeds:bookmarklet_subscribe')
-        for name, count in [('figaro', 15), ('github', 2), ('techcrunch', 3)]:
-            with open(test_file('%s-head.html' % name), 'r') as f:
-                response = self.app.post(url, {'html': f.read(),
-                                               'source': 'http://t.com'},
-                                         user=user.username)
-            self.assertContains(response, name)
-            self.assertEqual(len(response.content.split(
-                '<div class="subscribe_form">'
-            )), count + 1)
-
-    def test_get_bookmarklet(self):
-        url = reverse('feeds:bookmarklet_subscribe')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 405)
-        self.assertEqual(response['Accept'], 'POST')
+        form['form-0-name'] = ""
+        form['form-0-category'] = ""
+        form['form-0-subscribe'] = False
+        response = form.submit().follow()
+        self.assertContains(response, '0 feeds have been added')
 
     def test_bookmarklet_no_feed(self):
         user = UserFactory.create()
-        url = reverse('feeds:bookmarklet_subscribe')
-        response = self.app.post(url, params={
-            'source': 'http://isitbeeroclock.com/',
-            'html': '<link>',
-        }, user=user.username)
-        self.assertContains(response, 'No feed found')
-        self.assertContains(response, 'Return to the site')
+        url = reverse('feeds:subscribe')
+        response = self.app.get(url, {'url': 'http://isitbeeroclock.com/'},
+                                user=user.username)
+        self.assertContains(
+            response, ('it looks like there are no feeds available on '
+                       '<a href="http://isitbeeroclock.com/">'))

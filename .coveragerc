@@ -1,0 +1,6 @@
+[run]
+branch = True
+source = feedhq
+
+[report]
+omit = *migrations*

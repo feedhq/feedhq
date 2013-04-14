@@ -7,6 +7,7 @@ urlpatterns = patterns(
     url(r'^stats/$', views.stats, name='stats'),
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^sharing/$', views.sharing, name='sharing'),
+    url(r'^bookmarklet/$', views.bookmarklet, name='bookmarklet'),
     url(r'^password/$', views.password, name='password'),
     url(r'^export/$', views.export, name='export'),
     url(r'^export/opml/$', views.opml_export, name='opml_export'),

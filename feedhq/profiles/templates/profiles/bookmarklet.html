@@ -1,0 +1,15 @@
+{% extends "profiles/profile_base.html" %}
+
+{% block title %}{% trans "Subscribe button" %}{% endblock %}
+
+{% block bookmarklet_selected %}current{% endblock %}
+
+{% block profile_content %}
+	<h2>{% trans "Subscribe button" %}</h2>
+
+	<p>{% blocktrans %}FeedHQ provides a convenient way to subscribe to any site that provides feeds via <a target="_blank" href="https://www.subtome.com/">Subtome</a>. You need to <a target="_blank" href="https://www.subtome.com/settings.html">add the Subtome button</a> to your bookmarks toolbar or install the Chrome extension.{% endblocktrans %}</p>
+
+	<p>{% trans "Next time you visit an interesting site, simply click on the subscribe button on your bookmarks toolbar. It'll let you easily add the new subscription to your FeedHQ account." %}</p>
+
+	<iframe style="display:none;" src="https://www.subtome.com/register.html?name=FeedHQ&url={{ scheme }}://{{ site.domain }}{% url "feeds:subscribe" %}%3Ffeeds={feeds}%26url={url}"></iframe>
+{% endblock %}

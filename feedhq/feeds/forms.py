@@ -134,8 +134,22 @@ class ReadForm(forms.Form):
 
 class SubscriptionForm(forms.Form):
     subscribe = forms.BooleanField(label=_('Subscribe?'), required=False)
-    name = forms.CharField(label=_('Name'))
+    name = forms.CharField(label=_('Name'), required=False)
     url = forms.URLField(label=_('URL'))
-    category = forms.ChoiceField(label=_('Category'))
+    category = forms.ChoiceField(label=_('Category'), required=False)
+
+    def clean_name(self):
+        return self.require_if_subscribe('name')
+
+    def clean_category(self):
+        return self.require_if_subscribe('category')
+
+    def require_if_subscribe(self, field_name):
+        if (
+            self.cleaned_data.get('subscribe', False) and
+            not self.cleaned_data[field_name]
+        ):
+            raise forms.ValidationError(_('This field is required.'))
+        return self.cleaned_data[field_name]
 
 SubscriptionFormSet = formset_factory(SubscriptionForm, extra=0)

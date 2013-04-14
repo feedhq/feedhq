@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Subscribe" %}{% endblock %}
+
+{% block content %}
+	{% if form.forms %}
+		<h1>{% trans "Subscribe" %}</h1>
+		<p>{% blocktrans count counter=feed_count %}We found the following feed. Please choose a name and a category before subscribing.{% plural %}We found the following {{ feed_count }} feeds. Please uncheck those you don't want to subscribe to and select the category for each one.{% endblocktrans %}</p>
+		<form method="post" action="{% url "feeds:subscribe" %}" id="subscribe">
+			{{ form.management_form }}
+			{% with form as formset %}
+				{% for form in formset %}
+					<div class="subscribe_form">
+						<h2>#{{ forloop.counter }}</h2>
+						{% include "form.html" %}
+					</div>
+				{% endfor %}
+			{% endwith %}
+			<div class="submit">
+				<input type="submit" value="{% trans "Subscribe" %}">
+			</div>
+		</form>
+	{% else %}
+		<div id="entry">
+			<div class="content">
+				<h1>{% trans "No feed found" %}</h1>
+				{% if site_url %}
+					<p>{% blocktrans %}Sorry, it looks like there are no feeds available on <a href="{{ site_url }}">{{ site_url }}</a>.{% endblocktrans %}</p>
+				{% else %}
+					<p>{% trans "Sorry, it looks like there are no feeds available on this site." %}</p>
+				{% endif %}
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}

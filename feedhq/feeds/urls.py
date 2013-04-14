@@ -14,9 +14,7 @@ urlpatterns = patterns(
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
 
     url(r'^import/$', views.import_feeds, name='import_feeds'),
-    url(r'^bookmarklet/$', views.bookmarklet, name='bookmarklet'),
-    url(r'^bookmarklet/js/$', views.bookmarklet_js, name='bookmarklet_js'),
-    url(r'^subscribe/$', views.subscribe, name='bookmarklet_subscribe'),
+    url(r'^subscribe/$', views.subscribe, name='subscribe'),
 
     # Categories
     url(r'^category/add/$', views.add_category, name='add_category'),

@@ -297,3 +297,9 @@ class ProfilesTest(WebTest):
         self.client.logout()
         response = self.client.get(reverse('feeds:unread'))
         self.assertContains(response, 'Username or Email')
+
+    def test_register_subtome(self):
+        url = reverse('bookmarklet')
+        response = self.app.get(url, user='test')
+        self.assertContains(response, 'Subtome')
+        self.assertContains(response, 'iframe')

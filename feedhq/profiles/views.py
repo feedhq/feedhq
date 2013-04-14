@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.sites.models import RequestSite
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect, render
 from django.utils.translation import ugettext as _
@@ -148,3 +149,14 @@ destroy = login_required(Destroy.as_view())
 class DestroyDone(generic.TemplateView):
     template_name = 'profiles/account_delete_done.html'
 destroy_done = DestroyDone.as_view()
+
+
+class Bookmarklet(generic.TemplateView):
+    template_name = 'profiles/bookmarklet.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(Bookmarklet, self).get_context_data(**kwargs)
+        ctx['site'] = RequestSite(self.request)
+        ctx['scheme'] = 'https' if self.request.is_secure() else 'http'
+        return ctx
+bookmarklet = login_required(Bookmarklet.as_view())
