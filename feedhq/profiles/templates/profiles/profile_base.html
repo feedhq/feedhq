@@ -3,15 +3,17 @@
 {% block title %}{% trans "Account" %}{% endblock %}
 
 {% block content %}
-	<h1>{% trans "Account settings" %}</h1>
-	<div class="navlist profile">
-		<a class="{% block stats_selected %}{% endblock %}" href="{% url "stats" %}">{% trans "Stats" %}</a>
-		<a class="{% block profile_selected %}{% endblock %}" href="{% url "profile" %}">{% trans "Profile" %}</a>
-		<a class="{% block sharing_selected %}{% endblock %}" href="{% url "sharing" %}">{% trans "Sharing" %}</a>
-		<a class="{% block readlater_selected %}{% endblock %}" href="{% url "read_later" %}">{% trans "Read later" %}</a>
-		<a class="{% block password_selected %}{% endblock %}" href="{% url "password" %}">{% trans "Password" %}</a>
-		<a class="{% block export_selected %}{% endblock %}" href="{% url "export" %}">{% trans "Export" %}</a>
-		<a class="{% block delete_selected %}{% endblock %}" href="{% url "destroy_account" %}">{% trans "Cancel your account" %}</a>
+	<div class="profile-menu">
+		<h1>{% trans "Account settings" %}</h1>
+		<ul>
+			<li><a class="{% block stats_selected %}{% endblock %}" href="{% url "stats" %}">{% trans "Stats" %}</a></li>
+			<li><a class="{% block profile_selected %}{% endblock %}" href="{% url "profile" %}">{% trans "Profile" %}</a></li>
+			<li><a class="{% block sharing_selected %}{% endblock %}" href="{% url "sharing" %}">{% trans "Sharing" %}</a></li>
+			<li><a class="{% block readlater_selected %}{% endblock %}" href="{% url "read_later" %}">{% trans "Read later" %}</a></li>
+			<li><a class="{% block password_selected %}{% endblock %}" href="{% url "password" %}">{% trans "Password" %}</a></li>
+			<li><a class="{% block export_selected %}{% endblock %}" href="{% url "export" %}">{% trans "Export" %}</a></li>
+			<li><a class="{% block delete_selected %}{% endblock %}" href="{% url "destroy_account" %}">{% trans "Cancel your account" %}</a></li>
+		</ul>
 	</div>
 
 	<div class="profile">

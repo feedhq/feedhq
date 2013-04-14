@@ -14,6 +14,30 @@
 	}
 }
 
+@mixin profile-mobile-menu {
+	> .profile-menu, > .profile {
+		width: 100%;
+		margin: 0;
+	}
+
+	> .profile-menu {
+		ul {
+			border-right: none;
+			border-bottom: 1px solid $border-color;
+		}
+
+		li, a {
+			display: inline-block;
+		}
+
+		a {
+			margin-top: 1px;
+			padding: 1px 7px;
+			font-size: 1rem;
+		}
+	}
+}
+
 @font-face {
 	font-family: 'IconicFill';
 	src: url('../font/iconic_fill.eot');
@@ -93,6 +117,9 @@ $black: #101010;
 $gray: #505050;
 
 $text: #222;
+$light-text: lighten($text, 30%);
+$border-color: lighten($text, 70%);
+$light-background-color: lighten($text, 80%);
 
 em, i {
 	font-style: italic;
@@ -215,7 +242,7 @@ input, select {
 
 			&.unread {
 				padding: 0px 7px;
-				background: lighten($text, 80%);
+				background: $light-background-color;
 				color: lighten($text, 25%);
 				display: inline-block;
 				height: 24px;
@@ -271,7 +298,7 @@ input, select {
 				right: 0;
 				background: white;
 				margin-top: 5px;
-				border: 2px solid lighten($text, 70%);
+				border: 2px solid $border-color;
 				font-size: 1rem;
 				padding: 5px 0;
 				border-radius: 5px;
@@ -279,7 +306,7 @@ input, select {
 				&:before {
 					border: solid;
 					border-width: 0 6px 6px 6px;
-					border-color: lighten($text, 70%) transparent;
+					border-color: $border-color transparent;
 					top: -6px;
 					content: "";
 					display: block;
@@ -294,7 +321,7 @@ input, select {
 					&.sep {
 						margin-bottom: 5px;
 						padding-bottom: 5px;
-						border-bottom: 1px solid lighten($text, 80%);
+						border-bottom: 1px solid $light-background-color;
 					}
 
 					a, input {
@@ -302,7 +329,7 @@ input, select {
 						text-decoration: none;
 						padding: 0 5px;
 						&:hover {
-							background: lighten($text, 80%);
+							background: $light-background-color;
 						}
 					}
 				}
@@ -352,7 +379,7 @@ input, select {
 
 	a {
 		padding: 0 8px;
-		color: lighten($text, 30%);
+		color: $light-text;
 	}
 
 	a, input[type=submit] {
@@ -373,7 +400,7 @@ input, select {
 		}
 
 		&:hover, &.current {
-			background: lighten($text, 80%);
+			background: $light-background-color;
 		}
 	}
 
@@ -412,9 +439,37 @@ input, select {
 		color: $text;
 		height: 26px;
 	}
+}
 
-	&.profile {
-		border-bottom: 1px solid lighten($text, 70%);
+.profile-menu {
+	h1 {
+		font-size: 1.1em !important;
+	}
+
+	ul {
+		border-right: 1px solid $border-color;
+	}
+
+	li {
+
+		&:last-child {
+			border: none;
+		}
+	}
+
+	a {
+		display: block;
+		text-decoration: none;
+		padding: 5px;
+		color: $light-text;
+
+		&.current {
+			color: $text;
+		}
+
+		&.current, &:hover {
+			background: $light-background-color;
+		}
 	}
 }
 
@@ -426,6 +481,10 @@ input, select {
 		li {
 			padding: 5px 0;
 		}
+	}
+
+	p {
+		margin: 1rem 0;
 	}
 }
 
@@ -597,6 +656,10 @@ input, select {
 form {
 	.field {
 		padding: 5px 0;
+
+		p {
+			margin: 0;
+		}
 	}
 	.title {
 		text-align: right;
@@ -617,7 +680,7 @@ form {
 
 	.helptext {
 		font-size: 0.8em;
-		color: lighten($text, 30%);
+		color: $light-text;
 	}
 }
 
@@ -675,7 +738,7 @@ form {
 	}
 
 	a {
-		background: lighten($text, 80%);
+		background: $light-background-color;
 		border-radius: 3px;
 		text-decoration: none;
 
@@ -893,7 +956,7 @@ pre code {
 					padding: 0 5px;
 					cursor: pointer;
 					font-size: 1.5rem;
-					color: lighten($text, 70%);
+					color: $border-color;
 					border-right: 1px solid rgba(255, 255, 255, 0.2);
 					text-decoration: none;
 

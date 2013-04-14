@@ -38,4 +38,8 @@
 		@include cols(4.5);
 		margin-left: 0;
 	}
+
+	#content {
+		@include profile-mobile-menu;
+	}
 }

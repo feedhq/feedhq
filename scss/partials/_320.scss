@@ -143,4 +143,8 @@
 			margin-left: 1.5em !important;
 		}
 	}
+
+	#content {
+		@include profile-mobile-menu;
+	}
 }
