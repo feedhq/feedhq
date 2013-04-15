@@ -7,8 +7,8 @@
 	{% include "feeds/entry_navigation.html" %}
 	<div id="entry">
 		<h2>{{ object.sanitized_title|safe }}
-			<a href="{% if only_unread %}{% url "feeds:unread_feed" object.feed.pk %}{% else %}{% url "feeds:feed" object.feed.pk %}{% endif %}" class="cat {{ object.feed.category.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}"><span class="icon pen"></span></a>
-			<a href="{% if only_unread %}{% url "feeds:unread_category" object.feed.category.slug %}{% else %}{% url "feeds:category" object.feed.category.slug %}{% endif %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}"><span class="icon pen"></span></a>
+			<a href="{% if only_unread %}{% url "feeds:unread_feed" object.feed.pk %}{% else %}{% url "feeds:feed" object.feed.pk %}{% endif %}" class="cat {{ object.feed.category.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}"><span class="icon-pencil"></span></a>
+			<a href="{% if only_unread %}{% url "feeds:unread_category" object.feed.category.slug %}{% else %}{% url "feeds:category" object.feed.category.slug %}{% endif %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}"><span class="icon-pencil"></span></a>
 		</h2>
 		{% include "feeds/entry_links.html" %}
 		<div class="actions navlist">
@@ -16,16 +16,20 @@
 				<form method="post" action="{% url "feeds:item" object.id %}" id="read-later">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="read_later">
-					<input class="tultip icon" type="submit" title="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}" value="&#xe069;">
+					<button class="tultip" type="submit" title="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}">
+						<i class="icon-book"></i>
+					</button>
 				</form>
 			{% endif %}
 			<form method="post" action="{% url "feeds:item" object.id %}" id="unread">
 				{% csrf_token %}
 				<input type="hidden" name="action" value="unread">
-				<input class="tultip icon" type="submit" title="{% trans "Unread" %}" value="&#xe025;">
+				<button class="tultip" type="submit" title="{% trans "Unread" %}">
+					<i class="icon-eye-open"></i>
+				</button>
 			</form>
 			{% if user.sharing_email %}
-				<a class="tultip icon" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.get_link }}">&#x2709;</a>
+				<a class="tultip" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.get_link }}"><i class="icon-envelope-alt"></i></a>
 			{% endif %}
 			{% if user.sharing_twitter %}
 				<div class="sbutton">

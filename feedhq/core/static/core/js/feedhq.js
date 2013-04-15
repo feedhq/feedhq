@@ -83,10 +83,10 @@
 					return;
 				}
 
-				var menu_items = [$('<a class="zoom1" href="#"><span class="text">1:1</span></a>'), $('<a class="fit selected" href="#"><span class="icon fit"></span></a>')];
+				var menu_items = [$('<a class="zoom1" href="#"><span class="text">1:1</span></a>'), $('<a class="fit selected" href="#"><span class="icon-fullscreen"></span></a>')];
 
 				if (retina) {
-					menu_items.push($('<a class="retina" href="#"><span class="icon retina"></span></a>'));
+					menu_items.push($('<a class="retina" href="#"><span class="icon-eye-open"></span></a>'));
 				}
 
 				if (image.parent('a').length > 0) {

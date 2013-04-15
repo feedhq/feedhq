@@ -4,10 +4,10 @@
 	<li>
 	<strong><a class="profile" href="{% url "profile" %}">{{ user.username }}</a></strong>
 		<ul>
-			<li><a href="{% url "feeds:dashboard" %}" class="add" title="{% trans "Dashboard" %}"><span class="icon dashboard"></span>{% trans "Dashboard" %}</a></li>
-			<li><a href="{% url "feeds:add_category" %}" class="add" title="{% trans "Add a category" %}"><span class="icon tag"></span>{% trans "Add category" %}</a></li>
-			<li><a href="{% url "feeds:add_feed" %}" class="add" title="{% trans "Add a feed" %}"><span class="icon feed"></span>{% trans "Add feed" %}</a></li>
-			<li class="sep"><a href="{% url "feeds:import_feeds" %}" class="add" title="{% trans "Import feeds" %}"><span class="icon import"></span>{% trans "Import" %}</a></li>
+			<li><a href="{% url "feeds:dashboard" %}" class="add" title="{% trans "Dashboard" %}"><span class="icon-dashboard"></span>{% trans "Dashboard" %}</a></li>
+			<li><a href="{% url "feeds:add_category" %}" class="add" title="{% trans "Add a category" %}"><span class="icon-tag"></span>{% trans "Add category" %}</a></li>
+			<li><a href="{% url "feeds:add_feed" %}" class="add" title="{% trans "Add a feed" %}"><span class="icon-rss"></span>{% trans "Add feed" %}</a></li>
+			<li class="sep"><a href="{% url "feeds:import_feeds" %}" class="add" title="{% trans "Import feeds" %}"><span class="icon-cloud-upload"></span>{% trans "Import" %}</a></li>
 			<li><a href="{% url "profile" %}">{% trans "Account settings" %}</a></li>
 			<li><form method="post" action="{% url "logout" %}" id="logout">
 				{% csrf_token %}

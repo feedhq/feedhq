@@ -38,71 +38,6 @@
 	}
 }
 
-@font-face {
-	font-family: 'IconicFill';
-	src: url('../font/iconic_fill.eot');
-	src:
-		url('../font/iconic_fill.eot?#iefix') format('embedded-opentype'),
-		url('../font/iconic_fill.ttf') format('truetype'),
-		url('../font/iconic_fill.svg#iconic') format('svg');
-	font-weight: normal;
-	font-style: normal;
-}
-.icon {
-	display:inline-block;
-	font-family: 'IconicFill';
-	font-size: 16px;
-	padding-right: 2px;
-
-	&.dashboard:before {
-		content: "\e027";
-	}
-
-	&.tag:before {
-		content: "\e02b";
-	}
-
-	&.feed:before {
-		content: "\e02c";
-	}
-
-	&.import:before {
-		content: "\e045";
-	}
-
-	&.settings:before {
-		content: "\e062";
-	}
-
-	&.logout:before {
-		content: "\e04b";
-	}
-
-	&.pen:before {
-		content: "\e006";
-	}
-
-	&.menu:before {
-		content: "\e055";
-	}
-
-	&.cog:before {
-		content: "\2699";
-	}
-
-	&.check:before {
-		content: "\2717";
-	}
-
-	&.fit:before {
-		content: "\e04e";
-	}
-
-	&.retina:before {
-		content: "\e025";
-	}
-}
-
 $red: #ff0000;
 $dark_red: #cc0000;
 $pale_green: #64992c;
@@ -382,7 +317,14 @@ input, select {
 		color: $light-text;
 	}
 
-	a, input[type=submit] {
+	button {
+		padding: 0 12px;
+		margin: 0;
+	}
+
+	a, input[type=submit], button {
+		border: none;
+		background: inherit;
 		cursor: pointer;
 		display: inline-block;
 		min-height: 26px;
@@ -418,14 +360,13 @@ input, select {
 			float: right;
 			text-align: center;
 			color: $text;
-			font-size: 24px;
 		}
 
 		.sbutton {
 			float: right;
 		}
 
-		input {
+		input, button {
 			display: inline-block;
 			padding: 0 12px;
 
@@ -687,11 +628,11 @@ form {
 			}
 		}
 	}
+}
 
-	.helptext {
-		font-size: 0.8em;
-		color: $light-text;
-	}
+.helptext {
+	font-size: 0.8em;
+	color: $light-text;
 }
 
 .errorlist {
@@ -971,11 +912,7 @@ pre code {
 					text-decoration: none;
 
 					span {
-						font-size: 18px;
-
-						&.text {
-							font-size: 20px;
-						}
+						font-size: 1.2rem;
 					}
 
 					&:hover, &.selected {
