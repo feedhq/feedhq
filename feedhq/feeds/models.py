@@ -518,9 +518,17 @@ class Entry(models.Model):
                                                   strip=True))
         return _('(No title)')
 
+    @property
+    def content(self):
+        if not hasattr(self, '_content'):
+            xml = lxml.html.fromstring(self.subtitle)
+            xml.make_links_absolute(self.feed.url)
+            self._content = lxml.html.tostring(xml)
+        return self._content
+
     def sanitized_content(self):
         return bleach.clean(
-            self.subtitle,
+            self.content,
             tags=self.ELEMENTS,
             attributes=self.ATTRIBUTES,
             styles=self.CSS_PROPERTIES,
@@ -529,7 +537,7 @@ class Entry(models.Model):
 
     def sanitized_nomedia_content(self):
         return bleach.clean(
-            self.subtitle,
+            self.content,
             tags=self.ELEMENTS - set(['img', 'audio', 'video']),
             attributes=self.ATTRIBUTES,
             styles=self.CSS_PROPERTIES,

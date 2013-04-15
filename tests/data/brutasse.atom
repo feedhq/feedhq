@@ -1,0 +1,1124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/" xml:lang="en-US">
+  <id>tag:github.com,2008:/brutasse</id>
+  <link type="text/html" rel="alternate" href="https://github.com/brutasse"/>
+  <link type="application/atom+xml" rel="self" href="https://github.com/brutasse.atom"/>
+  <title>brutasse&#39;s Activity</title>
+  <updated>2013-04-15T11:54:14Z</updated>
+  <entry>
+    <id>tag:github.com,2008:IssuesEvent/1714107401</id>
+    <published>2013-04-15T11:54:14Z</published>
+    <updated>2013-04-15T11:54:14Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/superfeedr/subtome/issues/15"/>
+    <title type="html">brutasse opened issue superfeedr/subtome#15</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issues --&gt;
+&lt;span class=&quot;mega-icon mega-icon-issue-opened&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-15T11:54:14Z&quot; title=&quot;2013-04-15 11:54:14&quot;&gt;April 15, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;opened&lt;/span&gt; issue &lt;a href=&quot;https://github.com/superfeedr/subtome/issues/15&quot; title=&quot;Bookmarklet and CSP&quot;&gt;superfeedr/subtome#15&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message&quot;&gt;
+    &lt;blockquote&gt;
+      Bookmarklet and CSP
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1714057095</id>
+    <published>2013-04-15T10:21:26Z</published>
+    <updated>2013-04-15T10:21:26Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/issues/48#issuecomment-16377286"/>
+    <title type="html">brutasse commented on issue feedhq/feedhq#48</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-15T10:21:26Z&quot; title=&quot;2013-04-15 10:21:26&quot;&gt;April 15, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/feedhq/feedhq/issues/48#issuecomment-16377286&quot; title=&quot;Handle relative links&quot;&gt;feedhq/feedhq#48&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;Indeed, just saw that. Thanks for the report, I&#39;ll push a fix soon. And the service will take subscriptions :)&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713961671</id>
+    <published>2013-04-15T07:28:09Z</published>
+    <updated>2013-04-15T07:28:09Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/saltstack/salt-cloud/issues/369#issuecomment-16370787"/>
+    <title type="html">brutasse commented on issue saltstack/salt-cloud#369</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-15T07:28:09Z&quot; title=&quot;2013-04-15 07:28:09&quot;&gt;April 15, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/saltstack/salt-cloud/issues/369#issuecomment-16370787&quot; title=&quot;stacktrace trying to --list-locations&quot;&gt;saltstack/salt-cloud#369&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;&lt;a href=&quot;https://github.com/s0undt3ch&quot; class=&quot;user-mention&quot;&gt;@s0undt3ch&lt;/a&gt; to be honest I&#39;m really not a fan of the practice of injecting builtins in global scopes. It&#39;s very hard to debug/understand and not exa…&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713792465</id>
+    <published>2013-04-14T21:54:49Z</published>
+    <updated>2013-04-14T21:54:49Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/superfeedr/subtome/issues/7#issuecomment-16360382"/>
+    <title type="html">brutasse commented on issue superfeedr/subtome#7</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T21:54:49Z&quot; title=&quot;2013-04-14 21:54:49&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/superfeedr/subtome/issues/7#issuecomment-16360382&quot; title=&quot;Make sure we only get feeds in load.js&quot;&gt;superfeedr/subtome#7&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;Some &lt;code&gt;&amp;lt;link&amp;gt;&lt;/code&gt; elements can be excluded immediately if they provide a &lt;code&gt;type&lt;/code&gt; that doesn&#39;t match any feed type. Things like &lt;code&gt;application/json&lt;/code&gt; or &lt;code&gt;applicati…&lt;/code&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PushEvent/1713789718</id>
+    <published>2013-04-14T21:44:53Z</published>
+    <updated>2013-04-14T21:44:53Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/compare/c981d3fa59...7d8939c236"/>
+    <title type="html">brutasse pushed to master at feedhq/feedhq</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- push --&gt;
+&lt;span class=&quot;mega-icon mega-icon-commit&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T21:44:53Z&quot; title=&quot;2013-04-14 21:44:53&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;pushed&lt;/span&gt; to &lt;a href=&quot;/feedhq/feedhq/tree/master&quot;&gt;master&lt;/a&gt; at &lt;a href=&quot;/feedhq/feedhq&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;feedhq/feedhq&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+
+    &lt;div class=&quot;commits pusher-is-only-committer&quot;&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/feedhq/feedhq/commit/7d8939c2360477f20fd78dd9c27d24144434a9e4&quot;&gt;7d8939c&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Improved the subscribe page to pre-populate feed titles and detect du…
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PushEvent/1713758634</id>
+    <published>2013-04-14T20:02:17Z</published>
+    <updated>2013-04-14T20:02:17Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/compare/820e77377a...c981d3fa59"/>
+    <title type="html">brutasse pushed to master at feedhq/feedhq</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- push --&gt;
+&lt;span class=&quot;mega-icon mega-icon-commit&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T20:02:17Z&quot; title=&quot;2013-04-14 20:02:17&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;pushed&lt;/span&gt; to &lt;a href=&quot;/feedhq/feedhq/tree/master&quot;&gt;master&lt;/a&gt; at &lt;a href=&quot;/feedhq/feedhq&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;feedhq/feedhq&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+
+    &lt;div class=&quot;commits pusher-is-only-committer&quot;&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/feedhq/feedhq/commit/c981d3fa59b80317b92beb4da0e9693d94a6d39d&quot;&gt;c981d3f&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Advertised subtome
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PushEvent/1713758391</id>
+    <published>2013-04-14T20:01:28Z</published>
+    <updated>2013-04-14T20:01:28Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/compare/0a9fabc920...820e77377a"/>
+    <title type="html">brutasse pushed to master at feedhq/feedhq</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- push --&gt;
+&lt;span class=&quot;mega-icon mega-icon-commit&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T20:01:28Z&quot; title=&quot;2013-04-14 20:01:28&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;pushed&lt;/span&gt; to &lt;a href=&quot;/feedhq/feedhq/tree/master&quot;&gt;master&lt;/a&gt; at &lt;a href=&quot;/feedhq/feedhq&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;feedhq/feedhq&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+
+    &lt;div class=&quot;commits pusher-is-only-committer&quot;&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/feedhq/feedhq/commit/820e77377aab4c8ed8f451c3d4eda4fd2588340a&quot;&gt;820e773&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Fixed #27 -- added Subtome support.
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713726565</id>
+    <published>2013-04-14T18:12:40Z</published>
+    <updated>2013-04-14T18:12:40Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/issues/27#issuecomment-16356294"/>
+    <title type="html">brutasse commented on issue feedhq/feedhq#27</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T18:12:40Z&quot; title=&quot;2013-04-14 18:12:40&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/feedhq/feedhq/issues/27#issuecomment-16356294&quot; title=&quot;SubToMe Support?&quot;&gt;feedhq/feedhq#27&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;Ooh I think I understand what happened: I removed the handler but I still had a tab opened on the page that embeds the subtome &lt;code&gt;&amp;lt;iframe&amp;gt;&lt;/code&gt; so it messe…&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713723347</id>
+    <published>2013-04-14T18:01:23Z</published>
+    <updated>2013-04-14T18:01:23Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/issues/27#issuecomment-16356044"/>
+    <title type="html">brutasse commented on issue feedhq/feedhq#27</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T18:01:23Z&quot; title=&quot;2013-04-14 18:01:23&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/feedhq/feedhq/issues/27#issuecomment-16356044&quot; title=&quot;SubToMe Support?&quot;&gt;feedhq/feedhq#27&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;the handler is registered when you visit &lt;a href=&quot;https://feedhq.org/bookmarklet/&quot;&gt;https://feedhq.org/bookmarklet/&lt;/a&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713718005</id>
+    <published>2013-04-14T17:43:37Z</published>
+    <updated>2013-04-14T17:43:37Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/issues/27#issuecomment-16355606"/>
+    <title type="html">brutasse commented on issue feedhq/feedhq#27</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T17:43:37Z&quot; title=&quot;2013-04-14 17:43:37&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/feedhq/feedhq/issues/27#issuecomment-16355606&quot; title=&quot;SubToMe Support?&quot;&gt;feedhq/feedhq#27&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;&lt;a href=&quot;https://github.com/julien51&quot; class=&quot;user-mention&quot;&gt;@julien51&lt;/a&gt; I can&#39;t get this to work. Here&#39;s the code I use to register the handler: &lt;code&gt;&amp;lt;iframe style=&quot;display:none;&quot; src=&#39;https://www.subtome.com/regis…&lt;/code&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PushEvent/1713697698</id>
+    <published>2013-04-14T16:30:32Z</published>
+    <updated>2013-04-14T16:30:32Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/compare/63459d951d...0a9fabc920"/>
+    <title type="html">brutasse pushed to master at feedhq/feedhq</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- push --&gt;
+&lt;span class=&quot;mega-icon mega-icon-commit&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T16:30:32Z&quot; title=&quot;2013-04-14 16:30:32&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;pushed&lt;/span&gt; to &lt;a href=&quot;/feedhq/feedhq/tree/master&quot;&gt;master&lt;/a&gt; at &lt;a href=&quot;/feedhq/feedhq&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;feedhq/feedhq&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+
+    &lt;div class=&quot;commits pusher-is-only-committer&quot;&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/feedhq/feedhq/commit/0a9fabc920f2bab1db2920223aed377964fc5f18&quot;&gt;0a9fabc&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Removed length limits from URLs. They keep being hit as I increase them.
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/feedhq/feedhq/commit/959d29edc3fea96eef847cadcecdb3e67a7da43c&quot;&gt;959d29e&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Improved display of the navigation menu in user profiles
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;more&quot;&gt;&lt;a href=&quot;https://github.com/feedhq/feedhq/compare/63459d951d...0a9fabc920&quot;&gt;View comparison for these 2 commits &amp;raquo;&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713610359</id>
+    <published>2013-04-14T09:46:14Z</published>
+    <updated>2013-04-14T09:46:14Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/saltstack/salt-cloud/issues/369#issuecomment-16348515"/>
+    <title type="html">brutasse commented on issue saltstack/salt-cloud#369</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T09:46:14Z&quot; title=&quot;2013-04-14 09:46:14&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/saltstack/salt-cloud/issues/369#issuecomment-16348515&quot; title=&quot;stacktrace trying to --list-locations&quot;&gt;saltstack/salt-cloud#369&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;It was someone on IRC, apparently AWS. Just running pyflakes on the file highlights the issue: &lt;code&gt;undefined name &#39;get_conn&#39;&lt;/code&gt;, there&#39;s a function that g…&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713597969</id>
+    <published>2013-04-14T08:35:29Z</published>
+    <updated>2013-04-14T08:35:29Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/saltstack/salt-cloud/issues/369#issuecomment-16347808"/>
+    <title type="html">brutasse commented on issue saltstack/salt-cloud#369</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-14T08:35:29Z&quot; title=&quot;2013-04-14 08:35:29&quot;&gt;April 14, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/saltstack/salt-cloud/issues/369#issuecomment-16347808&quot; title=&quot;stacktrace trying to --list-locations&quot;&gt;saltstack/salt-cloud#369&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;There are still references to an undefined &lt;code&gt;get_conn()&lt;/code&gt; in &lt;code&gt;libcloudfuncs.py&lt;/code&gt;.&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:DeleteEvent/1713409426</id>
+    <published>2013-04-13T17:35:37Z</published>
+    <updated>2013-04-13T17:35:37Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/"/>
+    <title type="html">brutasse deleted branch fix/packaging-letter-case at brutasse/django-social-auth</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- delete --&gt;
+&lt;div class=&quot;simple&quot;&gt;
+  &lt;span class=&quot;mini-icon mini-icon-circle-slash&quot;&gt;&lt;/span&gt;
+
+  &lt;div class=&quot;title&quot;&gt;
+    &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;deleted&lt;/span&gt; branch fix/packaging-letter-case at &lt;a href=&quot;/brutasse/django-social-auth&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;brutasse/django-social-auth&lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;time&quot;&gt;
+    &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T17:35:37Z&quot; title=&quot;2013-04-13 17:35:37&quot;&gt;April 13, 2013&lt;/time&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713332902</id>
+    <published>2013-04-13T12:38:21Z</published>
+    <updated>2013-04-13T12:38:21Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/nvie/pip-tools/issues/10#issuecomment-16332369"/>
+    <title type="html">brutasse commented on issue nvie/pip-tools#10</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T12:38:21Z&quot; title=&quot;2013-04-13 12:38:21&quot;&gt;April 13, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/nvie/pip-tools/issues/10#issuecomment-16332369&quot; title=&quot;Dependency handling in requirements when updating packages&quot;&gt;nvie/pip-tools#10&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;Probably! Since we download the packages we should be able to infer it from the filename directly and even fix incorrect names.&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713331808</id>
+    <published>2013-04-13T12:33:22Z</published>
+    <updated>2013-04-13T12:33:22Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/nvie/pip-tools/issues/10#issuecomment-16332288"/>
+    <title type="html">brutasse commented on issue nvie/pip-tools#10</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T12:33:22Z&quot; title=&quot;2013-04-13 12:33:22&quot;&gt;April 13, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/nvie/pip-tools/issues/10#issuecomment-16332288&quot; title=&quot;Dependency handling in requirements when updating packages&quot;&gt;nvie/pip-tools#10&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;I think in case of conflict we really need to pick the correct one: it&#39;s not completely arbitrary, there is a canonical casing. PyPI and its mirror…&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PushEvent/1713287678</id>
+    <published>2013-04-13T08:54:08Z</published>
+    <updated>2013-04-13T08:54:08Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/nvie/pip-tools/compare/876de5b1c4...ae4c3d7c37"/>
+    <title type="html">brutasse pushed to future at nvie/pip-tools</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- push --&gt;
+&lt;span class=&quot;mega-icon mega-icon-commit&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T08:54:08Z&quot; title=&quot;2013-04-13 08:54:08&quot;&gt;April 13, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;pushed&lt;/span&gt; to &lt;a href=&quot;/nvie/pip-tools/tree/future&quot;&gt;future&lt;/a&gt; at &lt;a href=&quot;/nvie/pip-tools&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;nvie/pip-tools&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+
+    &lt;div class=&quot;commits pusher-is-only-committer&quot;&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/nvie/pip-tools/commit/ae4c3d7c377d2b0b262fcfcff76ca73b3499d3b3&quot;&gt;ae4c3d7&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Fix missing &#39;not&#39; and use proper ops lookup
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713283870</id>
+    <published>2013-04-13T08:33:40Z</published>
+    <updated>2013-04-13T08:33:40Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/nvie/pip-tools/issues/10#issuecomment-16329687"/>
+    <title type="html">brutasse commented on issue nvie/pip-tools#10</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T08:33:40Z&quot; title=&quot;2013-04-13 08:33:40&quot;&gt;April 13, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/nvie/pip-tools/issues/10#issuecomment-16329687&quot; title=&quot;Dependency handling in requirements when updating packages&quot;&gt;nvie/pip-tools#10&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;Oh actually the handling of multiple &lt;code&gt;.in&lt;/code&gt; files is done :)&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PushEvent/1713283095</id>
+    <published>2013-04-13T08:30:01Z</published>
+    <updated>2013-04-13T08:30:01Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/nvie/pip-tools/compare/ce02140aac...876de5b1c4"/>
+    <title type="html">brutasse pushed to future at nvie/pip-tools</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- push --&gt;
+&lt;span class=&quot;mega-icon mega-icon-commit&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T08:30:01Z&quot; title=&quot;2013-04-13 08:30:01&quot;&gt;April 13, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;pushed&lt;/span&gt; to &lt;a href=&quot;/nvie/pip-tools/tree/future&quot;&gt;future&lt;/a&gt; at &lt;a href=&quot;/nvie/pip-tools&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;nvie/pip-tools&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+
+    &lt;div class=&quot;commits pusher-is-only-committer&quot;&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/nvie/pip-tools/commit/876de5b1c40a724a7589eb614af98bdf42a10166&quot;&gt;876de5b&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Sort the output the pip way
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/nvie/pip-tools/commit/981a062df0431f93836f06de08da3f24a7439530&quot;&gt;981a062&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Updated PyPI links to use HTTPS
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;more&quot;&gt;&lt;a href=&quot;https://github.com/nvie/pip-tools/compare/ce02140aac...876de5b1c4&quot;&gt;View comparison for these 2 commits &amp;raquo;&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PullRequestEvent/1713280622</id>
+    <published>2013-04-13T08:16:07Z</published>
+    <updated>2013-04-13T08:16:07Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/omab/django-social-auth/pull/670"/>
+    <title type="html">brutasse opened pull request omab/django-social-auth#670</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- pull_request --&gt;
+&lt;span class=&quot;mega-icon mega-icon-pull-request&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T08:16:07Z&quot; title=&quot;2013-04-13 08:16:07&quot;&gt;April 13, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;opened&lt;/span&gt; pull request &lt;a href=&quot;https://github.com/omab/django-social-auth/pull/670&quot;&gt;omab/django-social-auth#670&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message&quot;&gt;
+    &lt;blockquote&gt;Fixed letter case in setup.py&lt;/blockquote&gt;
+      &lt;div class=&quot;pull-info&quot;&gt;
+        &lt;span class=&quot;mini-icon mini-icon-commit&quot;&gt;&lt;/span&gt;
+        &lt;em&gt;1&lt;/em&gt; commit with
+        &lt;em&gt;2&lt;/em&gt; additions and
+        &lt;em&gt;2&lt;/em&gt; deletions
+      &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:CreateEvent/1713280380</id>
+    <published>2013-04-13T08:14:38Z</published>
+    <updated>2013-04-13T08:14:38Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/brutasse/django-social-auth/compare/fix/packaging-letter-case"/>
+    <title type="html">brutasse created branch fix/packaging-letter-case  at brutasse/django-social-auth</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- create --&gt;
+&lt;div class=&quot;simple&quot;&gt;
+  &lt;span class=&quot;mini-icon mini-icon-merge&quot;&gt;&lt;/span&gt;
+
+  &lt;div class=&quot;title&quot;&gt;
+    &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;created&lt;/span&gt; branch &lt;a href=&quot;/brutasse/django-social-auth/tree/fix/packaging-letter-case&quot; class=&quot;css-truncate css-truncate-target branch-link&quot; title=&quot;fix/packaging-letter-case&quot;&gt;&lt;span class=&quot;mini-icon mini-icon-branch&quot;&gt;&lt;/span&gt;fix/packaging-letter-case&lt;/a&gt;  at &lt;a href=&quot;/brutasse/django-social-auth&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;brutasse/django-social-auth&lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;time&quot;&gt;
+    &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T08:14:38Z&quot; title=&quot;2013-04-13 08:14:38&quot;&gt;April 13, 2013&lt;/time&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:ForkEvent/1713280187</id>
+    <published>2013-04-13T08:13:28Z</published>
+    <updated>2013-04-13T08:13:28Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/brutasse/django-social-auth"/>
+    <title type="html">brutasse forked omab/django-social-auth to brutasse/django-social-auth</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- fork --&gt;
+&lt;div class=&quot;simple&quot;&gt;
+  &lt;span class=&quot;mini-icon mini-icon-fork&quot;&gt;&lt;/span&gt;
+
+  &lt;div class=&quot;title&quot;&gt;
+    &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;forked&lt;/span&gt; &lt;a href=&quot;/omab/django-social-auth&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;omab/django-social-auth&lt;/a&gt; to &lt;a href=&quot;/brutasse/django-social-auth&quot; class=&quot;css-truncate css-truncate-target&quot; title=&quot;brutasse/django-social-auth&quot;&gt;brutasse/django-social-auth&lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;time&quot;&gt;
+    &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T08:13:28Z&quot; title=&quot;2013-04-13 08:13:28&quot;&gt;April 13, 2013&lt;/time&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1713278652</id>
+    <published>2013-04-13T08:04:41Z</published>
+    <updated>2013-04-13T08:04:41Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/nvie/pip-tools/issues/10#issuecomment-16329387"/>
+    <title type="html">brutasse commented on issue nvie/pip-tools#10</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T08:04:41Z&quot; title=&quot;2013-04-13 08:04:41&quot;&gt;April 13, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on issue &lt;a href=&quot;https://github.com/nvie/pip-tools/issues/10#issuecomment-16329387&quot; title=&quot;Dependency handling in requirements when updating packages&quot;&gt;nvie/pip-tools#10&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;Hey &lt;a href=&quot;https://github.com/nvie&quot; class=&quot;user-mention&quot;&gt;@nvie&lt;/a&gt;, funny that you mention the project as I was playing with it again yesterday night. I just pushed a small fix, I think this is looking pr…&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PushEvent/1713276846</id>
+    <published>2013-04-13T07:55:13Z</published>
+    <updated>2013-04-13T07:55:13Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/nvie/pip-tools/compare/3a264be907...ce02140aac"/>
+    <title type="html">brutasse pushed to future at nvie/pip-tools</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- push --&gt;
+&lt;span class=&quot;mega-icon mega-icon-commit&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-13T07:55:13Z&quot; title=&quot;2013-04-13 07:55:13&quot;&gt;April 13, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;pushed&lt;/span&gt; to &lt;a href=&quot;/nvie/pip-tools/tree/future&quot;&gt;future&lt;/a&gt; at &lt;a href=&quot;/nvie/pip-tools&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;nvie/pip-tools&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+
+    &lt;div class=&quot;commits pusher-is-only-committer&quot;&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/nvie/pip-tools/commit/ce02140aac8d0cc29ee0e2da481cfb4687535059&quot;&gt;ce02140&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Use our custom operators for comparing versions.
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PushEvent/1712933649</id>
+    <published>2013-04-12T18:02:26Z</published>
+    <updated>2013-04-12T18:02:26Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/compare/86d600f921...63459d951d"/>
+    <title type="html">brutasse pushed to master at feedhq/feedhq</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- push --&gt;
+&lt;span class=&quot;mega-icon mega-icon-commit&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-12T18:02:26Z&quot; title=&quot;2013-04-12 18:02:26&quot;&gt;April 12, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;pushed&lt;/span&gt; to &lt;a href=&quot;/feedhq/feedhq/tree/master&quot;&gt;master&lt;/a&gt; at &lt;a href=&quot;/feedhq/feedhq&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;feedhq/feedhq&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+
+    &lt;div class=&quot;commits pusher-is-only-committer&quot;&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/feedhq/feedhq/commit/63459d951d3d1b85eec395bf5d9e78845768dc80&quot;&gt;63459d9&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Updated some requirements
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:WatchEvent/1712748607</id>
+    <published>2013-04-12T14:13:37Z</published>
+    <updated>2013-04-12T14:13:37Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/chrisglass/plans-resto-suisse"/>
+    <title type="html">brutasse starred chrisglass/plans-resto-suisse</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- watch --&gt;
+&lt;div class=&quot;simple&quot;&gt;
+  &lt;span class=&quot;mini-icon mini-icon-star&quot;&gt;&lt;/span&gt;
+
+  &lt;div class=&quot;title&quot;&gt;
+    &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;starred&lt;/span&gt; &lt;a href=&quot;/chrisglass/plans-resto-suisse&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;chrisglass/plans-resto-suisse&lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;time&quot;&gt;
+    &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-12T14:13:37Z&quot; title=&quot;2013-04-12 14:13:37&quot;&gt;April 12, 2013&lt;/time&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:IssueCommentEvent/1712041645</id>
+    <published>2013-04-11T17:27:26Z</published>
+    <updated>2013-04-11T17:27:26Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/issues/47#issuecomment-16249144"/>
+    <title type="html">brutasse commented on pull request feedhq/feedhq#47</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- issue_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-11T17:27:26Z&quot; title=&quot;2013-04-11 17:27:26&quot;&gt;April 11, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on pull request &lt;a href=&quot;https://github.com/feedhq/feedhq/issues/47#issuecomment-16249144&quot; title=&quot;Added South support&quot;&gt;feedhq/feedhq#47&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;Thanks! &lt;img class=&quot;emoji&quot; title=&quot;:beers:&quot; alt=&quot;:beers:&quot; src=&quot;https://a248.e.akamai.net/assets.github.com/images/icons/emoji/beers.png&quot; height=&quot;20&quot; width=&quot;20&quot; align=&quot;absmiddle&quot;&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PushEvent/1712041248</id>
+    <published>2013-04-11T17:26:55Z</published>
+    <updated>2013-04-11T17:26:55Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/compare/15487e316d...86d600f921"/>
+    <title type="html">brutasse pushed to master at feedhq/feedhq</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- push --&gt;
+&lt;span class=&quot;mega-icon mega-icon-commit&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-11T17:26:55Z&quot; title=&quot;2013-04-11 17:26:55&quot;&gt;April 11, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;pushed&lt;/span&gt; to &lt;a href=&quot;/feedhq/feedhq/tree/master&quot;&gt;master&lt;/a&gt; at &lt;a href=&quot;/feedhq/feedhq&quot; class=&quot;css-truncate css-truncate-target&quot;&gt;feedhq/feedhq&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+
+    &lt;div class=&quot;commits pusher-is-only-committer&quot;&gt;
+      &lt;ul&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/feedhq/feedhq/commit/86d600f92139b1805d30f018301fc72f6e58d7ce&quot;&gt;86d600f&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              South in the order pip freeze puts it
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/feedhq/feedhq/commit/83d2e4094f19b77f73d1d08a04778c9da37686b4&quot;&gt;83d2e40&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Added migrations info to the README
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li&gt;
+          &lt;span title=&quot;brutasse&quot;&gt;
+            &lt;img height=&quot;16&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;16&quot; /&gt;
+          &lt;/span&gt;
+          &lt;code&gt;&lt;a href=&quot;/feedhq/feedhq/commit/08f931ef1044a470c540b32ec0e06f71423eb9c0&quot;&gt;08f931e&lt;/a&gt;&lt;/code&gt;
+          &lt;div class=&quot;message&quot;&gt;
+            &lt;blockquote&gt;
+              Ignored migration files in flake8 checks
+            &lt;/blockquote&gt;
+          &lt;/div&gt;
+        &lt;/li&gt;
+        &lt;li class=&quot;more&quot;&gt;&lt;a href=&quot;https://github.com/feedhq/feedhq/compare/15487e316d...86d600f921&quot;&gt;4 more commits &amp;raquo;&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:PullRequestEvent/1712041237</id>
+    <published>2013-04-11T17:26:55Z</published>
+    <updated>2013-04-11T17:26:55Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/feedhq/feedhq/pull/47"/>
+    <title type="html">brutasse merged pull request feedhq/feedhq#47</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- pull_request --&gt;
+&lt;span class=&quot;mega-icon mega-icon-pull-request&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-11T17:26:55Z&quot; title=&quot;2013-04-11 17:26:55&quot;&gt;April 11, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;merged&lt;/span&gt; pull request &lt;a href=&quot;https://github.com/feedhq/feedhq/pull/47&quot;&gt;feedhq/feedhq#47&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message&quot;&gt;
+    &lt;blockquote&gt;Added South support&lt;/blockquote&gt;
+      &lt;div class=&quot;pull-info&quot;&gt;
+        &lt;span class=&quot;mini-icon mini-icon-commit&quot;&gt;&lt;/span&gt;
+        &lt;em&gt;1&lt;/em&gt; commit with
+        &lt;em&gt;318&lt;/em&gt; additions and
+        &lt;em&gt;0&lt;/em&gt; deletions
+      &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+  <entry>
+    <id>tag:github.com,2008:CommitCommentEvent/1711859013</id>
+    <published>2013-04-11T13:57:23Z</published>
+    <updated>2013-04-11T13:57:23Z</updated>
+    <link type="text/html" rel="alternate" href="https://github.com/brunobord/plans-resto-france/commit/c8df13d7a9b8b82fa97fb709fc0dca707b4d735b#-P0"/>
+    <title type="html">brutasse commented on commit brunobord/plans-resto-france@c8df13d7a9</title>
+    <author>
+      <name>brutasse</name>
+      <email>bruno@renie.fr</email>
+      <uri>https://github.com/brutasse</uri>
+    </author>
+    <media:thumbnail height="30" width="30" url="https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png"/>
+    <content type="html">&lt;!-- commit_comment --&gt;
+&lt;span class=&quot;mega-icon mega-icon-discussion&quot;&gt;&lt;/span&gt;
+
+&lt;div class=&quot;time&quot;&gt;
+  &lt;time class=&quot;js-relative-date&quot; datetime=&quot;2013-04-11T13:57:23Z&quot; title=&quot;2013-04-11 13:57:23&quot;&gt;April 11, 2013&lt;/time&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;title&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot;&gt;brutasse&lt;/a&gt; &lt;span&gt;commented&lt;/span&gt; on commit &lt;a href=&quot;https://github.com/brunobord/plans-resto-france/commit/c8df13d7a9b8b82fa97fb709fc0dca707b4d735b#commitcomment-2992239&quot;&gt;brunobord/plans-resto-france@c8df13d7a9&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;details&quot;&gt;
+  &lt;a href=&quot;/brutasse&quot; class=&quot;gravatar&quot;&gt;&lt;img height=&quot;30&quot; src=&quot;https://secure.gravatar.com/avatar/bd9b4485bcf325b989b5721bd0ef4d91?s=140&amp;amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png&quot; width=&quot;30&quot; /&gt;&lt;/a&gt;
+  &lt;div class=&quot;message markdown-body&quot;&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;&lt;img class=&quot;emoji&quot; title=&quot;:metal:&quot; alt=&quot;:metal:&quot; src=&quot;https://a248.e.akamai.net/assets.github.com/images/icons/emoji/metal.png&quot; height=&quot;20&quot; width=&quot;20&quot; align=&quot;absmiddle&quot;&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</content>
+  </entry>
+</feed>

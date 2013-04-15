@@ -308,7 +308,7 @@ class WebBaseTests(WebTest):
     def test_img(self, get):
         get.return_value = responses(304)
         user = UserFactory.create()
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, url='http://exmpl.com')
         entry = Entry.objects.create(
             feed=feed,
             title="Random title",
@@ -320,18 +320,21 @@ class WebBaseTests(WebTest):
         url = reverse('feeds:item', args=[entry.pk])
         response = self.app.get(url, user=user.username)
         self.assertContains(response, 'External media is hidden')
-        self.assertNotContains(response, '<img src="/favicon.png">')
+        self.assertNotContains(response,
+                               '<img src="http://exmpl.com/favicon.png">')
         self.assertEqual(Feed.objects.get(pk=feed.pk).media_safe, False)
 
         form = response.forms['images']
         response = form.submit(name='once')
         self.assertContains(response, 'Always display external media')
-        self.assertContains(response, '<img src="/favicon.png">')
+        self.assertContains(response,
+                            '<img src="http://exmpl.com/favicon.png">')
         self.assertEqual(Feed.objects.get(pk=feed.pk).media_safe, False)
         form = response.forms['images']
         response = form.submit(name='always')
         self.assertContains(response, 'Disable external media')
-        self.assertContains(response, '<img src="/favicon.png">')
+        self.assertContains(response,
+                            '<img src="http://exmpl.com/favicon.png">')
         self.assertEqual(Feed.objects.get(pk=feed.pk).media_safe, True)
         form = response.forms['images']
         response = form.submit(name='never')
@@ -649,3 +652,25 @@ class WebBaseTests(WebTest):
         self.assertContains(
             response, ('it looks like there are no feeds available on '
                        '<a href="http://isitbeeroclock.com/">'))
+
+    @patch("requests.get")
+    def test_relative_links(self, get):
+        get.return_value = responses(200, path='brutasse.atom')
+
+        user = UserFactory.create()
+        FeedFactory.create(category__user=user,
+                           url='https://github.com/brutasse.atom')
+        entry = user.entries.all()[0]
+
+        self.assertTrue('<a href="/brutasse"' in entry.subtitle)
+        self.assertFalse('<a href="/brutasse"' in entry.content)
+        self.assertTrue(
+            '<a href="https://github.com/brutasse"' in entry.content)
+
+        feed = Feed(url='http://standblog.org/blog/feed/rss2')
+        e = Entry(feed=feed, subtitle=(
+            ' <p><img alt=":-)" class="smiley"'
+            'src="/dotclear2/themes/default/smilies/smile.png" /> . </p>'
+        ))
+        self.assertTrue(('src="http://standblog.org/dotclear2/themes/'
+                         'default/smilies/smile.png"') in e.content)
