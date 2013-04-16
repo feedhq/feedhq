@@ -5,6 +5,7 @@ from urllib import urlencode
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.core.validators import email_re
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
 from django.utils import timezone
@@ -60,8 +61,12 @@ class Login(APIView):
         self.querydict = querydict
 
     def post(self, request, *args, **kwargs):
+        if email_re.search(self.querydict['Email']):
+            clause = Q(email__iexact=self.querydict['Email'])
+        else:
+            clause = Q(username__iexact=self.querydict['Email'])
         try:
-            user = User.objects.get(email=self.querydict['Email'])
+            user = User.objects.get(clause)
         except User.DoesNotExist:
             raise PermissionDenied()
         if not user.check_password(self.querydict['Passwd']):

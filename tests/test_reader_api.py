@@ -91,6 +91,16 @@ class AuthTest(ApiTest):
         response = self.client.post(url, params)
         self.assertContains(response, 'Auth=')
 
+        # Usernames are also accepted
+        params['Email'] = user.username
+        response = self.client.post(url, params)
+        self.assertContains(response, 'Auth=')
+
+        # Case-insensitivity
+        params['Email'] = user.username.upper()
+        response = self.client.post(url, params)
+        self.assertContains(response, 'Auth=')
+
         for line in response.content.splitlines():
             key, value = line.split('=', 1)
             self.assertEqual(len(value), 267)
