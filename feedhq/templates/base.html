@@ -14,7 +14,7 @@
 	</head>
 	<body id="{% block bodyid %}default{% endblock %}">
 		<div id="root">
-			<div id="header">
+			<div id="header"{% block header_mode %}{% endblock %}>
 				<div>
 					<h1>{% if user.is_authenticated and only_unread %}{% url "feeds:unread" as home_url %}
 						{% else %}{% url "feeds:home" as home_url %}{% endif %}
@@ -23,6 +23,7 @@
 							<a class="unread" title="{% trans "Unread entries" %}" href="{% url "feeds:unread" %}">{{ user.entries.unread }}</a>
 						{% endif %}
 					</h1>
+					{% block extra_header %}{% endblock %}
 					<div id="navigation">
 						<ul>{% spaceless %}
 							{% include "navigation.html" %}
