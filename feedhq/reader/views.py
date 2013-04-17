@@ -601,7 +601,14 @@ class StreamItemsContents(ReaderView):
             raise exceptions.ParseError(
                 "Required 'i' parameter: items IDs to send back")
 
-        entries = request.user.entries.filter(pk__in=items).select_related(
+        ids = []
+        for item_id in items:
+            if item_id.startswith('tag:google.com'):
+                ids.append(int(item_id.split('/')[-1]))
+            else:
+                ids.append(int(item_id))
+
+        entries = request.user.entries.filter(pk__in=ids).select_related(
             'feed', 'feed__category')
 
         if not entries:

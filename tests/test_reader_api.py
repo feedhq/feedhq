@@ -627,6 +627,13 @@ class ReaderApiTest(ApiTest):
                                        **clientlogin(token))
             self.assertEqual(response.status_code, 200)
 
+        with self.assertNumQueries(1):
+            ids = ["tag:google.com,2005:reader/item/{0}".format(pk)
+                   for pk in [entry1.pk, entry2.pk]]
+            response = self.client.get(url, {'i': ids, 'output': 'atom'},
+                                       **clientlogin(token))
+            self.assertEqual(response.status_code, 200)
+
         feed3 = FeedFactory.create(category__user=user)
         entry3 = EntryFactory.create(user=user, feed=feed3)
         with self.assertNumQueries(2):
