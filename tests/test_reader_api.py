@@ -402,6 +402,10 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(response.status_code, 400)
         response = self.client.get(url, {'ot': '13'}, **clientlogin(token))
         self.assertEqual(response.status_code, 200)
+        response = self.client.get(url, {'nt': 'foo'}, **clientlogin(token))
+        self.assertEqual(response.status_code, 400)
+        response = self.client.get(url, {'nt': '13'}, **clientlogin(token))
+        self.assertEqual(response.status_code, 200)
 
         response = self.client.get(url, {'r': 12, 'output': 'json'},
                                    **clientlogin(token))

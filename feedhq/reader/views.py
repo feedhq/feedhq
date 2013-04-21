@@ -263,13 +263,14 @@ class Subscribed(ReaderView):
 subscribed = Subscribed.as_view()
 
 
-def get_stream_q(streams, exclude=None, limit=None):
+def get_stream_q(streams, exclude=None, limit=None, offset=None):
     """
     Returns a Q object that can be used to filter a queryset of entries.
 
     streams: list of streams to include
     exclude: stream to exclude
     limit: unix timestamp from which to consider entries
+    offset: unix timestamp to which to consider entries
     """
     q = None
     for stream in streams:
@@ -335,6 +336,17 @@ def get_stream_q(streams, exclude=None, limit=None):
             limit = timezone.make_aware(
                 datetime.datetime.fromtimestamp(timestamp), timezone.utc)
             q &= Q(date__gte=limit)
+    # ?nt=<timestamp>
+    if offset is not None:
+        try:
+            timestamp = int(offset)
+        except ValueError:
+            raise exceptions.ParseError(
+                "Malformed 'nt' parameter. Must be a unix timstamp")
+        else:
+            offset = timezone.make_aware(
+                datetime.datetime.fromtimestamp(timestamp), timezone.utc)
+            q &= Q(date__lte=offset)
     return q
 
 
@@ -496,7 +508,8 @@ class StreamContents(ReaderView):
         entries = request.user.entries.filter(
             get_stream_q([content_id],
                          exclude=request.GET.get('xt'),
-                         limit=request.GET.get('ot')),
+                         limit=request.GET.get('ot'),
+                         offset=request.GET.get('nt')),
         ).select_related('feed', 'feed__category')
 
         # Ordering
@@ -544,7 +557,8 @@ class StreamItemsIds(ReaderView):
             get_stream_q(
                 request.GET['s'][len('splice/'):].split('|'),
                 exclude=request.GET.get('xt'),
-                limit=request.GET.get('ot'))).order_by('date')
+                limit=request.GET.get('ot'),
+                offset=request.GET.get('nt'))).order_by('date')
 
         start, end, continuation = pagination(entries, n=request.GET.get('n'),
                                               c=request.GET.get('c'))
