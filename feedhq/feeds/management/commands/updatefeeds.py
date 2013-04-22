@@ -2,13 +2,13 @@ import logging
 import os
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
 from django.utils import timezone
 from raven import Client
 
 from ....tasks import enqueue
 from ...models import UniqueFeed
 from ...tasks import update_feed
+from . import SentryCommand
 
 logger = logging.getLogger('feedupdater')
 
@@ -31,10 +31,10 @@ TO_UPDATE = """
 )
 
 
-class Command(BaseCommand):
+class Command(SentryCommand):
     """Updates the users' feeds"""
 
-    def handle(self, *args, **kwargs):
+    def handle_sentry(self, *args, **kwargs):
         if args:
             pk = args[0]
             feed = UniqueFeed.objects.get(pk=pk)

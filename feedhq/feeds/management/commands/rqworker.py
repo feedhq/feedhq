@@ -2,11 +2,12 @@ from optparse import make_option
 import os
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
 
 from raven import Client
 from redis import Redis
 from rq import Queue, Connection, Worker
+
+from . import SentryCommand
 
 
 def sentry_handler(job, *exc_info):
@@ -27,15 +28,15 @@ def sentry_handler(job, *exc_info):
     return False
 
 
-class Command(BaseCommand):
+class Command(SentryCommand):
     args = '<queue1 queue2 ...>'
-    option_list = BaseCommand.option_list + (
+    option_list = SentryCommand.option_list + (
         make_option('--burst', action='store_true', dest='burst',
                     default=False, help='Run the worker in burst mode'),
     )
     help = "Run a RQ worker on selected queues."
 
-    def handle(self, *args, **options):
+    def handle_sentry(self, *args, **options):
         conn = Redis(**settings.REDIS)
         with Connection(conn):
             queues = map(Queue, args)
