@@ -266,6 +266,10 @@ LOGGING = {
             'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
         },
+        'feedhq.reader.views': {
+            'handlers': ['console', 'sentry'],
+            'level': 'DEBUG',
+        },
         'ratelimitbackend': {
             'handlers': ['console', 'sentry'],
             'level': 'WARNING',
