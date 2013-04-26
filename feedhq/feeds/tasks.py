@@ -1,6 +1,10 @@
+import json
 import logging
 
 from collections import defaultdict
+from datetime import datetime
+
+import pytz
 
 from django_push.subscriber.models import Subscription
 from rq.timeouts import JobTimeoutException
@@ -41,8 +45,12 @@ def subscribe(topic_url, hub_url):
     Subscription.objects.subscribe(topic_url, hub_url)
 
 
-def store_entries(feed_url, entries):
+def store_entries(feed_url, entries, json_format=False):
     from .models import Entry, Feed
+    if json_format:
+        entries = json.loads(entries)
+    for entry in entries:
+        entry['date'] = datetime.fromtimestamp(entry['date'], tz=pytz.utc)
     links = set([entry['link'] for entry in entries])
     existing = Entry.objects.filter(feed__url=feed_url,
                                     link__in=links).values('link', 'feed_id')

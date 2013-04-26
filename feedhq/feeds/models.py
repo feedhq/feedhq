@@ -12,6 +12,7 @@ import urlparse
 import random
 import requests
 import socket
+import time
 
 from django.db import models
 from django.conf import settings
@@ -257,7 +258,8 @@ class UniqueFeedManager(models.Manager):
             [self.entry_data(entry, parsed) for entry in parsed.entries]
         )
         try:
-            enqueue(store_entries, args=[url, entries], queue='store')
+            enqueue(store_entries, args=[url, json.dumps(entries)],
+                    kwargs={'json_format': True}, queue='store')
         except ResponseError:
             # Protocol error: too big bulk count string
             # Redis can't handle this. Enqueue synchronously for now.
@@ -274,7 +276,7 @@ class UniqueFeedManager(models.Manager):
         data = {
             'title': title,
             'link': entry.link,
-            'date': cls.entry_date(entry),
+            'date': time.mktime(cls.entry_date(entry).timetuple()),
         }
         if 'description' in entry:
             data['subtitle'] = entry.description
@@ -624,7 +626,8 @@ def pubsubhubbub_update(notification, **kwargs):
         [UniqueFeedManager.entry_data(
             entry, notification) for entry in notification.entries]
     )
-    enqueue(store_entries, args=[url, entries], queue='store')
+    enqueue(store_entries, args=[url, json.dumps(entries)],
+            kwargs={'json_format': True}, queue='store')
 updated.connect(pubsubhubbub_update)
 
 
