@@ -60,8 +60,8 @@ Installation
 Requirements:
 
 * Python 2.7
-* Redis
-* PostgreSQL (preferred) or another django-compatible database server
+* Redis (2.6+ recommended)
+* PostgreSQL (9.2+ recommended)
 
 Getting the code::
 
