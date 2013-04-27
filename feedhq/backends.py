@@ -24,6 +24,8 @@ class RateLimitMultiBackend(RateLimitMixin, CaseInsensitiveModelBackend):
                 username = User.objects.get(email__iexact=username).username
             except User.DoesNotExist:
                 pass
-        return super(RateLimitMultiBackend, self).authenticate(username,
-                                                               password,
-                                                               request)
+        return super(RateLimitMultiBackend, self).authenticate(
+            username=username,
+            password=password,
+            request=request,
+        )
