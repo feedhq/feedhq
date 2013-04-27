@@ -277,25 +277,28 @@ class ProfilesTest(WebTest):
         self.assertContains(response, "Good bye")
 
     def test_login_via_username_or_email(self):
-        self.client.logout()
         url = reverse('login')
 
-        response = self.client.get(url)
+        response = self.app.get(url)
         self.assertContains(response, 'Username or Email')
+        form = response.forms['login']
 
-        data = {'username': 'test', 'password': 'pass'}
-        response = self.client.post(url, data)
+        form['username'] = 'test'
+        form['password'] = 'pass'
+        response = form.submit()
         self.assertRedirects(response, '/')
 
-        self.client.logout()
-        response = self.client.get(url)
+        self.renew_app()
+        response = self.app.get(url)
+        form = response.forms['login']
 
-        data = {'username': 'test@example.com', 'password': 'pass'}
-        response = self.client.post(url, data)
+        form['username'] = 'test@example.com'
+        form['password'] = 'pass'
+        response = form.submit()
         self.assertRedirects(response, '/')
 
-        self.client.logout()
-        response = self.client.get(reverse('feeds:unread'))
+        self.renew_app()
+        response = self.app.get(reverse('feeds:unread'))
         self.assertContains(response, 'Username or Email')
 
     def test_register_subtome(self):
