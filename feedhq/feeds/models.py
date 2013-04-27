@@ -523,9 +523,12 @@ class Entry(models.Model):
     @property
     def content(self):
         if not hasattr(self, '_content'):
-            xml = lxml.html.fromstring(self.subtitle)
-            xml.make_links_absolute(self.feed.url)
-            self._content = lxml.html.tostring(xml)
+            if self.subtitle:
+                xml = lxml.html.fromstring(self.subtitle)
+                xml.make_links_absolute(self.feed.url)
+                self._content = lxml.html.tostring(xml)
+            else:
+                self._content = self.subtitle
         return self._content
 
     def sanitized_content(self):

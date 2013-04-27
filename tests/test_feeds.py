@@ -14,7 +14,7 @@ from feedhq.feeds.models import Category, Feed, Entry, UniqueFeed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.utils import USER_AGENT
 
-from .factories import UserFactory, CategoryFactory, FeedFactory
+from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
 from . import test_file, responses
 
 
@@ -674,3 +674,11 @@ class WebBaseTests(WebTest):
         ))
         self.assertTrue(('src="http://standblog.org/dotclear2/themes/'
                          'default/smilies/smile.png"') in e.content)
+
+    @patch('requests.get')
+    def test_empty_subtitle(self, get):
+        get.return_value = responses(304)
+        user = UserFactory.create()
+        entry = EntryFactory(user=user, feed__category__user=user, subtitle='')
+        url = reverse('feeds:item', args=[entry.pk])
+        self.app.get(url, user=user)
