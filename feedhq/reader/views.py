@@ -180,7 +180,7 @@ preference_list = PreferenceList.as_view()
 
 
 class UnreadCount(ReaderView):
-    http_method_name = ['get']
+    http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
         feeds = Feed.objects.filter(
@@ -252,7 +252,7 @@ tag_list = TagList.as_view()
 
 
 class SubscriptionList(ReaderView):
-    http_method_name = ['get']
+    http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
         feeds = Feed.objects.filter(
@@ -288,7 +288,7 @@ subscription_list = SubscriptionList.as_view()
 
 
 class EditSubscription(ReaderView):
-    http_method_name = ['post']
+    http_method_names = ['post']
     renderer_classes = [PlainRenderer]
 
     def post(self, request, *args, **kwargs):
