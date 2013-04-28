@@ -6,7 +6,8 @@ from urllib import urlencode
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.core.validators import email_re
+from django.core.exceptions import ValidationError
+from django.core.validators import email_re, URLValidator
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
 from django.utils import timezone
@@ -303,6 +304,10 @@ class EditSubscription(ReaderView):
             raise exceptions.ParseError(
                 "Unrecognized stream: {0}".format(request.DATA['s']))
         url = request.DATA['s'][len('feed/'):]
+        try:
+            URLValidator()(url)
+        except ValidationError:
+            raise exceptions.ParseError("Invalid URL")
 
         if action == 'subscribe':
             for param in ['t', 'a']:

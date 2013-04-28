@@ -809,6 +809,10 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Unrecognized stream", status_code=400)
 
+        data['s'] = 'feed/foo bar'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Invalid URL", status_code=400)
+
         data['s'] = 'feed/{0}'.format(feed.url)
 
         data['t'] = 'Testing stuff'
