@@ -6,6 +6,8 @@ from collections import defaultdict
 from django_push.subscriber.models import Subscription
 from rq.timeouts import JobTimeoutException
 
+from ..tasks import enqueue
+
 logger = logging.getLogger('feedupdater')
 
 
@@ -20,12 +22,17 @@ def update_feed(url, etag=None, last_modified=None, subscribers=1,
             backoff_factor=backoff_factor, previous_error=error, link=link,
             title=title, hub=hub)
     except JobTimeoutException:
-        feed = UniqueFeed.objects.get(url=url)
-        feed.backoff()
-        feed.save()
-        logger.debug("Job timed out, backing off %s to %s" % (
-            feed.url, feed.backoff_factor,
-        ))
+        enqueue(backoff_feed, args=[url], queue='store')
+
+
+def backoff_feed(url):
+    from .models import UniqueFeed
+    feed = UniqueFeed.objects.get(url=url)
+    feed.backoff()
+    feed.save()
+    logger.debug("Job timed out, backing off %s to %s" % (
+        feed.url, feed.backoff_factor,
+    ))
 
 
 def read_later(entry_pk):
