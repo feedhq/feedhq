@@ -128,7 +128,6 @@ class ReaderView(APIView):
                 raise exceptions.ParseError("Missing 'T' POST token")
             user_id = check_post_token(request.DATA['T'])
             if not user_id == request.user.pk:
-                logger.info("Bad POST token")
                 raise BadToken
 
     def handle_exception(self, exc):
