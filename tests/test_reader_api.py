@@ -864,4 +864,32 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(Feed.objects.count(), 0)
+
+    def test_quickadd_subscription(self, get):
+        get.return_value = responses(304)
+
+        user = UserFactory.create()
+        token = self.auth_token(user)
+        post_token = self.post_token(token)
+        url = reverse('reader:subscription_quickadd')
+        data = {
+            'T': post_token,
+        }
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Missing 'quickadd' parameter",
+                            status_code=400)
+
+        data['quickadd'] = 'foo bar'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Invalid 'quickadd' URL",
+                            status_code=400)
+
+        feed = FeedFactory.build()
+        data['quickadd'] = feed.url
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+
+        data['quickadd'] = 'feed/{0}'.format(feed.url)
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "already subscribed", status_code=400)
 ReaderApiTest = patch('requests.get')(ReaderApiTest)

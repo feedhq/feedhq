@@ -1,6 +1,7 @@
 import datetime
 import logging
 import struct
+import urlparse
 
 from urllib import urlencode
 
@@ -351,10 +352,41 @@ class EditSubscription(ReaderView):
             Feed.objects.filter(category__user=request.user, url=url).update(
                 category=category)
         else:
-            raise exceptions.ParseError(
-                "Unrecognized action: {0}".format(action))
+            msg = "Unrecognized action: {0}".format(action)
+            logger.info(msg)
+            raise exceptions.ParseError(msg)
         return Response("OK")
 edit_subscription = EditSubscription.as_view()
+
+
+class QuickAddSubscription(ReaderView):
+    http_method_names = ['post']
+
+    def post(self, request, *args, **kwargs):
+        if not 'quickadd' in request.DATA:
+            raise exceptions.ParseError("Missing 'quickadd' parameter")
+
+        url = request.DATA['quickadd']
+        if url.startswith('feed/'):
+            url = url[len('feed/'):]
+
+        try:
+            URLValidator()(url)
+        except ValidationError:
+            raise exceptions.ParseError("Invalid 'quickadd' URL")
+
+        exists = Feed.objects.filter(category__user=request.user,
+                                     url=url).exists()
+        if exists:
+            raise exceptions.ParseError(
+                "You are already subscribed to {0}".format(url))
+
+        name = urlparse.urlparse(url).netloc
+        category, created = request.user.categories.get_or_create(
+            slug='quickadd', defaults={'name': 'Quick add'})
+        Feed.objects.create(category=category, name=name, url=url)
+        return Response("OK")
+quickadd_subscription = QuickAddSubscription.as_view()
 
 
 class Subscribed(ReaderView):

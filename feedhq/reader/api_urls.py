@@ -16,6 +16,9 @@ urlpatterns = patterns(
     url(r'^subscription/edit$', views.edit_subscription,
         name='subscription_edit'),
 
+    url(r'^subscription/quickadd$', views.quickadd_subscription,
+        name='subscription_quickadd'),
+
     url(r'^subscribed$', views.subscribed, name='subscribed'),
 
     url(r'^stream/contents/(?P<content_id>.+)?$', views.stream_contents,
@@ -50,7 +53,6 @@ urlpatterns = patterns(
 Missing URLS:
 
     subscription/
-        quickadd
         export
 
     /disable-tag
