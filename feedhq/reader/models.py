@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import models
@@ -51,12 +52,34 @@ def generate_post_token(user):
 class AuthToken(models.Model):
     user = models.ForeignKey(User, verbose_name=_('User'),
                              related_name='auth_tokens')
-    token = models.CharField(_('Token'), max_length=300, db_index=True,
-                             default=get_random_string(AUTH_TOKEN_LENGTH))
+    token = models.CharField(
+        _('Token'), max_length=300, db_index=True, unique=True,
+        default=lambda: get_random_string(AUTH_TOKEN_LENGTH))
     date_created = models.DateTimeField(_('Creation date'),
                                         default=timezone.now)
 
+    def __unicode__(self):
+        return u'Token for {0}'.format(self.user)
+
+    class Meta:
+        ordering = ('-date_created',)
+
     def delete(self):
-        cache_key = 'reader_auth_token:{0}'.format(self.token)
         super(AuthToken, self).delete()
-        cache.delete(cache_key)
+        cache.delete(self.cache_key)
+
+    @property
+    def cache_key(self):
+        return 'reader_auth_token:{0}'.format(self.token)
+
+    @property
+    def user_pk(self):
+        return self.user_id
+
+    @property
+    def cache_value(self):
+        return cache.get(self.cache_key)
+
+    @property
+    def preview(self):
+        return u'{0}…'.format(self.token[:8])
