@@ -1,5 +1,7 @@
 import json
 
+from urllib import urlencode
+
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
@@ -538,6 +540,14 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, {'n': 10, 's': 'foo'},
                                    **clientlogin(token))
         self.assertEqual(response.status_code, 400)
+
+        with self.assertNumQueries(2):
+            response = self.client.post('{0}?{1}'.format(url, urlencode({
+                'n': 5, 's': 'user/-/state/com.google/reading-list',
+                'includeAllDirectStreamIds': 'true'})),
+                **clientlogin(token))
+        self.assertEqual(len(response.json['itemRefs']), 5)
+        self.assertEqual(response.json['continuation'], 'page2')
 
         with self.assertNumQueries(2):
             response = self.client.get(url, {

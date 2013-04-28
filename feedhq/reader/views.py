@@ -273,6 +273,11 @@ def get_stream_q(streams, exclude=None, limit=None, offset=None):
     offset: unix timestamp to which to consider entries
     """
     q = None
+    if streams.startswith('splice/'):
+        streams = streams[len('splice/'):].split('|')
+    else:
+        streams = [streams]
+
     for stream in streams:
         if stream.startswith("feed/"):
             url = stream[len("feed/"):]
@@ -293,7 +298,9 @@ def get_stream_q(streams, exclude=None, limit=None, offset=None):
             slug = stream[len('user/-/label/'):]
             stream_q = Q(feed__category__slug=slug)
         else:
-            assert False, stream
+            msg = "Unrecognized stream: {0}".format(stream)
+            logger.info(msg)
+            raise exceptions.ParseError(msg)
         if q is None:
             q = stream_q
         else:
@@ -506,7 +513,7 @@ class StreamContents(ReaderView):
                 "Unknown stream id: {0}".format(content_id))
 
         entries = request.user.entries.filter(
-            get_stream_q([content_id],
+            get_stream_q(content_id,
                          exclude=request.GET.get('xt'),
                          limit=request.GET.get('ot'),
                          offset=request.GET.get('nt')),
@@ -542,20 +549,17 @@ stream_contents = StreamContents.as_view()
 
 
 class StreamItemsIds(ReaderView):
-    http_method_names = ['get']
+    http_method_names = ['get', 'post']
+    require_post_token = False
 
     def get(self, request, *args, **kwargs):
         if not 'n' in request.GET:
             raise exceptions.ParseError("Required 'n' parameter")
         if not 's' in request.GET:
             raise exceptions.ParseError("Required 's' parameter")
-        if not request.GET['s'].startswith('splice/'):
-            raise exceptions.ParseError(
-                "Unrecognized 's' parameter. Must be "
-                "'splice/<StreamID>|<StreamID>'")
         entries = request.user.entries.filter(
             get_stream_q(
-                request.GET['s'][len('splice/'):].split('|'),
+                request.GET['s'],
                 exclude=request.GET.get('xt'),
                 limit=request.GET.get('ot'),
                 offset=request.GET.get('nt'))).order_by('date')
@@ -586,6 +590,7 @@ class StreamItemsIds(ReaderView):
             } for e in entries[start:end]]
         data['itemRefs'] = item_refs
         return Response(data)
+    post = get
 stream_items_ids = StreamItemsIds.as_view()
 
 
@@ -595,7 +600,7 @@ class StreamItemsCount(ReaderView):
     def get(self, request, *args, **kwargs):
         if not 's' in request.GET:
             raise exceptions.ParseError("Missing 's' parameter")
-        entries = request.user.entries.filter(get_stream_q([request.GET['s']]))
+        entries = request.user.entries.filter(get_stream_q(request.GET['s']))
         data = str(entries.count())
         if request.GET.get('a') == 'true':
             data = '{0}#{1}'.format(
