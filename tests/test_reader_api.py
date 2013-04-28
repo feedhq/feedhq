@@ -859,6 +859,14 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertEqual(Feed.objects.get().category_id, cat.pk)
 
+        data = {'T': post_token,
+                'ac': 'edit',
+                's': 'feed/{0}'.format(feed.url),
+                't': 'Hahaha'}
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        self.assertEqual(Feed.objects.get().name, "Hahaha")
+
         # Unsubscribing
         data = {
             'T': post_token,

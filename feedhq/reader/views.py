@@ -335,21 +335,24 @@ class EditSubscription(ReaderView):
         elif action == 'unsubscribe':
             Feed.objects.filter(category__user=request.user, url=url).delete()
         elif action == 'edit':
-            if not 'a' in request.DATA:
-                raise exceptions.ParseError("Missing 'a' parameter")
+            qs = Feed.objects.filter(category__user=request.user, url=url)
+            query = {}
+            if 'a' in request.DATA:
+                if not request.DATA['a'].startswith('user/-/label/'):
+                    raise exceptions.ParseError(
+                        "Unknown label: {0}".format(request.DATA['a']))
 
-            if not request.DATA['a'].startswith('user/-/label/'):
-                raise exceptions.ParseError(
-                    "Unknown label: {0}".format(request.DATA['a']))
-
-            slug = request.DATA['a'].split('/')[-1]
-            try:
-                category = request.user.categories.get(slug=slug)
-            except Category.DoesNotExist:
-                raise exceptions.ParseError(
-                    "The label '{0}' does not exist".format(slug))
-            Feed.objects.filter(category__user=request.user, url=url).update(
-                category=category)
+                slug = request.DATA['a'].split('/')[-1]
+                try:
+                    category = request.user.categories.get(slug=slug)
+                except Category.DoesNotExist:
+                    raise exceptions.ParseError(
+                        "The label '{0}' does not exist".format(slug))
+                query['category'] = category
+            if 't' in request.DATA:
+                query['name'] = request.DATA['t']
+            if query:
+                qs.update(**query)
         else:
             msg = "Unrecognized action: {0}".format(action)
             logger.info(msg)
