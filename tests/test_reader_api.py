@@ -275,7 +275,7 @@ class ReaderApiTest(ApiTest):
                             status_code=400)
 
         entry = EntryFactory.create(user=user, feed__category__user=user)
-        data['i'] = 'tag:google.com,2005:reader/item/{0}'.format(entry.pk)
+        data['i'] = 'tag:google.com,2005:reader/item/{0}'.format(entry.hex_pk)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Specify a tag to add or remove",
                             status_code=400)
@@ -284,10 +284,15 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Bad tag format", status_code=400)
 
-        # don't provide a and r at the same time
-        data['r'] = data['a'] = 'user/-/state/com.google/kept-unread'
+        # a and r at the same time
+        data['a'] = 'user/-/state/com.google/starred'
+        data['r'] = 'user/-/state/com.google/kept-unread'
         response = self.client.post(url, data, **clientlogin(token))
-        self.assertContains(response, "mutually exclusive", status_code=400)
+        self.assertContains(response, "OK", status_code=200)
+        e = user.entries.get()
+        self.assertTrue(e.starred)
+        self.assertTrue(e.read)
+
         del data['a']
 
         # Mark as read: remove "kept-unread" or add "read"
@@ -338,6 +343,16 @@ class ReaderApiTest(ApiTest):
             self.assertContains(response, "OK")
             entry = Entry.objects.get()
             self.assertFalse(getattr(entry, tag))
+
+        # Batch edition
+        entry2 = EntryFactory.create(user=user, feed=entry.feed)
+        self.assertEqual(user.entries.filter(broadcast=True).count(), 0)
+        response = self.client.post(url, {
+            'i': [entry.pk, entry2.pk],
+            'a': 'user/-/state/com.google/broadcast',
+            'T': post_token,
+        }, **clientlogin(token))
+        self.assertEqual(user.entries.filter(broadcast=True).count(), 2)
 
     def test_tag_list(self, get):
         get.return_value = responses(304)
@@ -646,16 +661,15 @@ class ReaderApiTest(ApiTest):
             self.assertEqual(len(response.json['items']), 2)
 
         with self.assertNumQueries(1):
-            response = self.client.get(url, {'i': [hex(entry1.pk)[2:],
-                                                   entry2.pk]},
-                                       **clientlogin(token))
+            response = self.client.get(url, {'i': [
+                'tag:google.com,2005:reader/item/{0}'.format(entry1.hex_pk),
+                entry2.pk]}, **clientlogin(token))
             self.assertEqual(len(response.json['items']), 2)
 
         with self.assertNumQueries(1):
             response = self.client.get(url, {'i': [
-                'tag:google.com,2005:reader/item/{0}'.format(
-                    hex(entry1.pk)[2:]),
-                'tag:google.com,2005:reader/item/{0}'.format(entry2.pk),
+                'tag:google.com,2005:reader/item/{0}'.format(entry1.hex_pk),
+                'tag:google.com,2005:reader/item/{0}'.format(entry2.hex_pk),
             ]}, **clientlogin(token))
             self.assertEqual(len(response.json['items']), 2)
 
@@ -667,7 +681,7 @@ class ReaderApiTest(ApiTest):
 
         with self.assertNumQueries(1):
             ids = ["tag:google.com,2005:reader/item/{0}".format(pk)
-                   for pk in [entry1.pk, entry2.pk]]
+                   for pk in [entry1.hex_pk, entry2.hex_pk]]
             response = self.client.get(url, {'i': ids, 'output': 'atom'},
                                        **clientlogin(token))
             self.assertEqual(response.status_code, 200)

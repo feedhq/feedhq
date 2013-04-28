@@ -33,12 +33,29 @@ def item_id(value):
     Converts an input to a proper (integer) item ID.
     """
     if value.startswith('tag:google.com'):
-        value = value.split('/')[-1]
-    if value.isdigit():
+        try:
+            value = int(value.split('/')[-1], 16)
+        except (ValueError, IndexError):
+            raise exceptions.ParseError(
+                "Unrecognized item. Must be of the form "
+                "'tag:gogle.com,2005:reader/item/<item_id>'")
+    elif value.isdigit():
         value = int(value)
     else:
-        value = int(value, 16)
+        raise exceptions.ParseError(
+            "Unrecognized item. Must be of the form "
+            "'tag:gogle.com,2005:reader/item/<item_id>'")
     return value
+
+
+def tag_value(tag):
+    try:
+        return tag.rsplit('/', 1)[1]
+    except IndexError:
+        raise exceptions.ParseError(
+            "Bad tag format. Must be of the form "
+            "'user/-/state/com.google/<tag>'. Allowed tags: 'read', "
+            "'kept-unread', 'starred', 'broadcast'.")
 
 
 class ForceNegotiation(DefaultContentNegotiation):
@@ -682,44 +699,54 @@ class EditTag(ReaderView):
             raise exceptions.ParseError(
                 "Missing 'i' in request data. "
                 "'tag:gogle.com,2005:reader/item/<item_id>'")
-        try:
-            entry_id = item_id(request.DATA['i'])
-        except (ValueError, IndexError):
-            raise exceptions.ParseError(
-                "Unrecognized item. Must be of the form "
-                "'tag:gogle.com,2005:reader/item/<item_id>'")
+        entry_ids = map(item_id, request.DATA.getlist('i'))
         add = 'a' in request.DATA
         remove = 'r' in request.DATA
         if not add and not remove:
             raise exceptions.ParseError(
                 "Specify a tag to add or remove. Add: 'a' parameter, "
                 "remove: 'r' parameter.")
-        if add and remove:
-            raise exceptions.ParseError(
-                "'a' and 'r' parameters are mutually exclusive.")
-        try:
-            tag = request.DATA.get(
-                'a', request.DATA.get('r')).rsplit('/', 1)[1]
-        except IndexError:
-            raise exceptions.ParseError(
-                "Bad tag format. Must be of the form "
-                "'user/-/state/com.google/<tag>'. Allowed tags: 'read', "
-                "'kept-unread', 'starred', 'broadcast'.")
 
-        if tag == 'kept-unread':  # remove "kept-unread" == add "read"
-            add, remove = remove, add
-            tag = 'read'
+        to_add = []
+        if add:
+            to_add = map(tag_value, request.DATA.getlist('a'))
 
-        if tag in ['starred', 'broadcast', 'read']:
-            request.user.entries.filter(pk=entry_id).update(**{tag: add})
-            if tag == 'read':
-                feed = Feed.objects.get(
-                    pk=request.user.entries.get(pk=entry_id).feed_id)
+        to_remove = []
+        if remove:
+            to_remove = map(tag_value, request.DATA.getlist('r'))
+
+        query = {}
+        for tag in to_add:
+            if tag == 'kept-unread':
+                query['read'] = False
+
+            elif tag in ['starred', 'broadcast', 'read']:
+                query[tag] = True
+
+            else:
+                logger.info("Unhandled tag {0}".format(tag))
+                raise exceptions.ParseError(
+                    "Unrecognized tag: {0}".format(tag))
+
+        for tag in to_remove:
+            if tag == 'kept-unread':
+                query['read'] = True
+
+            elif tag in ['starred', 'broadcast', 'read']:
+                query[tag] = False
+            else:
+                logger.info("Unhandled tag {0}".format(tag))
+                raise exceptions.ParseError(
+                    "Unrecognized tag: {0}".format(tag))
+
+        request.user.entries.filter(pk__in=entry_ids).update(**query)
+        merged = to_add + to_remove
+        if 'read' in merged or 'kept-unread' in merged:
+            feeds = Feed.objects.filter(
+                pk__in=request.user.entries.filter(
+                    pk__in=entry_ids).values_list('feed_id', flat=True))
+            for feed in feeds:
                 feed.update_unread_count()
-        else:
-            logger.info("Unhandled tag {0}".format(tag))
-            raise exceptions.ParseError(
-                "Unrecognized tag: {0}".format(tag))
         return Response("OK")
 edit_tag = EditTag.as_view()
 
