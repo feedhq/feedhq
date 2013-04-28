@@ -561,6 +561,10 @@ class ReaderApiTest(ApiTest):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 20)
 
+        url = reverse('reader:stream_contents', args=['unknown'])
+        response = self.client.get(url, **clientlogin(token))
+        self.assertContains(response, "Unknown stream", status_code=400)
+
     def test_stream_items_ids(self, get):
         get.return_value = responses(304)
         url = reverse("reader:stream_items_ids")
@@ -864,6 +868,10 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(Feed.objects.count(), 0)
+
+        data['ac'] = 'test'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Unrecognized action", status_code=400)
 
     def test_quickadd_subscription(self, get):
         get.return_value = responses(304)

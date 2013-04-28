@@ -652,9 +652,9 @@ class StreamContents(ReaderView):
                 request.user.pk, slug)
             uniques = get_unique_map(request.user)
         else:
-            logger.info("Unknown stream id: {0}".format(content_id))
-            raise exceptions.ParseError(
-                "Unknown stream id: {0}".format(content_id))
+            msg = "Unknown stream id: {0}".format(content_id)
+            logger.info(msg)
+            raise exceptions.ParseError(msg)
 
         entries = request.user.entries.filter(
             get_stream_q(content_id,
