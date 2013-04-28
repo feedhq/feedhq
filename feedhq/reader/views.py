@@ -579,18 +579,18 @@ class StreamItemsIds(ReaderView):
             entries = entries.select_related('feed').values('pk', 'date',
                                                             'feed__url')
             item_refs = [{
-                'id': e['pk'],
+                'id': str(e['pk']),
                 'directStreamIds': [
                     'feed/{0}'.format(e['feed__url']),
                 ],
-                'timestampUsec': int(e['date'].strftime("%s000000")),
+                'timestampUsec': e['date'].strftime("%s000000"),
             } for e in entries[start:end]]
         else:
             entries = entries.values('pk', 'date')
             item_refs = [{
-                'id': e['pk'],
+                'id': str(e['pk']),
                 'directStreamIds': [],
-                'timestampUsec': int(e['date'].strftime("%s000000")),
+                'timestampUsec': e['date'].strftime("%s000000"),
             } for e in entries[start:end]]
         data['itemRefs'] = item_refs
         return Response(data)
