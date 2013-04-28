@@ -779,10 +779,85 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, **clientlogin(token))
         self.assertContains(response, "streamprefs")
 
-    def preference_list(self, get):
+    def test_preference_list(self, get):
         user = UserFactory.create()
         token = self.auth_token(user)
-        url = reverse('reader:stream_preference')
+        url = reverse('reader:preference_list')
         response = self.client.get(url, **clientlogin(token))
         self.assertContains(response, "prefs")
+
+    def test_edit_subscription(self, get):
+        get.return_value = responses(304)
+
+        user = UserFactory.create()
+        token = self.auth_token(user)
+        post_token = self.post_token(token)
+        category = CategoryFactory.create(user=user)
+        feed = FeedFactory.build(category=category)
+
+        url = reverse('reader:subscription_edit')
+        data = {'T': post_token}
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Missing 'ac' parameter",
+                            status_code=400)
+
+        data['ac'] = 'subscribe'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Missing 's' parameter", status_code=400)
+
+        data['s'] = '{0}'.format(feed.url)
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Unrecognized stream", status_code=400)
+
+        data['s'] = 'feed/{0}'.format(feed.url)
+
+        data['t'] = 'Testing stuff'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Missing 'a' parameter", status_code=400)
+
+        del data['t']
+        data['a'] = 'user/-/label/foo'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Missing 't' parameter", status_code=400)
+
+        data['t'] = 'Testing stuff'
+        data['a'] = 'userlabel/foo'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Unknown label", status_code=400)
+
+        data['a'] = 'user/-/label/foo'
+        self.assertEqual(Feed.objects.count(), 0)
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+
+        self.assertEqual(Feed.objects.count(), 1)
+        feed = Feed.objects.get()
+        self.assertEqual(feed.name, 'Testing stuff')
+
+        # Re-submit: existing
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "already subscribed", status_code=400)
+
+        # Editing that
+        data = {'T': post_token,
+                'ac': 'edit',
+                's': 'feed/{0}'.format(feed.url),
+                'a': 'user/-/label/unknown'}
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "The label 'unknown' does not exist",
+                            status_code=400)
+
+        cat = user.categories.create(name='Other', slug='unknown')
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertEqual(Feed.objects.get().category_id, cat.pk)
+
+        # Unsubscribing
+        data = {
+            'T': post_token,
+            'ac': 'unsubscribe',
+            's': 'feed/{0}'.format(feed.url),
+        }
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        self.assertEqual(Feed.objects.count(), 0)
 ReaderApiTest = patch('requests.get')(ReaderApiTest)

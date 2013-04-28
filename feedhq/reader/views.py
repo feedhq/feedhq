@@ -18,7 +18,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..feeds.models import Feed, UniqueFeed
+from ..feeds.models import Feed, UniqueFeed, Category
 from .authentication import GoogleLoginAuthentication
 from .exceptions import PermissionDenied, BadToken
 from .models import generate_auth_token, generate_post_token, check_post_token
@@ -285,6 +285,71 @@ class SubscriptionList(ReaderView):
             "subscriptions": subscriptions
         })
 subscription_list = SubscriptionList.as_view()
+
+
+class EditSubscription(ReaderView):
+    http_method_name = ['post']
+    renderer_classes = [PlainRenderer]
+
+    def post(self, request, *args, **kwargs):
+        action = request.DATA.get('ac')
+        if action is None:
+            raise exceptions.ParseError("Missing 'ac' parameter")
+
+        if not 's' in request.DATA:
+            raise exceptions.ParseError("Missing 's' parameter")
+
+        if not request.DATA['s'].startswith('feed/'):
+            raise exceptions.ParseError(
+                "Unrecognized stream: {0}".format(request.DATA['s']))
+        url = request.DATA['s'][len('feed/'):]
+
+        if action == 'subscribe':
+            for param in ['t', 'a']:
+                if not param in request.DATA:
+                    raise exceptions.ParseError(
+                        "Missing '{0}' parameter".format(param))
+
+            if not request.DATA['a'].startswith('user/-/label/'):
+                raise exceptions.ParseError(
+                    "Unknown label: {0}".format(request.DATA['a']))
+
+            slug = request.DATA['a'].split('/')[-1]
+            name = slug.title()
+            category, created = request.user.categories.get_or_create(
+                slug=slug, defaults={'name': name})
+
+            exists = Feed.objects.filter(category__user=request.user,
+                                         url=url).exists()
+            if exists:
+                raise exceptions.ParseError(
+                    "You are already subscribed to {0}".format(url))
+            Feed.objects.create(url=url, name=request.DATA['t'],
+                                category=category)
+
+        elif action == 'unsubscribe':
+            Feed.objects.filter(category__user=request.user, url=url).delete()
+        elif action == 'edit':
+            if not 'a' in request.DATA:
+                raise exceptions.ParseError("Missing 'a' parameter")
+
+            if not request.DATA['a'].startswith('user/-/label/'):
+                raise exceptions.ParseError(
+                    "Unknown label: {0}".format(request.DATA['a']))
+
+            slug = request.DATA['a'].split('/')[-1]
+            try:
+                category = request.user.categories.get(slug=slug)
+            except Category.DoesNotExist:
+                raise exceptions.ParseError(
+                    "The label '{0}' does not exist".format(slug))
+            Feed.objects.filter(category__user=request.user, url=url).update(
+                category=category)
+        else:
+            raise exceptions.ParseError(
+                "Unrecognized action: {0}".format(action))
+        return Response("OK")
+edit_subscription = EditSubscription.as_view()
 
 
 class Subscribed(ReaderView):
