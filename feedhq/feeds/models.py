@@ -512,6 +512,10 @@ class Entry(models.Model):
     def __unicode__(self):
         return u'%s' % self.title
 
+    @property
+    def hex_pk(self):
+        return hex(self.pk)[2:]
+
     def sanitized_title(self):
         if self.title:
             return unescape_entities(bleach.clean(self.title, tags=[],

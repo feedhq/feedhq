@@ -28,6 +28,19 @@ from .renderers import (PlainRenderer, GoogleReaderXMLRenderer, AtomRenderer,
 logger = logging.getLogger(__name__)
 
 
+def item_id(value):
+    """
+    Converts an input to a proper (integer) item ID.
+    """
+    if value.startswith('tag:google.com'):
+        value = value.split('/')[-1]
+    if value.isdigit():
+        value = int(value)
+    else:
+        value = int(value, 16)
+    return value
+
+
 class ForceNegotiation(DefaultContentNegotiation):
     """
     Forces output even if ?output= is wrong when we have
@@ -400,7 +413,7 @@ def serialize_entry(request, entry, uniques):
     item = {
         "crawlTimeMsec": entry.date.strftime("%s000"),
         "timestampUsec": entry.date.strftime("%s000000"),
-        "id": "tag:google.com,2005:reader/item/{0}".format(entry.pk),
+        "id": "tag:google.com,2005:reader/item/{0}".format(entry.hex_pk),
         "categories": [
             label_key(request, entry.feed.category),
             reading_list,
@@ -625,12 +638,7 @@ class StreamItemsContents(ReaderView):
             raise exceptions.ParseError(
                 "Required 'i' parameter: items IDs to send back")
 
-        ids = []
-        for item_id in items:
-            if item_id.startswith('tag:google.com'):
-                ids.append(int(item_id.split('/')[-1]))
-            else:
-                ids.append(int(item_id))
+        ids = map(item_id, items)
 
         entries = request.user.entries.filter(pk__in=ids).select_related(
             'feed', 'feed__category')
@@ -675,7 +683,7 @@ class EditTag(ReaderView):
                 "Missing 'i' in request data. "
                 "'tag:gogle.com,2005:reader/item/<item_id>'")
         try:
-            entry_id = int(request.DATA['i'].rsplit('/', 1)[1])
+            entry_id = item_id(request.DATA['i'])
         except (ValueError, IndexError):
             raise exceptions.ParseError(
                 "Unrecognized item. Must be of the form "

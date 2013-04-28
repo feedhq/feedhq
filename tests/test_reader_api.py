@@ -646,6 +646,20 @@ class ReaderApiTest(ApiTest):
             self.assertEqual(len(response.json['items']), 2)
 
         with self.assertNumQueries(1):
+            response = self.client.get(url, {'i': [hex(entry1.pk)[2:],
+                                                   entry2.pk]},
+                                       **clientlogin(token))
+            self.assertEqual(len(response.json['items']), 2)
+
+        with self.assertNumQueries(1):
+            response = self.client.get(url, {'i': [
+                'tag:google.com,2005:reader/item/{0}'.format(
+                    hex(entry1.pk)[2:]),
+                'tag:google.com,2005:reader/item/{0}'.format(entry2.pk),
+            ]}, **clientlogin(token))
+            self.assertEqual(len(response.json['items']), 2)
+
+        with self.assertNumQueries(1):
             response = self.client.get(url, {'i': [entry1.pk, entry2.pk],
                                              'output': 'atom'},
                                        **clientlogin(token))
