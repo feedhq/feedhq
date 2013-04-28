@@ -1,7 +1,8 @@
+import sys
 import warnings
 warnings.simplefilter('always')
 
-from .settings import *  # noqa
+from feedhq.settings import *  # noqa
 
 SECRET_KEY = 'test secret key'
 
@@ -27,7 +28,9 @@ INSTAPAPER = READABILITY = {
 }
 
 # Silencing log calls
-LOGGING['loggers']['feedupdater']['level'] = 'ERROR'
-LOGGING['loggers']['ratelimitbackend']['level'] = 'ERROR'
+if not '-v2' in sys.argv:
+    LOGGING['loggers']['feedupdater']['level'] = 'ERROR'
+    LOGGING['loggers']['ratelimitbackend']['level'] = 'ERROR'
+    LOGGING['loggers']['feedhq.reader.views']['level'] = 'ERROR'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media')
