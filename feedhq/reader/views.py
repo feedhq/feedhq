@@ -129,6 +129,11 @@ class ReaderView(APIView):
                 logger.info("Bad POST token")
                 raise BadToken
 
+    def handle_exception(self, exc):
+        if isinstance(exc, BadToken):
+            self.headers['X-Reader-Google-Bad-Token'] = "true"
+        return super(ReaderView, self).handle_exception(exc)
+
 
 class TokenView(ReaderView):
     http_method_names = ['get', 'post']

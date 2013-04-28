@@ -253,6 +253,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, {'T': 'no'}, **clientlogin(token))
         self.assertContains(response, "Invalid POST token",
                             status_code=401)
+        self.assertEqual(response['X-Reader-Google-Bad-Token'], 'true')
 
         token_url = reverse('reader:token')
         post_token = self.client.post(token_url, **clientlogin(token)).content
