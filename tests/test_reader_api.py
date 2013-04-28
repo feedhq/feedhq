@@ -258,7 +258,6 @@ class ReaderApiTest(ApiTest):
         post_token = self.client.post(token_url, **clientlogin(token)).content
 
         data = {
-            'ac': 'edit-tags',
             'T': post_token,
         }
         response = self.client.post(url, data, **clientlogin(token))
