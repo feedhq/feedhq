@@ -442,6 +442,17 @@ class ReaderApiTest(ApiTest):
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 20)
 
+        # Multiple ?xt= is valid.
+        with self.assertNumQueries(2):
+            response = self.client.get(
+                url, {'xt': [
+                    'user/-/state/com.google/starred',
+                    'user/-/state/com.google/broadcast-friends',
+                    'user/-/state/com.google/lol',
+                ], 'n': 40},
+                **clientlogin(token))
+        self.assertEqual(len(response.json['items']), 19)
+
         with self.assertNumQueries(2):
             response = self.client.get(
                 url, {'xt': 'user/-/state/com.google/broadcast', 'n': 40},

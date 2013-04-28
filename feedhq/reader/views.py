@@ -312,29 +312,30 @@ def get_stream_q(streams, exclude=None, limit=None, offset=None):
 
     # ?xt=user/stuff or feed/stuff to exclude something from the query
     if exclude is not None:
-        if exclude.startswith('feed/'):
-            exclude_q = Q(feed__url=exclude[len('feed/'):])
-        elif exclude.startswith("user/-/state/com.google/"):
-            exclude_state = exclude[len("user/-/state/com.google/"):]
-            if exclude_state == 'starred':
-                exclude_q = Q(starred=True)
-            elif exclude_state == 'broadcast':
-                exclude_q = Q(broadcast=True)
-            elif exclude_state == 'kept-unread':
-                exclude_q = Q(read=False)
-            elif exclude_state == 'read':
-                exclude_q = Q(read=True)
+        for ex in exclude:
+            exclude_q = None
+            if ex.startswith('feed/'):
+                exclude_q = Q(feed__url=ex[len('feed/'):])
+            elif ex.startswith("user/-/state/com.google/"):
+                exclude_state = ex[len("user/-/state/com.google/"):]
+                if exclude_state == 'starred':
+                    exclude_q = Q(starred=True)
+                elif exclude_state in ['broadcast', 'broadcast-friends']:
+                    exclude_q = Q(broadcast=True)
+                elif exclude_state == 'kept-unread':
+                    exclude_q = Q(read=False)
+                elif exclude_state == 'read':
+                    exclude_q = Q(read=True)
+                else:
+                    logger.info("Unknown user state: {0}".format(
+                        exclude_state))
+            elif ex.startswith("user/-/label/"):
+                exclude_label = ex[len("user/-/label/"):]
+                exclude_q = Q(feed__category__slug=exclude_label)
             else:
-                logger.info("Unknown user state: {0}".format(
-                    exclude_state))
-        elif exclude.startswith("user/-/label/"):
-            exclude_label = exclude[len("user/-/label/"):]
-            exclude_q = Q(feed__category__slug=exclude_label)
-        else:
-            logger.info("Unknown state: {0}".format(exclude))
-            raise exceptions.ParseError(
-                "Unknown state: {0}".format(exclude))
-        q &= ~exclude_q
+                logger.info("Unknown state: {0}".format(ex))
+            if exclude_q is not None:
+                q &= ~exclude_q
 
     # ?ot=<timestamp> for limiting in time
     if limit is not None:
@@ -518,7 +519,7 @@ class StreamContents(ReaderView):
 
         entries = request.user.entries.filter(
             get_stream_q(content_id,
-                         exclude=request.GET.get('xt'),
+                         exclude=request.GET.getlist('xt'),
                          limit=request.GET.get('ot'),
                          offset=request.GET.get('nt')),
         ).select_related('feed', 'feed__category')
@@ -564,7 +565,7 @@ class StreamItemsIds(ReaderView):
         entries = request.user.entries.filter(
             get_stream_q(
                 request.GET['s'],
-                exclude=request.GET.get('xt'),
+                exclude=request.GET.getlist('xt'),
                 limit=request.GET.get('ot'),
                 offset=request.GET.get('nt'))).order_by('date')
 
