@@ -8,7 +8,7 @@ from django.test import TestCase, Client
 from mock import patch
 
 from feedhq.feeds.models import Feed, Entry, UniqueFeed
-from feedhq.reader.views import GoogleReaderXMLRenderer
+from feedhq.reader.views import GoogleReaderXMLRenderer, item_id
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
 from . import responses
@@ -353,6 +353,21 @@ class ReaderApiTest(ApiTest):
             'T': post_token,
         }, **clientlogin(token))
         self.assertEqual(user.entries.filter(broadcast=True).count(), 2)
+
+    def test_hex_item_ids(self, get):
+        entry = Entry(pk=162170919393841362)
+        self.assertEqual(entry.hex_pk, "024025978b5e50d2")
+        entry.pk = -355401917359550817
+        self.assertEqual(entry.hex_pk, "fb115bd6d34a8e9f")
+
+        self.assertEqual(
+            item_id("tag:google.com,2005:reader/item/fb115bd6d34a8e9f"),
+            -355401917359550817
+        )
+        self.assertEqual(
+            item_id("tag:google.com,2005:reader/item/024025978b5e50d2"),
+            162170919393841362
+        )
 
     def test_tag_list(self, get):
         get.return_value = responses(304)

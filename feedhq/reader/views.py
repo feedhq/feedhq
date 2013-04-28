@@ -1,5 +1,6 @@
 import datetime
 import logging
+import struct
 
 from urllib import urlencode
 
@@ -35,16 +36,17 @@ def item_id(value):
     if value.startswith('tag:google.com'):
         try:
             value = int(value.split('/')[-1], 16)
+            value = struct.unpack("l", struct.pack("L", value))[0]
         except (ValueError, IndexError):
             raise exceptions.ParseError(
                 "Unrecognized item. Must be of the form "
-                "'tag:gogle.com,2005:reader/item/<item_id>'")
+                "'tag:google.com,2005:reader/item/<item_id>'")
     elif value.isdigit():
         value = int(value)
     else:
         raise exceptions.ParseError(
             "Unrecognized item. Must be of the form "
-            "'tag:gogle.com,2005:reader/item/<item_id>'")
+            "'tag:google.com,2005:reader/item/<item_id>'")
     return value
 
 

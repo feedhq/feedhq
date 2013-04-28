@@ -12,6 +12,7 @@ import urlparse
 import random
 import requests
 import socket
+import struct
 
 from django.db import models
 from django.conf import settings
@@ -514,7 +515,10 @@ class Entry(models.Model):
 
     @property
     def hex_pk(self):
-        return hex(self.pk)[2:]
+        value = hex(struct.unpack("L", struct.pack("l", self.pk))[0])
+        if value.endswith("L"):
+            value = value[:-1]
+        return value[2:].zfill(16)
 
     def sanitized_title(self):
         if self.title:
