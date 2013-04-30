@@ -209,7 +209,8 @@ class PreferenceList(ReaderView):
     def get(self, request, *args, **kwargs):
         return Response({"prefs": [{
             "id": "lhn-prefs",
-            "value": json.dumps({"subscriptions": {"ssa": True}}),
+            "value": json.dumps({"subscriptions": {"ssa": "true"}},
+                                separators=(',', ':')),
         }]})
 preference_list = PreferenceList.as_view()
 
