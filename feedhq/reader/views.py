@@ -64,6 +64,30 @@ def tag_value(tag):
             "'kept-unread', 'starred', 'broadcast'.")
 
 
+def is_stream(value, user_id):
+    stream_prefix = "user/-/state/com.google/"
+    stream_user_prefix = "user/{0}/state/com.google/".format(user_id)
+    if value.startswith((stream_prefix, stream_user_prefix)):
+        if value.startswith(stream_prefix):
+            prefix = stream_prefix
+        else:
+            prefix = stream_user_prefix
+        return value[len(prefix):]
+    return False
+
+
+def is_label(value, user_id):
+    label_prefix = "user/-/label/"
+    label_user_prefix = "user/{0}/label/".format(user_id)
+    if value.startswith((label_prefix, label_user_prefix)):
+        if value.startswith(label_prefix):
+            prefix = label_prefix
+        else:
+            prefix = label_user_prefix
+        return value[len(prefix):]
+    return False
+
+
 class ForceNegotiation(DefaultContentNegotiation):
     """
     Forces output even if ?output= is wrong when we have
@@ -136,6 +160,11 @@ class ReaderView(APIView):
         if isinstance(exc, BadToken):
             self.headers['X-Reader-Google-Bad-Token'] = "true"
         return super(ReaderView, self).handle_exception(exc)
+
+    def label(self, value):
+        if not is_label(value, self.request.user.pk):
+            raise exceptions.ParseError("Unknown label: {0}".format(value))
+        return value.split('/')[-1]
 
 
 class TokenView(ReaderView):
@@ -320,11 +349,7 @@ class EditSubscription(ReaderView):
                     raise exceptions.ParseError(
                         "Missing '{0}' parameter".format(param))
 
-            if not request.DATA['a'].startswith('user/-/label/'):
-                raise exceptions.ParseError(
-                    "Unknown label: {0}".format(request.DATA['a']))
-
-            slug = request.DATA['a'].split('/')[-1]
+            slug = self.label(request.DATA['a'])
             name = slug.title()
             category, created = request.user.categories.get_or_create(
                 slug=slug, defaults={'name': name})
@@ -343,11 +368,7 @@ class EditSubscription(ReaderView):
             qs = Feed.objects.filter(category__user=request.user, url=url)
             query = {}
             if 'a' in request.DATA:
-                if not request.DATA['a'].startswith('user/-/label/'):
-                    raise exceptions.ParseError(
-                        "Unknown label: {0}".format(request.DATA['a']))
-
-                slug = request.DATA['a'].split('/')[-1]
+                slug = self.label(request.DATA['a'])
                 try:
                     category = request.user.categories.get(slug=slug)
                 except Category.DoesNotExist:
@@ -413,7 +434,7 @@ class Subscribed(ReaderView):
 subscribed = Subscribed.as_view()
 
 
-def get_stream_q(streams, exclude=None, limit=None, offset=None):
+def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
     """
     Returns a Q object that can be used to filter a queryset of entries.
 
@@ -432,8 +453,8 @@ def get_stream_q(streams, exclude=None, limit=None, offset=None):
         if stream.startswith("feed/"):
             url = stream[len("feed/"):]
             stream_q = Q(feed__url=url)
-        elif stream.startswith("user/-/state/com.google/"):
-            state = stream[len('user/-/state/com.google/'):]
+        elif is_stream(stream, user_id):
+            state = is_stream(stream, user_id)
             if state == 'read':
                 stream_q = Q(read=True)
             elif state == 'kept-unread':
@@ -444,8 +465,8 @@ def get_stream_q(streams, exclude=None, limit=None, offset=None):
                 stream_q = Q()
             elif state == 'starred':
                 stream_q = Q(starred=True)
-        elif stream.startswith('user/-/label/'):
-            slug = stream[len('user/-/label/'):]
+        elif is_label(stream, user_id):
+            slug = is_label(stream, user_id)
             stream_q = Q(feed__category__slug=slug)
         else:
             msg = "Unrecognized stream: {0}".format(stream)
@@ -462,8 +483,8 @@ def get_stream_q(streams, exclude=None, limit=None, offset=None):
             exclude_q = None
             if ex.startswith('feed/'):
                 exclude_q = Q(feed__url=ex[len('feed/'):])
-            elif ex.startswith("user/-/state/com.google/"):
-                exclude_state = ex[len("user/-/state/com.google/"):]
+            elif is_stream(ex, user_id):
+                exclude_state = is_stream(ex, user_id)
                 if exclude_state == 'starred':
                     exclude_q = Q(starred=True)
                 elif exclude_state in ['broadcast', 'broadcast-friends']:
@@ -475,8 +496,8 @@ def get_stream_q(streams, exclude=None, limit=None, offset=None):
                 else:
                     logger.info("Unknown user state: {0}".format(
                         exclude_state))
-            elif ex.startswith("user/-/label/"):
-                exclude_label = ex[len("user/-/label/"):]
+            elif is_label(ex, user_id):
+                exclude_label = is_label(ex, user_id)
                 exclude_q = Q(feed__category__slug=exclude_label)
             else:
                 logger.info("Unknown state: {0}".format(ex))
@@ -631,10 +652,10 @@ class StreamContents(ReaderView):
                 'updated': int(unique.last_update.strftime("%s")),
             })
 
-        elif content_id.startswith('user/-/state/com.google/'):
+        elif is_stream(content_id, request.user.pk):
             uniques = get_unique_map(request.user)
 
-            state = content_id[len('user/-/state/com.google/'):]
+            state = is_stream(content_id, request.user.pk)
             base['id'] = 'user/{0}/state/com.google/{1}'.format(
                 request.user.pk, state)
             if state == 'reading-list':
@@ -651,8 +672,8 @@ class StreamContents(ReaderView):
             elif state == 'broadcast':
                 base["title"] = "Broadcast items on FeedHQ"
 
-        elif content_id.startswith('user/-/label/'):
-            slug = content_id[len('user/-/label/'):]
+        elif is_label(content_id, request.user.pk):
+            slug = is_label(content_id, request.user.pk)
             base['title'] = '"{0}" via {1} on FeedHQ'.format(
                 slug, request.user.username)
             base['id'] = 'user/{0}/label/{1}'.format(
@@ -664,7 +685,7 @@ class StreamContents(ReaderView):
             raise exceptions.ParseError(msg)
 
         entries = request.user.entries.filter(
-            get_stream_q(content_id,
+            get_stream_q(content_id, request.user.pk,
                          exclude=request.GET.getlist('xt'),
                          limit=request.GET.get('ot'),
                          offset=request.GET.get('nt')),
@@ -710,7 +731,7 @@ class StreamItemsIds(ReaderView):
             raise exceptions.ParseError("Required 's' parameter")
         entries = request.user.entries.filter(
             get_stream_q(
-                request.GET['s'],
+                request.GET['s'], request.user.pk,
                 exclude=request.GET.getlist('xt'),
                 limit=request.GET.get('ot'),
                 offset=request.GET.get('nt'))).order_by('date')
@@ -751,7 +772,8 @@ class StreamItemsCount(ReaderView):
     def get(self, request, *args, **kwargs):
         if not 's' in request.GET:
             raise exceptions.ParseError("Missing 's' parameter")
-        entries = request.user.entries.filter(get_stream_q(request.GET['s']))
+        entries = request.user.entries.filter(get_stream_q(request.GET['s'],
+                                                           request.user.pk))
         data = str(entries.count())
         if request.GET.get('a') == 'true':
             data = '{0}#{1}'.format(
@@ -882,14 +904,14 @@ class MarkAllAsRead(ReaderView):
                 category__user=self.request.user,
                 url=url,
             ).update(unread_count=0)
-        elif stream.startswith('user/-/label/'):
-            slug = stream[len('user/-/label/'):]
+        elif is_label(stream, request.user.pk):
+            slug = is_label(stream, request.user.pk)
             request.user.entries.filter(
                 feed__category=request.user.categories.get(slug=slug),
             ).update(read=True)
             request.user.categories.get(slug=slug).feeds.update(unread_count=0)
-        elif stream.startswith('user/-/state/com.google/'):
-            state = stream[len('user/-/state/com.google/'):]
+        elif is_stream(stream, request.user.pk):
+            state = is_stream(stream, request.user.pk)
             if state == 'read':  # mark read items as read yo
                 return Response("OK")
             elif state in ['kept-unread', 'reading-list']:

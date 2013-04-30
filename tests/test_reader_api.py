@@ -287,7 +287,7 @@ class ReaderApiTest(ApiTest):
 
         # a and r at the same time
         data['a'] = 'user/-/state/com.google/starred'
-        data['r'] = 'user/-/state/com.google/kept-unread'
+        data['r'] = 'user/{0}/state/com.google/kept-unread'.format(user.pk)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK", status_code=200)
         e = user.entries.get()
@@ -601,8 +601,27 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(response.json['continuation'], 'page2')
 
         with self.assertNumQueries(2):
+            response = self.client.post('{0}?{1}'.format(url, urlencode({
+                'n': 5, 's': 'user/{0}/state/com.google/reading-list'.format(
+                    user.pk),
+                'includeAllDirectStreamIds': 'true'})),
+                **clientlogin(token))
+        self.assertEqual(len(response.json['itemRefs']), 5)
+        self.assertEqual(response.json['continuation'], 'page2')
+
+        with self.assertNumQueries(2):
             response = self.client.get(url, {
                 'n': 5, 's': 'splice/user/-/state/com.google/reading-list',
+                'includeAllDirectStreamIds': 'true'},
+                **clientlogin(token))
+        self.assertEqual(len(response.json['itemRefs']), 5)
+        self.assertEqual(response.json['continuation'], 'page2')
+
+        with self.assertNumQueries(2):
+            response = self.client.get(url, {
+                'n': 5,
+                's': 'splice/user/{0}/state/com.google/reading-list'.format(
+                    user.pk),
                 'includeAllDirectStreamIds': 'true'},
                 **clientlogin(token))
         self.assertEqual(len(response.json['itemRefs']), 5)
@@ -618,8 +637,9 @@ class ReaderApiTest(ApiTest):
 
         with self.assertNumQueries(2):
             response = self.client.get(url, {
-                'n': 50, 's': ('splice/user/-/state/com.google/broadcast|'
-                               'user/-/state/com.google/read'),
+                'n': 50, 's': (
+                    'splice/user/-/state/com.google/broadcast|'
+                    'user/{0}/state/com.google/read').format(user.pk),
                 'includeAllDirectStreamIds': 'no'},
                 **clientlogin(token))
         self.assertEqual(len(response.json['itemRefs']), 10)
@@ -638,6 +658,12 @@ class ReaderApiTest(ApiTest):
             **clientlogin(token))
         self.assertEqual(response.content, '0')
 
+        response = self.client.get(
+            url, {'s': 'user/{0}/state/com.google/reading-list'.format(
+                user.pk)},
+            **clientlogin(token))
+        self.assertEqual(response.content, '0')
+
         feed = FeedFactory.create(category__user=user)
         for i in range(6):
             EntryFactory.create(feed=feed, user=user, read=True)
@@ -651,6 +677,11 @@ class ReaderApiTest(ApiTest):
 
         response = self.client.get(
             url, {'s': 'user/-/state/com.google/read'},
+            **clientlogin(token))
+        self.assertEqual(response.content, '6')
+
+        response = self.client.get(
+            url, {'s': 'user/{0}/state/com.google/read'.format(user.pk)},
             **clientlogin(token))
         self.assertEqual(response.content, '6')
 
@@ -762,6 +793,12 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(Entry.objects.filter(read=True).count(), 4)
         self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
 
+        data['s'] = 'user/{0}/label/{1}'.format(user.pk, feed2.category.slug)
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, 'OK')
+        self.assertEqual(Entry.objects.filter(read=True).count(), 4)
+        self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
+
         data['s'] = 'user/-/state/com.google/starred'
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
@@ -778,6 +815,11 @@ class ReaderApiTest(ApiTest):
             self.assertEqual(feed.unread_count, 0)
 
         data['s'] = 'user/-/state/com.google/read'  # yo dawg
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, 'OK')
+        self.assertEqual(Entry.objects.filter(read=False).count(), 0)
+
+        data['s'] = 'user/{0}/state/com.google/read'.format(user.pk)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         self.assertEqual(Entry.objects.filter(read=False).count(), 0)
@@ -856,7 +898,7 @@ class ReaderApiTest(ApiTest):
         data = {'T': post_token,
                 'ac': 'edit',
                 's': 'feed/{0}'.format(feed.url),
-                'a': 'user/-/label/unknown'}
+                'a': 'user/{0}/label/unknown'.format(user.pk)}
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "The label 'unknown' does not exist",
                             status_code=400)
