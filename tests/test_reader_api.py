@@ -565,6 +565,12 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, **clientlogin(token))
         self.assertContains(response, "Unknown stream", status_code=400)
 
+        response = self.client.get(
+            reverse('reader:stream_contents',
+                    args=['feed/http://inexisting.com/feed']),
+            **clientlogin(token))
+        self.assertEqual(response.status_code, 404)
+
     def test_stream_items_ids(self, get):
         get.return_value = responses(304)
         url = reverse("reader:stream_items_ids")

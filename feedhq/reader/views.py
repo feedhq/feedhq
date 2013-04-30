@@ -12,6 +12,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import email_re, URLValidator
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from rest_framework import exceptions
@@ -616,8 +617,8 @@ class StreamContents(ReaderView):
 
         if content_id.startswith("feed/"):
             url = content_id[len("feed/"):]
-            feed = Feed.objects.get(category__user=request.user,
-                                    url=url)
+            feed = get_object_or_404(Feed, category__user=request.user,
+                                     url=url)
             unique = UniqueFeed.objects.get(url=url)
             uniques = {url: unique}
             base.update({
