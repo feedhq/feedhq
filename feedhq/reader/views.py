@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import struct
 import urlparse
@@ -176,7 +177,10 @@ class PreferenceList(ReaderView):
     http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
-        return Response({"prefs": []})
+        return Response({"prefs": [{
+            "id": "lhn-prefs",
+            "value": json.dumps({"subscriptions": {"ssa": True}}),
+        }]})
 preference_list = PreferenceList.as_view()
 
 
