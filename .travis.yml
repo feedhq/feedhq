@@ -1,6 +1,8 @@
 language: python
 python:
   - "2.7"
+services:
+  - redis-server
 before_install:
   - sudo apt-get install daemontools
 install:

@@ -8,8 +8,7 @@ from urllib import urlencode
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.core.exceptions import ValidationError
-from django.core.validators import email_re, URLValidator
+from django.core.validators import email_re
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -22,6 +21,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ..feeds.forms import FeedForm
 from ..feeds.models import Feed, UniqueFeed, Category
 from .authentication import GoogleLoginAuthentication
 from .exceptions import PermissionDenied, BadToken
@@ -339,10 +339,6 @@ class EditSubscription(ReaderView):
             raise exceptions.ParseError(
                 "Unrecognized stream: {0}".format(request.DATA['s']))
         url = request.DATA['s'][len('feed/'):]
-        try:
-            URLValidator()(url)
-        except ValidationError:
-            raise exceptions.ParseError("Invalid URL")
 
         if action == 'subscribe':
             for param in ['t', 'a']:
@@ -350,16 +346,17 @@ class EditSubscription(ReaderView):
                     raise exceptions.ParseError(
                         "Missing '{0}' parameter".format(param))
 
+            form = FeedForm(data={'url': url}, user=request.user)
+            if not form.is_valid():
+                errors = dict(form._errors)
+                if 'url' in errors:
+                    raise exceptions.ParseError(errors['url'][0])
+
             slug = self.label(request.DATA['a'])
             name = slug.title()
             category, created = request.user.categories.get_or_create(
                 slug=slug, defaults={'name': name})
 
-            exists = Feed.objects.filter(category__user=request.user,
-                                         url=url).exists()
-            if exists:
-                raise exceptions.ParseError(
-                    "You are already subscribed to {0}".format(url))
             Feed.objects.create(url=url, name=request.DATA['t'],
                                 category=category)
 
@@ -399,16 +396,11 @@ class QuickAddSubscription(ReaderView):
         if url.startswith('feed/'):
             url = url[len('feed/'):]
 
-        try:
-            URLValidator()(url)
-        except ValidationError:
-            raise exceptions.ParseError("Invalid 'quickadd' URL")
-
-        exists = Feed.objects.filter(category__user=request.user,
-                                     url=url).exists()
-        if exists:
-            raise exceptions.ParseError(
-                "You are already subscribed to {0}".format(url))
+        form = FeedForm(data={'url': url}, user=request.user)
+        if not form.is_valid():
+            errors = dict(form._errors)
+            if 'url' in errors:
+                raise exceptions.ParseError(errors['url'][0])
 
         name = urlparse.urlparse(url).netloc
         category, created = request.user.categories.get_or_create(

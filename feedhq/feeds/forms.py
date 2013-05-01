@@ -1,14 +1,35 @@
+import contextlib
 import urlparse
 
+from django.core.cache import cache
 from django.forms.formsets import formset_factory
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
 
+import feedparser
 import floppyforms as forms
 import opml
+import requests
 
 from .models import Category, Feed
+from .utils import USER_AGENT
+
+
+@contextlib.contextmanager
+def user_lock(cache_key, user_id):
+    key = "lock:{0}:{1}".format(cache_key, user_id)
+
+    redis = cache._client
+    got_lock = redis.setnx(key, user_id)
+    if not got_lock:
+        raise forms.ValidationError(
+            _("This action can only be done one at a time."))
+    try:
+        yield
+    finally:
+        if got_lock:
+            redis.delete(key)
 
 
 class ColorWidget(forms.Select):
@@ -86,6 +107,22 @@ class FeedForm(UserFormMixin, forms.ModelForm):
         if existing.exists():
             raise forms.ValidationError(
                 _("It seems you're already subscribed to this feed."))
+
+        # Check this is actually a feed
+        with user_lock("feed_check", self.user.pk):
+            headers = {
+                'User-Agent': USER_AGENT % 'checking feed',
+                'Accept': feedparser.ACCEPT_HEADER,
+            }
+            response = requests.get(url, headers=headers, timeout=10)
+            if response.status_code != 200:
+                raise forms.ValidationError(_(
+                    "Invalid response code from URL: "
+                    "HTTP %s.") % response.status_code)
+        parsed = feedparser.parse(response.content)
+        if parsed.bozo or not hasattr(parsed.feed, 'updated_parsed'):
+            raise forms.ValidationError(
+                _("This URL doesn't seem to be a valid feed."))
         return url
 
 

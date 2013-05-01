@@ -1,6 +1,6 @@
 import os
 
-from io import StringIO
+from io import BytesIO
 
 from requests import Response as _Response
 
@@ -18,7 +18,7 @@ def responses(code, path=None, redirection=None,
     response.status_code = code
     if path is not None:
         with open(test_file(path), 'r') as f:
-            response.raw = StringIO(f.read().decode('utf-8'))
+            response.raw = BytesIO(f.read())
     if redirection is not None:
         temp = _Response()
         temp.status_code = 301 if 'permanent' in redirection else 302

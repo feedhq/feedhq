@@ -2,6 +2,7 @@
 import feedparser
 import json
 
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -170,6 +171,31 @@ class WebBaseTests(WebTest):
         form['url'] = 'http://example.com/feed.xml'
         form['category'] = category.pk
         response = form.submit()
+        self.assertFormError(response, 'form', 'url', [
+            "Invalid response code from URL: HTTP 304.",
+        ])
+        get.return_value = responses(200, 'categories.opml')
+        response = form.submit()
+        self.assertFormError(response, 'form', 'url', [
+            "This URL doesn't seem to be a valid feed.",
+        ])
+
+        get.return_value = responses(200, 'bruno.im.png')
+        response = form.submit()
+        self.assertFormError(response, 'form', 'url', [
+            "This URL doesn't seem to be a valid feed.",
+        ])
+
+        cache_key = "lock:feed_check:{0}".format(user.pk)
+        cache._client.set(cache_key, user.pk)
+        response = form.submit()
+        self.assertFormError(response, 'form', 'url', [
+            "This action can only be done one at a time.",
+        ])
+        cache._client.delete(cache_key)
+
+        get.return_value = responses(200, 'brutasse.atom')
+        response = form.submit()
         self.assertRedirects(response, category.get_absolute_url())
         response.follow()
 
@@ -220,6 +246,7 @@ class WebBaseTests(WebTest):
 
         form['name'] = 'New Name'
         form['url'] = 'http://example.com/newfeed.xml'
+        get.return_value = responses(200, 'brutasse.atom')
         response = form.submit().follow()
         self.assertContains(response, 'New Name has been successfully updated')
 

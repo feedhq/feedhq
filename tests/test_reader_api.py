@@ -861,10 +861,6 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Unrecognized stream", status_code=400)
 
-        data['s'] = 'feed/foo bar'
-        response = self.client.post(url, data, **clientlogin(token))
-        self.assertContains(response, "Invalid URL", status_code=400)
-
         data['s'] = 'feed/{0}'.format(feed.url)
 
         data['t'] = 'Testing stuff'
@@ -878,10 +874,16 @@ class ReaderApiTest(ApiTest):
 
         data['t'] = 'Testing stuff'
         data['a'] = 'userlabel/foo'
+        get.return_value = responses(200, 'brutasse.atom')
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Unknown label", status_code=400)
 
+        data['s'] = 'feed/foo bar'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Enter a valid URL", status_code=400)
+
         data['a'] = 'user/-/label/foo'
+        data['s'] = 'feed/{0}'.format(feed.url)
         self.assertEqual(Feed.objects.count(), 0)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
@@ -945,11 +947,12 @@ class ReaderApiTest(ApiTest):
 
         data['quickadd'] = 'foo bar'
         response = self.client.post(url, data, **clientlogin(token))
-        self.assertContains(response, "Invalid 'quickadd' URL",
+        self.assertContains(response, "Enter a valid URL",
                             status_code=400)
 
         feed = FeedFactory.build()
         data['quickadd'] = feed.url
+        get.return_value = responses(200, 'brutasse.atom')
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
 
