@@ -406,7 +406,11 @@ class QuickAddSubscription(ReaderView):
         category, created = request.user.categories.get_or_create(
             slug='quickadd', defaults={'name': 'Quick add'})
         Feed.objects.create(category=category, name=name, url=url)
-        return Response("OK")
+        return Response({
+            "numResults": 1,
+            "query": url,
+            "streamId": "feed/{0}".format(url),
+        })
 quickadd_subscription = QuickAddSubscription.as_view()
 
 

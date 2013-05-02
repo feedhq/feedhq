@@ -954,7 +954,7 @@ class ReaderApiTest(ApiTest):
         data['quickadd'] = feed.url
         get.return_value = responses(200, 'brutasse.atom')
         response = self.client.post(url, data, **clientlogin(token))
-        self.assertContains(response, "OK")
+        self.assertContains(response, "streamId")
 
         data['quickadd'] = 'feed/{0}'.format(feed.url)
         response = self.client.post(url, data, **clientlogin(token))
