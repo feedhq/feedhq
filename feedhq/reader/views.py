@@ -273,19 +273,52 @@ class DisableTag(ReaderView):
             raise exceptions.ParseError("Missing required 's' parameter")
 
         if 's' in request.DATA:
-            slug = is_label(request.DATA['s'], request.user.pk)
+            name = is_label(request.DATA['s'], request.user.pk)
         else:
-            slug = request.DATA['t']
+            name = request.DATA['t']
 
         try:
-            category = request.user.categories.get(slug=slug)
+            category = request.user.categories.get(name=name)
         except Category.DoesNotExist:
             raise exceptions.ParseError(
-                "Tag '{0}' does not exist".format(slug))
+                "Tag '{0}' does not exist".format(name))
 
         category.delete()
         return Response("OK")
 disable_tag = DisableTag.as_view()
+
+
+class RenameTag(ReaderView):
+    http_method_names = ['post']
+    renderer_classes = [PlainRenderer]
+
+    def post(self, request, *args, **kwargs):
+        if not 's' in request.DATA and not 't' in request.DATA:
+            raise exceptions.ParseError("Missing required 's' parameter")
+
+        if not 'dest' in request.DATA:
+            raise exceptions.ParseError("Missing required 'dest' parameter")
+
+        new_name = is_label(request.DATA['dest'], request.user.pk)
+        if not new_name:
+            raise exceptions.ParseError("Invalid 'dest' parameter")
+
+        if 's' in request.DATA:
+            name = is_label(request.DATA['s'], request.user.pk)
+        else:
+            name = request.DATA['t']
+
+        try:
+            category = request.user.categories.get(name=name)
+        except Category.DoesNotExist:
+            raise exceptions.ParseError(
+                "Tag '{0}' does not exist".format(name))
+
+        category.name = new_name
+        category.save()
+
+        return Response("OK")
+rename_tag = RenameTag.as_view()
 
 
 class TagList(ReaderView):

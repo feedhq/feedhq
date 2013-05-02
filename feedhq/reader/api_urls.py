@@ -12,6 +12,8 @@ urlpatterns = patterns(
 
     url(r'^disable-tag$', views.disable_tag, name='disable_tag'),
 
+    url(r'^rename-tag$', views.rename_tag, name='rename_tag'),
+
     url(r'^subscription/list$', views.subscription_list,
         name='subscription_list'),
 
@@ -57,7 +59,6 @@ Missing URLS:
     subscription/
         export
 
-    /rename-tag
     /related/list
 
     /stream

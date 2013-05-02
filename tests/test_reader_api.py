@@ -986,4 +986,43 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(user.categories.count(), 0)
+
+    def test_rename_tag(self, get):
+        user = UserFactory.create()
+        token = self.auth_token(user)
+        post_token = self.post_token(token)
+
+        url = reverse('reader:rename_tag')
+
+        data = {'T': post_token}
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Missing required 's'", status_code=400)
+
+        data['t'] = 'test'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Missing required 'dest'",
+                            status_code=400)
+
+        data['dest'] = 'yolo'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Invalid 'dest' parameter",
+                            status_code=400)
+
+        data['dest'] = 'user/{0}/label/yolo'.format(user.pk)
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Tag 'test' does not exist",
+                            status_code=400)
+
+        cat = CategoryFactory.create(user=user)
+        data['t'] = cat.name
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        self.assertEqual(user.categories.get().name, 'yolo')
+
+        data['s'] = 'user/{0}/label/yolo'.format(user.pk)
+        del data['t']
+        data['dest'] = 'user/{0}/label/Yo lo dawg'.format(user.pk)
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        self.assertEqual(user.categories.get().name, 'Yo lo dawg')
 ReaderApiTest = patch('requests.get')(ReaderApiTest)
