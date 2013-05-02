@@ -204,8 +204,8 @@ class ReaderApiTest(ApiTest):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(len(response.json['subscriptions']), 1)
         self.assertEqual(response.json['subscriptions'][0]['categories'][0], {
-            "id": "user/{0}/label/{1}".format(user.pk, feed.category.slug),
-            "label": feed.category.slug,
+            "id": "user/{0}/label/{1}".format(user.pk, feed.category.name),
+            "label": feed.category.name,
         })
 
         FeedFactory.create(category__user=user)
@@ -410,7 +410,7 @@ class ReaderApiTest(ApiTest):
         for count in response.json['unreadcounts']:
             if count['id'].endswith(feed2.url):
                 self.assertEqual(count['count'], 1)
-            elif count['id'].endswith((feed.category.slug, 'reading-list')):
+            elif count['id'].endswith((feed.category.name, 'reading-list')):
                 self.assertEqual(count['count'], 6)
             else:
                 self.assertEqual(count['count'], 5)
@@ -509,7 +509,7 @@ class ReaderApiTest(ApiTest):
 
         with self.assertNumQueries(2):
             response = self.client.get(
-                url, {'xt': 'user/-/label/{0}'.format(feed.category.slug)},
+                url, {'xt': 'user/-/label/{0}'.format(feed.category.name)},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
 
@@ -533,7 +533,7 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['items']), 10)
 
         url = reverse('reader:stream_contents',
-                      args=['user/-/label/{0}'.format(feed.category.slug)])
+                      args=['user/-/label/{0}'.format(feed.category.name)])
         with self.assertNumQueries(2):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 30)
@@ -787,13 +787,13 @@ class ReaderApiTest(ApiTest):
         feed2.update_unread_count()
         self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 1)
 
-        data['s'] = 'user/-/label/{0}'.format(feed2.category.slug)
+        data['s'] = 'user/-/label/{0}'.format(feed2.category.name)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         self.assertEqual(Entry.objects.filter(read=True).count(), 4)
         self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
 
-        data['s'] = 'user/{0}/label/{1}'.format(user.pk, feed2.category.slug)
+        data['s'] = 'user/{0}/label/{1}'.format(user.pk, feed2.category.name)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         self.assertEqual(Entry.objects.filter(read=True).count(), 4)
@@ -905,7 +905,8 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "The label 'unknown' does not exist",
                             status_code=400)
 
-        cat = user.categories.create(name='Other', slug='unknown')
+        data['a'] = 'user/{0}/label/Other'.format(user.pk)
+        cat = user.categories.create(name=u'Other', slug='unknown')
         response = self.client.post(url, data, **clientlogin(token))
         self.assertEqual(Feed.objects.get().category_id, cat.pk)
 
@@ -974,14 +975,14 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "does not exist", status_code=400)
 
-        CategoryFactory.create(user=user, slug='test')
+        CategoryFactory.create(user=user, name=u'test')
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(user.categories.count(), 0)
 
-        CategoryFactory.create(user=user, slug='other')
+        CategoryFactory.create(user=user, name=u'Other Cat')
         del data['t']
-        data['s'] = 'user/{0}/label/other'.format(user.pk)
+        data['s'] = 'user/{0}/label/Other Cat'.format(user.pk)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(user.categories.count(), 0)

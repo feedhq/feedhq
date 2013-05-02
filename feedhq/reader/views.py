@@ -301,7 +301,7 @@ class TagList(ReaderView):
             "sortid": "A0000002",
         }]
         index = 3
-        for cat in request.user.categories.order_by('slug'):
+        for cat in request.user.categories.order_by('name'):
             tags.append({
                 "id": label_key(request, cat),
                 "sortid": "A{0}".format(str(index).zfill(7)),
@@ -319,7 +319,7 @@ class SubscriptionList(ReaderView):
             category__user=request.user,
         ).annotate(
             ts=Min('entries__date'),
-        ).select_related('category').order_by('category__slug', 'name')
+        ).select_related('category').order_by('category__name', 'name')
         uniques = UniqueFeed.objects.filter(url__in=[f.url for f in feeds])
         unique_map = {}
         for unique in uniques:
@@ -333,7 +333,7 @@ class SubscriptionList(ReaderView):
                 "title": feed.name,
                 "categories": [{
                     "id": label_key(request, feed.category),
-                    "label": feed.category.slug,
+                    "label": feed.category.name,
                 }],
                 "sortid": "B{0}".format(str(index).zfill(7)),
                 "htmlUrl": unique_map.get(feed.url, feed.url),
@@ -376,10 +376,9 @@ class EditSubscription(ReaderView):
                 if 'url' in errors:
                     raise exceptions.ParseError(errors['url'][0])
 
-            slug = self.label(request.DATA['a'])
-            name = slug.title()
+            name = self.label(request.DATA['a'])
             category, created = request.user.categories.get_or_create(
-                slug=slug, defaults={'name': name})
+                name=name)
 
             Feed.objects.create(url=url, name=request.DATA['t'],
                                 category=category)
@@ -390,12 +389,12 @@ class EditSubscription(ReaderView):
             qs = Feed.objects.filter(category__user=request.user, url=url)
             query = {}
             if 'a' in request.DATA:
-                slug = self.label(request.DATA['a'])
+                name = self.label(request.DATA['a'])
                 try:
-                    category = request.user.categories.get(slug=slug)
+                    category = request.user.categories.get(name=name)
                 except Category.DoesNotExist:
                     raise exceptions.ParseError(
-                        "The label '{0}' does not exist".format(slug))
+                        "The label '{0}' does not exist".format(name))
                 query['category'] = category
             if 't' in request.DATA:
                 query['name'] = request.DATA['t']
@@ -428,7 +427,7 @@ class QuickAddSubscription(ReaderView):
 
         name = urlparse.urlparse(url).netloc
         category, created = request.user.categories.get_or_create(
-            slug='quickadd', defaults={'name': 'Quick add'})
+            name=u'Quick add')
         Feed.objects.create(category=category, name=name, url=url)
         return Response({
             "numResults": 1,
@@ -487,8 +486,8 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
             elif state == 'starred':
                 stream_q = Q(starred=True)
         elif is_label(stream, user_id):
-            slug = is_label(stream, user_id)
-            stream_q = Q(feed__category__slug=slug)
+            name = is_label(stream, user_id)
+            stream_q = Q(feed__category__name=name)
         else:
             msg = "Unrecognized stream: {0}".format(stream)
             logger.info(msg)
@@ -519,7 +518,7 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
                         exclude_state))
             elif is_label(ex, user_id):
                 exclude_label = is_label(ex, user_id)
-                exclude_q = Q(feed__category__slug=exclude_label)
+                exclude_q = Q(feed__category__name=exclude_label)
             else:
                 logger.info("Unknown state: {0}".format(ex))
             if exclude_q is not None:
@@ -575,7 +574,7 @@ def pagination(entries, n=None, c=None):
 
 
 def label_key(request, label):
-    return "user/{0}/label/{1}".format(request.user.pk, label.slug)
+    return "user/{0}/label/{1}".format(request.user.pk, label.name)
 
 
 def serialize_entry(request, entry, uniques):
@@ -694,11 +693,10 @@ class StreamContents(ReaderView):
                 base["title"] = "Broadcast items on FeedHQ"
 
         elif is_label(content_id, request.user.pk):
-            slug = is_label(content_id, request.user.pk)
+            name = is_label(content_id, request.user.pk)
             base['title'] = '"{0}" via {1} on FeedHQ'.format(
-                slug, request.user.username)
-            base['id'] = 'user/{0}/label/{1}'.format(
-                request.user.pk, slug)
+                name, request.user.username)
+            base['id'] = 'user/{0}/label/{1}'.format(request.user.pk, name)
             uniques = get_unique_map(request.user)
         else:
             msg = "Unknown stream id: {0}".format(content_id)
@@ -926,11 +924,11 @@ class MarkAllAsRead(ReaderView):
                 url=url,
             ).update(unread_count=0)
         elif is_label(stream, request.user.pk):
-            slug = is_label(stream, request.user.pk)
+            name = is_label(stream, request.user.pk)
             request.user.entries.filter(
-                feed__category=request.user.categories.get(slug=slug),
+                feed__category=request.user.categories.get(name=name),
             ).update(read=True)
-            request.user.categories.get(slug=slug).feeds.update(unread_count=0)
+            request.user.categories.get(name=name).feeds.update(unread_count=0)
         elif is_stream(stream, request.user.pk):
             state = is_stream(stream, request.user.pk)
             if state == 'read':  # mark read items as read yo
