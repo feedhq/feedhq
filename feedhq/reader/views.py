@@ -264,6 +264,30 @@ class UnreadCount(ReaderView):
 unread_count = UnreadCount.as_view()
 
 
+class DisableTag(ReaderView):
+    http_method_names = ['post']
+    renderer_classes = [PlainRenderer]
+
+    def post(self, request, *args, **kwargs):
+        if not 's' in request.DATA and not 't' in request.DATA:
+            raise exceptions.ParseError("Missing required 's' parameter")
+
+        if 's' in request.DATA:
+            slug = is_label(request.DATA['s'], request.user.pk)
+        else:
+            slug = request.DATA['t']
+
+        try:
+            category = request.user.categories.get(slug=slug)
+        except Category.DoesNotExist:
+            raise exceptions.ParseError(
+                "Tag '{0}' does not exist".format(slug))
+
+        category.delete()
+        return Response("OK")
+disable_tag = DisableTag.as_view()
+
+
 class TagList(ReaderView):
     http_method_names = ['get']
 

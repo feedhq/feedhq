@@ -10,6 +10,8 @@ urlpatterns = patterns(
 
     url(r'^unread-count$', views.unread_count, name='unread_count'),
 
+    url(r'^disable-tag$', views.disable_tag, name='disable_tag'),
+
     url(r'^subscription/list$', views.subscription_list,
         name='subscription_list'),
 
@@ -55,7 +57,6 @@ Missing URLS:
     subscription/
         export
 
-    /disable-tag
     /rename-tag
     /related/list
 

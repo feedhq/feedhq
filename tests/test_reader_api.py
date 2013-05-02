@@ -959,4 +959,30 @@ class ReaderApiTest(ApiTest):
         data['quickadd'] = 'feed/{0}'.format(feed.url)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "already subscribed", status_code=400)
+
+    def test_disable_tag(self, get):
+        user = UserFactory.create()
+        token = self.auth_token(user)
+        post_token = self.post_token(token)
+
+        url = reverse('reader:disable_tag')
+        data = {'T': post_token}
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "required 's'", status_code=400)
+
+        data['t'] = 'test'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "does not exist", status_code=400)
+
+        CategoryFactory.create(user=user, slug='test')
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        self.assertEqual(user.categories.count(), 0)
+
+        CategoryFactory.create(user=user, slug='other')
+        del data['t']
+        data['s'] = 'user/{0}/label/other'.format(user.pk)
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        self.assertEqual(user.categories.count(), 0)
 ReaderApiTest = patch('requests.get')(ReaderApiTest)
