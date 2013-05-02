@@ -50,6 +50,16 @@ class CategoryForm(UserFormMixin, forms.ModelForm):
             'color': ColorWidget,
         }
 
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        existing = self.user.categories.filter(name=name)
+        if self.instance is not None:
+            existing = existing.exclude(pk=self.instance.pk)
+        if existing.exists():
+            raise forms.ValidationError(
+                _("A category with this name already exists."))
+        return name
+
     def save(self, commit=True):
         category = super(CategoryForm, self).save(commit=False)
 

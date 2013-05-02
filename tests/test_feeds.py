@@ -92,7 +92,14 @@ class WebBaseTests(WebTest):
         response = form.submit()
         self.assertRedirects(response, '/category/new-name/')
 
-        # Adding a category with the same name. The slug will be different
+        # Re-submitting the same name fails
+        response = form.submit()
+        self.assertFormError(response, 'form', 'name',
+                             ['A category with this name already exists.'])
+
+        # Adding a category with a name generating the same slug.
+        # The slug will be different
+        form['name'] = 'New  Name'
         response = form.submit()
         self.assertRedirects(response, '/category/new-name-1/')
 
@@ -105,8 +112,10 @@ class WebBaseTests(WebTest):
         form['name'] = u'北京'
         response = form.submit()
         self.assertRedirects(response, '/category/unknown/')
+        form['name'] = u'北'
         response = form.submit()
         self.assertRedirects(response, '/category/unknown-1/')
+        form['name'] = u'京'
         response = form.submit()
         self.assertRedirects(response, '/category/unknown-2/')
 

@@ -113,6 +113,10 @@ class Category(models.Model):
     class Meta:
         ordering = ('order', 'name', 'id')
         verbose_name_plural = 'categories'
+        unique_together = (
+            ('user', 'slug'),
+            ('user', 'name'),
+        )
 
     def get_absolute_url(self):
         return reverse('feeds:category', args=[self.slug])
