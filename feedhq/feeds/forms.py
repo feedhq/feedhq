@@ -130,7 +130,7 @@ class FeedForm(UserFormMixin, forms.ModelForm):
                     "Invalid response code from URL: "
                     "HTTP %s.") % response.status_code)
         parsed = feedparser.parse(response.content)
-        if parsed.bozo or not hasattr(parsed.feed, 'updated_parsed'):
+        if parsed.bozo or not hasattr(parsed.feed, 'title'):
             raise forms.ValidationError(
                 _("This URL doesn't seem to be a valid feed."))
         return url
