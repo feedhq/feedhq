@@ -571,6 +571,12 @@ class ReaderApiTest(ApiTest):
             **clientlogin(token))
         self.assertEqual(response.status_code, 404)
 
+        url = reverse('reader:stream_contents',
+                      args=['user/-/state/com.google/like'])
+        with self.assertNumQueries(2):
+            response = self.client.get(url, {'n': 40}, **clientlogin(token))
+        self.assertEqual(len(response.json['items']), 0)
+
     def test_stream_items_ids(self, get):
         get.return_value = responses(304)
         url = reverse("reader:stream_items_ids")

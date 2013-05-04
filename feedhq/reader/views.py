@@ -503,6 +503,7 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
         streams = [streams]
 
     for stream in streams:
+        stream_q = None
         if stream.startswith("feed/"):
             url = stream[len("feed/"):]
             stream_q = Q(feed__url=url)
@@ -525,10 +526,11 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
             msg = "Unrecognized stream: {0}".format(stream)
             logger.info(msg)
             raise exceptions.ParseError(msg)
-        if q is None:
-            q = stream_q
-        else:
-            q |= stream_q
+        if stream_q is not None:
+            if q is None:
+                q = stream_q
+            else:
+                q |= stream_q
 
     # ?xt=user/stuff or feed/stuff to exclude something from the query
     if exclude is not None:
@@ -579,6 +581,8 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
             offset = timezone.make_aware(
                 datetime.datetime.fromtimestamp(timestamp), timezone.utc)
             q &= Q(date__lte=offset)
+    if q is None:
+        return Q(pk__lte=0)
     return q
 
 
