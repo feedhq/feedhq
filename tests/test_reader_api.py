@@ -210,7 +210,7 @@ class ReaderApiTest(ApiTest):
 
         FeedFactory.create(category__user=user, user=user)
         FeedFactory.create(category=feed.category, user=user)
-        FeedFactory.create(category=feed.category, user=user)
+        FeedFactory.create(category=None, user=user)
         with self.assertNumQueries(2):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(len(response.json['subscriptions']), 4)
@@ -396,7 +396,7 @@ class ReaderApiTest(ApiTest):
         feed = FeedFactory.create(category__user=user, user=user)
         for i in range(5):
             EntryFactory.create(feed=feed, read=False)
-        feed2 = FeedFactory.create(category=feed.category, user=user)
+        feed2 = FeedFactory.create(category=None, user=user)
         EntryFactory.create(feed=feed2, read=False)
         feed.update_unread_count()
         feed2.update_unread_count()
@@ -410,7 +410,9 @@ class ReaderApiTest(ApiTest):
         for count in response.json['unreadcounts']:
             if count['id'].endswith(feed2.url):
                 self.assertEqual(count['count'], 1)
-            elif count['id'].endswith((feed.category.name, 'reading-list')):
+            elif count['id'].endswith(feed.category.name):
+                self.assertEqual(count['count'], 5)
+            elif count['id'].endswith('reading-list'):
                 self.assertEqual(count['count'], 6)
             else:
                 self.assertEqual(count['count'], 5)

@@ -251,7 +251,7 @@ class UnreadCount(ReaderView):
             unread_counts += [{
                 "id": "user/{0}/state/com.google/reading-list".format(
                     request.user.pk),
-                "count": sum([c.unread_count for c in categories]),
+                "count": sum([f.unread_count for f in feeds]),
                 "newestItemTimestampUsec": max(
                     cat_ts.values()).strftime("%s000000"),
             }]
@@ -361,13 +361,15 @@ class SubscriptionList(ReaderView):
             subscription = {
                 "id": "feed/{0}".format(feed.url),
                 "title": feed.name,
-                "categories": [{
-                    "id": label_key(request, feed.category),
-                    "label": feed.category.name,
-                }],
+                "categories": [],
                 "sortid": "B{0}".format(str(index).zfill(7)),
                 "htmlUrl": unique_map.get(feed.url, feed.url),
             }
+            if feed.category is not None:
+                subscription['categories'].append({
+                    "id": label_key(request, feed.category),
+                    "label": feed.category.name,
+                })
             if feed.ts is not None:
                 subscription["firstitemmsec"] = feed.ts.strftime("%s000")
             subscriptions.append(subscription)
@@ -618,10 +620,7 @@ def serialize_entry(request, entry, uniques):
         "crawlTimeMsec": entry.date.strftime("%s000"),
         "timestampUsec": entry.date.strftime("%s000000"),
         "id": "tag:google.com,2005:reader/item/{0}".format(entry.hex_pk),
-        "categories": [
-            label_key(request, entry.feed.category),
-            reading_list,
-        ],
+        "categories": [reading_list],
         "title": entry.title,
         "published": int(entry.date.strftime("%s")),
         "updated": int(entry.date.strftime("%s")),
@@ -639,6 +638,9 @@ def serialize_entry(request, entry, uniques):
             "htmlUrl": uniques[entry.feed.url].link,
         },
     }
+    if entry.feed.category is not None:
+        item['categories'].append(
+            label_key(request, entry.feed.category))
     if entry.read:
         item['categories'].append(read)
     if entry.starred:
@@ -656,9 +658,9 @@ def get_unique_map(user, force=False):
             "select id, url, link from feeds_uniquefeed u "
             "where exists ("
             "select 1 from feeds_feed f "
-            "left join feeds_category c "
-            "on f.category_id = c.id "
-            "where f.url = u.url and c.user_id = %s)", [user.pk])
+            "left join auth_user s "
+            "on f.user_id = s.id "
+            "where f.url = u.url and f.user_id = %s)", [user.pk])
         value = {}
         for u in unique:
             value[u.url] = u
