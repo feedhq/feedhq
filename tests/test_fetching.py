@@ -86,6 +86,8 @@ class UpdateTests(TestCase):
         self.assertEqual(entry.sanitized_content(),
                          "<div>Watch out for <span> nasty tricks</span></div>")
 
+        self.assertEqual(entry.author, 'Mark Pilgrim (mark@example.org)')
+
     @patch('requests.get')
     def test_gone(self, get):
         """Muting the feed if the status code is 410"""

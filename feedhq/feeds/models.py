@@ -305,6 +305,7 @@ class UniqueFeedManager(models.Manager):
             'title': title,
             'link': entry.link,
             'date': cls.entry_date(entry),
+            'author': entry.get('author', parsed.get('author', '')),
         }
         if 'description' in entry:
             data['subtitle'] = entry.description
@@ -515,6 +516,7 @@ class Entry(models.Model):
     title = models.CharField(_('Title'), max_length=255)
     subtitle = models.TextField(_('Abstract'))
     link = URLField(_('URL'))
+    author = models.CharField(_('Author'), max_length=1023, blank=True)
     # We also have a permalink for feed proxies (like FeedBurner). If the link
     # points to feedburner, the redirection (=real feed link) is put here
     permalink = URLField(_('Permalink'), blank=True)
