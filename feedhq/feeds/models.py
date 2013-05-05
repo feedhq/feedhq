@@ -306,6 +306,7 @@ class UniqueFeedManager(models.Manager):
             'link': entry.link,
             'date': cls.entry_date(entry),
             'author': entry.get('author', parsed.get('author', '')),
+            'guid': entry.get('id', entry.link),
         }
         if 'description' in entry:
             data['subtitle'] = entry.description
@@ -515,9 +516,10 @@ class Entry(models.Model):
                              blank=True, related_name='entries')
     title = models.CharField(_('Title'), max_length=255)
     subtitle = models.TextField(_('Abstract'))
-    link = URLField(_('URL'))
+    link = URLField(_('URL'), db_index=True)
     author = models.CharField(_('Author'), max_length=1023, blank=True)
     date = models.DateTimeField(_('Date'), db_index=True)
+    guid = URLField(_('GUID'), db_index=True, blank=True)
     # The User FK is redundant but this may be better for performance and if
     # want to allow user input.
     user = models.ForeignKey(User, verbose_name=(_('User')),
@@ -534,7 +536,7 @@ class Entry(models.Model):
 
     class Meta:
         # Display most recent entries first
-        ordering = ('-date', 'title')
+        ordering = ('-date', '-id')
         verbose_name_plural = 'entries'
 
     ELEMENTS = (
