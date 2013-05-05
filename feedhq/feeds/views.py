@@ -376,6 +376,12 @@ def item(request, entry_id):
     return render(request, 'feeds/entry_detail.html', context)
 
 
+def truncate(value, length):
+    if len(value) > length - 3:
+        value = value[:length - 3] + '...'
+    return value
+
+
 def save_outline(user, category, outline, existing):
     count = 0
     if (
@@ -386,9 +392,7 @@ def save_outline(user, category, outline, existing):
         slug = slugify(outline.title)
         if not slug:
             slug = 'unknown'
-        title = outline.title
-        if len(title) > 1023:
-            title = title[:1020] + '...'
+        title = truncate(outline.title, 1023)
         slug = slug[:50]
         cat, created = user.categories.get_or_create(
             slug=slug, defaults={'name': title},
@@ -406,6 +410,7 @@ def save_outline(user, category, outline, existing):
             existing.add(outline.xmlUrl)
             title = getattr(outline, 'title',
                             getattr(outline, 'text', _('No title')))
+            title = truncate(title, 1023)
             user.feeds.create(category=category, url=outline.xmlUrl,
                               name=title)
             count += 1

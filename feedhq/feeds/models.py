@@ -439,7 +439,7 @@ class UniqueFeed(models.Model):
 
 class Feed(models.Model):
     """A URL and some extra stuff"""
-    name = models.CharField(_('Name'), max_length=255)
+    name = models.CharField(_('Name'), max_length=1023)
     url = URLField(_('URL'))
     category = models.ForeignKey(
         Category, verbose_name=_('Category'), related_name='feeds',
