@@ -906,14 +906,11 @@ class ReaderApiTest(ApiTest):
         data = {'T': post_token,
                 'ac': 'edit',
                 's': 'feed/{0}'.format(feed.url),
-                'a': 'user/{0}/label/unknown'.format(user.pk)}
+                'a': 'user/{0}/label/known'.format(user.pk)}
         response = self.client.post(url, data, **clientlogin(token))
-        self.assertContains(response, "The label 'unknown' does not exist",
-                            status_code=400)
-
-        data['a'] = 'user/{0}/label/Other'.format(user.pk)
-        cat = user.categories.create(name=u'Other', slug='unknown')
-        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        cat = user.categories.get(name='known')
+        self.assertEqual(cat.slug, 'known')
         self.assertEqual(Feed.objects.get().category_id, cat.pk)
 
         data = {'T': post_token,

@@ -3,7 +3,6 @@ import urlparse
 
 from django.core.cache import cache
 from django.forms.formsets import formset_factory
-from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
 
@@ -62,30 +61,9 @@ class CategoryForm(UserFormMixin, forms.ModelForm):
 
     def save(self, commit=True):
         category = super(CategoryForm, self).save(commit=False)
-
-        slug = slugify(self.cleaned_data['name'])
-        if not slug:
-            slug = 'unknown'
-        valid = False
-        candidate = slug
-        num = 1
-        while not valid:
-            if candidate in ('add', 'import'):  # gonna conflict
-                candidate = '{0}-{1}'.format(slug, num)
-            categories = self.user.categories.filter(slug=candidate)
-            if self.instance is not None:
-                categories = categories.exclude(pk=self.instance.pk)
-            if categories.exists():
-                candidate = '{0}-{1}'.format(slug, num)
-                num += 1
-            else:
-                valid = True
-        slug = candidate
-
-        category.slug = slug
         category.user = self.user
         if commit:
-            category.save()
+            category.save(update_slug=True)
         return category
 
 

@@ -420,11 +420,8 @@ class EditSubscription(ReaderView):
             query = {}
             if 'a' in request.DATA:
                 name = self.label(request.DATA['a'])
-                try:
-                    category = request.user.categories.get(name=name)
-                except Category.DoesNotExist:
-                    raise exceptions.ParseError(
-                        "The label '{0}' does not exist".format(name))
+                category, created = request.user.categories.get_or_create(
+                    name=name)
                 query['category'] = category
             if 't' in request.DATA:
                 query['name'] = request.DATA['t']

@@ -20,6 +20,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.text import unescape_entities
@@ -121,6 +122,29 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse('feeds:category', args=[self.slug])
+
+    def save(self, *args, **kwargs):
+        update_slug = kwargs.pop('update_slug', False)
+        if not self.slug or update_slug:
+            slug = slugify(self.name)
+            if not slug:
+                slug = 'unknown'
+            valid = False
+            candidate = slug
+            num = 1
+            while not valid:
+                if candidate in ('add', 'import'):  # gonna conflict
+                    candidate = '{0}-{1}'.format(slug, num)
+                categories = self.user.categories.filter(slug=candidate)
+                if self.pk is not None:
+                    categories = categories.exclude(pk=self.pk)
+                if categories.exists():
+                    candidate = '{0}-{1}'.format(slug, num)
+                    num += 1
+                else:
+                    valid = True
+            self.slug = candidate
+        return super(Category, self).save(*args, **kwargs)
 
 
 class UniqueFeedManager(models.Manager):
