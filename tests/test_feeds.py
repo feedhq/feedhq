@@ -31,7 +31,7 @@ class WebBaseTests(WebTest):
         url = reverse('feeds:home')
         response = self.app.get(url, user=user.username)
         self.assertContains(response, 'Getting started')
-        FeedFactory.create(category__user=user)
+        FeedFactory.create(category__user=user, user=user)
         response = self.app.get(url)
         self.assertNotContains(response, 'Getting started')
 
@@ -70,7 +70,7 @@ class WebBaseTests(WebTest):
         get.return_value = responses(304)
         user = UserFactory.create()
         category = CategoryFactory.create(user=user)
-        FeedFactory.create(category=category)
+        FeedFactory.create(category=category, user=user)
         url = reverse('feeds:unread_category', args=[category.slug])
         response = self.app.get(url, user=user.username)
 
@@ -135,7 +135,7 @@ class WebBaseTests(WebTest):
     def test_feed(self, get):
         get.return_value = responses(304)
         user = UserFactory.create()
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:feed', args=[feed.pk])
         response = self.app.get(url, user=user.username)
 
@@ -171,10 +171,9 @@ class WebBaseTests(WebTest):
 
         form = response.forms['feed']
         form['name'] = 'Lulz'
-        response = form.submit()  # there is no URL / category
-        for field in 'url', 'category':
-            self.assertFormError(response, 'form', field,
-                                 ['This field is required.'])
+        response = form.submit()  # there is no URL
+        self.assertFormError(response, 'form', 'url',
+                             ['This field is required.'])
 
         form['name'] = 'Bobby'
         form['url'] = 'http://example.com/feed.xml'
@@ -246,7 +245,7 @@ class WebBaseTests(WebTest):
     def test_edit_feed(self, get):
         get.return_value = responses(304)
         user = UserFactory.create()
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(user=user)
         url = reverse('feeds:edit_feed', args=[feed.pk])
         response = self.app.get(url, user=user.username)
         self.assertContains(response, feed.name)
@@ -259,12 +258,20 @@ class WebBaseTests(WebTest):
         response = form.submit().follow()
         self.assertContains(response, 'New Name has been successfully updated')
 
+        cat = CategoryFactory.create(user=user)
+        response = self.app.get(url, user=user.username)
+        form = response.forms['feed']
+        form['category'] = cat.pk
+        response = form.submit().follow()
+        self.assertContains(response, 'New Name has been successfully updated')
+        self.assertEqual(Feed.objects.get().category_id, cat.pk)
+
     @patch("requests.get")
     def test_delete_feed(self, get):
         get.return_value = responses(304)
 
         user = UserFactory.create()
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:delete_feed', args=[feed.pk])
         response = self.app.get(url, user=user.username)
         self.assertContains(response, 'Delete')
@@ -281,7 +288,7 @@ class WebBaseTests(WebTest):
         get.return_value = responses(304)
         # We need more than 25 entries
         user = UserFactory.create()
-        FeedFactory.create(category__user=user)
+        FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:home', args=[12000])  # that page doesn't exist
         response = self.app.get(url, user=user.username)
         self.assertContains(response, '<a href="/" class="current">')
@@ -300,7 +307,7 @@ class WebBaseTests(WebTest):
     def test_entry(self, get):
         user = UserFactory.create()
         get.return_value = responses(200, 'sw-all.xml')
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
 
         url = reverse('feeds:home')
         self._test_entry(url, user)
@@ -320,11 +327,15 @@ class WebBaseTests(WebTest):
         url = reverse('feeds:unread_feed', args=[feed.pk])
         self._test_entry(url, user)
 
+        feed.category = None
+        feed.save()
+        self._test_entry(url, user)
+
     @patch('requests.get')
     def test_last_entry(self, get):
         user = UserFactory.create()
         get.return_value = responses(200, 'sw-all.xml')
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
 
         with self.assertNumQueries(3):
             update_feed(feed.url)
@@ -344,7 +355,8 @@ class WebBaseTests(WebTest):
     def test_img(self, get):
         get.return_value = responses(304)
         user = UserFactory.create()
-        feed = FeedFactory.create(category__user=user, url='http://exmpl.com')
+        feed = FeedFactory.create(category__user=user, url='http://exmpl.com',
+                                  user=user)
         entry = Entry.objects.create(
             feed=feed,
             title="Random title",
@@ -391,7 +403,6 @@ class WebBaseTests(WebTest):
         response = form.submit().follow()
 
         self.assertContains(response, '2 feeds have been imported')
-        self.assertEqual(Category.objects.filter(name='Imported').count(), 1)
 
         # Re-import
         with open(test_file('sample.opml'), 'r') as opml_file:
@@ -441,9 +452,14 @@ class WebBaseTests(WebTest):
         for c in Category.objects.all():
             c.get_absolute_url()
 
-    def test_dashboard(self):
+    @patch('requests.get')
+    def test_dashboard(self, get):
+        get.return_value = responses(304)
         user = UserFactory.create()
         url = reverse('feeds:dashboard')
+        FeedFactory.create(category=None, user=user)
+        for i in range(5):
+            FeedFactory.create(category__user=user, user=user)
         response = self.app.get(url, user=user.username)
         self.assertContains(response, 'Dashboard')
 
@@ -459,7 +475,7 @@ class WebBaseTests(WebTest):
         )
 
         get.return_value = responses(200, 'sw-all.xml')
-        FeedFactory.create(category__user=user)
+        FeedFactory.create(category__user=user, user=user)
 
         response = self.app.get(url, user=user.username)
         self.assertContains(
@@ -471,7 +487,7 @@ class WebBaseTests(WebTest):
     def test_mark_as_read(self, get):
         get.return_value = responses(304)
         user = UserFactory.create()
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:unread')
         response = self.app.get(url, user=user.username)
         self.assertNotContains(response, 'Mark all as read')
@@ -510,7 +526,7 @@ class WebBaseTests(WebTest):
         )
 
         get.return_value = responses(200, 'sw-all.xml')
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         get.assert_called_with(
             feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
@@ -550,7 +566,7 @@ class WebBaseTests(WebTest):
             }),
         )
         get.return_value = responses(304)
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
 
         get.return_value = responses(200, 'sw-all.xml')
 
@@ -588,7 +604,7 @@ class WebBaseTests(WebTest):
         )
 
         get.return_value = responses(200, 'sw-all.xml')
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         get.assert_called_with(
             feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
@@ -617,7 +633,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         url = 'http://bruno.im/atom/tag/django-community/'
         get.return_value = responses(304)
-        feed = FeedFactory.create(url=url, category__user=user)
+        feed = FeedFactory.create(url=url, category__user=user, user=user)
         get.assert_called_with(
             url, headers={'User-Agent': USER_AGENT % '1 subscriber',
                           'Accept': feedparser.ACCEPT_HEADER},
@@ -652,7 +668,7 @@ class WebBaseTests(WebTest):
         form = response.forms['subscribe']
 
         response = form.submit()
-        self.assertContains(response, 'This field is required.', 2)
+        self.assertContains(response, 'This field is required.', 1)
 
         form['form-0-name'] = "Bruno's awesome blog"
         form['form-0-category'] = c.pk
@@ -678,7 +694,10 @@ class WebBaseTests(WebTest):
         response = self.app.get(
             url, {'feeds': ",".join(['http://bruno.im/atom/latest/',
                                      'http://example.com/feed'])})
-        self.assertContains(response, "Awesome")
+        form = response.forms['subscribe']
+        self.assertEqual(form['form-0-name'].value, 'Awesome')
+        response = form.submit().follow()
+        self.assertEqual(Feed.objects.count(), 2)
 
     def test_bookmarklet_no_feed(self):
         user = UserFactory.create()
@@ -694,7 +713,7 @@ class WebBaseTests(WebTest):
         get.return_value = responses(200, path='brutasse.atom')
 
         user = UserFactory.create()
-        FeedFactory.create(category__user=user,
+        FeedFactory.create(category__user=user, user=user,
                            url='https://github.com/brutasse.atom')
         entry = user.entries.all()[0]
 

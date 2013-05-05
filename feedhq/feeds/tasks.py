@@ -59,8 +59,7 @@ def store_entries(feed_url, entries, json_format=False):
     existing_map = defaultdict(set)
     for entry in existing:
         existing_map[entry['feed_id']].add(entry['link'])
-    feeds = Feed.objects.filter(url=feed_url).select_related(
-        'category__user').values('pk', 'category__user__pk')
+    feeds = Feed.objects.filter(url=feed_url).values('pk', 'user_id')
 
     create = []
     update_unread_counts = set()
@@ -68,7 +67,7 @@ def store_entries(feed_url, entries, json_format=False):
         for entry in entries:
             if entry['link'] in existing_map[feed['pk']]:
                 continue
-            create.append(Entry(user_id=feed['category__user__pk'],
+            create.append(Entry(user_id=feed['user_id'],
                                 feed_id=feed['pk'], **entry))
             update_unread_counts.add(feed['pk'])
 

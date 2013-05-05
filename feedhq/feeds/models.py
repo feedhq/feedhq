@@ -2,6 +2,7 @@
 import bleach
 import datetime
 import feedparser
+import hashlib
 import json
 import logging
 import lxml.html
@@ -417,7 +418,10 @@ class Feed(models.Model):
     category = models.ForeignKey(
         Category, verbose_name=_('Category'), related_name='feeds',
         help_text=_('<a href="/category/add/">Add a category</a>'),
+        null=True, blank=True,
     )
+    user = models.ForeignKey(User, verbose_name=_('User'),
+                             related_name='feeds')
     unread_count = models.PositiveIntegerField(_('Unread count'), default=0)
     favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True,
                                 storage=OverwritingStorage())
@@ -466,6 +470,14 @@ class Feed(models.Model):
         self.unread_count = self.entries.filter(read=False).count()
         self.save(update_fields=['unread_count'])
 
+    @property
+    def color(self):
+        md = hashlib.md5()
+        md.update(self.url)
+        index = int(md.hexdigest()[0], 16)
+        index = index * len(COLORS) // 16
+        return COLORS[index][0]
+
 
 class EntryManager(models.Manager):
     def unread(self):
@@ -474,8 +486,8 @@ class EntryManager(models.Manager):
 
 class Entry(models.Model):
     """An entry is a cached feed item"""
-    feed = models.ForeignKey(Feed, verbose_name=_('Feed'),
-                             related_name='entries')
+    feed = models.ForeignKey(Feed, verbose_name=_('Feed'), null=True,
+                             blank=True, related_name='entries')
     title = models.CharField(_('Title'), max_length=255)
     subtitle = models.TextField(_('Abstract'))
     link = URLField(_('URL'))

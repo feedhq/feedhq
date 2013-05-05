@@ -37,9 +37,7 @@ class Stats(UserMixin, generic.DetailView):
         ctx = super(Stats, self).get_context_data(**kwargs)
         ctx.update({
             'categories': self.request.user.categories.count(),
-            'feeds': Feed.objects.filter(
-                category__user=self.request.user,
-            ).count(),
+            'feeds': self.request.user.feeds.count(),
             'entries': self.request.user.entries.count(),
         })
         return ctx

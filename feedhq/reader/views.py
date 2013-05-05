@@ -219,10 +219,8 @@ class UnreadCount(ReaderView):
     http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
-        feeds = Feed.objects.filter(
-            category__in=request.user.categories.all(),
-            unread_count__gt=0,
-        ).annotate(ts=Max('entries__date'))
+        feeds = request.user.feeds.filter(
+            unread_count__gt=0).annotate(ts=Max('entries__date'))
         unread_counts = [{
             "id": "feed/{0}".format(feed.url),
             "count": feed.unread_count,
@@ -348,9 +346,7 @@ class SubscriptionList(ReaderView):
     http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
-        feeds = Feed.objects.filter(
-            category__user=request.user,
-        ).annotate(
+        feeds = request.user.feeds.annotate(
             ts=Min('entries__date'),
         ).select_related('category').order_by('category__name', 'name')
         uniques = UniqueFeed.objects.filter(url__in=[f.url for f in feeds])
@@ -413,13 +409,13 @@ class EditSubscription(ReaderView):
             category, created = request.user.categories.get_or_create(
                 name=name)
 
-            Feed.objects.create(url=url, name=request.DATA['t'],
-                                category=category)
+            category.feeds.create(url=url, name=request.DATA['t'],
+                                  user=category.user)
 
         elif action == 'unsubscribe':
-            Feed.objects.filter(category__user=request.user, url=url).delete()
+            request.user.feeds.filter(url=url).delete()
         elif action == 'edit':
-            qs = Feed.objects.filter(category__user=request.user, url=url)
+            qs = request.user.feeds.filter(url=url)
             query = {}
             if 'a' in request.DATA:
                 name = self.label(request.DATA['a'])
@@ -459,9 +455,7 @@ class QuickAddSubscription(ReaderView):
                 raise exceptions.ParseError(errors['url'][0])
 
         name = urlparse.urlparse(url).netloc
-        category, created = request.user.categories.get_or_create(
-            name=u'Quick add')
-        Feed.objects.create(category=category, name=name, url=url)
+        request.user.feeds.create(name=name, url=url)
         return Response({
             "numResults": 1,
             "query": url,
@@ -482,8 +476,9 @@ class Subscribed(ReaderView):
             raise exceptions.ParseError(
                 "Unrecognized feed format. Use 'feed/<url>'")
         url = feed[len('feed/'):]
-        return Response(str(Feed.objects.filter(category__user=request.user,
-                                                url=url).exists()).lower())
+        return Response(str(
+            request.user.feeds.filter(url=url).exists()
+        ).lower())
 subscribed = Subscribed.as_view()
 
 
@@ -695,8 +690,7 @@ class StreamContents(ReaderView):
 
         if content_id.startswith("feed/"):
             url = content_id[len("feed/"):]
-            feed = get_object_or_404(Feed, category__user=request.user,
-                                     url=url)
+            feed = get_object_or_404(request.user.feeds, url=url)
             unique = UniqueFeed.objects.get(url=url)
             uniques = {url: unique}
             base.update({
@@ -956,10 +950,7 @@ class MarkAllAsRead(ReaderView):
         if stream.startswith('feed/'):
             url = stream[len('feed/'):]
             self.request.user.entries.filter(feed__url=url).update(read=True)
-            Feed.objects.filter(
-                category__user=self.request.user,
-                url=url,
-            ).update(unread_count=0)
+            self.request.user.feeds.filter(url=url).update(unread_count=0)
         elif is_label(stream, request.user.pk):
             name = is_label(stream, request.user.pk)
             request.user.entries.filter(
@@ -972,16 +963,13 @@ class MarkAllAsRead(ReaderView):
                 return Response("OK")
             elif state in ['kept-unread', 'reading-list']:
                 request.user.entries.update(read=True)
-                Feed.objects.filter(
-                    category__user=self.request.user,
-                ).update(unread_count=0)
+                self.request.user.feeds.update(unread_count=0)
             elif state in ['starred', 'broadcast']:
                 entries = request.user.entries.filter(**{state: True})
                 feeds = set(entries.select_related('feed').values_list(
                     'feed__pk', flat=True))
                 entries.update(read=True)
-                for feed in Feed.objects.filter(category__user=request.user,
-                                                pk__in=feeds):
+                for feed in request.user.feeds.filter(pk__in=feeds):
                     feed.update_unread_count()
             else:
                 logger.info("Unknown state: {0}".format(state))

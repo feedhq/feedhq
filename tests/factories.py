@@ -45,6 +45,7 @@ class FeedFactory(Factory):
     name = Sequence(lambda n: u'Feed {0}'.format(n))
     url = Sequence(lambda n: u'http://example.com/feeds/{0}'.format(n))
     category = SubFactory(CategoryFactory)
+    user = SubFactory(UserFactory)
 
 
 class EntryFactory(Factory):

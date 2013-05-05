@@ -86,7 +86,7 @@ class UpdateTests(TestCase):
         u = User.objects.create_user('foo', 'foo@example.com', 'pass')
         c = u.categories.create(name='foo', slug='foo')
         get.return_value = responses(304)
-        c.feeds.create(url='http://example.com/test')
+        c.feeds.create(url='http://example.com/test', user=c.user)
 
         self.assertEqual(UniqueFeed.objects.count(), 1)
         get.assert_called_with(

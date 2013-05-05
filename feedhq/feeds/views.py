@@ -71,9 +71,8 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None):
         unread_url = reverse('feeds:unread_category', args=[category.slug])
 
     if feed is not None:
-        cat_ids = [c['id'] for c in categories]
-        feed = get_object_or_404(Feed.objects.select_related('category'),
-                                 category__in=cat_ids, pk=feed)
+        feed = get_object_or_404(user.feeds.select_related('category'),
+                                 pk=feed)
         entries = feed.entries.all()
         all_url = reverse('feeds:feed', args=[feed.id])
         unread_url = reverse('feeds:unread_feed', args=[feed.id])
@@ -96,7 +95,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None):
             elif category is not None:
                 feeds = category.feeds.all()
             else:
-                feeds = Feed.objects.filter(category__user=user)
+                feeds = user.feeds.all()
             feeds.update(unread_count=0)
             messages.success(request,
                              _('%s entries have been marked as read' % count))
@@ -137,9 +136,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None):
     if unread_count:
         context['form'] = ReadForm()
         context['action'] = request.get_full_path()
-    if entries.paginator.count == 0 and Feed.objects.filter(
-        category__in=request.user.categories.all()
-    ).count() == 0:
+    if entries.paginator.count == 0 and request.user.feeds.count() == 0:
         context['noob'] = True
     return render(request, 'feeds/entries_list.html', context)
 
@@ -215,11 +212,13 @@ class FeedMixin(SuccessMixin):
         return kwargs
 
     def get_object(self):
-        return get_object_or_404(Feed, category__user=self.request.user,
+        return get_object_or_404(self.request.user.feeds,
                                  pk=self.kwargs['feed'])
 
     def get_success_url(self):
-        return reverse('feeds:category', args=[self.object.category.slug])
+        if self.object.category is not None:
+            return reverse('feeds:category', args=[self.object.category.slug])
+        return reverse('feeds:feed', args=[self.object.pk])
 
 
 class AddFeed(FeedMixin, generic.CreateView):
@@ -261,9 +260,8 @@ class DeleteFeed(generic.DeleteView):
         return reverse_lazy('feeds:home')
 
     def get_object(self):
-        return get_object_or_404(Feed,
-                                 pk=self.kwargs['feed'],
-                                 category__user=self.request.user)
+        return get_object_or_404(Feed, pk=self.kwargs['feed'],
+                                 user=self.request.user)
 
     def get_context_data(self, **kwargs):
         kwargs['entry_count'] = self.object.entries.count()
@@ -408,8 +406,8 @@ def save_outline(user, category, outline, existing):
             existing.add(outline.xmlUrl)
             title = getattr(outline, 'title',
                             getattr(outline, 'text', _('No title')))
-            category.feeds.create(url=outline.xmlUrl,
-                                  name=title)
+            user.feeds.create(category=category, url=outline.xmlUrl,
+                              name=title)
             count += 1
     return count
 
@@ -422,20 +420,12 @@ def import_feeds(request):
         form = OPMLImportForm(request.POST, request.FILES)
         if form.is_valid():
             # get the list of existing feeds
-            existing_feeds = set([f.url for f in Feed.objects.filter(
-                category__in=request.user.categories.all(),
-            )])
-            # try to get the "Unclassified" field, create it if needed
-            category, created = request.user.categories.get_or_create(
-                slug='imported', defaults={'name': _('Imported')},
-            )
+            existing_feeds = set(request.user.feeds.values_list('url',
+                                                                flat=True))
 
             entries = opml.parse(request.FILES['file'])
-            imported = save_outline(request.user, category, entries,
+            imported = save_outline(request.user, None, entries,
                                     existing_feeds)
-
-            if created and category.feeds.count() == 0:
-                category.delete()
 
             messages.success(
                 request,
@@ -462,12 +452,19 @@ def dashboard(request):
         unread_count=Sum('feeds__unread_count'),
     )
 
-    total = sum((len(c.feeds.all()) for c in categories))
+    uncategorized = request.user.feeds.filter(category__isnull=True)
+    categories = [
+        {'feeds': uncategorized}
+    ] + list(categories)
+
+    total = len(uncategorized) + sum(
+        (len(c.feeds.all()) for c in categories[1:])
+    )
     col_size = total / 3
     col_1 = None
     col_2 = None
-    done = 0
-    for index, cat in enumerate(categories):
+    done = len(uncategorized)
+    for index, cat in enumerate(categories[1:]):
         done += len(cat.feeds.all())
         if col_1 is None and done > col_size:
             col_1 = index + 1
@@ -488,9 +485,7 @@ class Subscribe(generic.FormView):
         urls = [l for l in self.request.GET.get('feeds', '').split(',') if l]
         self.feed_count = len(urls)
 
-        self.existing = Feed.objects.filter(
-            category__user=self.request.user,
-            url__in=urls)
+        self.existing = self.request.user.feeds.filter(url__in=urls)
 
         existing_urls = set([e.url for e in self.existing])
 
@@ -527,11 +522,17 @@ class Subscribe(generic.FormView):
         created = 0
         for form in formset:
             if form.cleaned_data['subscribe']:
-                category = self.request.user.categories.get(
-                    pk=form.cleaned_data['category'],
+                if form.cleaned_data['category']:
+                    category = self.request.user.categories.get(
+                        pk=form.cleaned_data['category'],
+                    )
+                else:
+                    category = None
+                self.request.user.feeds.create(
+                    name=form.cleaned_data['name'],
+                    url=form.cleaned_data['url'],
+                    category=category,
                 )
-                category.feeds.create(name=form.cleaned_data['name'],
-                                      url=form.cleaned_data['url'])
                 created += 1
         if created == 1:
             message = _('1 feed has been added')

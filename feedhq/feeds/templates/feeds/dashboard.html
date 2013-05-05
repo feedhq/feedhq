@@ -7,7 +7,12 @@
 
 	<div class="col first">
 		{% for cat in categories %}
-			<div class="category"><h3><a href="{% url "feeds:category" cat.slug %}">{{ cat }}</a> <a class="cat {{ cat.color }}" href="{% url "feeds:unread_category" cat.slug %}">{{ cat.unread_count|default:"0" }}</a></h3>
+			<div class="category">
+				{% if cat.slug %}
+					<h3><a href="{% url "feeds:category" cat.slug %}">{{ cat }}</a> <a class="cat {{ cat.color }}" href="{% url "feeds:unread_category" cat.slug %}">{{ cat.unread_count|default:"0" }}</a></h3>
+				{% else %}
+					<br>
+				{% endif %}
 				<ul>{% for feed in cat.feeds.all %}
 						<li{% if feed.favicon %} style="background-image: url('{{ feed.favicon.url }}');"{% endif %}{% if feed.unread_count %} class="new"{% endif %}><a href="{% url "feeds:feed" feed.pk %}">{{ feed }}</a>{% if feed.unread_count %} <a href="{% url "feeds:unread_feed" feed.pk %}" class="unread">{{ feed.unread_count }}{% endif %}</a></li>
 				{% endfor %}</ul>

@@ -195,7 +195,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, **clientlogin(token))
         self.assertEqual(response.json, {"subscriptions": []})
 
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         u = UniqueFeed.objects.get()
         u.link = 'http://example.com/foo'
         u.save(update_fields=['link'])
@@ -208,9 +208,9 @@ class ReaderApiTest(ApiTest):
             "label": feed.category.name,
         })
 
-        FeedFactory.create(category__user=user)
-        FeedFactory.create(category=feed.category)
-        FeedFactory.create(category=feed.category)
+        FeedFactory.create(category__user=user, user=user)
+        FeedFactory.create(category=feed.category, user=user)
+        FeedFactory.create(category=feed.category, user=user)
         with self.assertNumQueries(2):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(len(response.json['subscriptions']), 4)
@@ -233,7 +233,7 @@ class ReaderApiTest(ApiTest):
                                    **clientlogin(token))
         self.assertContains(response, 'false')
 
-        FeedFactory.create(url=feed_url, category__user=user)
+        FeedFactory.create(url=feed_url, category__user=user, user=user)
         response = self.client.get(url, {'s': 'feed/{0}'.format(feed_url)},
                                    **clientlogin(token))
         self.assertContains(response, 'true')
@@ -393,10 +393,10 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, **clientlogin(token))
         self.assertEqual(response.json, {'max': 1000, 'unreadcounts': []})
 
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         for i in range(5):
             EntryFactory.create(feed=feed, read=False)
-        feed2 = FeedFactory.create(category=feed.category)
+        feed2 = FeedFactory.create(category=feed.category, user=user)
         EntryFactory.create(feed=feed2, read=False)
         feed.update_unread_count()
         feed2.update_unread_count()
@@ -451,7 +451,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, {'c': 'pageone'}, **clientlogin(token))
         response = self.client.get(url, {'c': 'a'}, **clientlogin(token))
 
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         for i in range(15):
             EntryFactory.create(user=user, feed=feed, read=False)
         for i in range(4):
@@ -582,7 +582,7 @@ class ReaderApiTest(ApiTest):
         url = reverse("reader:stream_items_ids")
         user = UserFactory.create()
         token = self.auth_token(user)
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         for i in range(5):
             EntryFactory.create(feed=feed, user=user, broadcast=True)
         for i in range(5):
@@ -670,7 +670,7 @@ class ReaderApiTest(ApiTest):
             **clientlogin(token))
         self.assertEqual(response.content, '0')
 
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         for i in range(6):
             EntryFactory.create(feed=feed, user=user, read=True)
         for i in range(4):
@@ -713,8 +713,8 @@ class ReaderApiTest(ApiTest):
                                    **clientlogin(token))
         self.assertContains(response, "No items found", status_code=400)
 
-        feed1 = FeedFactory.create(category__user=user)
-        feed2 = FeedFactory.create(category__user=user)
+        feed1 = FeedFactory.create(category__user=user, user=user)
+        feed2 = FeedFactory.create(category__user=user, user=user)
         entry1 = EntryFactory.create(user=user, feed=feed1)
         entry2 = EntryFactory.create(user=user, feed=feed2)
 
@@ -749,7 +749,7 @@ class ReaderApiTest(ApiTest):
                                        **clientlogin(token))
             self.assertEqual(response.status_code, 200)
 
-        feed3 = FeedFactory.create(category__user=user)
+        feed3 = FeedFactory.create(category__user=user, user=user)
         entry3 = EntryFactory.create(user=user, feed=feed3)
         with self.assertNumQueries(2):
             response = self.client.get(
@@ -766,13 +766,13 @@ class ReaderApiTest(ApiTest):
         token_url = reverse('reader:token')
         post_token = self.client.post(token_url, **clientlogin(token)).content
 
-        feed = FeedFactory.create(category__user=user)
+        feed = FeedFactory.create(category__user=user, user=user)
         for i in range(4):
             EntryFactory.create(feed=feed, user=user)
         EntryFactory.create(feed=feed, user=user, starred=True)
         EntryFactory.create(feed=feed, user=user, broadcast=True)
 
-        feed2 = FeedFactory.create(category__user=user)
+        feed2 = FeedFactory.create(category__user=user, user=user)
         entry = EntryFactory.create(feed=feed2, user=user)
         EntryFactory.create(feed=feed2, user=user, starred=True)
         EntryFactory.create(feed=feed2, user=user, starred=True)
@@ -851,7 +851,7 @@ class ReaderApiTest(ApiTest):
         token = self.auth_token(user)
         post_token = self.post_token(token)
         category = CategoryFactory.create(user=user)
-        feed = FeedFactory.build(category=category)
+        feed = FeedFactory.build(category=category, user=user)
 
         url = reverse('reader:subscription_edit')
         data = {'T': post_token}

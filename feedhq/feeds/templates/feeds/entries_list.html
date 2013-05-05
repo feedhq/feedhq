@@ -26,8 +26,8 @@
 					<a class="edit {{ category.color }} cat" href="{% url "feeds:edit_category" category.slug %}"><span class="icon-pencil"></span></a>
 				{% endif %}
 				{% if feed %}
-					<a class="cat {{ feed.category.color }} left" href="{% if only_unread %}{% url "feeds:unread_feed" feed.pk %}{% else %}{% url "feeds:feed" feed.pk %}{% endif %}">{{ feed }}</a>
-					<a class="edit {{ feed.category.color }} cat right" href="{% url "feeds:edit_feed" feed.pk %}"><span class="icon-pencil"></span></a>
+					<a class="cat {{ feed.category.color|default:feed.color }} left" href="{% if only_unread %}{% url "feeds:unread_feed" feed.pk %}{% else %}{% url "feeds:feed" feed.pk %}{% endif %}">{{ feed }}</a>
+					<a class="edit {{ feed.category.color|default:feed.color }} cat right" href="{% url "feeds:edit_feed" feed.pk %}"><span class="icon-pencil"></span></a>
 				{% endif %}{% endspaceless %}
 				<div class="navlist">{% spaceless %}
 					<a href="{{ all_url }}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %} <span class="ct">{{ total_count }}</span></a>

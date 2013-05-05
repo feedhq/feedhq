@@ -110,7 +110,7 @@ class FeedForm(UserFormMixin, forms.ModelForm):
         if netloc in ['localhost', '127.0.0.1', '::1']:
             raise forms.ValidationError(_("Invalid URL."))
 
-        existing = Feed.objects.filter(category__user=self.user, url=url)
+        existing = self.user.feeds.filter(url=url)
         if self.instance is not None:
             existing = existing.exclude(pk=self.instance.pk)
 
@@ -134,6 +134,13 @@ class FeedForm(UserFormMixin, forms.ModelForm):
             raise forms.ValidationError(
                 _("This URL doesn't seem to be a valid feed."))
         return url
+
+    def save(self, commit=True):
+        feed = super(FeedForm, self).save(commit=False)
+        feed.user = self.user
+        if commit:
+            feed.save()
+        return feed
 
 
 class OPMLField(forms.FileField):
@@ -189,24 +196,18 @@ class SubscriptionForm(forms.Form):
         url = self.cleaned_data['url']
         if (
             self.cleaned_data.get('subscribe', False) and
-            Feed.objects.filter(category__user=self.user, url=url).exists()
+            self.user.feeds.filter(url=url).exists()
         ):
             raise forms.ValidationError(
                 _("You are already subscribed to this feed."))
         return url
 
     def clean_name(self):
-        return self.require_if_subscribe('name')
-
-    def clean_category(self):
-        return self.require_if_subscribe('category')
-
-    def require_if_subscribe(self, field_name):
         if (
             self.cleaned_data.get('subscribe', False) and
-            not self.cleaned_data[field_name]
+            not self.cleaned_data['name']
         ):
             raise forms.ValidationError(_('This field is required.'))
-        return self.cleaned_data[field_name]
+        return self.cleaned_data['name']
 
 SubscriptionFormSet = formset_factory(SubscriptionForm, extra=0)

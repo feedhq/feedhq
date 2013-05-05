@@ -22,6 +22,7 @@ class ModelAdmin(URLOverrideMixin, admin.ModelAdmin):
 
 class FeedInline(TabularInline):
     model = Feed
+    raw_id_fields = ('user',)
 
 
 class CategoryAdmin(ModelAdmin):
@@ -45,7 +46,7 @@ class UniqueFeedAdmin(ModelAdmin):
 class FeedAdmin(ModelAdmin):
     list_display = ('name', 'category', 'unread_count', 'favicon_img')
     search_fields = ('name', 'url')
-    raw_id_fields = ('category',)
+    raw_id_fields = ('category', 'user')
 
 
 class EntryAdmin(ModelAdmin):

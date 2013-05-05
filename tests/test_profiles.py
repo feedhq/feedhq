@@ -113,7 +113,8 @@ class ProfilesTest(WebTest):
 
         get.return_value = responses(304)
         cat.feeds.create(name='Test Feed',
-                         url='http://example.com/test.atom')
+                         url='http://example.com/test.atom',
+                         user=cat.user)
         get.assert_called_with(
             'http://example.com/test.atom',
             headers={"User-Agent": USER_AGENT % '1 subscriber',
