@@ -46,7 +46,6 @@ urlpatterns = patterns(
     url(r'^mark-all-as-read$', views.mark_all_as_read,
         name='mark_all_as_read'),
 
-    # Dummy prefs
     url(r'^preference/list$', views.preference_list, name='preference_list'),
 
     url(r'^preference/stream/list$', views.stream_preference,

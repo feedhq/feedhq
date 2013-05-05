@@ -10,7 +10,6 @@ from password_reset import views
 from .forms import (ChangePasswordForm, ProfileForm, CredentialsForm,
                     ServiceForm, DeleteAccountForm, SharingForm)
 from ..decorators import login_required
-from ..feeds.models import Feed
 
 
 class UserMixin(object):

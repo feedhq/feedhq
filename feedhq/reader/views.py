@@ -281,6 +281,7 @@ class DisableTag(ReaderView):
             raise exceptions.ParseError(
                 "Tag '{0}' does not exist".format(name))
 
+        category.feeds.update(category=None)
         category.delete()
         return Response("OK")
 disable_tag = DisableTag.as_view()

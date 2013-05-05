@@ -968,6 +968,8 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "already subscribed", status_code=400)
 
     def test_disable_tag(self, get):
+        get.return_value = responses(304)
+
         user = UserFactory.create()
         token = self.auth_token(user)
         post_token = self.post_token(token)
@@ -986,12 +988,14 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "OK")
         self.assertEqual(user.categories.count(), 0)
 
-        CategoryFactory.create(user=user, name=u'Other Cat')
+        cat = CategoryFactory.create(user=user, name=u'Other Cat')
+        FeedFactory.create(user=user, category=cat)
         del data['t']
         data['s'] = 'user/{0}/label/Other Cat'.format(user.pk)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(user.categories.count(), 0)
+        self.assertEqual(user.feeds.count(), 1)
 
     def test_rename_tag(self, get):
         user = UserFactory.create()
