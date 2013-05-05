@@ -59,12 +59,6 @@ class ModelTests(TestCase):
         # __unicode__
         self.assertEqual('%s' % entry, title)
 
-        # get_link()
-        self.assertEqual(entry.get_link(), entry.link)
-        # Setting permalink
-        entry.permalink = 'http://example.com/some-url'
-        self.assertEqual(entry.get_link(), entry.permalink)
-
     @patch("requests.get")
     def test_entry_model_behaviour(self, get):
         """Behaviour of the `Entry` model"""

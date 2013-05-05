@@ -517,9 +517,6 @@ class Entry(models.Model):
     subtitle = models.TextField(_('Abstract'))
     link = URLField(_('URL'))
     author = models.CharField(_('Author'), max_length=1023, blank=True)
-    # We also have a permalink for feed proxies (like FeedBurner). If the link
-    # points to feedburner, the redirection (=real feed link) is put here
-    permalink = URLField(_('Permalink'), blank=True)
     date = models.DateTimeField(_('Date'), db_index=True)
     # The User FK is redundant but this may be better for performance and if
     # want to allow user input.
@@ -600,13 +597,8 @@ class Entry(models.Model):
     def get_absolute_url(self):
         return reverse('feeds:item', args=[self.id])
 
-    def get_link(self):
-        if self.permalink:
-            return self.permalink
-        return self.link
-
     def link_domain(self):
-        return urlparse.urlparse(self.get_link()).netloc
+        return urlparse.urlparse(self.link).netloc
 
     def read_later_domain(self):
         netloc = urlparse.urlparse(self.read_later_url).netloc
@@ -624,7 +616,7 @@ class Entry(models.Model):
         data = json.loads(self.user.read_later_credentials)
         data.update({
             'apikey': settings.API_KEYS['readitlater'],
-            'url': self.get_link(),
+            'url': self.link,
             'title': self.title,
         })
         # The readitlater API doesn't return anything back
@@ -633,7 +625,7 @@ class Entry(models.Model):
     def add_to_readability(self):
         url = 'https://www.readability.com/api/rest/v1/bookmarks'
         client = self.oauth_client('readability')
-        params = {'url': self.get_link()}
+        params = {'url': self.link}
         response, data = client.request(url, method='POST',
                                         body=urllib.urlencode(params))
         response, data = client.request(response['location'], method='GET')
@@ -644,7 +636,7 @@ class Entry(models.Model):
     def add_to_instapaper(self):
         url = 'https://www.instapaper.com/api/1/bookmarks/add'
         client = self.oauth_client('instapaper')
-        params = {'url': self.get_link()}
+        params = {'url': self.link}
         response, data = client.request(url, method='POST',
                                         body=urllib.urlencode(params))
         url = 'https://www.instapaper.com/read/%s'

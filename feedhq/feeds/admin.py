@@ -51,7 +51,7 @@ class FeedAdmin(ModelAdmin):
 
 class EntryAdmin(ModelAdmin):
     list_display = ('title', 'date')
-    search_fields = ('title', 'link', 'permalink')
+    search_fields = ('title', 'link')
     raw_id_fields = ('feed', 'user')
 
 

@@ -361,7 +361,7 @@ class WebBaseTests(WebTest):
             feed=feed,
             title="Random title",
             subtitle='<img src="/favicon.png">',
-            permalink='http://example.com',
+            link='http://example.com',
             date=timezone.now(),
             user=user,
         )

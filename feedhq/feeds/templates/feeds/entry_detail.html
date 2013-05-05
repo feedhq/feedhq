@@ -29,11 +29,11 @@
 				</button>
 			</form>
 			{% if user.sharing_email %}
-				<a class="tultip" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.get_link }}"><i class="icon-envelope-alt"></i></a>
+				<a class="tultip" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.link }}"><i class="icon-envelope-alt"></i></a>
 			{% endif %}
 			{% if user.sharing_twitter %}
 				<div class="sbutton">
-					<a href="https://twitter.com/share?url={{ object.get_link }}&via=FeedHQ&text={{ object.title }} &mdash; &dnt=true" class="twitter-share-button" data-lang="en">Tweet</a>
+					<a href="https://twitter.com/share?url={{ object.link }}&via=FeedHQ&text={{ object.title }} &mdash; &dnt=true" class="twitter-share-button" data-lang="en">Tweet</a>
 {% addtoblock "js" %}
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 {% endaddtoblock %}
@@ -43,7 +43,7 @@
 				<div class="sbutton">
 					<div class="g-plusone" data-size="medium"></div>
 {% addtoblock "css" %}
-<link rel="canonical" href="{{ object.get_link }}">
+<link rel="canonical" href="{{ object.link }}">
 {% endaddtoblock %}
 				</div>
 {% addtoblock "js" %}
