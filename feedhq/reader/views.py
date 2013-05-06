@@ -420,6 +420,10 @@ class EditSubscription(ReaderView):
         elif action == 'edit':
             qs = request.user.feeds.filter(url=url)
             query = {}
+            if 'r' in request.DATA:
+                name = self.label(request.DATA['r'])
+                qs = request.user.feeds.filter(category__name=name)
+                query['category'] = None
             if 'a' in request.DATA:
                 name = self.label(request.DATA['a'])
                 category, created = request.user.categories.get_or_create(
@@ -647,6 +651,8 @@ def serialize_entry(request, entry, uniques):
         item['categories'].append(starred)
     if entry.broadcast:
         item['categories'].append(broadcast)
+    if entry.author:
+        item['author'] = entry.author
     return item
 
 
