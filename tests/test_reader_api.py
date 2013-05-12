@@ -152,6 +152,7 @@ class SerializerTest(ApiTest):
             serializer.render(12.5)
 
 
+@patch('requests.get')
 class ReaderApiTest(ApiTest):
     def test_user_info(self, get):
         url = reverse('reader:user_info')
@@ -1048,4 +1049,3 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(user.categories.get().name, 'Yo lo dawg')
-ReaderApiTest = patch('requests.get')(ReaderApiTest)
