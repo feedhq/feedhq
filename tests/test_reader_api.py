@@ -924,6 +924,7 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "OK")
         self.assertEqual(Feed.objects.get().name, "Hahaha")
 
+        feed2 = FeedFactory.create(user=user, category=cat)
         # Moving to top folder
         data = {
             'T': post_token,
@@ -934,9 +935,13 @@ class ReaderApiTest(ApiTest):
         }
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
-        feed = Feed.objects.get()
+        feed = Feed.objects.get(pk=feed.pk)
         self.assertEqual(feed.name, "Woo")
         self.assertIsNone(feed.category)
+
+        feed2 = Feed.objects.get(pk=feed2.pk)
+        self.assertIsNotNone(feed2.category)
+        feed2.delete()
 
         # Unsubscribing
         data = {

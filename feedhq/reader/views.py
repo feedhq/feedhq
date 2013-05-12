@@ -422,7 +422,7 @@ class EditSubscription(ReaderView):
             query = {}
             if 'r' in request.DATA:
                 name = self.label(request.DATA['r'])
-                qs = request.user.feeds.filter(category__name=name)
+                qs = qs.filter(category__name=name)
                 query['category'] = None
             if 'a' in request.DATA:
                 name = self.label(request.DATA['a'])
