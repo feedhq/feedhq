@@ -509,7 +509,8 @@ class ReaderApiTest(ApiTest):
 
         with self.assertNumQueries(2):
             response = self.client.get(
-                url, {'xt': u'feed/{0}'.format(feed.url)}, **clientlogin(token))
+                url, {'xt': u'feed/{0}'.format(feed.url)},
+                **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
 
         with self.assertNumQueries(2):
