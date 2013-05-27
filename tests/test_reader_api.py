@@ -205,7 +205,7 @@ class ReaderApiTest(ApiTest):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(len(response.json['subscriptions']), 1)
         self.assertEqual(response.json['subscriptions'][0]['categories'][0], {
-            "id": "user/{0}/label/{1}".format(user.pk, feed.category.name),
+            "id": u"user/{0}/label/{1}".format(user.pk, feed.category.name),
             "label": feed.category.name,
         })
 
@@ -507,12 +507,12 @@ class ReaderApiTest(ApiTest):
 
         with self.assertNumQueries(2):
             response = self.client.get(
-                url, {'xt': 'feed/{0}'.format(feed.url)}, **clientlogin(token))
+                url, {'xt': u'feed/{0}'.format(feed.url)}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
 
         with self.assertNumQueries(2):
             response = self.client.get(
-                url, {'xt': 'user/-/label/{0}'.format(feed.category.name)},
+                url, {'xt': u'user/-/label/{0}'.format(feed.category.name)},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
 
@@ -536,13 +536,13 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['items']), 10)
 
         url = reverse('reader:stream_contents',
-                      args=['user/-/label/{0}'.format(feed.category.name)])
+                      args=[u'user/-/label/{0}'.format(feed.category.name)])
         with self.assertNumQueries(2):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 30)
 
         url = reverse('reader:stream_contents',
-                      args=['feed/{0}'.format(feed.url)])
+                      args=[u'feed/{0}'.format(feed.url)])
         with self.assertNumQueries(4):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 30)
@@ -785,7 +785,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Missing 's' parameter", status_code=400)
 
-        data['s'] = 'feed/{0}'.format(feed2.url)
+        data['s'] = u'feed/{0}'.format(feed2.url)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         self.assertEqual(Entry.objects.filter(read=True).count(), 4)
@@ -796,13 +796,13 @@ class ReaderApiTest(ApiTest):
         feed2.update_unread_count()
         self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 1)
 
-        data['s'] = 'user/-/label/{0}'.format(feed2.category.name)
+        data['s'] = u'user/-/label/{0}'.format(feed2.category.name)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         self.assertEqual(Entry.objects.filter(read=True).count(), 4)
         self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
 
-        data['s'] = 'user/{0}/label/{1}'.format(user.pk, feed2.category.name)
+        data['s'] = u'user/{0}/label/{1}'.format(user.pk, feed2.category.name)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         self.assertEqual(Entry.objects.filter(read=True).count(), 4)
@@ -866,11 +866,11 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Missing 's' parameter", status_code=400)
 
-        data['s'] = '{0}'.format(feed.url)
+        data['s'] = u'{0}'.format(feed.url)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Unrecognized stream", status_code=400)
 
-        data['s'] = 'feed/{0}'.format(feed.url)
+        data['s'] = u'feed/{0}'.format(feed.url)
 
         data['t'] = 'Testing stuff'
         response = self.client.post(url, data, **clientlogin(token))
@@ -892,7 +892,7 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "Enter a valid URL", status_code=400)
 
         data['a'] = 'user/-/label/foo'
-        data['s'] = 'feed/{0}'.format(feed.url)
+        data['s'] = u'feed/{0}'.format(feed.url)
         self.assertEqual(Feed.objects.count(), 0)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
@@ -908,7 +908,7 @@ class ReaderApiTest(ApiTest):
         # Editing that
         data = {'T': post_token,
                 'ac': 'edit',
-                's': 'feed/{0}'.format(feed.url),
+                's': u'feed/{0}'.format(feed.url),
                 'a': 'user/{0}/label/known'.format(user.pk)}
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
@@ -918,7 +918,7 @@ class ReaderApiTest(ApiTest):
 
         data = {'T': post_token,
                 'ac': 'edit',
-                's': 'feed/{0}'.format(feed.url),
+                's': u'feed/{0}'.format(feed.url),
                 't': 'Hahaha'}
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
@@ -947,7 +947,7 @@ class ReaderApiTest(ApiTest):
         data = {
             'T': post_token,
             'ac': 'unsubscribe',
-            's': 'feed/{0}'.format(feed.url),
+            's': u'feed/{0}'.format(feed.url),
         }
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
@@ -982,7 +982,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "streamId")
 
-        data['quickadd'] = 'feed/{0}'.format(feed.url)
+        data['quickadd'] = u'feed/{0}'.format(feed.url)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "already subscribed", status_code=400)
 

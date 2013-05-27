@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import datetime
 import random
 
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.utils.text import slugify
+from django.utils.text import slugify, force_text
 from factory import (DjangoModelFactory as Factory, SubFactory, Sequence,
                      lazy_attribute)
 
@@ -13,12 +14,12 @@ from feedhq.feeds.models import Category, Feed, Entry
 class UserFactory(Factory):
     FACTORY_FOR = User
 
-    username = Sequence(lambda n: u'user{0}'.format(n))
+    username = Sequence(lambda n: u'ùser{0}'.format(n))
     password = 'test'
 
     @lazy_attribute
     def email(self):
-        return "{0}@example.com".format(self.username)
+        return u"{0}@example.com".format(slugify(force_text(self.username)))
 
     @classmethod
     def _prepare(cls, create, **kwargs):
@@ -31,7 +32,7 @@ class UserFactory(Factory):
 class CategoryFactory(Factory):
     FACTORY_FOR = Category
 
-    name = Sequence(lambda n: u'Category {0}'.format(n))
+    name = Sequence(lambda n: u'Categorỳ {0}'.format(n))
     user = SubFactory(UserFactory)
 
     @lazy_attribute
@@ -42,8 +43,8 @@ class CategoryFactory(Factory):
 class FeedFactory(Factory):
     FACTORY_FOR = Feed
 
-    name = Sequence(lambda n: u'Feed {0}'.format(n))
-    url = Sequence(lambda n: u'http://example.com/feeds/{0}'.format(n))
+    name = Sequence(lambda n: u'Feèd {0}'.format(n))
+    url = Sequence(lambda n: u'http://example.com/feèds/{0}'.format(n))
     category = SubFactory(CategoryFactory)
     user = SubFactory(UserFactory)
 
@@ -52,9 +53,9 @@ class EntryFactory(Factory):
     FACTORY_FOR = Entry
 
     feed = SubFactory(FeedFactory)
-    title = Sequence(lambda n: u'Entry {0}'.format(n))
-    subtitle = 'dummy content'
-    link = Sequence(lambda n: u'https://example.com/entry/{0}'.format(n))
+    title = Sequence(lambda n: u'Entrỳ {0}'.format(n))
+    subtitle = 'dùmmy content'
+    link = Sequence(lambda n: u'https://example.com/entrỳ/{0}'.format(n))
     user = SubFactory(UserFactory)
 
     @lazy_attribute

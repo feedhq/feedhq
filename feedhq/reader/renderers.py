@@ -106,7 +106,7 @@ class AtomRenderer(BaseXMLRenderer):
         xml.endElement('generator')
 
         xml.startElement('id', {})
-        xml.characters('tag:google.com,2005:reader/{0}'.format(data['id']))
+        xml.characters(u'tag:google.com,2005:reader/{0}'.format(data['id']))
         xml.endElement('id')
 
         xml.startElement('title', {})

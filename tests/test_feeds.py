@@ -6,6 +6,7 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.encoding import force_bytes
 from django_push.subscriber.signals import updated
 from django_webtest import WebTest
 from httplib2 import Response
@@ -29,7 +30,7 @@ class WebBaseTests(WebTest):
                                              'pass')
         user = UserFactory.create()
         url = reverse('feeds:home')
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, 'Getting started')
         FeedFactory.create(category__user=user, user=user)
         response = self.app.get(url)
@@ -43,7 +44,8 @@ class WebBaseTests(WebTest):
     def test_homepage(self):
         """The homepage from a logged in user"""
         user = UserFactory.create()
-        response = self.app.get(reverse('feeds:home'), user=user.username)
+        response = self.app.get(reverse('feeds:home'),
+                                user=force_bytes(user.username))
         self.assertContains(response, 'Home')
         self.assertContains(response, user.username)
 
@@ -55,14 +57,14 @@ class WebBaseTests(WebTest):
     def test_paginator(self):
         user = UserFactory.create()
         response = self.app.get(reverse('feeds:home', args=[5]),
-                                user=user.username)
+                                user=force_bytes(user.username))
         self.assertContains(response, 'Home')
 
     def test_category(self):
         user = UserFactory.create()
         CategoryFactory.create(user=user, name=u'Cat yo')
         url = reverse('feeds:category', args=['cat-yo'])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, 'Cat yo')
 
     @patch("requests.get")
@@ -72,7 +74,7 @@ class WebBaseTests(WebTest):
         category = CategoryFactory.create(user=user)
         FeedFactory.create(category=category, user=user)
         url = reverse('feeds:unread_category', args=[category.slug])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
 
         self.assertContains(response, category.name)
         self.assertContains(response, 'all <span class="ct">')
@@ -80,7 +82,7 @@ class WebBaseTests(WebTest):
     def test_add_category(self):
         user = UserFactory.create()
         url = reverse('feeds:add_category')
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
 
         form = response.forms['category']
         response = form.submit()
@@ -123,7 +125,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         category = CategoryFactory.create(user=user)
         url = reverse('feeds:delete_category', args=[category.slug])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(Category.objects.count(), 1)
@@ -137,7 +139,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         feed = FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:feed', args=[feed.pk])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
 
         expected = (
             '<a href="{0}unread/">unread <span class="ct">0</span></a>'
@@ -148,8 +150,8 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         category = CategoryFactory.create(user=user)
         url = reverse('feeds:edit_category', args=[category.slug])
-        response = self.app.get(url, user=user.username)
-        self.assertContains(response, 'Edit {0}'.format(category.name))
+        response = self.app.get(url, user=force_bytes(user.username))
+        self.assertContains(response, u'Edit {0}'.format(category.name))
 
         form = response.forms['category']
         form['name'] = 'New Name'
@@ -166,7 +168,7 @@ class WebBaseTests(WebTest):
         category = CategoryFactory.create(user=user)
 
         url = reverse('feeds:add_feed')
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, 'Add a feed')
 
         form = response.forms['feed']
@@ -222,7 +224,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         category = CategoryFactory.create(user=user)
         url = reverse('feeds:add_feed')
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
 
         form = response.forms['feed']
         form['name'] = 'Test'
@@ -247,7 +249,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         feed = FeedFactory.create(user=user)
         url = reverse('feeds:edit_feed', args=[feed.pk])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, feed.name)
 
         form = response.forms['feed']
@@ -259,7 +261,7 @@ class WebBaseTests(WebTest):
         self.assertContains(response, 'New Name has been successfully updated')
 
         cat = CategoryFactory.create(user=user)
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         form = response.forms['feed']
         form['category'] = cat.pk
         response = form.submit().follow()
@@ -273,7 +275,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         feed = FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:delete_feed', args=[feed.pk])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, 'Delete')
         self.assertContains(response, feed.name)
 
@@ -290,17 +292,17 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:home', args=[12000])  # that page doesn't exist
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, '<a href="/" class="current">')
 
     # This is called by other tests
     def _test_entry(self, from_url, user):
-        self.assertEqual(self.app.get(from_url,
-                                      user=user.username).status_code, 200)
+        self.assertEqual(self.app.get(
+            from_url, user=force_bytes(user.username)).status_code, 200)
 
         e = Entry.objects.get(title="jacobian's django-deployment-workshop")
         url = reverse('feeds:item', args=[e.pk])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, "jacobian's django-deployment-workshop")
 
     @patch('requests.get')
@@ -344,7 +346,7 @@ class WebBaseTests(WebTest):
 
         last_item = user.entries.order_by('date')[0]
         url = reverse('feeds:item', args=[last_item.pk])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertNotContains(response, 'Next →')
 
     def test_not_mocked(self):
@@ -366,7 +368,7 @@ class WebBaseTests(WebTest):
             user=user,
         )
         url = reverse('feeds:item', args=[entry.pk])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, 'External media is hidden')
         self.assertNotContains(response,
                                '<img src="http://exmpl.com/favicon.png">')
@@ -393,7 +395,7 @@ class WebBaseTests(WebTest):
     def test_opml_import(self, get):
         user = UserFactory.create()
         url = reverse('feeds:import_feeds')
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
 
         get.return_value = responses(304)
         form = response.forms['import']
@@ -428,7 +430,7 @@ class WebBaseTests(WebTest):
     def test_categories_in_opml(self, get):
         user = UserFactory.create()
         url = reverse('feeds:import_feeds')
-        response = self.app.get(url, user=user)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertEqual(response.status_code, 200)
 
         get.return_value = responses(304)
@@ -460,7 +462,7 @@ class WebBaseTests(WebTest):
         FeedFactory.create(category=None, user=user)
         for i in range(5):
             FeedFactory.create(category__user=user, user=user)
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, 'Dashboard')
 
     @patch('requests.get')
@@ -468,7 +470,7 @@ class WebBaseTests(WebTest):
         """Unread feed count everywhere"""
         user = UserFactory.create()
         url = reverse('profile')
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(
             response,
             '<a class="unread" title="Unread entries" href="/unread/">0</a>'
@@ -477,7 +479,7 @@ class WebBaseTests(WebTest):
         get.return_value = responses(200, 'sw-all.xml')
         FeedFactory.create(category__user=user, user=user)
 
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(
             response,
             '<a class="unread" title="Unread entries" href="/unread/">30</a>'
@@ -489,13 +491,13 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         feed = FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:unread')
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertNotContains(response, 'Mark all as read')
 
         get.return_value = responses(200, 'sw-all.xml')
         update_feed(feed.url)
 
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, 'Mark all as read')
 
         form = response.forms['read']
@@ -534,7 +536,7 @@ class WebBaseTests(WebTest):
 
         entry_pk = Entry.objects.all()[0].pk
         url = reverse('feeds:item', args=[entry_pk])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, "Add to Readability")
 
         form = response.forms['read-later']
@@ -543,7 +545,7 @@ class WebBaseTests(WebTest):
                                           method='GET')
         self.assertEqual(Entry.objects.get(pk=entry_pk).read_later_url,
                          'https://www.readability.com/articles/foo')
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertNotContains(response, "Add to Instapaper")
 
     @patch("requests.get")
@@ -578,7 +580,7 @@ class WebBaseTests(WebTest):
 
         entry_pk = Entry.objects.all()[0].pk
         url = reverse('feeds:item', args=[entry_pk])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, "Add to Instapaper")
 
         form = response.forms['read-later']
@@ -591,7 +593,7 @@ class WebBaseTests(WebTest):
         )
         self.assertEqual(Entry.objects.get(pk=entry_pk).read_later_url,
                          'https://www.instapaper.com/read/12345')
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertNotContains(response, "Add to Instapaper")
 
     @patch('requests.get')
@@ -611,7 +613,7 @@ class WebBaseTests(WebTest):
                      'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
 
         url = reverse('feeds:item', args=[Entry.objects.all()[0].pk])
-        response = self.app.get(url, user=user.username)
+        response = self.app.get(url, user=force_bytes(user.username))
         self.assertContains(response, 'Add to Read it later')
         form = response.forms['read-later']
         response = form.submit()
@@ -662,7 +664,7 @@ class WebBaseTests(WebTest):
 
         url = reverse('feeds:subscribe')
         response = self.app.get(url, {'feeds': "http://bruno.im/atom/latest/"},
-                                user=user.username)
+                                user=force_bytes(user.username))
 
         self.assertContains(response, 'value="http://bruno.im/atom/latest/"')
         form = response.forms['subscribe']
@@ -703,7 +705,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         url = reverse('feeds:subscribe')
         response = self.app.get(url, {'url': 'http://isitbeeroclock.com/'},
-                                user=user.username)
+                                user=force_bytes(user.username))
         self.assertContains(
             response, ('it looks like there are no feeds available on '
                        '<a href="http://isitbeeroclock.com/">'))
@@ -736,4 +738,4 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         entry = EntryFactory(user=user, feed__category__user=user, subtitle='')
         url = reverse('feeds:item', args=[entry.pk])
-        self.app.get(url, user=user)
+        self.app.get(url, user=force_bytes(user.username))

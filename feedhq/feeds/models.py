@@ -190,7 +190,7 @@ class UniqueFeedManager(models.Manager):
             self.backoff_feed(url, error, backoff_factor)
             return
         except LocationParseError:
-            logger.debug("Failed to parse URL for {0}".format(url))
+            logger.debug(u"Failed to parse URL for {0}".format(url))
             self.mute_feed(url, UniqueFeed.PARSE_ERROR)
             return
 
@@ -218,20 +218,20 @@ class UniqueFeedManager(models.Manager):
         update = {'last_update': timezone.now()}
 
         if response.status_code == 410:
-            logger.debug("Feed gone, {0}".format(url))
+            logger.debug(u"Feed gone, {0}".format(url))
             self.mute_feed(url, UniqueFeed.GONE)
             return
 
         elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
             if backoff_factor == UniqueFeed.MAX_BACKOFF - 1:
-                logger.debug("{0} reached max backoff period ({1})".format(
+                logger.debug(u"{0} reached max backoff period ({1})".format(
                     url, response.status_code,
                 ))
             self.backoff_feed(url, str(response.status_code), backoff_factor)
             return
 
         elif response.status_code not in [200, 204, 304]:
-            logger.debug("{0} returned {1}".format(url, response.status_code))
+            logger.debug(u"{0} returned {1}".format(url, response.status_code))
 
         else:
             # Avoid going back to 1 directly if it isn't safe given the
@@ -243,7 +243,7 @@ class UniqueFeedManager(models.Manager):
                 update['backoff_factor'] = new_backoff
 
         if response.status_code == 304:
-            logger.debug("Feed not modified, {0}".format(url))
+            logger.debug(u"Feed not modified, {0}".format(url))
             self.filter(url=url).update(**update)
             return
 
@@ -263,7 +263,7 @@ class UniqueFeedManager(models.Manager):
             else:
                 content = response.content
         except socket.timeout:
-            logger.debug('{0} timed out'.format(url))
+            logger.debug(u'{0} timed out'.format(url))
             self.backoff_feed(url, UniqueFeed.TIMEOUT, backoff_factor)
             return
         parsed = feedparser.parse(content)
@@ -291,7 +291,7 @@ class UniqueFeedManager(models.Manager):
         except ResponseError:
             # Protocol error: too big bulk count string
             # Redis can't handle this. Enqueue synchronously for now.
-            logger.info("Synchronously storing entries for {0}".format(url))
+            logger.info(u"Synchronously storing entries for {0}".format(url))
             store_entries(url, entries)
 
     @classmethod
@@ -343,7 +343,7 @@ class UniqueFeedManager(models.Manager):
         return entry_date
 
     def handle_redirection(self, old_url, new_url, subscribers):
-        logger.debug("{0} moved to {1}".format(old_url, new_url))
+        logger.debug(u"{0} moved to {1}".format(old_url, new_url))
         Feed.objects.filter(url=old_url).update(url=new_url)
         unique, created = self.get_or_create(
             url=new_url, defaults={'subscribers': subscribers})
@@ -499,7 +499,7 @@ class Feed(models.Model):
     @property
     def color(self):
         md = hashlib.md5()
-        md.update(self.url)
+        md.update(self.url.encode('utf-8'))
         index = int(md.hexdigest()[0], 16)
         index = index * len(COLORS) // 16
         return COLORS[index][0]

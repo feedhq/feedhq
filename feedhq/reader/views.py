@@ -149,7 +149,7 @@ class ReaderView(APIView):
         if request.method == 'POST' and self.require_post_token:
             if not 'T' in request.DATA:
                 logger.info(
-                    "Missing POST token, {0}".format(request.DATA.dict())
+                    u"Missing POST token, {0}".format(request.DATA.dict())
                 )
                 raise exceptions.ParseError("Missing 'T' POST token")
             user_id = check_post_token(request.DATA['T'])
@@ -222,7 +222,7 @@ class UnreadCount(ReaderView):
         feeds = request.user.feeds.filter(
             unread_count__gt=0).annotate(ts=Max('entries__date'))
         unread_counts = [{
-            "id": "feed/{0}".format(feed.url),
+            "id": u"feed/{0}".format(feed.url),
             "count": feed.unread_count,
             "newestItemTimestampUsec": feed.ts.strftime("%s000000"),
         } for feed in feeds]
@@ -359,7 +359,7 @@ class SubscriptionList(ReaderView):
         subscriptions = []
         for index, feed in enumerate(feeds):
             subscription = {
-                "id": "feed/{0}".format(feed.url),
+                "id": u"feed/{0}".format(feed.url),
                 "title": feed.name,
                 "categories": [],
                 "sortid": "B{0}".format(str(index).zfill(7)),
@@ -393,7 +393,7 @@ class EditSubscription(ReaderView):
 
         if not request.DATA['s'].startswith('feed/'):
             raise exceptions.ParseError(
-                "Unrecognized stream: {0}".format(request.DATA['s']))
+                u"Unrecognized stream: {0}".format(request.DATA['s']))
         url = request.DATA['s'][len('feed/'):]
 
         if action == 'subscribe':
@@ -434,7 +434,7 @@ class EditSubscription(ReaderView):
             if query:
                 qs.update(**query)
         else:
-            msg = "Unrecognized action: {0}".format(action)
+            msg = u"Unrecognized action: {0}".format(action)
             logger.info(msg)
             raise exceptions.ParseError(msg)
         return Response("OK")
@@ -463,7 +463,7 @@ class QuickAddSubscription(ReaderView):
         return Response({
             "numResults": 1,
             "query": url,
-            "streamId": "feed/{0}".format(url),
+            "streamId": u"feed/{0}".format(url),
         })
 quickadd_subscription = QuickAddSubscription.as_view()
 
@@ -522,7 +522,7 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
             name = is_label(stream, user_id)
             stream_q = Q(feed__category__name=name)
         else:
-            msg = "Unrecognized stream: {0}".format(stream)
+            msg = u"Unrecognized stream: {0}".format(stream)
             logger.info(msg)
             raise exceptions.ParseError(msg)
         if stream_q is not None:
@@ -548,13 +548,13 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
                 elif exclude_state == 'read':
                     exclude_q = Q(read=True)
                 else:
-                    logger.info("Unknown user state: {0}".format(
+                    logger.info(u"Unknown user state: {0}".format(
                         exclude_state))
             elif is_label(ex, user_id):
                 exclude_label = is_label(ex, user_id)
                 exclude_q = Q(feed__category__name=exclude_label)
             else:
-                logger.info("Unknown state: {0}".format(ex))
+                logger.info(u"Unknown state: {0}".format(ex))
             if exclude_q is not None:
                 q &= ~exclude_q
 
@@ -610,7 +610,7 @@ def pagination(entries, n=None, c=None):
 
 
 def label_key(request, label):
-    return "user/{0}/label/{1}".format(request.user.pk, label.name)
+    return u"user/{0}/label/{1}".format(request.user.pk, label.name)
 
 
 def serialize_entry(request, entry, uniques):
@@ -637,7 +637,7 @@ def serialize_entry(request, entry, uniques):
             "content": entry.subtitle,
         },
         "origin": {
-            "streamId": "feed/{0}".format(entry.feed.url),
+            "streamId": u"feed/{0}".format(entry.feed.url),
             "title": entry.feed.name,
             "htmlUrl": uniques[entry.feed.url].link,
         },
@@ -716,11 +716,11 @@ class StreamContents(ReaderView):
             base['id'] = 'user/{0}/state/com.google/{1}'.format(
                 request.user.pk, state)
             if state == 'reading-list':
-                base['title'] = "{0}'s reading list on FeedHQ".format(
+                base['title'] = u"{0}'s reading list on FeedHQ".format(
                     request.user.username)
 
             elif state == 'kept-unread':
-                base['title'] = "{0}'s unread items on FeedHQ".format(
+                base['title'] = u"{0}'s unread items on FeedHQ".format(
                     request.user.username)
 
             elif state == 'starred':
@@ -731,12 +731,12 @@ class StreamContents(ReaderView):
 
         elif is_label(content_id, request.user.pk):
             name = is_label(content_id, request.user.pk)
-            base['title'] = '"{0}" via {1} on FeedHQ'.format(
+            base['title'] = u'"{0}" via {1} on FeedHQ'.format(
                 name, request.user.username)
-            base['id'] = 'user/{0}/label/{1}'.format(request.user.pk, name)
+            base['id'] = u'user/{0}/label/{1}'.format(request.user.pk, name)
             uniques = get_unique_map(request.user)
         else:
-            msg = "Unknown stream id: {0}".format(content_id)
+            msg = u"Unknown stream id: {0}".format(content_id)
             logger.info(msg)
             raise exceptions.ParseError(msg)
 
@@ -805,7 +805,7 @@ class StreamItemsIds(ReaderView):
             item_refs = [{
                 'id': str(e['pk']),
                 'directStreamIds': [
-                    'feed/{0}'.format(e['feed__url']),
+                    u'feed/{0}'.format(e['feed__url']),
                 ],
                 'timestampUsec': e['date'].strftime("%s000000"),
             } for e in entries[start:end]]
@@ -866,7 +866,7 @@ class StreamItemsContents(ReaderView):
 
         base = {
             'direction': 'ltr',
-            'id': 'feed/{0}'.format(entries[0].feed.url),
+            'id': u'feed/{0}'.format(entries[0].feed.url),
             'title': entries[0].feed.name,
             'self': [{
                 'href': request.build_absolute_uri(),
@@ -918,7 +918,7 @@ class EditTag(ReaderView):
                 query[tag] = True
 
             else:
-                logger.info("Unhandled tag {0}".format(tag))
+                logger.info(u"Unhandled tag {0}".format(tag))
                 raise exceptions.ParseError(
                     "Unrecognized tag: {0}".format(tag))
 
@@ -929,7 +929,7 @@ class EditTag(ReaderView):
             elif tag in ['starred', 'broadcast', 'read']:
                 query[tag] = False
             else:
-                logger.info("Unhandled tag {0}".format(tag))
+                logger.info(u"Unhandled tag {0}".format(tag))
                 raise exceptions.ParseError(
                     "Unrecognized tag: {0}".format(tag))
 
@@ -978,8 +978,8 @@ class MarkAllAsRead(ReaderView):
                 for feed in request.user.feeds.filter(pk__in=feeds):
                     feed.update_unread_count()
             else:
-                logger.info("Unknown state: {0}".format(state))
+                logger.info(u"Unknown state: {0}".format(state))
         else:
-            logger.info("Unknown stream: {0}".format(stream))
+            logger.info(u"Unknown stream: {0}".format(stream))
         return Response("OK")
 mark_all_as_read = MarkAllAsRead.as_view()
