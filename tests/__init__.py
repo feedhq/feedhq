@@ -1,11 +1,17 @@
 import os
 
-from io import BytesIO
+from io import BytesIO as BaseBytesIO
 
 from requests import Response as _Response
 
 
 TEST_DATA = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
+
+
+class BytesIO(BaseBytesIO):
+    def read(self, *args, **kwargs):
+        kwargs.pop('decode_content')
+        return super(BytesIO, self).read(*args, **kwargs)
 
 
 def test_file(name):

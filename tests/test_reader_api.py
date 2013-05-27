@@ -26,7 +26,7 @@ def clientlogin(token):
 class ApiClient(Client):
     def request(self, **request):
         response = super(ApiClient, self).request(**request)
-        if response['Content-Type'] == 'application/json':
+        if response['Content-Type'] == 'application/json; charset=utf-8':
             response.json = json.loads(response.content)
         return response
 
@@ -181,11 +181,13 @@ class ReaderApiTest(ApiTest):
         token = self.auth_token(user)
         response = self.client.get(url, {'output': 'json'},
                                    **clientlogin(token))
-        self.assertEqual(response['Content-Type'], 'application/json')
+        self.assertEqual(response['Content-Type'],
+                         'application/json; charset=utf-8')
 
         response = self.client.get(url, {'output': 'xml'},
                                    **clientlogin(token))
-        self.assertEqual(response['Content-Type'], 'application/xml')
+        self.assertEqual(response['Content-Type'],
+                         'application/xml; charset=utf-8')
 
     def test_subscriptions_list(self, get):
         get.return_value = responses(304)
