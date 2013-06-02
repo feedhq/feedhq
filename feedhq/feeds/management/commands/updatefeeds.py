@@ -18,7 +18,7 @@ class Command(SentryCommand):
             pk = args[0]
             feed = UniqueFeed.objects.get(pk=pk)
             return update_feed(
-                feed.url, etag=feed.etag, last_modified=feed.modified,
+                feed.url, etag=feed.etag, modified=feed.modified,
                 subscribers=feed.subscribers,
                 request_timeout=feed.request_timeout,
                 backoff_factor=feed.backoff_factor, error=feed.error,

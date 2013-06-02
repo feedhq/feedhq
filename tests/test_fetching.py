@@ -165,7 +165,7 @@ class UpdateTests(ClearRacheTestCase):
     def test_etag_modified(self, get):
         get.return_value = responses(304)
         feed = FeedFactory.create()
-        update_feed(feed.url, etag='etag', last_modified='1234', subscribers=2)
+        update_feed(feed.url, etag='etag', modified='1234', subscribers=2)
         get.assert_called_with(
             feed.url,
             headers={
