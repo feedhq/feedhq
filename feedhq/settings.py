@@ -262,11 +262,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'feedupdater': {
-            'handlers': ['console', 'sentry'],
-            'level': 'DEBUG',
-        },
-        'feedhq.reader.views': {
+        'feedhq': {
             'handlers': ['console', 'sentry'],
             'level': 'DEBUG',
         },

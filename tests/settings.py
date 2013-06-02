@@ -29,8 +29,7 @@ INSTAPAPER = READABILITY = {
 
 # Silencing log calls
 if not '-v2' in sys.argv:
-    LOGGING['loggers']['feedupdater']['level'] = 'ERROR'
     LOGGING['loggers']['ratelimitbackend']['level'] = 'ERROR'
-    LOGGING['loggers']['feedhq.reader.views']['level'] = 'ERROR'
+    LOGGING['loggers']['feedhq']['level'] = 'ERROR'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media')

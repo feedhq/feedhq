@@ -14,6 +14,7 @@ import random
 import requests
 import socket
 import struct
+import time
 
 from django.db import models
 from django.conf import settings
@@ -28,6 +29,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 from httplib import IncompleteRead
 from lxml.etree import ParserError
+from rache import schedule_job, delete_job, job_details
 from redis.exceptions import ResponseError
 from requests.packages.urllib3.exceptions import LocationParseError
 
@@ -39,7 +41,7 @@ from .utils import FAVICON_FETCHER, USER_AGENT
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
 
-logger = logging.getLogger('feedupdater')
+logger = logging.getLogger(__name__)
 
 feedparser.PARSE_MICROFORMATS = False
 feedparser.SANITIZE_HTML = False
@@ -62,6 +64,10 @@ COLORS = (
 
 def random_color():
     return random.choice(COLORS)[0]
+
+
+def timedelta_to_seconds(delta):
+    return delta.days * 3600 * 24 + delta.seconds
 
 
 DURATIONS = (
@@ -179,10 +185,6 @@ class UniqueFeedManager(models.Manager):
         except (requests.RequestException, socket.timeout, socket.error,
                 IncompleteRead) as e:
             logger.debug("Error fetching %s, %s" % (url, str(e)))
-            if backoff_factor == UniqueFeed.MAX_BACKOFF - 1:
-                logger.debug(
-                    "%s reached max backoff period (%s)" % (url, str(e))
-                )
             if isinstance(e, IncompleteRead):
                 error = UniqueFeed.CONNECTION_ERROR
             else:
@@ -215,7 +217,7 @@ class UniqueFeedManager(models.Manager):
             if redirection is not None and redirection != url:
                 self.handle_redirection(url, redirection, subscribers)
 
-        update = {'last_update': timezone.now()}
+        update = {'last_update': int(time.time())}
 
         if response.status_code == 410:
             logger.debug(u"Feed gone, {0}".format(url))
@@ -223,10 +225,6 @@ class UniqueFeedManager(models.Manager):
             return
 
         elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
-            if backoff_factor == UniqueFeed.MAX_BACKOFF - 1:
-                logger.debug(u"{0} reached max backoff period ({1})".format(
-                    url, response.status_code,
-                ))
             self.backoff_feed(url, str(response.status_code), backoff_factor)
             return
 
@@ -237,25 +235,26 @@ class UniqueFeedManager(models.Manager):
             # Avoid going back to 1 directly if it isn't safe given the
             # actual response time.
             if previous_error and error is None:
-                update['error'] = ''
+                update['error'] = None
             new_backoff = min(backoff_factor, self.safe_backoff(elapsed))
             if new_backoff != backoff_factor:
                 update['backoff_factor'] = new_backoff
 
         if response.status_code == 304:
             logger.debug(u"Feed not modified, {0}".format(url))
-            self.filter(url=url).update(**update)
+            schedule_job(url, schedule_in=UniqueFeed.delay(new_backoff),
+                         **update)
             return
 
         if 'etag' in response.headers:
             update['etag'] = response.headers['etag']
         else:
-            update['etag'] = ''
+            update['etag'] = None
 
         if 'last-modified' in response.headers:
             update['modified'] = response.headers['last-modified']
         else:
-            update['modified'] = ''
+            update['modified'] = None
 
         try:
             if not response.content:
@@ -280,7 +279,10 @@ class UniqueFeedManager(models.Manager):
                     update['hub'] = link.href
                     # TODO actually subscribe
 
-        self.filter(url=url).update(**update)
+        schedule_job(url,
+                     schedule_in=UniqueFeed.delay(
+                         update.get('backoff_factor', backoff_factor)),
+                     **update)
 
         entries = filter(
             None,
@@ -347,18 +349,26 @@ class UniqueFeedManager(models.Manager):
         Feed.objects.filter(url=old_url).update(url=new_url)
         unique, created = self.get_or_create(
             url=new_url, defaults={'subscribers': subscribers})
-        if created and not settings.TESTS:
-            enqueue_favicon(new_url)
+        if created:
+            unique.schedule()
+            if not settings.TESTS:
+                enqueue_favicon(new_url)
         self.filter(url=old_url).delete()
+        delete_job(old_url)
 
     def mute_feed(self, url, reason):
+        delete_job(url)
         self.filter(url=url).update(muted=True, error=reason,
                                     last_update=timezone.now())
 
     def backoff_feed(self, url, error, backoff_factor):
-        self.filter(url=url).update(error=error, last_update=timezone.now(),
-                                    backoff_factor=min(UniqueFeed.MAX_BACKOFF,
-                                                       backoff_factor + 1))
+        if backoff_factor == UniqueFeed.MAX_BACKOFF - 1:
+            logger.debug(u"{0} reached max backoff period ({1})".format(
+                url, error,
+            ))
+        backoff_factor = min(UniqueFeed.MAX_BACKOFF, backoff_factor + 1)
+        schedule_job(url, schedule_in=UniqueFeed.delay(backoff_factor),
+                     error=error, backoff_factor=backoff_factor)
 
     def safe_backoff(self, response_time):
         """
@@ -423,18 +433,51 @@ class UniqueFeed(models.Model):
     UPDATE_PERIOD = 60  # in minutes
     BACKOFF_EXPONENT = 1.5
     TIMEOUT_BASE = 20
+    JOB_ATTRS = ['modified', 'etag', 'backoff_factor', 'error', 'link',
+                 'title', 'hub', 'subscribers', 'request_timeout']
 
     def __unicode__(self):
         if self.title:
             return u'%s' % self.title
         return u'%s' % self.url
 
-    def backoff(self):
-        self.backoff_factor = min(self.MAX_BACKOFF, self.backoff_factor + 1)
-
     @property
     def request_timeout(self):
         return 10 * self.backoff_factor
+
+    @classmethod
+    def delay(cls, backoff_factor):
+        return datetime.timedelta(
+            seconds=60 * cls.UPDATE_PERIOD *
+            backoff_factor ** cls.BACKOFF_EXPONENT)
+
+    @property
+    def schedule_in(self):
+        return (
+            self.last_update + self.delay(self.backoff_factor)
+        ) - timezone.now()
+
+    def schedule(self):
+        kwargs = {}
+        for attr in self.JOB_ATTRS:
+            if getattr(self, attr):
+                kwargs[attr] = getattr(self, attr)
+        schedule_job(self.url, schedule_in=self.schedule_in, **kwargs)
+
+    @property
+    def job_details(self):
+        if not hasattr(self, '_job_details'):
+            self._job_details = job_details(self.url)
+        return self._job_details
+
+    @property
+    def scheduler_data(self):
+        return json.dumps(self.job_details, indent=4, sort_keys=True)
+
+    @property
+    def next_update(self):
+        return timezone.make_aware(datetime.datetime.utcfromtimestamp(
+            self.job_details['schedule_at']), pytz.utc)
 
 
 class Feed(models.Model):

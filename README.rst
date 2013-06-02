@@ -142,6 +142,7 @@ account using the regular interface.
 
 Crawl for updates::
 
+    django-admin.py sync_scheduler
     django-admin.py updatefeeds
 
 Set up a cron job to update your feeds on a regular basis. This puts the
@@ -163,6 +164,57 @@ you should probably do every month or so)::
 And a final one to purge expired sessions from the DB::
 
     @daily /path/to/env/bin/django-admin.py cleanup
+
+Here is a full list of management commands that you should schedule:
+
+* ``add_missing`` creates the missing denormalized URLs for crawling. Since
+  URLs are denormalized it's recommended to run it every now and then to
+  ensure consistency.
+
+  Recommended frequency: hourly.
+
+  Resource consumption: negligible (2 database queries).
+
+* ``delete_unsubscribed`` is the delete counterpart of ``add_missing``.
+
+  Recommended frequency: hourly.
+
+  Resource consumption: negligible (2 database queries).
+
+* ``favicons --all`` forces fetching the favicons for all existing URLs. It's
+  useful for picking up new favicons when they're updated. Depending on your
+  volume of data, this can be resource-intensive.
+
+  Recommended frequency: monthly.
+
+  Resource consumption: the command itself only triggers async jobs but the
+  jobs perform network I/O, HTML parsing, disk I/O and database queries.
+
+* ``updatefeeds`` picks 1/12th of the URLs and fetches them.
+
+  Recommended frequency: every 5 minutes.
+
+  Resource consumption: the command itself only triggers async jobs but the
+  jobs perform network I/O, HTML parsing and -- when updates are found --
+  database queries.
+
+* ``sync_scheduler`` adds missing URLs to the scheduler. Also useful to run
+  every now and then.
+
+  Recommended frequency: every hour.
+
+  Resource consumption: one large database query per chunk of 10k feeds which
+  aren't in the scheduler, plus one redis ``HMSET`` per URL that's not in the
+  scheduler. As a routine task it's not resource-intensive.
+
+* ``backup_scheduler`` puts all the scheduler data back to the database. This
+  is useful as a maintenance job for your backups as the scheduler can be
+  up-to-date more quickly on a database restore.
+
+  Recommended frequency: 2 to 4 times a day.
+
+  Resource consumption: intensive. One database ``UPDATE`` per URL that's in
+  the scheduler.
 
 Development
 -----------

@@ -41,6 +41,7 @@ class UniqueFeedAdmin(ModelAdmin):
     list_display = ('url', 'last_update', 'muted', 'error', 'backoff_factor')
     list_filter = ('muted', 'error', 'backoff_factor')
     search_fields = ('url', 'title', 'link')
+    change_form_template = 'admin/uniquefeed_change_form.html'
 
 
 class FeedAdmin(ModelAdmin):

@@ -2,6 +2,8 @@ import os
 
 from io import BytesIO as BaseBytesIO
 
+from django.test import TestCase
+from rache import r, REDIS_PREFIX
 from requests import Response
 
 
@@ -33,3 +35,12 @@ def responses(code, path=None, redirection=None,
         response.url = redirection
     response.headers = headers
     return response
+
+
+class ClearRacheTestCase(TestCase):
+    def tearDown(self):  # noqa
+        """Clean up the rache:* redis keys"""
+        keys = r.keys("{0}*".format(REDIS_PREFIX))
+        for key in keys:
+            r.delete(key)
+    setUp = tearDown

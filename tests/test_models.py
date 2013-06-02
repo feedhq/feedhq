@@ -1,15 +1,15 @@
-from django.test import TestCase
 from django.utils import timezone
 from mock import patch
+from rache import job_details
 
 from feedhq.feeds.models import Category, Feed, UniqueFeed, Entry
 from feedhq.feeds.tasks import update_feed
 
 from .factories import CategoryFactory, FeedFactory
-from . import responses
+from . import responses, ClearRacheTestCase
 
 
-class ModelTests(TestCase):
+class ModelTests(ClearRacheTestCase):
     def test_category_model(self):
         """Behaviour of the ``Category`` model"""
         cat = CategoryFactory.create(name='New Cat', slug='new-cat')
@@ -40,9 +40,10 @@ class ModelTests(TestCase):
         # update()
         update_feed(feed.url)
 
-        unique_feed = UniqueFeed.objects.get(url=feed.url)
-        self.assertEqual(unique_feed.title, 'Sample Feed')
-        self.assertEqual(unique_feed.link, 'http://example.org/')
+        data = job_details(feed.url)
+
+        self.assertEqual(data['title'], 'Sample Feed')
+        self.assertEqual(data['link'], 'http://example.org/')
 
         feed = Feed.objects.get(pk=feed.id)
         self.assertEqual(feed.entries.count(), 1)
@@ -78,6 +79,6 @@ class ModelTests(TestCase):
         get.return_value = responses(200, headers={'etag': 'foo',
                                                    'last-modified': 'bar'})
         FeedFactory.create()
-        feed = UniqueFeed.objects.get()
-        self.assertEqual(feed.etag, 'foo')
-        self.assertEqual(feed.modified, 'bar')
+        data = job_details(UniqueFeed.objects.get().url)
+        self.assertEqual(data['etag'], 'foo')
+        self.assertEqual(data['modified'], 'bar')

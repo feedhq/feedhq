@@ -1,34 +1,13 @@
 import logging
-import os
 
-from django.conf import settings
-from django.utils import timezone
-from raven import Client
+from rache import pending_jobs
 
 from ....tasks import enqueue
 from ...models import UniqueFeed
 from ...tasks import update_feed
 from . import SentryCommand
 
-logger = logging.getLogger('feedupdater')
-
-
-TO_UPDATE = """
-    SELECT
-        id, url, modified, etag, backoff_factor, muted_reason, link, title,
-        hub, subscribers, backoff_factor * {timeout_base} as tm
-    FROM feeds_uniquefeed
-    WHERE
-        muted='false' AND
-        (last_update + {update_period} * interval '1 minute' *
-            backoff_factor^{backoff_exponent} < current_timestamp)
-    ORDER BY last_loop ASC
-    LIMIT %s
-""".format(
-    timeout_base=UniqueFeed.TIMEOUT_BASE,
-    update_period=UniqueFeed.UPDATE_PERIOD,
-    backoff_exponent=UniqueFeed.BACKOFF_EXPONENT,
-)
+logger = logging.getLogger(__name__)
 
 
 class Command(SentryCommand):
@@ -38,8 +17,6 @@ class Command(SentryCommand):
         if args:
             pk = args[0]
             feed = UniqueFeed.objects.get(pk=pk)
-            feed.last_loop = timezone.now()
-            feed.save(update_fields=['last_loop'])
             return update_feed(
                 feed.url, etag=feed.etag, last_modified=feed.modified,
                 subscribers=feed.subscribers,
@@ -49,34 +26,12 @@ class Command(SentryCommand):
             )
 
         ratio = UniqueFeed.UPDATE_PERIOD // 5
-
-        uniques = UniqueFeed.objects.raw(
-            TO_UPDATE,
-            [max(1, UniqueFeed.objects.filter(muted=False).count() // ratio)])
-        queued = set()
-
-        try:
-            for unique in uniques:
-                enqueue(update_feed, args=[unique.url], kwargs={
-                    'etag': unique.etag,
-                    'last_modified': unique.modified,
-                    'subscribers': unique.subscribers,
-                    'request_timeout': unique.backoff_factor * 10,
-                    'backoff_factor': unique.backoff_factor,
-                    'error': unique.error,
-                    'link': unique.link,
-                    'title': unique.title,
-                    'hub': unique.hub,
-                }, timeout=unique.tm)
-                queued.add(unique.pk)
-        except Exception:  # We don't know what to expect, and anyway
-                           # we're reporting the exception
-            if settings.DEBUG or not 'SENTRY_DSN' in os.environ:
-                raise
-            else:
-                client = Client(dsn=settings.SENTRY_DSN)
-                client.captureException()
-        finally:
-            if queued:
-                UniqueFeed.objects.filter(pk__in=list(queued)).update(
-                    last_loop=timezone.now())
+        limit = max(
+            1, UniqueFeed.objects.filter(muted=False).count() // ratio)
+        jobs = pending_jobs(limit=limit,
+                            reschedule_in=UniqueFeed.UPDATE_PERIOD * 60)
+        for job in jobs:
+            url = job.pop('id')
+            job.pop('last_update', None)
+            enqueue(update_feed, args=[url], kwargs=job,
+                    timeout=UniqueFeed.TIMEOUT_BASE * job['backoff_factor'])

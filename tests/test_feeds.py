@@ -339,7 +339,7 @@ class WebBaseTests(WebTest):
         get.return_value = responses(200, 'sw-all.xml')
         feed = FeedFactory.create(category__user=user, user=user)
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             update_feed(feed.url)
         self.assertEqual(Feed.objects.get().unread_count,
                          user.entries.filter(read=False).count())

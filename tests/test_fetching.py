@@ -1,9 +1,9 @@
 import feedparser
 
 from django.core.management import call_command
-from django.test import TestCase
 from httplib import IncompleteRead
 from mock import patch
+from rache import job_details
 from requests import RequestException
 from requests.packages.urllib3.exceptions import LocationParseError
 from rq.timeouts import JobTimeoutException
@@ -14,9 +14,10 @@ from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT
 
 from .factories import FeedFactory
 from .test_feeds import test_file, responses
+from . import ClearRacheTestCase
 
 
-class UpdateTests(TestCase):
+class UpdateTests(ClearRacheTestCase):
     @patch("requests.get")
     def test_parse_error(self, get):
         get.side_effect = LocationParseError("Failed to parse url")
@@ -31,7 +32,8 @@ class UpdateTests(TestCase):
         FeedFactory.create()
         f = UniqueFeed.objects.get()
         self.assertFalse(f.muted)
-        self.assertEqual(f.error, f.CONNECTION_ERROR)
+        data = job_details(f.url)
+        self.assertEqual(data['error'], f.CONNECTION_ERROR)
 
     @patch('requests.get')
     def test_ctype(self, get):
@@ -107,18 +109,22 @@ class UpdateTests(TestCase):
             self.assertFalse(feed.muted)
             self.assertEqual(feed.error, None)
             self.assertEqual(feed.backoff_factor, 1)
+            feed.schedule()
+            data = job_details(feed.url)
 
-            update_feed(feed.url, backoff_factor=feed.backoff_factor)
+            update_feed(feed.url, backoff_factor=data['backoff_factor'])
 
             feed = UniqueFeed.objects.get(url=feed.url)
             self.assertFalse(feed.muted)
-            self.assertEqual(feed.error, str(code))
-            self.assertEqual(feed.backoff_factor, 2)
+            data = job_details(feed.url)
+            self.assertEqual(data['error'], code)
+            self.assertEqual(data['backoff_factor'], 2)
 
             # Restore status for next iteration
             feed.backoff_factor = 1
             feed.error = None
             feed.save(update_fields=['backoff_factor', 'error'])
+            feed.schedule()
 
     @patch('requests.get')
     def test_backoff(self, get):
@@ -127,26 +133,33 @@ class UpdateTests(TestCase):
         feed = UniqueFeed.objects.get(url=feed.url)
         self.assertEqual(feed.error, None)
         self.assertEqual(feed.backoff_factor, 1)
+        feed.schedule()
+        data = job_details(feed.url)
 
         get.return_value = responses(502)
         for i in range(12):
-            update_feed(feed.url, backoff_factor=feed.backoff_factor)
+            update_feed(feed.url, backoff_factor=data['backoff_factor'])
             feed = UniqueFeed.objects.get(url=feed.url)
             self.assertFalse(feed.muted)
-            self.assertEqual(feed.error, '502')
-            self.assertEqual(feed.backoff_factor, min(i + 2, 10))
+            data = job_details(feed.url)
+            self.assertEqual(data['error'], 502)
+            self.assertEqual(data['backoff_factor'], min(i + 2, 10))
 
         get.side_effect = RequestException
         feed = UniqueFeed.objects.get()
         feed.error = None
         feed.backoff_factor = 1
         feed.save()
+        feed.schedule()
+        data = job_details(feed.url)
+
         for i in range(12):
-            update_feed(feed.url, backoff_factor=feed.backoff_factor)
+            update_feed(feed.url, backoff_factor=data['backoff_factor'])
             feed = UniqueFeed.objects.get(url=feed.url)
             self.assertFalse(feed.muted)
-            self.assertEqual(feed.error, 'timeout')
-            self.assertEqual(feed.backoff_factor, min(i + 2, 10))
+            data = job_details(feed.url)
+            self.assertEqual(data['error'], 'timeout')
+            self.assertEqual(data['backoff_factor'], min(i + 2, 10))
 
     @patch("requests.get")
     def test_etag_modified(self, get):
@@ -173,9 +186,9 @@ class UpdateTests(TestCase):
         update_feed(feed.url, error=feed.error,
                     backoff_factor=feed.backoff_factor)
 
-        feed = UniqueFeed.objects.get()
-        self.assertEqual(feed.backoff_factor, 1)
-        self.assertEqual(feed.error, '')
+        data = job_details(feed.url)
+        self.assertEqual(data['backoff_factor'], 1)
+        self.assertTrue('error' not in data)
 
     @patch('requests.get')
     def test_no_date_and_304(self, get):
@@ -224,10 +237,11 @@ class UpdateTests(TestCase):
         get.side_effect = JobTimeoutException
         self.assertEqual(UniqueFeed.objects.get().backoff_factor, 1)
         update_feed(feed.url)
-        self.assertEqual(UniqueFeed.objects.get().backoff_factor, 2)
+        data = job_details(feed.url)
+        self.assertEqual(data['backoff_factor'], 2)
 
 
-class FaviconTests(TestCase):
+class FaviconTests(ClearRacheTestCase):
     @patch("requests.get")
     def test_declared_favicon(self, get):
         with open(test_file('bruno.im.png'), 'r') as f:

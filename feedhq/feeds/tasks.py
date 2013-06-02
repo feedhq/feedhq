@@ -5,35 +5,30 @@ from collections import defaultdict
 
 from django.db.models import Q
 from django_push.subscriber.models import Subscription
+from rache import schedule_job
 from rq.timeouts import JobTimeoutException
 
-from ..tasks import enqueue
-
-logger = logging.getLogger('feedupdater')
+logger = logging.getLogger(__name__)
 
 
-def update_feed(url, etag=None, last_modified=None, subscribers=1,
+def update_feed(url, etag=None, modified=None, subscribers=1,
                 request_timeout=10, backoff_factor=1, error=None, link=None,
                 title=None, hub=None):
     from .models import UniqueFeed
     try:
         UniqueFeed.objects.update_feed(
-            url, etag=etag, last_modified=last_modified,
+            url, etag=etag, last_modified=modified,
             subscribers=subscribers, request_timeout=request_timeout,
             backoff_factor=backoff_factor, previous_error=error, link=link,
             title=title, hub=hub)
     except JobTimeoutException:
-        enqueue(backoff_feed, args=[url], queue='store')
-
-
-def backoff_feed(url):
-    from .models import UniqueFeed
-    feed = UniqueFeed.objects.get(url=url)
-    feed.backoff()
-    feed.save()
-    logger.debug("Job timed out, backing off %s to %s" % (
-        feed.url, feed.backoff_factor,
-    ))
+        backoff_factor = min(UniqueFeed.MAX_BACKOFF,
+                             backoff_factor + 1)
+        logger.debug("Job timed out, backing off %s to %s" % (
+            url, backoff_factor,
+        ))
+        schedule_job(url, schedule_in=UniqueFeed.delay(backoff_factor),
+                     backoff_factor=backoff_factor)
 
 
 def read_later(entry_pk):

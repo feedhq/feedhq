@@ -4,7 +4,7 @@ python:
 services:
   - redis-server
 before_install:
-  - sudo apt-get install daemontools
+  - sudo apt-get install daemontools redis-server
 install:
   - pip install -r requirements-dev.txt --use-mirrors
 before_script:

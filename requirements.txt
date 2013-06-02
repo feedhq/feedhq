@@ -17,6 +17,7 @@ hiredis==0.1.1
 html5lib==0.95
 httplib2==0.8
 lxml==3.2.1
+more_itertools==2.2
 oauth2==1.5.211
 opml==0.5
 procname==0.3
@@ -24,6 +25,7 @@ psycopg2==2.5
 python-dateutil==2.1
 python-magic==0.4.3
 pytz==2013b
+rache==0.2
 raven==3.3.7
 redis==2.7.5
 requests==1.2.3
