@@ -5,13 +5,13 @@ from mock import patch
 
 import feedparser
 
-from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.utils import timezone
 from rache import pending_jobs, delete_job, schedule_job
 
 from feedhq.feeds.models import UniqueFeed, timedelta_to_seconds
 from feedhq.feeds.utils import USER_AGENT
+from feedhq.profiles.models import User
 
 from .factories import FeedFactory
 from . import responses, ClearRacheTestCase

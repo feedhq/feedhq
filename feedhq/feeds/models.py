@@ -18,7 +18,6 @@ import time
 
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
@@ -103,7 +102,7 @@ class Category(models.Model):
     """Used to sort our feeds"""
     name = models.CharField(_('Name'), max_length=1023, db_index=True)
     slug = models.SlugField(_('Slug'), db_index=True)
-    user = models.ForeignKey(User, verbose_name=_('User'),
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
                              related_name='categories')
     # Some day there will be drag'n'drop ordering
     order = models.PositiveIntegerField(blank=True, null=True)
@@ -482,7 +481,7 @@ class Feed(models.Model):
         help_text=_('<a href="/category/add/">Add a category</a>'),
         null=True, blank=True,
     )
-    user = models.ForeignKey(User, verbose_name=_('User'),
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
                              related_name='feeds')
     unread_count = models.PositiveIntegerField(_('Unread count'), default=0)
     favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True,
@@ -558,8 +557,8 @@ class Entry(models.Model):
     guid = URLField(_('GUID'), db_index=True, blank=True)
     # The User FK is redundant but this may be better for performance and if
     # want to allow user input.
-    user = models.ForeignKey(User, verbose_name=(_('User')),
-                             related_name='entries')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             verbose_name=(_('User')), related_name='entries')
     # Mark something as read or unread
     read = models.BooleanField(_('Read'), default=False, db_index=True)
     # Read later: store the URL

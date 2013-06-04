@@ -6,7 +6,6 @@ import urlparse
 
 from urllib import urlencode
 
-from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.validators import email_re
 from django.db.models import Max, Sum, Min, Q
@@ -23,6 +22,7 @@ from rest_framework.views import APIView
 
 from ..feeds.forms import FeedForm
 from ..feeds.models import Feed, UniqueFeed, Category
+from ..profiles.models import User
 from .authentication import GoogleLoginAuthentication
 from .exceptions import PermissionDenied, BadToken
 from .models import generate_auth_token, generate_post_token, check_post_token

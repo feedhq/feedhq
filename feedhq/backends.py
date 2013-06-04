@@ -1,8 +1,9 @@
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.models import User
 from django.core.validators import email_re
 
 from ratelimitbackend.backends import RateLimitMixin
+
+from .profiles.models import User
 
 
 class CaseInsensitiveModelBackend(ModelBackend):

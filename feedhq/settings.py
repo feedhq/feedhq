@@ -113,6 +113,8 @@ AUTHENTICATION_BACKENDS = (
     'feedhq.backends.RateLimitMultiBackend',
 )
 
+AUTH_USER_MODEL = 'profiles.User'
+
 TEMPLATE_LOADERS = (
     ('django.template.loaders.cached.Loader', (
         'django.template.loaders.filesystem.Loader',
@@ -212,8 +214,8 @@ INSTALLED_APPS = (
     'south',
 
     'feedhq.core',
-    'feedhq.feeds',
     'feedhq.profiles',
+    'feedhq.feeds',
     'feedhq.reader',
 
     'password_reset',

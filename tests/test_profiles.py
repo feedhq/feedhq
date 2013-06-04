@@ -1,7 +1,6 @@
 import feedparser
 import json
 
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from django_webtest import WebTest
@@ -9,6 +8,7 @@ from httplib2 import Response as _Response
 from mock import patch
 
 from feedhq.feeds.utils import USER_AGENT
+from feedhq.profiles.models import User
 
 from . import responses
 

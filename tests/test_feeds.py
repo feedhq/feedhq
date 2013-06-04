@@ -4,7 +4,6 @@ import json
 
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django_push.subscriber.signals import updated
@@ -15,6 +14,7 @@ from mock import patch
 from feedhq.feeds.models import Category, Feed, Entry, UniqueFeed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.utils import USER_AGENT
+from feedhq.profiles.models import User
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
 from . import test_file, responses

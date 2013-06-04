@@ -5,12 +5,13 @@ import urllib
 import urlparse
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 import floppyforms as forms
 
 from ratelimitbackend.forms import AuthenticationForm
+
+from .models import User
 
 
 class AuthForm(AuthenticationForm):

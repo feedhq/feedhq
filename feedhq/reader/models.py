@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.cache import cache
 from django.db import models
 from django.utils import timezone
@@ -50,7 +50,7 @@ def generate_post_token(user):
 
 
 class AuthToken(models.Model):
-    user = models.ForeignKey(User, verbose_name=_('User'),
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
                              related_name='auth_tokens')
     token = models.CharField(
         _('Token'), max_length=300, db_index=True, unique=True,

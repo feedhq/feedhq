@@ -2,13 +2,13 @@
 import datetime
 import random
 
-from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.text import slugify, force_text
 from factory import (DjangoModelFactory as Factory, SubFactory, Sequence,
                      lazy_attribute)
 
 from feedhq.feeds.models import Category, Feed, Entry
+from feedhq.profiles.models import User
 
 
 class UserFactory(Factory):

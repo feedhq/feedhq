@@ -1,10 +1,10 @@
 import pytz
 
-from django.contrib.auth.models import User as DjangoUser
+from django.contrib.auth.models import (AbstractBaseUser, UserManager,
+                                        PermissionsMixin)
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-
-from ..models import contribute_to_model
 
 TIMEZONES = [
     (tz, _(tz)) for tz in pytz.common_timezones
@@ -17,7 +17,10 @@ ENTRIES_PER_PAGE = (
 )
 
 
-class User(models.Model):
+class User(PermissionsMixin, AbstractBaseUser):
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+
     NONE = ''
     READABILITY = 'readability'
     READITLATER = 'readitlater'
@@ -30,6 +33,12 @@ class User(models.Model):
     )
 
     username = models.CharField(max_length=75, unique=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    email = models.CharField(max_length=75)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(default=timezone.now)
     timezone = models.CharField(_('Time zone'), max_length=75,
                                 choices=TIMEZONES, default='UTC')
     entries_per_page = models.IntegerField(_('Entries per page'), default=50,
@@ -45,7 +54,10 @@ class User(models.Model):
                                         default=False)
     sharing_email = models.BooleanField(_('Enable Mail button'), default=False)
 
-    class Meta:
-        abstract = True
+    objects = UserManager()
 
-contribute_to_model(User, DjangoUser)
+    class Meta:
+        db_table = 'auth_user'
+
+    def get_short_name(self):
+        return self.username

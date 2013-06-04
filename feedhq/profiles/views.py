@@ -130,7 +130,7 @@ recover = Recover.as_view()
 class Destroy(generic.FormView):
     success_url = reverse_lazy('destroy_done')
     form_class = DeleteAccountForm
-    template_name = 'auth/user_confirm_delete.html'
+    template_name = 'profiles/user_confirm_delete.html'
 
     def get_form_kwargs(self):
         kwargs = super(Destroy, self).get_form_kwargs()

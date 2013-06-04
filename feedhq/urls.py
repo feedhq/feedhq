@@ -7,9 +7,6 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from ratelimitbackend import admin
 admin.autodiscover()
 
-# This patches User and needs to be done early
-from .profiles.models import User, DjangoUser  # noqa
-
 from . import views
 from .profiles.forms import AuthForm
 
