@@ -34,4 +34,5 @@ class Command(SentryCommand):
             url = job.pop('id')
             job.pop('last_update', None)
             enqueue(update_feed, args=[url], kwargs=job,
-                    timeout=UniqueFeed.TIMEOUT_BASE * job['backoff_factor'])
+                    timeout=UniqueFeed.TIMEOUT_BASE * job.get(
+                        'backoff_factor', 1))
