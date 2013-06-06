@@ -1,0 +1,18 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+	{{ block.super }}
+	<div id="scheduler-graph" data-url="{% url "admin:graph-data"  %}"></div>
+
+	<style tyle="text/css">
+		.chart {
+			height: 101px;
+			margin-bottom: 5px;
+			border-bottom: 1px solid gray;
+		}
+		.chart rect {
+			stroke: white;
+			fill: steelblue;
+		}
+	</style>
+{% endblock %}

@@ -1,5 +1,11 @@
+import json
+import math
+
+from django.conf.urls import url, patterns
 from django.contrib.admin import widgets
+from django.http import HttpResponse
 from django_push.subscriber.models import Subscription
+from rache import scheduled_jobs
 from ratelimitbackend import admin
 
 from .fields import URLField
@@ -41,7 +47,35 @@ class UniqueFeedAdmin(ModelAdmin):
     list_display = ('url', 'last_update', 'muted', 'error', 'backoff_factor')
     list_filter = ('muted', 'error', 'backoff_factor')
     search_fields = ('url', 'title', 'link')
-    change_form_template = 'admin/uniquefeed_change_form.html'
+
+    class Media:
+        js = (
+            'feeds/js/d3.v3.min.js',
+            'feeds/js/graph-scheduler.js',
+        )
+
+    def get_urls(self):
+        return patterns(
+            '',
+            url(r'^graph/$', self.admin_site.admin_view(self.graph_data),
+                name='graph-data'),
+        ) + super(UniqueFeedAdmin, self).get_urls()
+
+    def graph_data(self, request):
+        jobs = list(scheduled_jobs(with_times=True))
+
+        timespan = jobs[-1][1] - jobs[0][1]
+        interval = math.ceil(timespan / 200)
+        start = jobs[0][1]
+        counts = [0]
+        for url, time in jobs:
+            while len(counts) * interval < time - start:
+                counts.append(0)
+            counts[-1] += 1
+
+        return HttpResponse(json.dumps({'max': max(counts),
+                                        'counts': counts,
+                                        'timespan': timespan}))
 
 
 class FeedAdmin(ModelAdmin):
