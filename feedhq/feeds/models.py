@@ -583,7 +583,7 @@ class Entry(models.Model):
         feedparser._HTMLSanitizer.acceptable_attributes |
         feedparser._HTMLSanitizer.mathml_attributes |
         feedparser._HTMLSanitizer.svg_attributes
-    )
+    ) - set(['id', 'class'])
     CSS_PROPERTIES = feedparser._HTMLSanitizer.acceptable_css_properties
 
     def __unicode__(self):
