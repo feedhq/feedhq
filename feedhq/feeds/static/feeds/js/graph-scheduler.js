@@ -13,7 +13,7 @@
             chart.append('text')
             .attr('x', '80%')
             .attr('y', 20)
-            .text('Time resolution: ' + (data.timespan / 200 / 60).toFixed(2) + ' min');
+            .text('Time resolution: ' + (data.timespan / data.counts.length / 60).toFixed(2) + ' min');
             chart.append('text')
             .attr('x', '80%')
             .attr('y', 34)
@@ -28,12 +28,12 @@
             .data(data.counts)
             .enter().append('rect')
             .attr('x', function(d, i) {
-                return i * 5 + 0.5;
+                return i * 2;
             })
             .attr('y', function(d) {
-                return Math.round(100 - 100 * d / data.max) + 0.5;
+                return Math.round(100 - 100 * d / data.max);
             })
-            .attr('width', 5)
+            .attr('width', 2)
             .attr('height', function(d) {
                 return Math.round(100 * d / data.max);
             });

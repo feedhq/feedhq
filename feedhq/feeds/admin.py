@@ -65,7 +65,7 @@ class UniqueFeedAdmin(ModelAdmin):
         jobs = list(scheduled_jobs(with_times=True))
 
         timespan = jobs[-1][1] - jobs[0][1]
-        interval = math.ceil(timespan / 200)
+        interval = math.ceil(timespan / 500)
         start = jobs[0][1]
         counts = [0]
         for url, time in jobs:
