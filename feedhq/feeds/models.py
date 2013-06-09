@@ -641,6 +641,10 @@ class Entry(models.Model):
         netloc = urlparse.urlparse(self.read_later_url).netloc
         return netloc.replace('www.', '')
 
+    def tweet(self):
+        return u"{title} — {link} via @FeedHQ".format(
+            title=self.title, link=self.link)
+
     def read_later(self):
         """Adds this item to the user's read list"""
         user = self.user
