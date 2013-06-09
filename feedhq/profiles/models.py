@@ -54,6 +54,9 @@ class User(PermissionsMixin, AbstractBaseUser):
                                         default=False)
     sharing_email = models.BooleanField(_('Enable Mail button'), default=False)
 
+    allow_media = models.BooleanField(_('Automatically allow external media'),
+                                      default=False)
+
     objects = UserManager()
 
     class Meta:

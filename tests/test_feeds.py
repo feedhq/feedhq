@@ -391,6 +391,13 @@ class WebBaseTests(WebTest):
         self.assertNotContains(response, 'Disable external media')
         self.assertEqual(Feed.objects.get(pk=feed.pk).media_safe, False)
 
+        user.allow_media = True
+        user.save(update_fields=['allow_media'])
+        response = form.submit(name='never')
+        self.assertFalse('images' in response.forms)
+        self.assertContains(response,
+                            '<img src="http://exmpl.com/favicon.png">')
+
     @patch('requests.get')
     def test_opml_import(self, get):
         user = UserFactory.create()

@@ -38,7 +38,7 @@
 				<a target="_blank" class="tultip" title="{% trans "Share on Google+" %}" href="https://plus.google.com/share?url={{ object.link }}"><i class="icon-google-plus"></i></a>
 			{% endif %}
 		</div>
-		{% if has_media %}
+		{% if has_media and not user.allow_media %}
 			<div class="externalmedia">
 				<form method="post" action="{% url "feeds:item" object.id %}" class="images" id="images">
 					{% csrf_token %}
@@ -60,7 +60,7 @@
 			</div>
 		{% endif %}
 		<div class="content">
-			{% if media_safe or object.feed.media_safe %}
+			{% if media_safe or object.feed.media_safe or user.allow_media %}
 				{{ object.sanitized_content|safe }}
 			{% else %}
 				{{ object.sanitized_nomedia_content|safe }}
