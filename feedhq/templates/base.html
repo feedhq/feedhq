@@ -35,7 +35,7 @@
 				{% if messages %}
 					<div id="messages">
 						{% for m in messages %}
-							<p class="{{ m.tags }}">{{ m|safe }}</p>
+							<div class="{{ m.tags }}">{{ m|safe }}</div>
 						{% endfor %}
 					</div>
 				{% endif %}
@@ -92,12 +92,6 @@
 
 		$('#navigation .profile').click(function() {
 			return false;
-		});
-
-		$('form.read').submit(function(e) {
-			if (!confirm("{% blocktrans %}Are you sure you want to mark {{ unread_count }} items as read?{% endblocktrans %}")) {
-				return false;
-			}
 		});
 	});
 </script>

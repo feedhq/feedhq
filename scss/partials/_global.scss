@@ -700,6 +700,29 @@ form {
 	}
 }
 
+#messages {
+	form {
+		margin: 0;
+		display: inline-block;
+	}
+	input {
+		font: inherit;
+		border: none;
+		background: none;
+		text-decoration: underline;
+		cursor: pointer;
+		padding: 0;
+		color: inherit;
+	}
+
+	> div {
+		font-size: 0.9em;
+		margin: 3px 0;
+		padding: 1px 0;
+		color: #3a87ad;
+	}
+}
+
 #entries {
 	margin: 0.5em 0;
 

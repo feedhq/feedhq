@@ -513,6 +513,18 @@ class WebBaseTests(WebTest):
         response = response.follow()
         self.assertContains(response, '30 entries have been marked as read')
 
+        self.assertEqual(user.entries.filter(read=False).count(), 0)
+        self.assertEqual(user.entries.filter(read=True).count(), 30)
+
+        form = response.forms['undo']
+        response = form.submit()
+        self.assertRedirects(response, url)
+        response = response.follow()
+        self.assertContains(response, "30 entries have been marked as unread")
+
+        self.assertEqual(user.entries.filter(read=False).count(), 30)
+        self.assertEqual(user.entries.filter(read=True).count(), 0)
+
     @patch('requests.get')
     @patch('oauth2.Client')
     def test_add_to_readability(self, Client, get):  # noqa

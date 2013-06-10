@@ -1,4 +1,5 @@
 import contextlib
+import json
 import urlparse
 
 from django.core.cache import cache
@@ -162,6 +163,50 @@ class ReadForm(forms.Form):
         widget=forms.HiddenInput,
         initial='read',
     )
+
+    def __init__(self, entries=None, feed=None, category=None, user=None,
+                 *args, **kwargs):
+        self.entries = entries
+        self.feed = feed
+        self.category = category
+        self.user = user
+        super(ReadForm, self).__init__(*args, **kwargs)
+
+    def save(self):
+        pks = list(self.entries.filter(read=False).values_list('pk',
+                                                               flat=True))
+        self.entries.update(read=True)
+        if self.feed is not None:
+            feeds = Feed.objects.filter(pk=self.feed.pk)
+        elif self.category is not None:
+            feeds = self.category.feeds.all()
+        else:
+            feeds = self.user.feeds.all()
+        feeds.update(unread_count=0)
+        return pks
+
+
+class UndoReadForm(forms.Form):
+    action = forms.ChoiceField(
+        choices=(
+            ('undo-read', 'undo-read'),
+        ),
+        widget=forms.HiddenInput,
+        initial='undo-read',
+    )
+    pks = forms.CharField(widget=forms.HiddenInput)
+
+    def __init__(self, user=None, *args, **kwargs):
+        self.user = user
+        super(UndoReadForm, self).__init__(*args, **kwargs)
+
+    def clean_pks(self):
+        return json.loads(self.cleaned_data['pks'])
+
+    def save(self):
+        self.user.entries.filter(pk__in=self.cleaned_data['pks']).update(
+            read=False)
+        return len(self.cleaned_data['pks'])
 
 
 class SubscriptionForm(forms.Form):

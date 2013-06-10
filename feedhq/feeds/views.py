@@ -1,3 +1,4 @@
+import json
 import opml
 import re
 
@@ -7,15 +8,17 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template import loader, RequestContext
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext as _
+from django.utils.html import format_html
+from django.utils.translation import ugettext as _, ungettext
 from django.views import generic
 
 from ..decorators import login_required
 from ..tasks import enqueue
 from .models import Category, Feed, Entry, UniqueFeed
 from .forms import (CategoryForm, FeedForm, OPMLImportForm, ActionForm,
-                    ReadForm, SubscriptionFormSet)
+                    ReadForm, SubscriptionFormSet, UndoReadForm)
 from .tasks import read_later
 
 """
@@ -86,23 +89,36 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None):
     entries = entries.select_related('feed', 'feed__category')
 
     if request.method == "POST":
-        form = ReadForm(data=request.POST)
-        if form.is_valid():
-            count = entries.filter(read=False).count()
-            entries.update(read=True)
-            if feed is not None:
-                feeds = Feed.objects.filter(pk=feed.pk)
-            elif category is not None:
-                feeds = category.feeds.all()
-            else:
-                feeds = user.feeds.all()
-            feeds.update(unread_count=0)
-            messages.success(request,
-                             _('%s entries have been marked as read' % count))
-            if only_unread:
-                return redirect(unread_url)
-            else:
-                return redirect(all_url)
+        if request.POST['action'] == 'read':
+            form = ReadForm(entries, feed, category, user, data=request.POST)
+            if form.is_valid():
+                pks = form.save()
+                undo_form = loader.render_to_string('feeds/undo_read.html', {
+                    'form': UndoReadForm(initial={
+                        'pks': json.dumps(pks, separators=(',', ':'))}),
+                    'action': request.get_full_path(),
+                }, context_instance=RequestContext(request))
+                message = ungettext(
+                    '1 entry has been marked as read.',
+                    '%(value)s entries have been marked as read.',
+                    'value') % {'value': len(pks)}
+                messages.success(request,
+                                 format_html(u"{0} {1}", message, undo_form))
+
+        elif request.POST['action'] == 'undo-read':
+            form = UndoReadForm(user, data=request.POST)
+            if form.is_valid():
+                count = form.save()
+                messages.success(
+                    request, ungettext(
+                        '1 entry has been marked as unread.',
+                        '%(value)s entries have been marked as unread.',
+                        'value') % {'value': count})
+
+        if only_unread:
+            return redirect(unread_url)
+        else:
+            return redirect(all_url)
 
     unread_count = entries.filter(read=False).count()
 
