@@ -1057,3 +1057,11 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(user.categories.get().name, 'Yo lo dawg')
+
+    def test_friends_list(self, get):
+        user = UserFactory.create()
+        token = self.auth_token(user)
+
+        url = reverse('reader:friend_list')
+        response = self.client.get(url, **clientlogin(token))
+        self.assertEqual(response.status_code, 200)

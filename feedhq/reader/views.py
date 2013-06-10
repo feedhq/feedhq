@@ -983,3 +983,23 @@ class MarkAllAsRead(ReaderView):
             logger.info(u"Unknown stream: {0}".format(stream))
         return Response("OK")
 mark_all_as_read = MarkAllAsRead.as_view()
+
+
+class FriendList(ReaderView):
+    def get(self, request, *args, **kwargs):
+        return Response({
+            'friends': [{
+                'userIds': [str(request.user.pk)],
+                'profileIds': [str(request.user.pk)],
+                'contactId': '-1',
+                'stream': u"user/{0}/state/com.google/broadcast".format(
+                    request.user.pk),
+                'flags': 1,
+                'displayName': request.user.username,
+                'givenName': request.user.username,
+                'n': '',
+                'p': '',
+                'hasSharedItemsOnProfile': False,  # TODO handle broadcast
+            }]
+        })
+friend_list = FriendList.as_view()

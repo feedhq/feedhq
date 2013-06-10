@@ -50,6 +50,8 @@ urlpatterns = patterns(
 
     url(r'^preference/stream/list$', views.stream_preference,
         name='stream_preference'),
+
+    url(r'^friend/list$', views.friend_list, name='friend_list'),
 )
 
 """
@@ -72,7 +74,6 @@ Missing URLS:
         /groups
         /acl
         /edit
-        /list
         /feeds
 
     /people
