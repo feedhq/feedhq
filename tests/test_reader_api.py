@@ -457,13 +457,19 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, {'c': 'a'}, **clientlogin(token))
 
         feed = FeedFactory.create(category__user=user, user=user)
-        for i in range(15):
-            EntryFactory.create(user=user, feed=feed, read=False)
-        for i in range(4):
-            EntryFactory.create(user=user, feed=feed, read=True)
-        for i in range(10):
-            EntryFactory.create(user=user, feed=feed, read=False, starred=True)
-        EntryFactory.create(user=user, feed=feed, read=True, broadcast=True)
+
+        Entry.objects.bulk_create([
+            EntryFactory.build(user=user, feed=feed, read=False)
+            for i in range(15)
+        ] + [
+            EntryFactory.build(user=user, feed=feed, read=True)
+            for i in range(4)
+        ] + [
+            EntryFactory.build(user=user, feed=feed, read=False, starred=True)
+            for i in range(10)
+        ] + [
+            EntryFactory.build(user=user, feed=feed, read=True, broadcast=True)
+        ])
 
         # Warm up the uniques map cache
         with self.assertNumQueries(3):
@@ -582,6 +588,22 @@ class ReaderApiTest(ApiTest):
         with self.assertNumQueries(2):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
+
+    def test_stream_atom(self, get):
+        get.return_value = responses(304)
+        user = UserFactory.create()
+        token = self.auth_token(user)
+        url = reverse('reader:atom_contents',
+                      args=['user/-/state/com.google/reading-list'])
+
+        # 2 are warmup queries, cached in following calls
+        with self.assertNumQueries(4):
+            response = self.client.get(url, **clientlogin(token))
+        self.assertTrue(response['Content-Type'].startswith("text/xml"))
+
+        response = self.client.get(url, {'output': 'json'},
+                                   **clientlogin(token))
+        self.assertTrue(response['Content-Type'].startswith("text/xml"))
 
     def test_stream_items_ids(self, get):
         get.return_value = responses(304)

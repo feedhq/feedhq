@@ -93,6 +93,16 @@ class ForceNegotiation(DefaultContentNegotiation):
     Forces output even if ?output= is wrong when we have
     only one renderer.
     """
+    def __init__(self, force_format=None):
+        self.force_format = force_format
+        super(ForceNegotiation, self).__init__()
+
+    def select_renderer(self, request, renderers, format_suffix=None):
+        if self.force_format is not None:
+            format_suffix = self.force_format
+        return super(ForceNegotiation, self).select_renderer(
+            request, renderers, format_suffix)
+
     def filter_renderers(self, renderers, format):
         if len(renderers) == 1:
             return renderers
@@ -165,6 +175,12 @@ class ReaderView(APIView):
         if not is_label(value, self.request.user.pk):
             raise exceptions.ParseError("Unknown label: {0}".format(value))
         return value.split('/')[-1]
+
+    def get_content_negotiator(self):
+        if not getattr(self, '_negotiator', None):
+            force_format = self.kwargs.get('output')
+            self._negotiator = self.content_negotiation_class(force_format)
+        return self._negotiator
 
 
 class TokenView(ReaderView):
