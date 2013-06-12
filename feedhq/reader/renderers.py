@@ -165,7 +165,7 @@ class AtomRenderer(BaseXMLRenderer):
 
             xml.startElement('author', {})
             xml.startElement('name', {})
-            xml.characters(data['author'])
+            xml.characters(entry.get('author', data['author']))
             xml.endElement('name')
             xml.endElement('author')
 
