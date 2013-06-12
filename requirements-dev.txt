@@ -4,7 +4,7 @@ WebTest==2.0.6
 beautifulsoup4==4.2.0
 django-debug-toolbar==0.9.4
 django-discover-runner==0.4
-django-webtest==1.7
+django-webtest==1.7.1
 factory-boy==2.0.2
 flake8==2.0
 mccabe==0.2.1
