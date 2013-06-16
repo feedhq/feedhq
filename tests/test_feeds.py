@@ -336,7 +336,7 @@ class WebBaseTests(WebTest):
     def test_custom_ordering(self, get):
         user = UserFactory.create()
         get.return_value = responses(200, 'sw-all.xml')
-        feed = FeedFactory.create(user=user, category__user=user)
+        FeedFactory.create(user=user, category__user=user)
 
         url = reverse('feeds:unread')
         response = self.app.get(url, user=user)
