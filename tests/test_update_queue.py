@@ -177,7 +177,13 @@ class UpdateTests(ClearRacheTestCase):
             call_command('backup_scheduler')
 
         schedule_job(feed.url, schedule_in=10, subscribers=10, etag='foobar',
-                     backoff_factor=2, last_update=int(time.time()) + 10)
+                     backoff_factor=2, last_update=int(time.time()) + 10,
+                     title="f" * 2049)
+
+        with self.assertNumQueries(1):
+            call_command('backup_scheduler')
+
+        schedule_job(feed.url, schedule_in=10, title='12')
 
         with self.assertNumQueries(1):
             call_command('backup_scheduler')

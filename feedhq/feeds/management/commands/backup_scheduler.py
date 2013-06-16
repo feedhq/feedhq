@@ -33,9 +33,15 @@ class Command(SentryCommand):
                 'backoff_factor': 1,
                 'subscribers': 1,
             }
+            string_keys = ['title', 'link', 'etag', 'modified', 'error', 'hub']
             for key in attrs:
                 if key in details:
-                    attrs[key] = details[key]
+                    value = details[key]
+                    if key in string_keys and not isinstance(value,
+                                                             basestring):
+                        value = str(value)
+                    attrs[key] = value
+            attrs['title'] = attrs['title'][:2048]
             if 'last_update' in details:
                 attrs['last_update'] = timezone.make_aware(
                     datetime.utcfromtimestamp(details['last_update']),
