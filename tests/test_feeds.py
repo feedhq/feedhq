@@ -525,6 +525,13 @@ class WebBaseTests(WebTest):
         self.assertEqual(user.entries.filter(read=True).count(), 0)
 
     @patch('requests.get')
+    def test_promote_html_content_type(self, get):
+        get.return_value = responses(200, 'content-description.xml')
+        feed = FeedFactory.create()
+        self.assertEqual(
+            len(feed.entries.all()[0].content.split('F&#233;vrier 1953')), 2)
+
+    @patch('requests.get')
     @patch('oauth2.Client')
     def test_add_to_readability(self, Client, get):  # noqa
         client = Client.return_value
