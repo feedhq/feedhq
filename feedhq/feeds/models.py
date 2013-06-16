@@ -299,7 +299,7 @@ class UniqueFeedManager(models.Manager):
             'title': title,
             'link': entry.link,
             'date': cls.entry_date(entry),
-            'author': entry.get('author', parsed.get('author', '')),
+            'author': entry.get('author', parsed.get('author', ''))[:1023],
             'guid': entry.get('id', entry.link),
         }
         if 'description' in entry:
