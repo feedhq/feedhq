@@ -113,6 +113,11 @@ class AtomRenderer(BaseXMLRenderer):
         xml.characters(data['title'])
         xml.endElement('title')
 
+        if 'continuation' in data:
+            xml.startElement('gr:continuation', {})
+            xml.characters(data['continuation'])
+            xml.endElement('gr:continuation')
+
         xml.startElement('link', {'rel': 'self',
                                   'href': data['self'][0]['href']})
         xml.endElement('link')
