@@ -168,11 +168,12 @@ class AtomRenderer(BaseXMLRenderer):
             xml.characters(entry['content']['content'])
             xml.endElement('content')
 
-            xml.startElement('author', {})
-            xml.startElement('name', {})
-            xml.characters(entry.get('author', data['author']))
-            xml.endElement('name')
-            xml.endElement('author')
+            if entry.get('author'):
+                xml.startElement('author', {})
+                xml.startElement('name', {})
+                xml.characters(entry['author'])
+                xml.endElement('name')
+                xml.endElement('author')
 
             xml.startElement('source', {
                 'gr:stream-id': entry['origin']['streamId']})
