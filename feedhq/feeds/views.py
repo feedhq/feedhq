@@ -87,6 +87,8 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None):
         unread_url = reverse('feeds:unread')
 
     entries = entries.select_related('feed', 'feed__category')
+    if user.oldest_first:
+        entries = entries.order_by('date', 'id')
 
     if request.method == "POST":
         if request.POST['action'] == 'read':

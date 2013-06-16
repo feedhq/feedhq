@@ -43,6 +43,10 @@ class User(PermissionsMixin, AbstractBaseUser):
                                 choices=TIMEZONES, default='UTC')
     entries_per_page = models.IntegerField(_('Entries per page'), default=50,
                                            choices=ENTRIES_PER_PAGE)
+    oldest_first = models.BooleanField(
+        _('Oldest entries first'), default=False,
+        help_text=_("Check this box if you'd like to have the oldest "
+                    "entries appear first."))
     read_later = models.CharField(_('Read later service'), blank=True,
                                   choices=READ_LATER_SERVICES, max_length=50)
     read_later_credentials = models.TextField(_('Read later credentials'),

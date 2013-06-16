@@ -333,6 +333,25 @@ class WebBaseTests(WebTest):
         self._test_entry(url, user)
 
     @patch('requests.get')
+    def test_custom_ordering(self, get):
+        user = UserFactory.create()
+        get.return_value = responses(200, 'sw-all.xml')
+        feed = FeedFactory.create(user=user, category__user=user)
+
+        url = reverse('feeds:unread')
+        response = self.app.get(url, user=user)
+        first_title = response.context['entries'].object_list[0].title
+        last_title = response.context['entries'].object_list[-1].title
+
+        user.oldest_first = True
+        user.save()
+        response = self.app.get(url, user=user)
+        self.assertEqual(response.context['entries'].object_list[0].title,
+                         last_title)
+        self.assertEqual(response.context['entries'].object_list[-1].title,
+                         first_title)
+
+    @patch('requests.get')
     def test_last_entry(self, get):
         user = UserFactory.create()
         get.return_value = responses(200, 'sw-all.xml')
