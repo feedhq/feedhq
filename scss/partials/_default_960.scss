@@ -103,6 +103,7 @@ form {
 #content {
 	> .profile-menu {
 		@include cols(3);
+		margin-left: 0;
 	}
 
 	> .profile {
