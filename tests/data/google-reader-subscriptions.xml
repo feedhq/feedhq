@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+    <head>
+        <title>Bruno subscriptions in Google Reader</title>
+    </head>
+    <body>
+        <outline text="Bruno.im updates" title="Bruno.im updates"
+            type="rss" xmlUrl="http://bruno.im/atom/latest/" htmlUrl="http://bruno.im"/>
+    </body>
+</opml>

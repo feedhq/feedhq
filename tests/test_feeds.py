@@ -452,6 +452,23 @@ class WebBaseTests(WebTest):
         ])
 
     @patch('requests.get')
+    def test_greader_opml_import(self, get):
+        user = UserFactory.create()
+        url = reverse('feeds:import_feeds')
+        response = self.app.get(url, user=user)
+
+        get.return_value = responses(304)
+        form = response.forms['import']
+
+        with open(test_file('google-reader-subscriptions.xml'),
+                  'r') as opml_file:
+            form['file'] = 'sample.opml', opml_file.read()
+        response = form.submit().follow()
+
+        self.assertContains(response, '1 feed has been imported')
+        self.assertEqual(Category.objects.count(), 0)
+
+    @patch('requests.get')
     def test_categories_in_opml(self, get):
         user = UserFactory.create()
         url = reverse('feeds:import_feeds')
@@ -467,7 +484,7 @@ class WebBaseTests(WebTest):
 
         response = form.submit().follow()
         self.assertContains(response, '20 feeds have been imported')
-        self.assertEqual(user.categories.count(), 7)
+        self.assertEqual(user.categories.count(), 6)
         with self.assertRaises(Category.DoesNotExist):
             user.categories.get(name='Imported')
         with self.assertRaises(Feed.DoesNotExist):

@@ -405,19 +405,27 @@ def truncate(value, length):
 
 def save_outline(user, category, outline, existing):
     count = 0
+    try:
+        opml_tag = outline._tree.getroot().tag == 'opml'
+    except AttributeError:
+        opml_tag = False
     if (
         not hasattr(outline, 'xmlUrl') and
         hasattr(outline, 'title') and
         outline._outlines
     ):
-        slug = slugify(outline.title)
-        if not slug:
-            slug = 'unknown'
-        title = truncate(outline.title, 1023)
-        slug = slug[:50]
-        cat, created = user.categories.get_or_create(
-            slug=slug, defaults={'name': title},
-        )
+        if opml_tag:
+            cat = None
+            created = False
+        else:
+            slug = slugify(outline.title)
+            if not slug:
+                slug = 'unknown'
+            title = truncate(outline.title, 1023)
+            slug = slug[:50]
+            cat, created = user.categories.get_or_create(
+                slug=slug, defaults={'name': title},
+            )
         for entry in outline._outlines:
             count += save_outline(user, cat, entry, existing)
         if created and cat.feeds.count() == 0:
@@ -453,12 +461,14 @@ def import_feeds(request):
             imported = save_outline(request.user, None, entries,
                                     existing_feeds)
 
-            messages.success(
-                request,
-                _('%(num)s feeds have been imported, new content will appear '
-                  'in a moment when you refresh the '
-                  'page.' % {'num': imported}),
-            )
+            message = " ".join([ungettext(
+                u'%s feed has been imported.',
+                u'%s feeds have been imported.',
+                imported) % imported,
+                _('New content will appear in a moment when you refresh '
+                  'the page.')
+            ])
+            messages.success(request, message)
             return redirect('feeds:home')
 
     else:
