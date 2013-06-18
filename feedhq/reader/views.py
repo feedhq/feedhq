@@ -148,7 +148,12 @@ class Login(APIView):
             raise PermissionDenied()
         if not user.check_password(self.querydict['Passwd']):
             raise PermissionDenied()
-        token = generate_auth_token(user)
+        client = request.GET.get('client', request.DATA.get('client', ''))
+        token = generate_auth_token(
+            user,
+            client=client,
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+        )
         return Response("SID={t}\nLSID={t}\nAuth={t}".format(t=token))
     get = post
 login = Login.as_view()

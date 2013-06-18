@@ -88,8 +88,14 @@ class AuthTest(ApiTest):
         self.assertEqual(response.status_code, 403)
 
         params['Passwd'] = 'test'
-        response = self.client.get(url, params)
+        params['client'] = 'Test Client'
+        response = self.client.get(url, params,
+                                   HTTP_USER_AGENT='testclient/1.0')
         self.assertContains(response, 'Auth=')
+
+        token = user.auth_tokens.get()
+        self.assertEqual(token.client, 'Test Client')
+        self.assertEqual(token.user_agent, 'testclient/1.0')
 
         response = self.client.post(url, params)
         self.assertContains(response, 'Auth=')

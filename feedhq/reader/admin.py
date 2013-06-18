@@ -7,5 +7,6 @@ class AuthTokenAdmin(admin.ModelAdmin):
     list_display = ('user', 'date_created', 'preview', 'user_pk',
                     'cache_value')
     raw_id_fields = ('user',)
+    list_filter = ['client']
 
 admin.site.register(AuthToken, AuthTokenAdmin)

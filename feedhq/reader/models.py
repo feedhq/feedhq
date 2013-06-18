@@ -35,8 +35,8 @@ def check_post_token(token):
     return int(value)
 
 
-def generate_auth_token(user):
-    token = user.auth_tokens.create()
+def generate_auth_token(user, client='', user_agent=''):
+    token = user.auth_tokens.create(client=client, user_agent=user_agent)
     key = 'reader_auth_token:{0}'.format(token.token)
     cache.set(key, user.pk, AUTH_TOKEN_TIMEOUT)
     return token.token
@@ -57,6 +57,8 @@ class AuthToken(models.Model):
         default=lambda: get_random_string(AUTH_TOKEN_LENGTH))
     date_created = models.DateTimeField(_('Creation date'),
                                         default=timezone.now)
+    client = models.CharField(_('Client'), max_length=1023, blank=True)
+    user_agent = models.TextField(_('User-Agent'), blank=True)
 
     def __unicode__(self):
         return u'Token for {0}'.format(self.user)
