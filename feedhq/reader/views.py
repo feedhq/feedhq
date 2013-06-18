@@ -88,6 +88,12 @@ def is_label(value, user_id):
     return False
 
 
+def epoch_to_utc(value):
+    """Converts epoch (in seconds) values to a timezone-aware datetime."""
+    return timezone.make_aware(
+        datetime.datetime.fromtimestamp(value), timezone.utc)
+
+
 class ForceNegotiation(DefaultContentNegotiation):
     """
     Forces output even if ?output= is wrong when we have
@@ -582,8 +588,7 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
             raise exceptions.ParseError(
                 "Malformed 'ot' parameter. Must be a unix timstamp")
         else:
-            limit = timezone.make_aware(
-                datetime.datetime.fromtimestamp(timestamp), timezone.utc)
+            limit = epoch_to_utc(timestamp)
             q &= Q(date__gte=limit)
     # ?nt=<timestamp>
     if offset is not None:
@@ -593,8 +598,7 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
             raise exceptions.ParseError(
                 "Malformed 'nt' parameter. Must be a unix timstamp")
         else:
-            offset = timezone.make_aware(
-                datetime.datetime.fromtimestamp(timestamp), timezone.utc)
+            offset = epoch_to_utc(timestamp)
             q &= Q(date__lte=offset)
     if q is None:
         return Q(pk__lte=0)
