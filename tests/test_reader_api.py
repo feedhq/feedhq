@@ -1,4 +1,5 @@
 import json
+import time
 
 from urllib import urlencode
 
@@ -857,6 +858,20 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         self.assertEqual(Entry.objects.filter(read=False).count(), 0)
+
+        Entry.objects.update(read=False)
+        data['ts'] = int(time.mktime(
+            list(Entry.objects.all()[:5])[-1].date.timetuple()
+        )) * 1000000
+        data['s'] = 'user/-/state/com.google/reading-list'
+        with self.assertNumQueries(2):
+            self.client.post(url, data, **clientlogin(token))
+        self.assertEqual(Entry.objects.filter(read=False).count(), 5)
+
+        data['ts'] = 'foo'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "Invalid 'ts' parameter",
+                            status_code=400)
 
     def test_stream_prefs(self, get):
         user = UserFactory.create()

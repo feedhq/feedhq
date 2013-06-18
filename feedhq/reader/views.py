@@ -8,6 +8,7 @@ from urllib import urlencode
 
 from django.core.cache import cache
 from django.core.validators import email_re
+from django.db import connection
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -972,35 +973,49 @@ class MarkAllAsRead(ReaderView):
     def post(self, request, *args, **kwargs):
         if not 's' in request.DATA:
             raise exceptions.ParseError("Missing 's' parameter")
+        entries = request.user.entries
+        limit = None
+        if 'ts' in request.DATA:
+            try:
+                timestamp = int(request.DATA['ts'])
+            except ValueError:
+                raise exceptions.ParseError(
+                    "Invalid 'ts' parameter. Must be a number of microseconds "
+                    "since epoch.")
+            limit = epoch_to_utc(timestamp / 1000000)  # microseconds -> secs
+            entries = entries.filter(date__lte=limit)
+
         stream = request.DATA['s']
+
         if stream.startswith('feed/'):
             url = stream[len('feed/'):]
-            self.request.user.entries.filter(feed__url=url).update(read=True)
-            self.request.user.feeds.filter(url=url).update(unread_count=0)
+            entries.filter(feed__url=url).update(read=True)
         elif is_label(stream, request.user.pk):
             name = is_label(stream, request.user.pk)
-            request.user.entries.filter(
+            entries.filter(
                 feed__category=request.user.categories.get(name=name),
             ).update(read=True)
-            request.user.categories.get(name=name).feeds.update(unread_count=0)
         elif is_stream(stream, request.user.pk):
             state = is_stream(stream, request.user.pk)
             if state == 'read':  # mark read items as read yo
                 return Response("OK")
             elif state in ['kept-unread', 'reading-list']:
-                request.user.entries.update(read=True)
-                self.request.user.feeds.update(unread_count=0)
-            elif state in ['starred', 'broadcast']:
-                entries = request.user.entries.filter(**{state: True})
-                feeds = set(entries.select_related('feed').values_list(
-                    'feed__pk', flat=True))
                 entries.update(read=True)
-                for feed in request.user.feeds.filter(pk__in=feeds):
-                    feed.update_unread_count()
+            elif state in ['starred', 'broadcast']:
+                entries = entries.filter(**{state: True})
+                entries.update(read=True)
             else:
                 logger.info(u"Unknown state: {0}".format(state))
         else:
             logger.info(u"Unknown stream: {0}".format(stream))
+
+        cursor = connection.cursor()
+        cursor.execute("""
+            update feeds_feed f set unread_count = (
+                select count(*) from feeds_entry e
+                where e.feed_id = f.id and read = false
+            ) where f.user_id = %s
+        """, [request.user.pk])
         return Response("OK")
 mark_all_as_read = MarkAllAsRead.as_view()
 
