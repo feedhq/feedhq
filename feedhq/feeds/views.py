@@ -344,6 +344,9 @@ def item(request, entry_id):
     except entry.DoesNotExist:
         next = None
 
+    if request.user.oldest_first:
+        previous, next = next, previous
+
     # For serch results, previous and next aren't available
     if bits[1] == 'search':
         previous = None
