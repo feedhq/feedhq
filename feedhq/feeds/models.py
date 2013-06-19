@@ -615,7 +615,11 @@ class Entry(models.Model):
         if not hasattr(self, '_content'):
             if self.subtitle:
                 xml = lxml.html.fromstring(self.subtitle)
-                xml.make_links_absolute(self.feed.url)
+                try:
+                    xml.make_links_absolute(self.feed.url)
+                except ValueError as e:
+                    if e.args[0] != 'Invalid IPv6 URL':
+                        raise
                 self._content = lxml.html.tostring(xml)
             else:
                 self._content = self.subtitle

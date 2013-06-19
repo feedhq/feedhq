@@ -866,6 +866,9 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(Entry.objects.filter(read=False).count(), 0)
 
         Entry.objects.update(read=False)
+        for feed in Feed.objects.all():
+            feed.update_unread_count()
+
         data['ts'] = int(time.mktime(
             list(Entry.objects.all()[:5])[-1].date.timetuple()
         )) * 1000000
@@ -873,6 +876,9 @@ class ReaderApiTest(ApiTest):
         with self.assertNumQueries(2):
             self.client.post(url, data, **clientlogin(token))
         self.assertEqual(Entry.objects.filter(read=False).count(), 5)
+        for feed in Feed.objects.all():
+            self.assertEqual(feed.entries.filter(read=False).count(),
+                             feed.unread_count)
 
         data['ts'] = 'foo'
         response = self.client.post(url, data, **clientlogin(token))

@@ -82,3 +82,15 @@ class ModelTests(ClearRacheTestCase):
         data = job_details(UniqueFeed.objects.get().url)
         self.assertEqual(data['etag'], 'foo')
         self.assertEqual(data['modified'], 'bar')
+
+    @patch('requests.get')
+    def test_invalid_content(self, get):
+        """Behaviour of the ``Feed`` model"""
+        get.return_value = responses(304)
+        feed = Feed(url='http://example.com/')
+        entry = Entry(
+            feed=feed,
+            subtitle='<a href="http://mozillaopennews.org]/">OpenNews</a>')
+        self.assertEqual(
+            entry.content,
+            '<a href="http://mozillaopennews.org%5D/">OpenNews</a>')
