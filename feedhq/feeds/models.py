@@ -708,6 +708,9 @@ class Entry(models.Model):
         client.set_signature_method(oauth.SignatureMethod_HMAC_SHA1())
         return client
 
+    def current_year(self):
+        return self.date.year == timezone.now().year
+
 
 def pubsubhubbub_update(notification, **kwargs):
     url = None

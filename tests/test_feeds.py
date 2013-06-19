@@ -2,6 +2,8 @@
 import feedparser
 import json
 
+from datetime import timedelta
+
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.utils import timezone
@@ -12,6 +14,7 @@ from mock import patch
 
 from feedhq.feeds.models import Category, Feed, Entry, UniqueFeed
 from feedhq.feeds.tasks import update_feed
+from feedhq.feeds.templatetags.feeds_tags import smart_date
 from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
 
@@ -800,3 +803,14 @@ class WebBaseTests(WebTest):
         entry = EntryFactory(user=user, feed__category__user=user, subtitle='')
         url = reverse('feeds:item', args=[entry.pk])
         self.app.get(url, user=user)
+
+    def test_smart_date(self):
+        now = timezone.now()
+        self.assertEqual(len(smart_date(now)), 5)
+
+        if now.day != 1 and now.month != 1:  # Can't test this on Jan 1st :)
+            now = now - timedelta(days=1)
+            self.assertEqual(len(smart_date(now)), 6)
+
+        now = now - timedelta(days=366)
+        self.assertEqual(len(smart_date(now)), 12)
