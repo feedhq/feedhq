@@ -823,6 +823,10 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(Entry.objects.filter(read=True).count(), 4)
         self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
 
+        for f in Feed.objects.all():
+            self.assertEqual(f.entries.filter(read=False).count(),
+                             f.unread_count)
+
         entry.read = False
         entry.save(update_fields=['read'])
         feed2.update_unread_count()
@@ -834,11 +838,19 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(Entry.objects.filter(read=True).count(), 4)
         self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
 
+        for f in Feed.objects.all():
+            self.assertEqual(f.entries.filter(read=False).count(),
+                             f.unread_count)
+
         data['s'] = u'user/{0}/label/{1}'.format(user.pk, feed2.category.name)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         self.assertEqual(Entry.objects.filter(read=True).count(), 4)
         self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
+
+        for f in Feed.objects.all():
+            self.assertEqual(f.entries.filter(read=False).count(),
+                             f.unread_count)
 
         data['s'] = 'user/-/state/com.google/starred'
         response = self.client.post(url, data, **clientlogin(token))
@@ -848,12 +860,17 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(Entry.objects.filter(starred=True,
                                               read=False).count(), 0)
 
+        for feed in Feed.objects.all():
+            self.assertEqual(feed.entries.filter(read=False).count(),
+                             feed.unread_count)
+
         data['s'] = 'user/-/state/com.google/reading-list'
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         self.assertEqual(Entry.objects.filter(read=False).count(), 0)
         for feed in Feed.objects.all():
             self.assertEqual(feed.unread_count, 0)
+            self.assertEqual(feed.entries.filter(read=False).count(), 0)
 
         data['s'] = 'user/-/state/com.google/read'  # yo dawg
         response = self.client.post(url, data, **clientlogin(token))
