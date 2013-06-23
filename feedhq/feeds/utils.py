@@ -4,6 +4,6 @@ from .. import __version__
 
 USER_AGENT = (
     'FeedHQ/%s (https://github.com/feedhq/feedhq; %%s; https://github.com/'
-    'feedhq/feedhq/wiki/User-Agent)'
+    'feedhq/feedhq/wiki/User-Agent; like FeedFetcher-Google)'
 ) % __version__
 FAVICON_FETCHER = USER_AGENT % 'favicon fetcher'
