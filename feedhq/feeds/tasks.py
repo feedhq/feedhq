@@ -60,7 +60,8 @@ def store_entries(feed_url, entries, json_format=False):
         if entry['guid']:
             existing_guids[entry['feed_id']].add(entry['guid'])
 
-    feeds = Feed.objects.filter(url=feed_url).values('pk', 'user_id')
+    feeds = Feed.objects.filter(
+        url=feed_url, user__is_suspended=False).values('pk', 'user_id')
 
     create = []
     update_unread_counts = set()

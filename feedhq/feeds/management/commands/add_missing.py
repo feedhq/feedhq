@@ -12,9 +12,15 @@ class Command(SentryCommand):
     def handle_sentry(self, *args, **kwargs):
         missing = Feed.objects.raw(
             """
-            select id, url from feeds_feed f where not exists (
-                select 1 from feeds_uniquefeed u where f.url = u.url
-            )
+            select f.id, f.url
+            from
+                feeds_feed f
+                left join auth_user u on f.user_id = u.id
+            where
+                not exists (
+                    select 1 from feeds_uniquefeed u where f.url = u.url
+                ) and
+                u.is_suspended = false
             """)
         uniques = []
         urls = Counter([f.url for f in missing])

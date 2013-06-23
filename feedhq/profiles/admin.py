@@ -15,7 +15,8 @@ class ProfileUserChangeForm(UserChangeForm):
 class ProfileUserAdmin(UserAdmin):
     form = ProfileUserChangeForm
     fieldsets = UserAdmin.fieldsets + (
-        (_('FeedHQ'), {'fields': ('timezone', 'entries_per_page',
+        (_('FeedHQ'), {'fields': ('is_suspended', 'timezone',
+                                  'entries_per_page',
                                   'read_later', 'read_later_credentials',
                                   'sharing_twitter', 'sharing_gplus',
                                   'sharing_email')}),

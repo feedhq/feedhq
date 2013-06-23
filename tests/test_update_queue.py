@@ -10,11 +10,12 @@ from django.utils import timezone
 from rache import pending_jobs, delete_job, schedule_job
 
 from feedhq.feeds.models import UniqueFeed, timedelta_to_seconds
+from feedhq.feeds.tasks import store_entries
 from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
 
 from .factories import FeedFactory
-from . import responses, ClearRacheTestCase
+from . import responses, ClearRacheTestCase, test_file
 
 
 class UpdateTests(ClearRacheTestCase):
@@ -155,6 +156,34 @@ class UpdateTests(ClearRacheTestCase):
         with self.assertNumQueries(1):
             # count()
             call_command('updatefeeds')
+
+    @patch('requests.get')
+    def test_suspending_user(self, get):
+        get.return_value = responses(304)
+        feed = FeedFactory.create(user__is_suspended=True)
+        call_command('delete_unsubscribed')
+        self.assertEqual(UniqueFeed.objects.count(), 0)
+
+        parsed = feedparser.parse(test_file('sw-all.xml'))
+        data = filter(
+            None,
+            [UniqueFeed.objects.entry_data(
+                entry, parsed) for entry in parsed.entries]
+        )
+
+        with self.assertNumQueries(2):  # no insert
+            store_entries(feed.url, data)
+
+        feed2 = FeedFactory.create(url=feed.url)
+        self.assertEqual(UniqueFeed.objects.count(), 1)
+        call_command('delete_unsubscribed')
+        self.assertEqual(UniqueFeed.objects.count(), 1)
+
+        with self.assertNumQueries(5):  # insert
+            store_entries(feed.url, data)
+
+        self.assertEqual(feed.entries.count(), 0)
+        self.assertEqual(feed2.entries.count(), 30)
 
     @patch("requests.get")
     def test_schedule_in(self, get):
