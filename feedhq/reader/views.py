@@ -8,7 +8,7 @@ from urllib import urlencode
 
 from django.core.cache import cache
 from django.core.validators import email_re
-from django.db import connection
+from django.db import connection, transaction
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -22,7 +22,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..feeds.forms import FeedForm
-from ..feeds.models import Feed, UniqueFeed, Category, Entry
+from ..feeds.models import Feed, UniqueFeed, Category
 from ..profiles.models import User
 from .authentication import GoogleLoginAuthentication
 from .exceptions import PermissionDenied, BadToken
@@ -1024,6 +1024,7 @@ class MarkAllAsRead(ReaderView):
                 where e.feed_id = f.id and read = false
             ) where f.user_id = %s
         """, [request.user.pk])
+        transaction.commit_unless_managed()
         return Response("OK")
 mark_all_as_read = MarkAllAsRead.as_view()
 
