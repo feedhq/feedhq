@@ -64,7 +64,6 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None):
     Note: only set category OR feed. Not both at the same time.
     """
     user = request.user
-    # Filtering the categories only to those owned by this user
     categories = user.categories.with_unread_counts()
 
     if category is not None:
