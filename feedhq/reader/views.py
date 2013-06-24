@@ -22,7 +22,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..feeds.forms import FeedForm
-from ..feeds.models import Feed, UniqueFeed, Category
+from ..feeds.models import Feed, UniqueFeed, Category, Entry
 from ..profiles.models import User
 from .authentication import GoogleLoginAuthentication
 from .exceptions import PermissionDenied, BadToken
@@ -994,25 +994,28 @@ class MarkAllAsRead(ReaderView):
 
         if stream.startswith('feed/'):
             url = stream[len('feed/'):]
-            entries.filter(feed__url=url).update(read=True)
+            entries = entries.filter(feed__url=url)
         elif is_label(stream, request.user.pk):
             name = is_label(stream, request.user.pk)
-            entries.filter(
+            entries = entries.filter(
                 feed__category=request.user.categories.get(name=name),
-            ).update(read=True)
+            )
         elif is_stream(stream, request.user.pk):
             state = is_stream(stream, request.user.pk)
             if state == 'read':  # mark read items as read yo
                 return Response("OK")
             elif state in ['kept-unread', 'reading-list']:
-                entries.update(read=True)
+                pass
             elif state in ['starred', 'broadcast']:
                 entries = entries.filter(**{state: True})
-                entries.update(read=True)
             else:
                 logger.info(u"Unknown state: {0}".format(state))
+                return Response("OK")
         else:
             logger.info(u"Unknown stream: {0}".format(stream))
+            return Response("OK")
+
+        entries.filter(read=False).update(read=True)
 
         cursor = connection.cursor()
         cursor.execute("""
