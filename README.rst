@@ -216,6 +216,14 @@ Here is a full list of management commands that you should schedule:
   Resource consumption: intensive. One database ``UPDATE`` per URL that's in
   the scheduler.
 
+* ``sync_pubssubhubbub`` manages PubSubHubbub subscriptions for feeds which
+  have a declared hub.
+
+  Recommended frequency: once a day.
+
+  Resource consumption: low but initial synchronizations can take a lot of
+  time when subscribing to lots of hubs.
+
 Development
 -----------
 

@@ -4,7 +4,6 @@ import math
 from django.conf.urls import url, patterns
 from django.contrib.admin import widgets
 from django.http import HttpResponse
-from django_push.subscriber.models import Subscription
 from rache import scheduled_jobs
 from ratelimitbackend import admin
 
@@ -90,12 +89,6 @@ class EntryAdmin(ModelAdmin):
     raw_id_fields = ('feed', 'user')
 
 
-class SubscriptionAdmin(ModelAdmin):
-    list_display = ('topic', 'hub', 'verified', 'lease_expiration')
-    list_filter = ('verified', 'hub')
-    search_fields = ('topic', 'hub')
-
-
 class FaviconAdmin(ModelAdmin):
     list_display = ('url', 'favicon_img')
     search_fields = ('url',)
@@ -106,4 +99,3 @@ admin.site.register(UniqueFeed, UniqueFeedAdmin)
 admin.site.register(Feed, FeedAdmin)
 admin.site.register(Entry, EntryAdmin)
 admin.site.register(Favicon, FaviconAdmin)
-admin.site.register(Subscription, SubscriptionAdmin)

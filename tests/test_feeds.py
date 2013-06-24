@@ -707,8 +707,9 @@ class WebBaseTests(WebTest):
 
         self.assertEqual(feed.entries.count(), 0)
         path = test_file('bruno.im.atom')
-        parsed = feedparser.parse(path)
-        updated.send(sender=None, notification=parsed)
+        with open(path, 'r') as f:
+            data = f.read()
+        updated.send(sender=None, notification=data)
         self.assertEqual(feed.entries.count(), 5)
 
         # Check content handling

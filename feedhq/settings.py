@@ -43,6 +43,7 @@ STATIC_URL = '/static/'
 SECRET_KEY = os.environ['SECRET_KEY']
 
 ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split()
+PUSH_DOMAIN = ALLOWED_HOSTS[0]
 
 WSGI_APPLICATION = 'feedhq.wsgi.application'
 
@@ -278,6 +279,10 @@ LOGGING = {
         },
         'bleach': {
             'handlers': ['null'],
+        },
+        'django_push': {
+            'handlers': ['console', 'sentry'],
+            'level': 'DEBUG',
         },
         'raven': {
             'handlers': ['console'],

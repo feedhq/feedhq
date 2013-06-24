@@ -240,7 +240,7 @@ class UniqueFeedManager(models.Manager):
 
         if response.status_code == 304:
             logger.debug(u"Feed not modified, {0}".format(url))
-            schedule_job(url, schedule_in=UniqueFeed.delay(new_backoff),
+            schedule_job(url, schedule_in=UniqueFeed.delay(new_backoff, hub),
                          **update)
             return
 
@@ -275,11 +275,13 @@ class UniqueFeedManager(models.Manager):
             for link in parsed.feed.links:
                 if link.rel == 'hub' and link.href != hub:
                     update['hub'] = link.href
-                    # TODO actually subscribe
+        if 'hub' not in update:
+            update['hub'] = None
 
         schedule_job(url,
                      schedule_in=UniqueFeed.delay(
-                         update.get('backoff_factor', backoff_factor)),
+                         update.get('backoff_factor', backoff_factor),
+                         update['hub']),
                      **update)
 
         entries = filter(
@@ -446,7 +448,9 @@ class UniqueFeed(models.Model):
         return 10 * self.backoff_factor
 
     @classmethod
-    def delay(cls, backoff_factor):
+    def delay(cls, backoff_factor, hub=None):
+        if hub is not None:
+            backoff_factor = cls.MAX_BACKOFF
         return datetime.timedelta(
             seconds=60 * cls.UPDATE_PERIOD *
             backoff_factor ** cls.BACKOFF_EXPONENT)
@@ -454,7 +458,7 @@ class UniqueFeed(models.Model):
     @property
     def schedule_in(self):
         return (
-            self.last_update + self.delay(self.backoff_factor)
+            self.last_update + self.delay(self.backoff_factor, self.hub)
         ) - timezone.now()
 
     def schedule(self):
@@ -713,6 +717,7 @@ class Entry(models.Model):
 
 
 def pubsubhubbub_update(notification, **kwargs):
+    notification = feedparser.parse(notification)
     url = None
     for link in notification.feed.links:
         if link['rel'] == 'self':
