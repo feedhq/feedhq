@@ -585,6 +585,12 @@ class Entry(models.Model):
         # Display most recent entries first
         ordering = ('-date', '-id')
         verbose_name_plural = 'entries'
+        index_together = (
+            ('user', 'date'),
+            ('user', 'read'),
+            ('user', 'starred'),
+            ('user', 'broadcast'),
+        )
 
     ELEMENTS = (
         feedparser._HTMLSanitizer.acceptable_elements |
