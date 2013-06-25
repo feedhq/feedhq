@@ -35,7 +35,7 @@ import pytz
 
 from .fields import URLField
 from .tasks import update_feed, update_favicon, store_entries
-from .utils import FAVICON_FETCHER, USER_AGENT
+from .utils import FAVICON_FETCHER, USER_AGENT, is_feed
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
 
@@ -263,7 +263,13 @@ class UniqueFeedManager(models.Manager):
             logger.debug(u'{0} timed out'.format(url))
             self.backoff_feed(url, UniqueFeed.TIMEOUT, backoff_factor)
             return
+
         parsed = feedparser.parse(content)
+
+        if not is_feed(parsed):
+            self.backoff_feed(url, UniqueFeed.NOT_A_FEED,
+                              UniqueFeed.MAX_BACKOFF)
+            return
 
         if 'link' in parsed.feed and parsed.feed.link != link:
             update['link'] = parsed.feed.link
@@ -387,6 +393,7 @@ class UniqueFeed(models.Model):
     TIMEOUT = 'timeout'
     PARSE_ERROR = 'parseerror'
     CONNECTION_ERROR = 'connerror'
+    NOT_A_FEED = 'notafeed'
     HTTP_400 = '400'
     HTTP_401 = '401'
     HTTP_403 = '403'
@@ -399,6 +406,7 @@ class UniqueFeed(models.Model):
         (TIMEOUT, 'Feed timed out'),
         (PARSE_ERROR, 'Location parse error'),
         (CONNECTION_ERROR, 'Connection error'),
+        (NOT_A_FEED, 'Not a valid RSS/Atom feed'),
         (HTTP_400, 'HTTP 400'),
         (HTTP_401, 'HTTP 401'),
         (HTTP_403, 'HTTP 403'),

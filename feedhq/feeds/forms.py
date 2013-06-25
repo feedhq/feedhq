@@ -13,7 +13,7 @@ import opml
 import requests
 
 from .models import Category, Feed
-from .utils import USER_AGENT
+from .utils import USER_AGENT, is_feed
 
 
 @contextlib.contextmanager
@@ -109,7 +109,7 @@ class FeedForm(UserFormMixin, forms.ModelForm):
                     "Invalid response code from URL: "
                     "HTTP %s.") % response.status_code)
         parsed = feedparser.parse(response.content)
-        if parsed.bozo or not hasattr(parsed.feed, 'title'):
+        if not is_feed(parsed):
             raise forms.ValidationError(
                 _("This URL doesn't seem to be a valid feed."))
         return url

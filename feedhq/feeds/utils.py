@@ -7,3 +7,7 @@ USER_AGENT = (
     'feedhq/feedhq/wiki/User-Agent; like FeedFetcher-Google)'
 ) % __version__
 FAVICON_FETCHER = USER_AGENT % 'favicon fetcher'
+
+
+def is_feed(parsed):
+    return not parsed.bozo and hasattr(parsed.feed, 'title')
