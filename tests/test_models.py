@@ -76,8 +76,9 @@ class ModelTests(ClearRacheTestCase):
 
     @patch("requests.get")
     def test_handle_etag(self, get):
-        get.return_value = responses(200, headers={'etag': 'foo',
-                                                   'last-modified': 'bar'})
+        get.return_value = responses(200, 'sw-all.xml',
+                                     headers={'etag': 'foo',
+                                              'last-modified': 'bar'})
         FeedFactory.create()
         data = job_details(UniqueFeed.objects.get().url)
         self.assertEqual(data['etag'], 'foo')

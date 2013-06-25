@@ -181,14 +181,12 @@ class SuccessMixin(object):
 
 class CategoryMixin(SuccessMixin):
     form_class = CategoryForm
+    success_url = reverse_lazy('feeds:manage')
 
     def get_form_kwargs(self):
         kwargs = super(CategoryMixin, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
-
-    def get_success_url(self):
-        return reverse('feeds:category', args=[self.object.slug])
 
     def get_object(self):
         return get_object_or_404(self.request.user.categories,
@@ -210,11 +208,11 @@ edit_category = login_required(EditCategory.as_view())
 
 
 class DeleteCategory(CategoryMixin, generic.DeleteView):
-    def get_success_url(self):
-        messages.success(self.request,
-                         _('%(category)s has been successfully '
-                           'deleted') % {'category': self.object})
-        return reverse('feeds:home')
+    success_url = reverse_lazy('feeds:manage')
+
+    def get_success_message(self):
+        return _('%(category)s has been successfully '
+                 'deleted') % {'category': self.object}
 
     def get_context_data(self, **kwargs):
         kwargs.update({
@@ -229,6 +227,7 @@ delete_category = login_required(DeleteCategory.as_view())
 
 class FeedMixin(SuccessMixin):
     form_class = FeedForm
+    success_url = reverse_lazy('feeds:manage')
 
     def get_form_kwargs(self):
         kwargs = super(FeedMixin, self).get_form_kwargs()
@@ -239,20 +238,13 @@ class FeedMixin(SuccessMixin):
         return get_object_or_404(self.request.user.feeds,
                                  pk=self.kwargs['feed'])
 
-    def get_success_url(self):
-        if self.object.category is not None:
-            return reverse('feeds:category', args=[self.object.category.slug])
-        return reverse('feeds:feed', args=[self.object.pk])
-
 
 class AddFeed(FeedMixin, generic.CreateView):
     template_name = 'feeds/feed_form.html'
 
-    def form_valid(self, form):
-        response = super(AddFeed, self).form_valid(form)
-        messages.success(self.request, _('%(feed)s has been successfully '
-                                         'added') % {'feed': self.object.name})
-        return response
+    def get_success_message(self):
+        return _('%(feed)s has been successfully '
+                 'added') % {'feed': self.object.name}
 
     def get_initial(self):
         initial = super(AddFeed, self).get_initial()
@@ -267,25 +259,16 @@ add_feed = login_required(AddFeed.as_view())
 class EditFeed(FeedMixin, generic.UpdateView):
     template_name = 'feeds/edit_feed.html'
 
-    def form_valid(self, form):
-        response = super(EditFeed, self).form_valid(form)
-        messages.success(
-            self.request, _('%(feed)s has been successfully '
-                            'updated') % {'feed': self.object.name})
-        return response
+    def get_success_message(self):
+        return _('%(feed)s has been successfully '
+                 'updated') % {'feed': self.object.name}
 edit_feed = login_required(EditFeed.as_view())
 
 
-class DeleteFeed(generic.DeleteView):
-    def get_success_url(self):
-        messages.success(
-            self.request, _('%(feed)s has been successfully '
-                            'deleted') % {'feed': self.object.name})
-        return reverse_lazy('feeds:home')
-
-    def get_object(self):
-        return get_object_or_404(Feed, pk=self.kwargs['feed'],
-                                 user=self.request.user)
+class DeleteFeed(FeedMixin, generic.DeleteView):
+    def get_success_message(self):
+        return _('%(feed)s has been successfully '
+                 'deleted') % {'feed': self.object.name}
 
     def get_context_data(self, **kwargs):
         kwargs['entry_count'] = self.object.entries.count()
@@ -489,11 +472,9 @@ def import_feeds(request):
 
 @login_required
 def dashboard(request):
-    categories = Category.objects.prefetch_related(
+    categories = request.user.categories.prefetch_related(
         'feeds',
-    ).filter(user=request.user).annotate(
-        unread_count=Sum('feeds__unread_count'),
-    )
+    ).annotate(unread_count=Sum('feeds__unread_count'))
 
     uncategorized = request.user.feeds.filter(category__isnull=True)
     categories = [
@@ -584,3 +565,32 @@ class Subscribe(generic.FormView):
         messages.success(self.request, message)
         return redirect(reverse('feeds:home'))
 subscribe = login_required(Subscribe.as_view())
+
+
+class ManageFeeds(generic.TemplateView):
+    template_name = 'feeds/manage_feeds.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(ManageFeeds, self).get_context_data(**kwargs)
+        feeds = Feed.objects.raw(
+            """
+            select
+                f.id, f.name, f.url, f.category_id, f.favicon,
+
+                u.muted, u.muted_reason as error, u.backoff_factor,
+
+                c.name as category_name, c.id as category_id,
+                c.slug as category_slug, c.color as category_color
+            from
+                feeds_feed f
+                left outer join feeds_category c on c.id = f.category_id
+                left outer join feeds_uniquefeed u on u.url = f.url
+            where
+                f.user_id = %s
+            order by
+                c.name, c.id, f.name
+            """, [self.request.user.pk])
+
+        ctx['feeds'] = feeds
+        return ctx
+manage = login_required(ManageFeeds.as_view())

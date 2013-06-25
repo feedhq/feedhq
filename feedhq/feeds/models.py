@@ -68,25 +68,6 @@ def timedelta_to_seconds(delta):
     return delta.days * 3600 * 24 + delta.seconds
 
 
-DURATIONS = (
-    ('1day', _('One day')),
-    ('2days', _('Two days')),
-    ('1week', _('One week')),
-    ('1month', _('One month')),
-    ('1year', _('One year')),
-)
-
-
-TIMEDELTAS = {
-    '1day': datetime.timedelta(days=1),
-    '2days': datetime.timedelta(days=2),
-    '1week': datetime.timedelta(weeks=1),
-    '1month': datetime.timedelta(days=30),
-    '1year': datetime.timedelta(days=365),
-    #'never': None, # Implicit
-}
-
-
 def enqueue_favicon(url, force_update=False):
     enqueue(update_favicon, args=[url], kwargs={'force_update': force_update},
             queue='favicons')
@@ -415,6 +396,7 @@ class UniqueFeed(models.Model):
         (HTTP_502, 'HTTP 502'),
         (HTTP_503, 'HTTP 503'),
     )
+    MUTE_DICT = dict(MUTE_CHOICES)
 
     url = URLField(_('URL'), unique=True)
     title = models.CharField(_('Title'), max_length=2048, blank=True)
@@ -558,6 +540,9 @@ class Feed(models.Model):
         index = int(md.hexdigest()[0], 16)
         index = index * len(COLORS) // 16
         return COLORS[index][0]
+
+    def error_display(self):
+        return UniqueFeed.MUTE_DICT[self.error]
 
 
 class EntryManager(models.Manager):

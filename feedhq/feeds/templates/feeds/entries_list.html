@@ -23,11 +23,11 @@
 			<div class="count">{% spaceless %}
 				{% if category %}
 					<a class="cat {{ category.color }} left" href="{% if only_unread %}{% url "feeds:unread_category" category.slug %}{% else %}{% url "feeds:category" category.slug %}{% endif %}">{{ category }}</a>
-					<a class="edit {{ category.color }} cat" href="{% url "feeds:edit_category" category.slug %}"><span class="icon-pencil"></span></a>
+					<a class="edit {{ category.color }} cat tultip" href="{% url "feeds:edit_category" category.slug %}" title="{% trans "Edit this category" %}"><span class="icon-pencil"></span></a>
 				{% endif %}
 				{% if feed %}
 					<a class="cat {{ feed.category.color|default:feed.color }} left" href="{% if only_unread %}{% url "feeds:unread_feed" feed.pk %}{% else %}{% url "feeds:feed" feed.pk %}{% endif %}">{{ feed }}</a>
-					<a class="edit {{ feed.category.color|default:feed.color }} cat right" href="{% url "feeds:edit_feed" feed.pk %}"><span class="icon-pencil"></span></a>
+					<a class="edit {{ feed.category.color|default:feed.color }} cat right tultip" href="{% url "feeds:edit_feed" feed.pk %}" title="{% trans "Edit this feed" %}"><span class="icon-pencil"></span></a>
 				{% endif %}{% endspaceless %}
 				<div class="navlist">{% spaceless %}
 					{% if stars %}<i class="icon-star"></i>&nbsp;{% endif %}

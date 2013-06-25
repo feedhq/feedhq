@@ -19,6 +19,8 @@ urlpatterns = patterns(
     url(r'^stars/(?P<page>\d+)/$', views.entries_list,
         {'starred': True}, name='stars'),
 
+    url(r'^manage/$', views.manage, name='manage'),
+
     url(r'^import/$', views.import_feeds, name='import_feeds'),
     url(r'^subscribe/$', views.subscribe, name='subscribe'),
 

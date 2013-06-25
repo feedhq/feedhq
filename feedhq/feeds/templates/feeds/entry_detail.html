@@ -7,8 +7,8 @@
 	{% include "feeds/entry_navigation.html" %}
 	<div id="entry">
 		<h2>{{ object.sanitized_title|safe }}
-			<a href="{% if only_unread %}{% url "feeds:unread_feed" object.feed.pk %}{% else %}{% url "feeds:feed" object.feed.pk %}{% endif %}" class="cat {{ object.feed.category.color|default:object.feed.color }}">{{ object.feed.name }}</a><a class="edit {{ object.feed.category.color|default:object.feed.color }} cat" title="{% trans "Edit this feed" %}" href="{% url "feeds:edit_feed" object.feed.pk %}"><span class="icon-pencil"></span></a>
-			{% if object.feed.category %}<a href="{% if only_unread %}{% url "feeds:unread_category" object.feed.category.slug %}{% else %}{% url "feeds:category" object.feed.category.slug %}{% endif %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a><a class="edit {{ object.feed.category.color }} cat" title="{% trans "Edit this category" %}" href="{% url "feeds:edit_category" object.feed.category.slug %}"><span class="icon-pencil"></span></a>{% endif %}
+			<a href="{% if only_unread %}{% url "feeds:unread_feed" object.feed.pk %}{% else %}{% url "feeds:feed" object.feed.pk %}{% endif %}" class="cat {{ object.feed.category.color|default:object.feed.color }}">{{ object.feed.name }}</a>
+			{% if object.feed.category %}<a href="{% if only_unread %}{% url "feeds:unread_category" object.feed.category.slug %}{% else %}{% url "feeds:category" object.feed.category.slug %}{% endif %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a>{% endif %}
 		</h2>
 		{% include "feeds/entry_links.html" %}
 		<div class="actions navlist">

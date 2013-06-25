@@ -94,7 +94,7 @@ class WebBaseTests(WebTest):
         form['name'] = 'New Name'
         form['color'] = 'red'
         response = form.submit()
-        self.assertRedirects(response, '/category/new-name/')
+        self.assertRedirects(response, '/manage/')
 
         # Re-submitting the same name fails
         response = form.submit()
@@ -105,23 +105,28 @@ class WebBaseTests(WebTest):
         # The slug will be different
         form['name'] = 'New  Name'
         response = form.submit()
-        self.assertRedirects(response, '/category/new-name-1/')
+        user.categories.get(slug='new-name-1')
+        self.assertRedirects(response, '/manage/')
 
         # Now we add a category named 'add', which is a conflicting URL
         form['name'] = 'add'
         response = form.submit()
-        self.assertRedirects(response, '/category/add-1/')
+        user.categories.get(slug='add-1')
+        self.assertRedirects(response, '/manage/')
 
         # Add a category with non-ASCII names, slugify should cope
         form['name'] = u'北京'
         response = form.submit()
-        self.assertRedirects(response, '/category/unknown/')
+        user.categories.get(slug='unknown')
+        self.assertRedirects(response, '/manage/')
         form['name'] = u'北'
         response = form.submit()
-        self.assertRedirects(response, '/category/unknown-1/')
+        user.categories.get(slug='unknown-1')
+        self.assertRedirects(response, '/manage/')
         form['name'] = u'京'
         response = form.submit()
-        self.assertRedirects(response, '/category/unknown-2/')
+        user.categories.get(slug='unknown-2')
+        self.assertRedirects(response, '/manage/')
 
     def test_delete_category(self):
         user = UserFactory.create()
@@ -208,7 +213,7 @@ class WebBaseTests(WebTest):
 
         get.return_value = responses(200, 'brutasse.atom')
         response = form.submit()
-        self.assertRedirects(response, category.get_absolute_url())
+        self.assertRedirects(response, '/manage/')
         response.follow()
 
         response = form.submit()
@@ -853,3 +858,22 @@ class WebBaseTests(WebTest):
 
         now = now - timedelta(days=366)
         self.assertEqual(len(smart_date(now)), 12)
+
+    @patch('requests.get')
+    def test_manage_feed(self, get):
+        get.return_value = responses(304)
+        user = UserFactory.create()
+        url = reverse('feeds:manage')
+        response = self.app.get(url, user=user)
+        self.assertContains(response, 'Manage feeds')
+
+        FeedFactory.create(user=user, category=None)
+        FeedFactory.create(user=user, category=None)
+        FeedFactory.create(user=user, category=None)
+        unique = UniqueFeed.objects.all()[0]
+        unique.backoff_factor = 10
+        unique.error = UniqueFeed.NOT_A_FEED
+        unique.save()
+
+        response = self.app.get(url, user=user)
+        self.assertContains(response, 'Not a valid RSS/Atom feed')

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans "Manage feeds" %}{% endblock %}
+
+{% block content %}
+	<h2>{% trans "Manage feeds" %}</h2>
+	<ul class="all-feeds">
+		{% for feed in feeds %}
+			{% ifchanged feed.category_name %}
+				<h2>
+					{% if feed.category_slug %}
+						<div class="colors"><div class="color {{ feed.category_color }}"></div></div>
+						{{ feed.category_name }}
+						<a href="{% url "feeds:edit_category" feed.category_slug %}">{% trans "edit" %}</a>
+						<a href="{% url "feeds:delete_category" feed.category_slug %}">{% trans "delete" %}</a>
+					{% endif %}
+				</h2>
+			{% endifchanged %}
+			<li>
+				{{ feed.favicon_img }} {{ feed.name }}
+				<a href="{% url "feeds:edit_feed" feed.id %}">{% trans "edit" %}</a> 
+				<a href="{% url "feeds:delete_feed" feed.id %}">{% trans "delete" %}</a>
+
+				{% if feed.muted or feed.backoff_factor == 10 %}
+					<br>
+					<span class="message">{% trans "Fetching this feed fails with the following error:" %} <strong>{{ feed.error_display }}</strong></span>
+				{% endif %}
+				<br><a class="url" href="{{ feed.url }}" target="_blank">{{ feed.url }}</a>
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

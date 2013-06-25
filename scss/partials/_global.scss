@@ -585,6 +585,39 @@ input, select {
 	.overflow {
 		overflow: auto;
 	}
+
+	.all-feeds {
+		li {
+			padding: 5px 0;
+		}
+
+		a {
+			font-size: 1rem;
+		}
+
+		.colors {
+			display: inline-block;
+		}
+		.color {
+			margin: 0px 0 -4px 0;
+			cursor: inherit;
+
+			&:hover {
+				padding: 3px;
+			}
+		}
+
+		.url {
+			font-size: 0.8em;
+			color: $light-text;
+			text-decoration: inherit;
+		}
+
+		.message {
+			font-size: 0.9em;
+			color: #ce3f3b;
+		}
+	}
 }
 
 .subscribe_form {
@@ -782,12 +815,6 @@ form {
 	border-radius: 5px;
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
-}
-
-h2 .cat {
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	margin-right: 1px;
 }
 
 .edit {
