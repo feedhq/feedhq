@@ -152,6 +152,8 @@ class ActionForm(forms.Form):
         ('images', 'images'),
         ('unread', 'unread'),
         ('read_later', 'read_later'),
+        ('star', 'star'),
+        ('unstar', 'unstar'),
     ))
 
 

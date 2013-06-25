@@ -319,6 +319,9 @@ class WebBaseTests(WebTest):
         url = reverse('feeds:unread')
         self._test_entry(url, user)
 
+        url = reverse('feeds:stars')
+        self._test_entry(url, user)
+
         url = reverse('feeds:category', args=[feed.category.slug])
         self._test_entry(url, user)
 
@@ -418,6 +421,41 @@ class WebBaseTests(WebTest):
         self.assertFalse('images' in response.forms)
         self.assertContains(response,
                             '<img src="http://exmpl.com/favicon.png">')
+
+    @patch("requests.get")
+    def test_actions(self, get):
+        get.return_value = responses(304)
+        user = UserFactory.create()
+        feed = FeedFactory.create(category__user=user, url='http://exmpl.com',
+                                  user=user)
+        entry = Entry.objects.create(
+            feed=feed,
+            title="Random title",
+            subtitle='Foo bar content',
+            link='http://example.com',
+            date=timezone.now(),
+            user=user,
+        )
+        url = reverse('feeds:item', args=[entry.pk])
+        response = self.app.get(url, user=user)
+        token = response.forms['unread'].fields['csrfmiddlewaretoken'][0].value
+        response = self.app.post(url, {'action': 'invalid',
+                                       'csrfmiddlewaretoken': token},
+                                 user=user)
+
+        form = response.forms['star']
+        response = form.submit()
+        self.assertTrue(Entry.objects.get().starred)
+        form = response.forms['star']
+        response = form.submit()
+        self.assertFalse(Entry.objects.get().starred)
+
+        user.oldest_first = True
+        user.save(update_fields=['oldest_first'])
+
+        form = response.forms['unread']
+        response = form.submit()
+        self.assertFalse(Entry.objects.get().read)
 
     @patch('requests.get')
     def test_opml_import(self, get):

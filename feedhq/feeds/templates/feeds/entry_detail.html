@@ -28,6 +28,20 @@
 					<i class="icon-eye-open"></i>
 				</button>
 			</form>
+			<form method="post" action="{% url "feeds:item" object.id %}" id="star">
+				{% csrf_token %}
+				{% if object.starred %}
+					<input type="hidden" name="action" value="unstar">
+					<button class="tultip" type="submit" title="{% trans "Unstar" %}">
+						<i class="icon-star-empty"></i>
+					</button>
+				{% else %}
+					<input type="hidden" name="action" value="star">
+					<button class="tultip" type="submit" title="{% trans "Star" %}">
+						<i class="icon-star"></i>
+					</button>
+				{% endif %}
+			</form>
 			{% if user.sharing_email %}
 				<a class="tultip" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.link }}"><i class="icon-envelope-alt"></i></a>
 			{% endif %}

@@ -13,6 +13,12 @@ urlpatterns = patterns(
 
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
 
+    url(r'^stars/$', views.entries_list,
+        {'starred': True}, name='stars'),
+
+    url(r'^stars/(?P<page>\d+)/$', views.entries_list,
+        {'starred': True}, name='stars'),
+
     url(r'^import/$', views.import_feeds, name='import_feeds'),
     url(r'^subscribe/$', views.subscribe, name='subscribe'),
 

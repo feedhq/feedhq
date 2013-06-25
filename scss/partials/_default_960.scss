@@ -82,12 +82,12 @@ form {
 	overflow: visible;
 
 	.date {
-		@include cols(5);
+		@include cols(4.5);
 		margin-left: 0;
 	}
 
 	.actions {
-		@include cols(3);
+		@include cols(3.5);
 		margin-right: 0;
 		margin-left: 0.75em;
 	}

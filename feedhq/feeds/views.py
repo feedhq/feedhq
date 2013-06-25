@@ -52,7 +52,8 @@ def paginate(object_list, page=1, nb_items=25, force_count=None):
 
 
 @login_required
-def entries_list(request, page=1, only_unread=False, category=None, feed=None):
+def entries_list(request, page=1, only_unread=False, category=None, feed=None,
+                 starred=False):
     """
     Displays a paginated list of entries.
 
@@ -80,7 +81,12 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None):
         unread_url = reverse('feeds:unread_feed', args=[feed.id])
         category = feed.category
 
-    if feed is None and category is None:
+    if starred is True:
+        entries = user.entries.filter(starred=True)
+        all_url = reverse('feeds:stars')
+        unread_url = None
+
+    if feed is None and category is None and starred is not True:
         entries = user.entries.all()
         all_url = reverse('feeds:home')
         unread_url = reverse('feeds:unread')
@@ -149,6 +155,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None):
         'all_url': all_url,
         'unread_url': unread_url,
         'base_url': base_url,
+        'stars': starred,
     }
     if unread_count:
         context['form'] = ReadForm()
@@ -329,6 +336,9 @@ def item(request, entry_id):
         category = Category.objects.get(slug=category_slug, user=request.user)
         kw = {'feed__category': category}
 
+    elif bits[1] == 'stars':
+        kw = {'user': request.user, 'starred': True}
+
     if len(bits) > 3 and bits[3] == 'unread':
         kw['read'] = False
         only_unread = True
@@ -345,11 +355,6 @@ def item(request, entry_id):
 
     if request.user.oldest_first:
         previous, next = next, previous
-
-    # For serch results, previous and next aren't available
-    if bits[1] == 'search':
-        previous = None
-        next = None
 
     # if there is an image in the entry, don't show it. We need user
     # intervention to display the image.
@@ -381,6 +386,9 @@ def item(request, entry_id):
                     request,
                     _('Article successfully added to your reading list'),
                 )
+            elif action in ['star', 'unstar']:
+                entry.starred = action == 'star'
+                entry.save(update_fields=['starred'])
 
     context = {
         'category': entry.feed.category,
