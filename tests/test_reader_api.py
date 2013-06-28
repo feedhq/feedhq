@@ -570,6 +570,12 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['items']), 1)
 
         url = reverse('reader:stream_contents',
+                      args=['user/-/state/com.google/broadcast'])
+        with self.assertNumQueries(2):
+            response = self.client.get(url, {'ot': 12}, **clientlogin(token))
+        self.assertEqual(len(response.json['items']), 1)
+
+        url = reverse('reader:stream_contents',
                       args=['user/-/state/com.google/kept-unread'])
         with self.assertNumQueries(2):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))

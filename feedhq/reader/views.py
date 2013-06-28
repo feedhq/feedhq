@@ -596,7 +596,8 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
                 "Malformed 'ot' parameter. Must be a unix timstamp")
         else:
             limit = epoch_to_utc(timestamp)
-            q &= Q(date__gte=limit)
+            if q is not None:
+                q &= Q(date__gte=limit)
     # ?nt=<timestamp>
     if offset is not None:
         try:
@@ -606,7 +607,8 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
                 "Malformed 'nt' parameter. Must be a unix timstamp")
         else:
             offset = epoch_to_utc(timestamp)
-            q &= Q(date__lte=offset)
+            if q is not None:
+                q &= Q(date__lte=offset)
     if q is None:
         return Q(pk__lte=0)
     return q
