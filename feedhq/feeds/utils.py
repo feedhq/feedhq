@@ -10,4 +10,4 @@ FAVICON_FETCHER = USER_AGENT % 'favicon fetcher'
 
 
 def is_feed(parsed):
-    return not parsed.bozo and hasattr(parsed.feed, 'title')
+    return hasattr(parsed.feed, 'title')
