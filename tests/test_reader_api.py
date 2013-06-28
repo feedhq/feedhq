@@ -817,6 +817,10 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Missing 's' parameter", status_code=400)
 
+        response = self.client.post(url + '?T={0}'.format(post_token), {},
+                                    **clientlogin(token))
+        self.assertContains(response, "Missing 's' parameter", status_code=400)
+
         data['s'] = u'feed/{0}'.format(feed2.url)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')

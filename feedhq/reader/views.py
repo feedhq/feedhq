@@ -169,12 +169,13 @@ class ReaderView(APIView):
     def initial(self, request, *args, **kwargs):
         super(ReaderView, self).initial(request, *args, **kwargs)
         if request.method == 'POST' and self.require_post_token:
-            if not 'T' in request.DATA:
+            token = request.DATA.get('T', request.GET.get('T', None))
+            if token is None:
                 logger.info(
                     u"Missing POST token, {0}".format(request.DATA.dict())
                 )
                 raise exceptions.ParseError("Missing 'T' POST token")
-            user_id = check_post_token(request.DATA['T'])
+            user_id = check_post_token(token)
             if not user_id == request.user.pk:
                 raise BadToken
 
