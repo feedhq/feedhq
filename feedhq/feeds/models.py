@@ -440,7 +440,7 @@ class UniqueFeed(models.Model):
     @classmethod
     def delay(cls, backoff_factor, hub=None):
         if hub is not None:
-            backoff_factor = cls.MAX_BACKOFF
+            backoff_factor = max(backoff_factor, 3)
         return datetime.timedelta(
             seconds=60 * cls.UPDATE_PERIOD *
             backoff_factor ** cls.BACKOFF_EXPONENT)
