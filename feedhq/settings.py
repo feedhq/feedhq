@@ -177,7 +177,7 @@ CACHES = {
 }
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
