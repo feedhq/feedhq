@@ -168,6 +168,8 @@ class ReadForm(forms.Form):
 
     def __init__(self, entries=None, feed=None, category=None, user=None,
                  *args, **kwargs):
+        if entries is not None:
+            entries = entries.filter(read=False)
         self.entries = entries
         self.feed = feed
         self.category = category
@@ -175,8 +177,7 @@ class ReadForm(forms.Form):
         super(ReadForm, self).__init__(*args, **kwargs)
 
     def save(self):
-        pks = list(self.entries.filter(read=False).values_list('pk',
-                                                               flat=True))
+        pks = list(self.entries.values_list('pk', flat=True))
         self.entries.update(read=True)
         if self.feed is not None:
             feeds = Feed.objects.filter(pk=self.feed.pk)
