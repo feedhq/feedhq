@@ -433,6 +433,13 @@ class UniqueFeed(models.Model):
             return u'%s' % self.title
         return u'%s' % self.url
 
+    def truncated_url(self):
+        if len(self.url) > 50:
+            return self.url[:49] + u'…'
+        return self.url
+    truncated_url.short_description = _('URL')
+    truncated_url.admin_order_field = 'url'
+
     @property
     def request_timeout(self):
         return 10 * self.backoff_factor
