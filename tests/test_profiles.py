@@ -119,8 +119,11 @@ class ProfilesTest(WebTest):
             'http://example.com/test.atom',
             headers={"User-Agent": USER_AGENT % '1 subscriber',
                      "Accept": feedparser.ACCEPT_HEADER}, timeout=10)
+        self.user.feeds.create(name='Other thing',
+                               url='https://foo.com/bar.xml')
         response = self.app.get(url, user='test')
         self.assertContains(response, 'xmlUrl="http://example.com/test.atom"')
+        self.assertContains(response, 'xmlUrl="https://foo.com/bar.xml"')
 
     def test_read_later(self):
         url = reverse('read_later')

@@ -6,6 +6,7 @@
 	<body>{% for category in categories %}
 		<outline type="folder" title="{{ category.name }}" text="{{ category.name}}" description="{{ category.name }}">{% for feed in category.feeds.all %}
 			<outline type="rss" title="{{ feed.name }}" text="{{ feed.name }}" description="{{ feed.name }}" xmlUrl="{{ feed.url }}"{% if feed.link %} htmlUrl="{{ feed.link }}"{% endif %}/>{% endfor %}
-		</outline>{% endfor %}
+		</outline>{% endfor %}{% for feed in orphan_feeds %}
+		<outline type="rss" title="{{ feed.name }}" text="{{ feed.name }}" description="{{ feed.name }}" xmlUrl="{{ feed.url }}"{% if feed.link %} htmlUrl="{{ feed.link }}"{% endif %}/>{% endfor %}
 	</body>
 </opml>

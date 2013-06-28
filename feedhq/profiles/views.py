@@ -75,8 +75,10 @@ export = login_required(Export.as_view())
 @login_required
 def opml_export(request):
     """OPML export"""
-    response = render(request, 'profiles/opml_export.opml',
-                      {'categories': request.user.categories.all()})
+    response = render(
+        request, 'profiles/opml_export.opml',
+        {'categories': request.user.categories.all(),
+         'orphan_feeds': request.user.feeds.filter(category__isnull=True)})
     response['Content-Disposition'] = 'attachment; filename=feedhq-export.opml'
     response['Content-Type'] = 'text/xml; charset=utf-8'
     return response
