@@ -45,10 +45,8 @@ def subscribe(topic_url, hub_url):
     Subscription.objects.subscribe(topic_url, hub_url)
 
 
-def store_entries(feed_url, entries, json_format=False):
+def store_entries(feed_url, entries):
     from .models import Entry, Feed
-    if json_format:
-        entries = json.loads(entries)
     links = set([entry['link'] for entry in entries])
     guids = set([entry['guid'] for entry in entries])
     query = Q(feed__url=feed_url) & (Q(link__in=links) | Q(guid__in=guids))
