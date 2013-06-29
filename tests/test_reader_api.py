@@ -609,6 +609,14 @@ class ReaderApiTest(ApiTest):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
 
+        UniqueFeed.objects.all().delete()
+        url = reverse('reader:stream_contents',
+                      args=[u'feed/{0}'.format(user.feeds.all()[0].url)])
+        with self.assertNumQueries(4):
+            response = self.client.get(url, {'n': 40, 'output': 'atom'},
+                                       **clientlogin(token))
+            self.assertEqual(response.status_code, 200)
+
     def test_stream_atom(self, get):
         get.return_value = responses(304)
         user = UserFactory.create()

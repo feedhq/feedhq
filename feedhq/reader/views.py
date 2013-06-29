@@ -726,17 +726,29 @@ class StreamContents(ReaderView):
         if content_id.startswith("feed/"):
             url = content_id[len("feed/"):]
             feed = get_object_or_404(request.user.feeds, url=url)
-            unique = UniqueFeed.objects.get(url=url)
-            uniques = {url: unique.link}
             base.update({
                 'title': feed.name,
                 'description': feed.name,
-                'alternate': [{
-                    'href': unique.link,
-                    'type': 'text/html',
-                }],
-                'updated': int(unique.last_update.strftime("%s")),
             })
+            try:
+                unique = UniqueFeed.objects.get(url=url)
+                uniques = {url: unique.link}
+            except UniqueFeed.DoesNotExist:
+                uniques = {url: url}
+                base.update({
+                    'alternate': [{
+                        'href': url,
+                        'type': 'text/html',
+                    }],
+                })
+            else:
+                base.update({
+                    'alternate': [{
+                        'href': unique.link,
+                        'type': 'text/html',
+                    }],
+                    'updated': int(unique.last_update.strftime("%s")),
+                })
 
         elif is_stream(content_id, request.user.pk):
             uniques = get_unique_map(request.user)
