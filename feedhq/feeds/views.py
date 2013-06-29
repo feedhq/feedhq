@@ -1,8 +1,10 @@
 import json
+import logging
 import opml
 import re
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
@@ -18,7 +20,7 @@ from ..decorators import login_required
 from ..tasks import enqueue
 from .models import Category, Feed, Entry, UniqueFeed
 from .forms import (CategoryForm, FeedForm, OPMLImportForm, ActionForm,
-                    ReadForm, SubscriptionFormSet, UndoReadForm)
+                    ReadForm, SubscriptionFormSet, UndoReadForm, user_lock)
 from .tasks import read_later
 
 """
@@ -30,6 +32,8 @@ Each view displays a list of entries, with a level of filtering:
 
 Entries are paginated.
 """
+
+logger = logging.getLogger(__name__)
 
 MEDIA_RE = re.compile(r'.*<(img|audio|video)\s+.*', re.UNICODE | re.DOTALL)
 
@@ -448,18 +452,23 @@ def import_feeds(request):
                                                                 flat=True))
 
             entries = opml.parse(request.FILES['file'])
-            imported = save_outline(request.user, None, entries,
-                                    existing_feeds)
-
-            message = " ".join([ungettext(
-                u'%s feed has been imported.',
-                u'%s feeds have been imported.',
-                imported) % imported,
-                _('New content will appear in a moment when you refresh '
-                  'the page.')
-            ])
-            messages.success(request, message)
-            return redirect('feeds:home')
+            try:
+                with user_lock('opml_import', request.user.pk):
+                    imported = save_outline(request.user, None, entries,
+                                            existing_feeds)
+            except ValidationError:
+                logger.info("Prevented duplicate import for user {0}".format(
+                    request.user.pk))
+            else:
+                message = " ".join([ungettext(
+                    u'%s feed has been imported.',
+                    u'%s feeds have been imported.',
+                    imported) % imported,
+                    _('New content will appear in a moment when you refresh '
+                      'the page.')
+                ])
+                messages.success(request, message)
+                return redirect('feeds:home')
 
     else:
         form = OPMLImportForm()
