@@ -227,6 +227,12 @@ class WebBaseTests(WebTest):
         self.assertContains(response, 'value="https://example.com/blog/atom"')
         self.assertContains(response, 'value="Some Example Blog"')
 
+        get.side_effect = ValueError
+        user.feeds.all().delete()
+        response = form.submit()
+        self.assertFormError(response, 'form', 'url',
+                             ['Error fetching the feed.'])
+
     def test_feed_url_validation(self):
         user = UserFactory.create()
         category = CategoryFactory.create(user=user)

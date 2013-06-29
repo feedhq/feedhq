@@ -103,12 +103,18 @@ class FeedForm(UserFormMixin, forms.ModelForm):
                 'User-Agent': USER_AGENT % 'checking feed',
                 'Accept': feedparser.ACCEPT_HEADER,
             }
-            response = requests.get(url, headers=headers, timeout=10)
+            try:
+                response = requests.get(url, headers=headers, timeout=10)
+            except Exception:
+                raise forms.ValidationError(_("Error fetching the feed."))
             if response.status_code != 200:
                 raise forms.ValidationError(_(
                     "Invalid response code from URL: "
                     "HTTP %s.") % response.status_code)
-        parsed = feedparser.parse(response.content)
+        try:
+            parsed = feedparser.parse(response.content)
+        except Exception:
+            raise forms.ValidationError(_("Error parsing the feed."))
         if not is_feed(parsed):
             raise forms.ValidationError(
                 _("This URL doesn't seem to be a valid feed."))
