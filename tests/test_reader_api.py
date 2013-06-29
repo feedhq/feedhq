@@ -552,6 +552,13 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['items']), 10)
 
         url = reverse('reader:stream_contents',
+                      args=['user/-/state/com.google/broadcast-friends'])
+        with self.assertNumQueries(2):
+            response = self.client.get(url, {'n': 40, 'output': 'atom'},
+                                       **clientlogin(token))
+        self.assertEqual(response.status_code, 200)
+
+        url = reverse('reader:stream_contents',
                       args=[u'user/-/label/{0}'.format(feed.category.name)])
         with self.assertNumQueries(2):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))

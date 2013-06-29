@@ -755,7 +755,7 @@ class StreamContents(ReaderView):
             elif state == 'starred':
                 base["title"] = "Starred items on FeedHQ"
 
-            elif state == 'broadcast':
+            elif state in ['broadcast', 'broadcast-friends']:
                 base["title"] = "Broadcast items on FeedHQ"
 
         elif is_label(content_id, request.user.pk):
