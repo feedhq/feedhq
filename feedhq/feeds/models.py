@@ -29,7 +29,8 @@ from django_push.subscriber.signals import updated
 from httplib import IncompleteRead
 from lxml.etree import ParserError
 from rache import schedule_job, delete_job, job_details
-from requests.packages.urllib3.exceptions import LocationParseError
+from requests.packages.urllib3.exceptions import (LocationParseError,
+                                                  DecodeError)
 
 import pytz
 
@@ -162,10 +163,12 @@ class UniqueFeedManager(models.Manager):
             response = requests.get(url, headers=headers,
                                     timeout=request_timeout)
         except (requests.RequestException, socket.timeout, socket.error,
-                IncompleteRead) as e:
+                IncompleteRead, DecodeError) as e:
             logger.debug("Error fetching %s, %s" % (url, str(e)))
             if isinstance(e, IncompleteRead):
                 error = UniqueFeed.CONNECTION_ERROR
+            elif isinstance(e, DecodeError):
+                error = UniqueFeed.DECODE_ERROR
             else:
                 error = UniqueFeed.TIMEOUT
             self.backoff_feed(url, error, backoff_factor)
@@ -374,6 +377,7 @@ class UniqueFeed(models.Model):
     TIMEOUT = 'timeout'
     PARSE_ERROR = 'parseerror'
     CONNECTION_ERROR = 'connerror'
+    DECODE_ERROR = 'decodeerror'
     NOT_A_FEED = 'notafeed'
     HTTP_400 = '400'
     HTTP_401 = '401'
@@ -387,6 +391,7 @@ class UniqueFeed(models.Model):
         (TIMEOUT, 'Feed timed out'),
         (PARSE_ERROR, 'Location parse error'),
         (CONNECTION_ERROR, 'Connection error'),
+        (DECODE_ERROR, 'Decoding error'),
         (NOT_A_FEED, 'Not a valid RSS/Atom feed'),
         (HTTP_400, 'HTTP 400'),
         (HTTP_401, 'HTTP 401'),

@@ -5,7 +5,8 @@ from httplib import IncompleteRead
 from mock import patch
 from rache import job_details
 from requests import RequestException
-from requests.packages.urllib3.exceptions import LocationParseError
+from requests.packages.urllib3.exceptions import (LocationParseError,
+                                                  DecodeError)
 from rq.timeouts import JobTimeoutException
 
 from feedhq.feeds.models import Favicon, UniqueFeed, Feed, Entry
@@ -25,6 +26,16 @@ class UpdateTests(ClearRacheTestCase):
         unique = UniqueFeed.objects.get()
         self.assertTrue(unique.muted)
         self.assertEqual(unique.error, UniqueFeed.PARSE_ERROR)
+
+    @patch("requests.get")
+    def test_decode_error(self, get):
+        get.side_effect = DecodeError("Received response with content-encoding"
+                                      ": gzip, but failed to decode it.")
+        FeedFactory.create()
+        unique = UniqueFeed.objects.get()
+        data = job_details(unique.url)
+        self.assertEqual(data['backoff_factor'], 2)
+        self.assertEqual(data['error'], UniqueFeed.DECODE_ERROR)
 
     @patch("requests.get")
     def test_incomplete_read(self, get):
