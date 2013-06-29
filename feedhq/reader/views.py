@@ -668,7 +668,7 @@ def serialize_entry(request, entry, uniques):
         "origin": {
             "streamId": u"feed/{0}".format(entry.feed.url),
             "title": entry.feed.name,
-            "htmlUrl": uniques[entry.feed.url].link,
+            "htmlUrl": uniques.get(entry.feed.url, entry.feed.url),
         },
     }
     if entry.feed.category is not None:
@@ -698,7 +698,7 @@ def get_unique_map(user, force=False):
             "where f.url = u.url and f.user_id = %s)", [user.pk])
         value = {}
         for u in unique:
-            value[u.url] = u
+            value[u.url] = u.link
         cache.set(cache_key, value, 60)
     return value
 
@@ -727,7 +727,7 @@ class StreamContents(ReaderView):
             url = content_id[len("feed/"):]
             feed = get_object_or_404(request.user.feeds, url=url)
             unique = UniqueFeed.objects.get(url=url)
-            uniques = {url: unique}
+            uniques = {url: unique.link}
             base.update({
                 'title': feed.name,
                 'description': feed.name,
@@ -796,9 +796,11 @@ class StreamContents(ReaderView):
         if continuation:
             base['continuation'] = continuation
 
+        forced = False  # Make at most 1 full refetch
         for entry in entries.order_by(ordering)[start:end]:
-            if not entry.feed.url in uniques:
+            if entry.feed.url not in uniques and not forced:
                 uniques = get_unique_map(request.user, force=True)
+                forced = True
             item = serialize_entry(request, entry, uniques)
             base['items'].append(item)
         return Response(base)
@@ -901,7 +903,7 @@ class StreamItemsContents(ReaderView):
                 'href': request.build_absolute_uri(),
             }],
             'alternate': [{
-                'href': uniques[entries[0].feed.url].link,
+                'href': uniques[entries[0].feed.url],
                 'type': 'text/html',
             }],
             'updated': int(timezone.now().strftime("%s")),
