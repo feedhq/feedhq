@@ -20,6 +20,7 @@ urlpatterns = patterns(
     url(r'^humans.txt$', views.humans),
     url(r'^favicon.ico$', views.favicon),
     url(r'^apple-touch-icon-precomposed.png$', views.touch_icon),
+    url(r'^apple-touch-icon.png$', views.touch_icon),
     (r'^', include('feedhq.reader.urls', namespace='reader')),
     (r'^accounts/', include('feedhq.profiles.urls')),
     (r'^', include('feedhq.feeds.urls', namespace='feeds')),
