@@ -584,7 +584,7 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
                 exclude_q = Q(feed__category__name=exclude_label)
             else:
                 logger.info(u"Unknown state: {0}".format(ex))
-            if exclude_q is not None:
+            if exclude_q is not None and q is not None:
                 q &= ~exclude_q
 
     # ?ot=<timestamp> for limiting in time
