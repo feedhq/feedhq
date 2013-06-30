@@ -48,14 +48,29 @@ def store_entries(feed_url, entries):
     from .models import Entry, Feed
     links = set([entry['link'] for entry in entries])
     guids = set([entry['guid'] for entry in entries])
-    query = Q(feed__url=feed_url) & (Q(link__in=links) | Q(guid__in=guids))
-    existing = Entry.objects.filter(query).values('link', 'guid', 'feed_id')
+
+    # TODO limit number of entries to a safe number. len(entries)?
+    query = Q(feed__url=feed_url)
+    filter_by_title = len(guids) == 1 and len(entries) > 1
+    if filter_by_title:
+        # All items have the same guid. Query by title instead.
+        titles = set([entry['title'] for entry in entries])
+        query &= Q(title__in=titles)
+    else:
+        query &= (Q(link__in=links) | Q(guid__in=guids))
+    existing = Entry.objects.filter(query).values('link', 'guid',
+                                                  'title', 'feed_id')
+
     existing_links = defaultdict(set)
     existing_guids = defaultdict(set)
+    existing_titles = defaultdict(set)
     for entry in existing:
+        # TODO remove query by link when it's safe
         existing_links[entry['feed_id']].add(entry['link'])
         if entry['guid']:
             existing_guids[entry['feed_id']].add(entry['guid'])
+        if filter_by_title:
+            existing_titles[entry['feed_id']].add(entry['title'])
 
     feeds = Feed.objects.filter(
         url=feed_url, user__is_suspended=False).values('pk', 'user_id')
@@ -64,9 +79,14 @@ def store_entries(feed_url, entries):
     update_unread_counts = set()
     for feed in feeds:
         for entry in entries:
-            if (
+            if not filter_by_title and (
                 entry['link'] in existing_links[feed['pk']] or
                 entry['guid'] in existing_guids[feed['pk']]
+            ):
+                continue
+            if (
+                filter_by_title and
+                entry['title'] in existing_titles[feed['pk']]
             ):
                 continue
             create.append(Entry(user_id=feed['user_id'],
