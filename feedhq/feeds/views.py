@@ -486,23 +486,28 @@ def dashboard(request):
     ).annotate(unread_count=Sum('feeds__unread_count'))
 
     uncategorized = request.user.feeds.filter(category__isnull=True)
-    categories = [
-        {'feeds': uncategorized}
-    ] + list(categories)
+    has_orphans = bool(len(uncategorized))
 
     total = len(uncategorized) + sum(
-        (len(c.feeds.all()) for c in categories[1:])
+        (len(c.feeds.all()) for c in categories)
     )
+
+    if has_orphans:
+        categories = [
+            {'feeds': uncategorized}
+        ] + list(categories)
+
     col_size = total / 3
     col_1 = None
     col_2 = None
     done = len(uncategorized)
-    for index, cat in enumerate(categories[1:]):
-        done += len(cat.feeds.all())
+    for index, cat in enumerate(categories[has_orphans:]):
         if col_1 is None and done > col_size:
             col_1 = index + 1
         if col_2 is None and done > 2 * col_size:
             col_2 = index + 1
+        done += len(cat.feeds.all())
+
     context = {
         'categories': categories,
         'breaks': [col_1, col_2],
