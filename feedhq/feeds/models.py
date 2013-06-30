@@ -499,7 +499,7 @@ class Feed(models.Model):
                              related_name='feeds')
     unread_count = models.PositiveIntegerField(_('Unread count'), default=0)
     favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True,
-                                storage=OverwritingStorage())
+                                blank=True, storage=OverwritingStorage())
     img_safe = models.BooleanField(_('Display images by default'),
                                    default=False)
 
