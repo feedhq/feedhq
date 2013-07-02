@@ -147,4 +147,9 @@
 	#content {
 		@include profile-mobile-menu;
 	}
+
+	.modal {
+		width: 320px;
+		margin-left: -160px;
+	}
 }

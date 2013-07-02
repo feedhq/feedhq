@@ -586,13 +586,13 @@ class WebBaseTests(WebTest):
         feed = FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:unread')
         response = self.app.get(url, user=user)
-        self.assertNotContains(response, 'Mark all as read')
+        self.assertNotContains(response, '"Mark all as read"')
 
         get.return_value = responses(200, 'sw-all.xml')
         update_feed(feed.url)
 
         response = self.app.get(url, user=user)
-        self.assertContains(response, 'Mark all as read')
+        self.assertContains(response, '"Mark all as read"')
 
         form = response.forms['read']
         response = form.submit()

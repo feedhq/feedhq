@@ -3,9 +3,11 @@
 
 {% block title %}{{ object.sanitized_title|safe }}{% endblock %}
 
+{% block view %}detail{% endblock %}
+
 {% block content %}
 	{% include "feeds/entry_navigation.html" %}
-	<div id="entry">
+	<div id="entry" class="feedhq-images feedhq-highlight">
 		<h2>{{ object.sanitized_title|safe }}
 			<a href="{% if only_unread %}{% url "feeds:unread_feed" object.feed.pk %}{% else %}{% url "feeds:feed" object.feed.pk %}{% endif %}" class="cat {{ object.feed.category.color|default:object.feed.color }}">{{ object.feed.name }}</a>
 			{% if object.feed.category %}<a href="{% if only_unread %}{% url "feeds:unread_category" object.feed.category.slug %}{% else %}{% url "feeds:category" object.feed.category.slug %}{% endif %}" class="cat edit_cat {{ object.feed.category.color }}">{{ object.feed.category.name }}</a>{% endif %}
@@ -43,13 +45,13 @@
 				{% endif %}
 			</form>
 			{% if user.sharing_email %}
-				<a class="tultip" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.link }}"><i class="icon-envelope-alt"></i></a>
+				<a class="tultip email" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.link }}"><i class="icon-envelope-alt"></i></a>
 			{% endif %}
 			{% if user.sharing_twitter %}
-				<a target="_blank" class="tultip" title="{% trans "Tweet" %}" href="https://twitter.com/home?status={{ object.tweet|urlencode }}"><i class="icon-twitter"></i></a>
+				<a target="_blank" class="tultip twitter" title="{% trans "Tweet" %}" href="https://twitter.com/home?status={{ object.tweet|urlencode }}"><i class="icon-twitter"></i></a>
 			{% endif %}
 			{% if user.sharing_gplus %}
-				<a target="_blank" class="tultip" title="{% trans "Share on Google+" %}" href="https://plus.google.com/share?url={{ object.link }}"><i class="icon-google-plus"></i></a>
+				<a target="_blank" class="tultip gplus" title="{% trans "Share on Google+" %}" href="https://plus.google.com/share?url={{ object.link }}"><i class="icon-google-plus"></i></a>
 			{% endif %}
 		</div>
 		{% if has_media and not user.allow_media %}
@@ -83,23 +85,4 @@
 		{% include "feeds/entry_links.html" %}
 	</div>
 	{% include "feeds/entry_navigation.html" %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/jquery.min.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/highlight.min.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/feedhq.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script>
-	$(document).hl().images().keys();
-</script>
-{% endaddtoblock %}
-
 {% endblock %}

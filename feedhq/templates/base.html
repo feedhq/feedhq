@@ -12,13 +12,13 @@
 		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-144.png" %}" sizes="144x144">
 		{% render_block "css" %}
 	</head>
-	<body id="{% block bodyid %}default{% endblock %}">
+	<body id="{% block bodyid %}default{% endblock %}" data-view="{% block view %}list{% endblock %}">
 		<div id="root">
 			<div id="header"{% block header_mode %}{% endblock %}>
 				<div>
 					<h1>{% if user.is_authenticated and only_unread %}{% url "feeds:unread" as home_url %}
 						{% else %}{% url "feeds:home" as home_url %}{% endif %}
-						<a href="{{ home_url }}">FeedHQ</a>
+						<a class="home" href="{{ home_url }}" data-all="{% url "feeds:home" %}" data-unread="{% url "feeds:unread" %}">FeedHQ</a>
 						{% if user.is_authenticated %}
 							<a class="unread" title="{% trans "Unread entries" %}" href="{% url "feeds:unread" %}">{{ user.entries.unread }}</a>
 						{% endif %}
@@ -42,6 +42,47 @@
 				{% block actions %}{% endblock %}
 				{% block content %}{% endblock %}
 			</div>
+
+			<div id="keyboard" class="modal hide fade">
+				<div class="modal-header">
+					<a data-dismiss="modal" class="close icon-remove-circle"></a>
+					<h3>{% trans "Keyboard shortcuts" %}</h3>
+				</div>
+				<div class="modal-body">
+					<h4>{% trans "Site-wide shortcuts" %}</h4>
+
+					<code>?</code> {% trans "Show this help" %}<br>
+					<code>ESC</code> {% trans "Hide this help" %}<br>
+					<code>A</code> {% trans "Add a subscription" %}<br>
+					<code>R</code> {% trans "Refresh the current view" %}<br>
+
+					<h4>{% trans "Navigation" %}</h4>
+
+					<code>G</code> then <code>H</code> {% trans "Go to home" %}<br>
+					<code>G</code> then <code>A</code> {% trans "Go to all items" %}<br>
+					<code>G</code> then <code>U</code> {% trans "Go to unread items" %}<br>
+					<code>G</code> then <code>S</code> {% trans "Go to starred items" %}<br>
+					<code>G</code> then <code>D</code> {% trans "Go to the dashboard" %}<br>
+					<code>G</code> then <code>M</code> {% trans "Go to the feed management view" %}<br>
+
+					<h4>{% trans "Entries list" %}</h4>
+
+					<code>Shift+A</code> {% trans "Mark all as read in current view" %}<br>
+					<code>Enter</code> {% trans "Open the first item in the list" %}<br>
+
+					<h4>{% trans "Entry detail" %}</h4>
+
+					<code>J</code>/<code>K</code>, <code>↓</code>/<code>↑</code>, <code>→</code>/<code>←</code> {% trans "View next/previous item" %}<br>
+					<code>S</code> {% trans "Toggle star" %}<br>
+					<code>M</code> {% trans "Mark item as unread" %}<br>
+					<code>V</code> {% trans "View original page" %}<br>
+					<code>E</code> {% trans "Email item" %}<br>
+					<code>T</code> {% trans "Tweet item" %}<br>
+					<code>+</code> {% trans "Share on Google+" %}<br>
+					<code>I</code> {% trans "Read later" %}<br>
+				</div>
+			</div>
+
 			<div id="root_footer"></div>
 		</div>
 		<div id="footer">
@@ -49,28 +90,9 @@
 		</div>
 {% render_block "js" %}
 
-{% addtoblock "js" %}
-<script type="text/javascript">
-	window.addEventListener("load", function() {
-		setTimeout(function() {
-			if (window.pageYOffset === 0) {
-				window.scrollTo(0, 1);
-			}
-		}, 0);
-	});
-</script>
-{% endaddtoblock %}
-
+{% if debug %}
 {% addtoblock "js" %}
 <script type="text/javascript" src="{% static "core/js/fastclick.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript">
-	window.addEventListener('load', function() {
-		new FastClick(document.body);
-	}, false);
-</script>
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
@@ -82,19 +104,24 @@
 {% endaddtoblock %}
 
 {% addtoblock "js" %}
-<script type="text/javascript">
-	$(function() {
-		window.touchDevice = 'ontouchstart' in document.documentElement;
-
-		if (!touchDevice) {
-			$('.tultip').tooltip();
-		}
-
-		$('#navigation .profile').click(function() {
-			return false;
-		});
-	});
-</script>
+<script type="text/javascript" src="{% static "core/js/bootstrap-modal.js" %}"></script>
 {% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static "core/js/mousetrap.min.js" %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static "core/js/highlight.min.js" %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static "core/js/feedhq.js" %}"></script>
+{% endaddtoblock %}
+{% else %}
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% static "core/js/bundle.min.js" %}"></script>
+{% endaddtoblock %}
+{% endif %}
 	</body>
 </html>
