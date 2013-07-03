@@ -25,7 +25,7 @@ psycopg2==2.5.1
 python-dateutil==2.1
 python-magic==0.4.3
 pytz==2013b
-rache==0.2
+rache==0.2.1
 raven==3.3.12
 redis==2.7.6
 requests==1.2.3
