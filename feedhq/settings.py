@@ -189,11 +189,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-if 'SENTRY_DSN' in os.environ:
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
-        'raven.contrib.django.middleware.Sentry404CatchMiddleware',
-    )
-
 ROOT_URLCONF = 'feedhq.urls'
 
 TEMPLATE_DIRS = (
