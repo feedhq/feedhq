@@ -46,10 +46,9 @@ def subscribe(topic_url, hub_url):
 
 def store_entries(feed_url, entries):
     from .models import Entry, Feed
-    links = set([entry['link'] for entry in entries])
     guids = set([entry['guid'] for entry in entries])
 
-    # TODO limit number of entries to a safe number. len(entries)?
+    # TODO limit number of entries to a safe number.
     query = Q(feed__url=feed_url)
     filter_by_title = len(guids) == 1 and len(entries) > 1
     if filter_by_title:
@@ -57,18 +56,13 @@ def store_entries(feed_url, entries):
         titles = set([entry['title'] for entry in entries])
         query &= Q(title__in=titles)
     else:
-        query &= (Q(link__in=links) | Q(guid__in=guids))
-    existing = Entry.objects.filter(query).values('link', 'guid',
-                                                  'title', 'feed_id')
+        query &= Q(guid__in=guids)
+    existing = Entry.objects.filter(query).values('guid', 'title', 'feed_id')
 
-    existing_links = defaultdict(set)
     existing_guids = defaultdict(set)
     existing_titles = defaultdict(set)
     for entry in existing:
-        # TODO remove query by link when it's safe
-        existing_links[entry['feed_id']].add(entry['link'])
-        if entry['guid']:
-            existing_guids[entry['feed_id']].add(entry['guid'])
+        existing_guids[entry['feed_id']].add(entry['guid'])
         if filter_by_title:
             existing_titles[entry['feed_id']].add(entry['title'])
 
@@ -79,8 +73,8 @@ def store_entries(feed_url, entries):
     update_unread_counts = set()
     for feed in feeds:
         for entry in entries:
-            if not filter_by_title and (
-                entry['link'] in existing_links[feed['pk']] or
+            if (
+                not filter_by_title and
                 entry['guid'] in existing_guids[feed['pk']]
             ):
                 continue
