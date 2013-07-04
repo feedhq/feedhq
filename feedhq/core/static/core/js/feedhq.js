@@ -15,7 +15,6 @@
 		},
 		keys: function() {
 			var view = $('body').data('view');
-			console.log(view);
 
 			Mousetrap.bind('?', function() {
 				$('#keyboard').modal('show');
