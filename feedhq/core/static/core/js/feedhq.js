@@ -92,12 +92,12 @@
 					}
 				}
 
-				Mousetrap.bind(['k', 'left', 'up'], function() {
+				Mousetrap.bind(['k', 'left'], function() {
 					navigate('previous');
 					return false;
 				});
 
-				Mousetrap.bind(['j', 'right', 'down'], function() {
+				Mousetrap.bind(['j', 'right'], function() {
 					navigate('next');
 					return false;
 				});
