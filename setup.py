@@ -16,7 +16,7 @@ setup(
     version=__import__('feedhq').__version__,
     author='Bruno Renie',
     author_email='bruno@renie.fr',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     include_package_data=True,
     url='https://github.com/feedhq/feedhq',
     license='BSD',
