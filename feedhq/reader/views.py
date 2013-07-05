@@ -426,23 +426,23 @@ class EditSubscription(ReaderView):
         url = request.DATA['s'][len('feed/'):]
 
         if action == 'subscribe':
-            for param in ['t', 'a']:
-                if not param in request.DATA:
-                    raise exceptions.ParseError(
-                        "Missing '{0}' parameter".format(param))
-
             form = FeedForm(data={'url': url}, user=request.user)
             if not form.is_valid():
                 errors = dict(form._errors)
                 if 'url' in errors:
                     raise exceptions.ParseError(errors['url'][0])
 
-            name = self.label(request.DATA['a'])
-            category, created = request.user.categories.get_or_create(
-                name=name)
+            if 'a' in request.DATA:
+                name = self.label(request.DATA['a'])
+                category, created = request.user.categories.get_or_create(
+                    name=name)
+            else:
+                category = None
 
-            category.feeds.create(url=url, name=request.DATA['t'],
-                                  user=category.user)
+            request.user.feeds.create(
+                url=url,
+                name=request.DATA.get('t', form.cleaned_data['title']),
+                category=category)
 
         elif action == 'unsubscribe':
             request.user.feeds.filter(url=url).delete()

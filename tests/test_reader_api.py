@@ -966,14 +966,9 @@ class ReaderApiTest(ApiTest):
 
         data['s'] = u'feed/{0}'.format(feed.url)
 
-        data['t'] = 'Testing stuff'
-        response = self.client.post(url, data, **clientlogin(token))
-        self.assertContains(response, "Missing 'a' parameter", status_code=400)
-
-        del data['t']
         data['a'] = 'user/-/label/foo'
         response = self.client.post(url, data, **clientlogin(token))
-        self.assertContains(response, "Missing 't' parameter", status_code=400)
+        self.assertContains(response, "HTTP 304", status_code=400)
 
         data['t'] = 'Testing stuff'
         data['a'] = 'userlabel/foo'
@@ -994,6 +989,23 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(Feed.objects.count(), 1)
         feed = Feed.objects.get()
         self.assertEqual(feed.name, 'Testing stuff')
+
+        Feed.objects.get().delete()
+        del data['t']  # extract title from feed now
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        self.assertEqual(Feed.objects.count(), 1)
+        feed = Feed.objects.get()
+        self.assertEqual(feed.name, "brutasse's Activity")
+
+        # Allow adding to no category
+        Feed.objects.get().delete()
+        del data['a']
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        self.assertEqual(Feed.objects.count(), 1)
+        feed = Feed.objects.get()
+        self.assertIs(feed.category, None)
 
         # Re-submit: existing
         response = self.client.post(url, data, **clientlogin(token))

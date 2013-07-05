@@ -118,6 +118,7 @@ class FeedForm(UserFormMixin, forms.ModelForm):
         if not is_feed(parsed):
             raise forms.ValidationError(
                 _("This URL doesn't seem to be a valid feed."))
+        self.cleaned_data['title'] = parsed.feed.title
         return url
 
     def save(self, commit=True):
