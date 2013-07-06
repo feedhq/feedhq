@@ -18,7 +18,7 @@
 				<div>
 					<h1>{% if user.is_authenticated and only_unread %}{% url "feeds:unread" as home_url %}
 						{% else %}{% url "feeds:home" as home_url %}{% endif %}
-						<a class="home" href="{{ home_url }}" data-all="{% url "feeds:home" %}" data-unread="{% url "feeds:unread" %}">FeedHQ</a>
+						<a class="home" href="{{ home_url }}" data-all="{% url "feeds:home" %}" data-unread="{% url "feeds:unread" %}" data-mousetrap="g h">FeedHQ</a>
 						{% if user.is_authenticated %}
 							<a class="unread" title="{% trans "Unread entries" %}" href="{% url "feeds:unread" %}">{{ user.entries.unread }}</a>
 						{% endif %}

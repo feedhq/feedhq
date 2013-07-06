@@ -32,9 +32,18 @@
 				return false;
 			});
 
-			Mousetrap.bind('g h', function() {
-				$('#header a.home')[0].click();
-				return false;
+			$('[data-mousetrap]').each(function() {
+				var self = $(this);
+				Mousetrap.bind(self.data('mousetrap').split(','), function() {
+					window.foo = self;
+					var tagName = self.prop('tagName');
+					if (tagName === 'A') {
+						self[0].click();
+					} else if (tagName === 'FORM') {
+						self.submit();
+					}
+					return false;
+				});
 			});
 
 			Mousetrap.bind('g a', function() {
@@ -47,42 +56,10 @@
 				return false;
 			});
 
-			Mousetrap.bind('g s', function() {
-				$('li a.starred')[0].click();
-				return false;
-			});
-
-			Mousetrap.bind('g d', function() {
-				$('li a.dashboard')[0].click();
-				return false;
-			});
-
-			Mousetrap.bind('g m', function() {
-				$('li a.manage')[0].click();
-				return false;
-			});
-
-			Mousetrap.bind('a', function() {
-				$('li a.subscription')[0].click();
-				return false;
-			});
-
 			Mousetrap.bind('r', function() {
 				window.location.reload();
 				return false;
 			});
-
-			if (view === 'list') {
-				Mousetrap.bind('shift+a', function() {
-					$('form#read').submit();
-					return false;
-				});
-
-				Mousetrap.bind('enter', function() {
-					window.location.pathname = $('.entry').first().find('a').last().attr('href');
-					return false
-				});
-			}
 
 			if (view === 'detail') {
 				var navigate = function(target) {
@@ -92,48 +69,8 @@
 					}
 				}
 
-				Mousetrap.bind(['k', 'left'], function() {
-					navigate('previous');
-					return false;
-				});
-
-				Mousetrap.bind(['j', 'right'], function() {
-					navigate('next');
-					return false;
-				});
-
-				Mousetrap.bind('s', function() {
-					$('form#star').submit();
-					return false;
-				});
-
-				Mousetrap.bind('e', function() {
-					$('.actions .email')[0].click();
-					return false;
-				});
-
-				Mousetrap.bind('m', function() {
-					$('form#unread').submit();
-					return false;
-				});
-
 				Mousetrap.bind('v', function() {
 					window.open($('.date a').attr('href'), '_blank');
-					return false;
-				});
-
-				Mousetrap.bind('t', function() {
-					$('.actions .twitter')[0].click();
-					return false;
-				});
-
-				Mousetrap.bind('+', function() {
-					$('.actions .gplus')[0].click();
-					return false;
-				});
-
-				Mousetrap.bind('i', function() {
-					$('form#read-later').submit();
 					return false;
 				});
 			}

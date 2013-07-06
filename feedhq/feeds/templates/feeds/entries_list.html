@@ -34,7 +34,7 @@
 					<a href="{{ all_url }}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %} <span class="ct">{{ total_count }}</span></a>
 					{% if unread_url %}<a href="{{ unread_url }}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %} <span class="ct">{{ unread_count }}</span></a>{% endif %}
 					{% if form %}
-						<form method="post" action="{{ action }}" class="read" id="read">
+						<form data-mousetrap="shift+a" method="post" action="{{ action }}" class="read" id="read">
 							{% include "form.html" %}
 							<button class="tultip" title="{% trans "Mark all as read" %}">
 								<i class="icon-ok"></i>
