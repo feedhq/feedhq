@@ -727,12 +727,23 @@ class Entry(models.Model):
         return self.date.year == timezone.now().year
 
 
-def pubsubhubbub_update(notification, **kwargs):
-    notification = feedparser.parse(notification)
+def pubsubhubbub_update(notification, request, links, **kwargs):
     url = None
-    for link in notification.feed.get('links', []):
-        if link['rel'] == 'self':
-            url = link['href']
+    # Try the header links first
+    if links is not None:
+        for link in links:
+            if link['rel'] == 'self':
+                url = link['url']
+                break
+
+    notification = feedparser.parse(notification)
+
+    # Fallback to feed links if no header link found
+    if url is None:
+        for link in notification.feed.get('links', []):
+            if link['rel'] == 'self':
+                url = link['href']
+
     if url is None:
         return
 

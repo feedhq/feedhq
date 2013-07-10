@@ -758,7 +758,7 @@ class WebBaseTests(WebTest):
         path = test_file('bruno.im.atom')
         with open(path, 'r') as f:
             data = f.read()
-        updated.send(sender=None, notification=data)
+        updated.send(sender=None, notification=data, request=None, links=None)
         self.assertEqual(feed.entries.count(), 5)
 
         # Check content handling
@@ -774,7 +774,21 @@ class WebBaseTests(WebTest):
         path = test_file('no-rel.atom')
         with open(path, 'r') as f:
             data = f.read()
-        updated.send(sender=None, notification=data)
+        updated.send(sender=None, notification=data, request=None, links=None)
+
+    @patch('requests.get')
+    def test_link_headers(self, get):
+        user = UserFactory.create()
+        url = 'foo'
+        get.return_value = responses(304)
+        feed = FeedFactory.create(url=url, category__user=user, user=user)
+
+        path = test_file('no-rel.atom')
+        with open(path, 'r') as f:
+            data = f.read()
+        updated.send(sender=None, notification=data, request=None,
+                     links=[{'url': 'foo', 'rel': 'self'}])
+        self.assertEqual(feed.entries.count(), 1)
 
     @patch('requests.get')
     def test_subscribe_url(self, get):
