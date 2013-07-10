@@ -730,7 +730,7 @@ class Entry(models.Model):
 def pubsubhubbub_update(notification, **kwargs):
     notification = feedparser.parse(notification)
     url = None
-    for link in notification.feed.links:
+    for link in notification.feed.get('links', []):
         if link['rel'] == 'self':
             url = link['href']
     if url is None:

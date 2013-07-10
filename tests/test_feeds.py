@@ -770,6 +770,13 @@ class WebBaseTests(WebTest):
         self.assertEqual(feed.entries.filter(date__year=2012).count(), 2)
 
     @patch('requests.get')
+    def test_missing_links(self, get):
+        path = test_file('no-rel.atom')
+        with open(path, 'r') as f:
+            data = f.read()
+        updated.send(sender=None, notification=data)
+
+    @patch('requests.get')
     def test_subscribe_url(self, get):
         get.return_value = responses(304)
 
