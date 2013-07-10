@@ -5,6 +5,10 @@ FeedHQ
    :alt: Build Status
    :target: https://travis-ci.org/feedhq/feedhq
 
+.. image:: https://coveralls.io/repos/feedhq/feedhq/badge.png?branch=master
+   :alt: Coverage Status
+   :target: https://coveralls.io/r/feedhq/feedhq?branch=master
+
 FeedHQ is a simple, lightweight web-based feed reader. Main features:
 
 User-facing features

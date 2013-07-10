@@ -6,10 +6,13 @@ services:
 before_install:
   - sudo apt-get install daemontools redis-server
 install:
-  - pip install -r requirements-dev.txt --use-mirrors
+  - pip install -r requirements-dev.txt
+  - pip install coveralls
 before_script:
   - flake8 feedhq
   - flake8 tests
 script:
   - psql -c 'CREATE DATABASE feedhq;' -U postgres
-  - PYTHONPATH=. make test
+  - PYTHONPATH=. make coverage
+after_success:
+  - coveralls
