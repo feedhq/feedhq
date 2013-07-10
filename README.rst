@@ -65,7 +65,7 @@ Requirements:
 
 * Python 2.7
 * Redis (2.6+ recommended)
-* PostgreSQL (9.2+ recommended)
+* PostgreSQL (9.2+ recommended but anything >= 8.4 should work)
 
 Getting the code::
 
