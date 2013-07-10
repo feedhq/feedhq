@@ -11,7 +11,6 @@ from django.core.validators import email_re
 from django.db import connection, transaction
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from rest_framework import exceptions
