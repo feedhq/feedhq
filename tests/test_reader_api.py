@@ -464,6 +464,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, {'c': 'a'}, **clientlogin(token))
 
         feed = FeedFactory.create(category__user=user, user=user)
+        FeedFactory.create(category=feed.category, user=user, url=feed.url)
 
         Entry.objects.bulk_create([
             EntryFactory.build(user=user, feed=feed, read=False)

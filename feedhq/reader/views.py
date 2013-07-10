@@ -725,7 +725,10 @@ class StreamContents(ReaderView):
 
         if content_id.startswith("feed/"):
             url = content_id[len("feed/"):]
-            feed = get_object_or_404(request.user.feeds, url=url)
+            feeds = request.user.feeds.filter(url=url).order_by('pk')[:1]
+            if len(feeds) == 0:
+                raise Http404
+            feed = feeds[0]
             base.update({
                 'title': feed.name,
                 'description': feed.name,
