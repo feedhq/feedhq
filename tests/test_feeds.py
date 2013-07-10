@@ -904,3 +904,10 @@ class WebBaseTests(WebTest):
 
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Not a valid RSS/Atom feed')
+
+        unique.error = ''
+        unique.muted = True
+        unique.backoff_factor = 1
+        unique.save()
+        response = self.app.get(url, user=user)
+        self.assertContains(response, 'Error')

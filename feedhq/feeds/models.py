@@ -555,7 +555,7 @@ class Feed(models.Model):
         return COLORS[index][0]
 
     def error_display(self):
-        return UniqueFeed.MUTE_DICT[self.error]
+        return UniqueFeed.MUTE_DICT.get(self.error, _('Error'))
 
 
 class EntryManager(models.Manager):
