@@ -22,6 +22,7 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.utils import timezone
+from django.utils.encoding import force_bytes
 from django.utils.html import format_html
 from django.utils.text import unescape_entities
 from django.utils.translation import ugettext_lazy as _
@@ -148,9 +149,9 @@ class UniqueFeedManager(models.Manager):
         }
 
         if last_modified:
-            headers['If-Modified-Since'] = last_modified
+            headers['If-Modified-Since'] = force_bytes(last_modified)
         if etag:
-            headers['If-None-Match'] = etag
+            headers['If-None-Match'] = force_bytes(etag)
 
         if settings.TESTS:
             # Make sure requests.get is properly mocked during tests
