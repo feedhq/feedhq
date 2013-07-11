@@ -75,7 +75,7 @@ ol {
 	list-style-type: decimal;
 }
 
-.cat, .edit, .color {
+.cat, .color {
 	color: white !important;
 	font-weight: normal !important;
 	padding: 2px 4px;
@@ -83,6 +83,7 @@ ol {
 	white-space: nowrap;
 	border-radius: 5px;
 	text-decoration: inherit;
+	margin-right: 2px;
 
 	&.red {
 		background: $red;
@@ -130,16 +131,6 @@ ol {
 
 	&.gray {
 		background: $gray;
-	}
-
-	&.left {
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0;
-		border-right: 1px solid white;
-	}
-	&.right {
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
 	}
 }
 
@@ -815,40 +806,14 @@ form {
 	text-overflow: ellipsis;
 }
 
-.edit, .edit_cat {
-	opacity: 0.5;
-}
-
-.edit {
-	border-radius: 5px;
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
-}
-
-.edit {
-	border-top-right-radius: 5px !important;
-	border-bottom-right-radius: 5px !important;
-}
-
 .count {
 	overflow: hidden;
+	white-space: nowrap;
 	a.cat {
 		float: left;
 		padding: 0 2px;
 		height: 26px;
 	}
-	.edit {
-		display: inline;
-		border-radius: 0;
-		border-right: 1px solid white;
-
-		&.cat {
-			opacity: 1 !important;
-			margin-right: 5px;
-		}
-	}
-
-	white-space: nowrap;
 
 	form {
 		display: inline-block;
@@ -871,14 +836,6 @@ pre, code, tt {
 pre code {
 	border: none;
 	font-size: 1em;
-}
-
-#entry > h2:hover {
-	.edit, .edit_cat {
-		opacity: 1;
-		width: 20px;
-	}
-
 }
 
 #entry, .help {
