@@ -30,6 +30,7 @@ from django_push.subscriber.signals import updated
 from httplib import IncompleteRead
 from lxml.etree import ParserError
 from rache import schedule_job, delete_job, job_details
+from requests.exceptions import ConnectionError
 from requests.packages.urllib3.exceptions import (LocationParseError,
                                                   DecodeError)
 
@@ -786,9 +787,8 @@ class FaviconManager(models.Manager):
 
         try:
             page = requests.get(link, headers=ua, timeout=10).content
-        except requests.RequestException:
-            return favicon
-        except LocationParseError:
+        except (requests.RequestException, LocationParseError, socket.timeout,
+                DecodeError, ConnectionError):
             return favicon
         if not page:
             return favicon
