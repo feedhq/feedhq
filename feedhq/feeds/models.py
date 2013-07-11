@@ -744,6 +744,7 @@ def pubsubhubbub_update(notification, request, links, **kwargs):
         for link in notification.feed.get('links', []):
             if link['rel'] == 'self':
                 url = link['href']
+                break
 
     if url is None:
         return
