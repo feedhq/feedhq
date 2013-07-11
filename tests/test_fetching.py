@@ -1,8 +1,9 @@
 import feedparser
+import socket
 
 from django.core.management import call_command
 from httplib import IncompleteRead
-from mock import patch
+from mock import patch, PropertyMock
 from rache import job_details
 from requests import RequestException
 from requests.packages.urllib3.exceptions import (LocationParseError,
@@ -45,6 +46,16 @@ class UpdateTests(ClearRacheTestCase):
         self.assertFalse(f.muted)
         data = job_details(f.url)
         self.assertEqual(data['error'], f.CONNECTION_ERROR)
+
+    @patch("requests.get")
+    def test_socket_timeout(self, get):
+        m = get.return_value
+        type(m).content = PropertyMock(side_effect=socket.timeout)
+        FeedFactory.create()
+        f = UniqueFeed.objects.get()
+        self.assertFalse(f.muted)
+        data = job_details(f.url)
+        self.assertEqual(data['error'], f.TIMEOUT)
 
     @patch('requests.get')
     def test_ctype(self, get):
