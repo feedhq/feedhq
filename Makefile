@@ -1,10 +1,9 @@
 proj = feedhq
-django = envdir $(CURDIR)/envdir django-admin.py
-testdjango = envdir $(CURDIR)/tests/envdir django-admin.py
+django = python $(CURDIR)/manage.py
 
 
 test:
-	@$(testdjango) test --failfast --noinput
+	@$(django) test --failfast --noinput
 
 run:
 	@foreman start

@@ -248,9 +248,9 @@ true and the ``django-debug-toolbar`` package is installed.
 
 `Foreman`_ is used in development to start a lightweight Django server, run
 one `RQ`_ worker and interactively preprocess changes in SCSS files to CSS
-with `Compass`_. Environment variables are managed using Daemontools'
-``envdir`` utility. A running `Redis`_ server, Ruby, `Bundler`_ and
-`Daemontools`_ are prerequisites for this workflow::
+with `Compass`_. Environment variables are managed using a `python port`_ of
+Daemontools' ``envdir`` utility. A running `Redis`_ server, Ruby and
+`Bundler`_ are prerequisites for this workflow::
 
     bundle install
     make run
@@ -261,6 +261,7 @@ with `Compass`_. Environment variables are managed using Daemontools'
 .. _Redis: http://redis.io/
 .. _Bundler: http://gembundler.com/
 .. _Daemontools: http://cr.yp.to/daemontools.html
+.. _python port: https://pypi.python.org/pypi/envdir
 
 When running ``django-admin.py updatefeeds`` on your development machine,
 make sure you have the ``DEBUG`` environment variable present to avoid making
