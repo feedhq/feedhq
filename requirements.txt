@@ -1,5 +1,5 @@
 Django==1.5.1
-Pillow==2.0.0
+Pillow==2.1.0
 South==0.8.1
 bleach==1.2.2
 django-classy-tags==0.4
@@ -27,7 +27,7 @@ python-dateutil==2.1
 python-magic==0.4.3
 pytz==2013b
 rache==0.2.2
-raven==3.3.12
+raven==3.4.0
 redis==2.7.6
 requests==1.2.3
 rq==0.3.8
