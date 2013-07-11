@@ -917,7 +917,7 @@ class StreamItemsContents(ReaderView):
                 'href': request.build_absolute_uri(),
             }],
             'alternate': [{
-                'href': uniques[entries[0].feed.url],
+                'href': uniques.get(entries[0].feed.url, entries[0].feed.url),
                 'type': 'text/html',
             }],
             'updated': int(timezone.now().strftime("%s")),
