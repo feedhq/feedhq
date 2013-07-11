@@ -1,5 +1,5 @@
-{% load feeds_tags %}<li class="entry{% if not entry.read %} new{% endif%}">
-	<div class="title ellipsis"{% if entry.feed.favicon %} style="background-image: url('{{ entry.feed.favicon.url }}');"{% endif %}>
+{% load feeds_tags staticfiles %}<li class="entry{% if not entry.read %} new{% endif%}">
+	<div class="title ellipsis" style="background-image: url('{% if entry.feed.favicon %}{{ entry.feed.favicon.url }}{% else %}{% static "core/img/icon-globe.png" %}{% endif %}');">
 		<a href="{% if only_unread %}{% url "feeds:unread_feed" entry.feed.pk %}{% else %}{% url "feeds:feed" entry.feed.pk %}{% endif %}" class="cat {{ entry.feed.category.color|default:entry.feed.color }}">{{ entry.feed }}</a>
 		<a {% if forloop.first %}data-mousetrap="enter" {% endif %}href="{% url "feeds:item" entry.id %}" title="{{ entry.sanitized_title }}">{{ entry.sanitized_title }}</a>
 	</div>
