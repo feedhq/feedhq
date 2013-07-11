@@ -17,6 +17,7 @@ from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.templatetags.feeds_tags import smart_date
 from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
+from feedhq.wsgi import application  # noqa
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
 from . import test_file, responses

@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+from datetime import timedelta
 from django.utils import timezone
 from mock import patch
 from rache import job_details
 
-from feedhq.feeds.models import Category, Feed, UniqueFeed, Entry
+from feedhq.feeds.models import (Category, Feed, UniqueFeed, Entry, Favicon,
+                                 UniqueFeedManager)
 from feedhq.feeds.tasks import update_feed
 
 from .factories import CategoryFactory, FeedFactory
@@ -49,6 +52,11 @@ class ModelTests(ClearRacheTestCase):
         self.assertEqual(feed.entries.count(), 1)
         self.assertEqual(feed.entries.all()[0].title, 'First item title')
 
+        self.assertEqual(feed.favicon_img(), '')
+        feed.favicon = 'fav.png'
+        self.assertEqual(feed.favicon_img(),
+                         '<img src="/media/fav.png" width="16" height="16" />')
+
     @patch('requests.get')
     def test_entry_model(self, get):
         get.return_value = responses(200, 'sw-all.xml')
@@ -59,6 +67,60 @@ class ModelTests(ClearRacheTestCase):
 
         # __unicode__
         self.assertEqual('%s' % entry, title)
+
+        entry.title = ''
+        self.assertEqual(entry.sanitized_title(), '(No title)')
+
+        entry.title = 'Foo'
+        entry.link = 'http://example.com/foo'
+        self.assertEqual(entry.tweet(),
+                         u'Foo — http://example.com/foo via @FeedHQ')
+
+    @patch('requests.get')
+    def test_uniquefeed_model(self, get):
+        get.return_value = responses(304)
+        FeedFactory.create(url='http://example.com/' + 'foo/' * 200)
+        unique = UniqueFeed.objects.get()
+        self.assertEqual(len(unique.truncated_url()), 50)
+
+        unique.delete()
+
+        FeedFactory.create(url='http://example.com/foo/')
+        unique = UniqueFeed.objects.get()
+        self.assertEqual(len(unique.truncated_url()), len(unique.url))
+
+        unique = UniqueFeed(url='http://foo.com')
+        self.assertEqual('%s' % unique, 'http://foo.com')
+        unique.title = 'Lol'
+        self.assertEqual('%s' % unique, 'Lol')
+
+        self.assertIs(UniqueFeedManager.entry_data({}, None), None)
+
+        unique.schedule()
+        details = unique.job_details
+        at = details.pop('schedule_at')
+        self.assertEqual(details, {
+            u"request_timeout": 10,
+            u"title": "Lol",
+            u"backoff_factor": 1,
+            u"subscribers": 1,
+            u"id": "http://foo.com",
+        })
+        details['schedule_at'] = at
+        self.assertEqual(unique.job_details['id'], "http://foo.com")
+
+        self.assertTrue(unique.scheduler_data.startswith("{\n"))
+
+        self.assertTrue(unique.next_update > timezone.now())
+        self.assertTrue(unique.next_update <
+                        timezone.now() + timedelta(seconds=60 * 61))
+
+    def test_favicon_model(self):
+        fav = Favicon(url='http://example.com/')
+        self.assertEqual('%s' % fav, 'Favicon for http://example.com/')
+        self.assertEqual(fav.favicon_img(), '(None)')
+        fav.favicon = 'foo.png'
+        self.assertEqual(fav.favicon_img(), '<img src="/media/foo.png">')
 
     @patch("requests.get")
     def test_entry_model_behaviour(self, get):

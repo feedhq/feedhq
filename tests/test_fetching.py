@@ -2,6 +2,8 @@ import feedparser
 import socket
 
 from django.core.management import call_command
+from django.utils import timezone
+from django_push.subscriber.models import Subscription
 from httplib import IncompleteRead
 from mock import patch, PropertyMock
 from rache import job_details
@@ -261,6 +263,31 @@ class UpdateTests(ClearRacheTestCase):
         update_feed(feed.url)
         data = job_details(feed.url)
         self.assertEqual(data['backoff_factor'], 2)
+
+    @patch('requests.post')
+    def test_sync_pubsub(self, post):
+        post.return_value = responses(202, 'sw-all.xml')
+        call_command('sync_pubsubhubbub')
+        post.assert_not_called()
+
+        u = UniqueFeed.objects.create(url='http://example.com',
+                                      hub='http://hub.example.com')
+        call_command('sync_pubsubhubbub')
+        post.assert_called()
+        post.reset()
+
+        Subscription.objects.update(lease_expiration=timezone.now())
+        call_command('sync_pubsubhubbub')
+        post.assert_called()
+        post.reset()
+
+        u.delete()
+        call_command('sync_pubsubhubbub')
+        post.assert_called()
+        post.reset()
+
+        call_command('sync_pubsubhubbub')
+        post.assert_not_called()
 
 
 class FaviconTests(ClearRacheTestCase):
