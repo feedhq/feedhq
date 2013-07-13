@@ -1,6 +1,7 @@
 import logging
 
 from collections import defaultdict
+from datetime import timedelta
 
 from django.db.models import Q
 from django_push.subscriber.models import Subscription
@@ -48,8 +49,14 @@ def store_entries(feed_url, entries):
     from .models import Entry, Feed
     guids = set([entry['guid'] for entry in entries])
 
-    # TODO limit number of entries to a safe number.
     query = Q(feed__url=feed_url)
+
+    # When we have dates, filter the query to avoid returning the whole dataset
+    date_generated = any([e.pop('date_generated') for e in entries])
+    if not date_generated:
+        earliest = min([entry['date'] for entry in entries])
+        query &= Q(date__gte=earliest - timedelta(days=1))
+
     filter_by_title = len(guids) == 1 and len(entries) > 1
     if filter_by_title:
         # All items have the same guid. Query by title instead.

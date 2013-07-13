@@ -179,6 +179,11 @@ class UpdateTests(ClearRacheTestCase):
         call_command('delete_unsubscribed')
         self.assertEqual(UniqueFeed.objects.count(), 1)
 
+        data = filter(
+            None,
+            [UniqueFeed.objects.entry_data(
+                entry, parsed) for entry in parsed.entries]
+        )
         with self.assertNumQueries(5):  # insert
             store_entries(feed.url, data)
 
@@ -201,6 +206,11 @@ class UpdateTests(ClearRacheTestCase):
             store_entries(feed.url, data)
         self.assertEqual(feed.entries.count(), 4)
 
+        data = filter(
+            None,
+            [UniqueFeed.objects.entry_data(
+                entry, parsed) for entry in parsed.entries]
+        )
         with self.assertNumQueries(2):
             store_entries(feed.url, data)
         self.assertEqual(feed.entries.count(), 4)

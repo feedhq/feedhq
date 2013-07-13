@@ -289,12 +289,14 @@ class UniqueFeedManager(models.Manager):
         title = entry.title if 'title' in entry else u''
         if len(title) > 255:  # FIXME this is gross
             title = title[:254] + u'…'
+        entry_date, date_generated = cls.entry_date(entry)
         data = {
             'title': title,
             'link': entry.link,
-            'date': cls.entry_date(entry),
+            'date': entry_date,
             'author': entry.get('author', parsed.get('author', ''))[:1023],
             'guid': entry.get('id', entry.link),
+            'date_generated': date_generated,
         }
         if not data['guid']:
             data['guid'] = entry.link
@@ -321,6 +323,7 @@ class UniqueFeedManager(models.Manager):
 
     @classmethod
     def entry_date(cls, entry):
+        date_generated = False
         if 'published_parsed' in entry and entry.published_parsed is not None:
             field = entry.published_parsed
         elif 'updated_parsed' in entry and entry.updated_parsed is not None:
@@ -330,6 +333,7 @@ class UniqueFeedManager(models.Manager):
 
         if field is None:
             entry_date = timezone.now()
+            date_generated = True
         else:
             entry_date = timezone.make_aware(
                 datetime.datetime(*field[:6]),
@@ -339,7 +343,7 @@ class UniqueFeedManager(models.Manager):
             # published, it's probably safe to adjust the date.
             if entry_date > timezone.now():
                 entry_date = timezone.now()
-        return entry_date
+        return entry_date, date_generated
 
     def handle_redirection(self, old_url, new_url, subscribers):
         logger.debug(u"{0} moved to {1}".format(old_url, new_url))
