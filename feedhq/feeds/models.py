@@ -296,6 +296,9 @@ class UniqueFeedManager(models.Manager):
             'author': entry.get('author', parsed.get('author', ''))[:1023],
             'guid': entry.get('id', entry.link),
         }
+        if not data['guid']:
+            data['guid'] = entry.link
+        assert data['guid']
         if 'description' in entry:
             data['subtitle'] = entry.description
         if 'summary' in entry:

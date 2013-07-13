@@ -217,6 +217,21 @@ class UpdateTests(ClearRacheTestCase):
         self.assertEqual(feed.entries.count(), 10)
 
     @patch("requests.get")
+    def test_empty_guid(self, get):
+        get.return_value = responses(304)
+
+        parsed = feedparser.parse(test_file('no-guid.xml'))
+        data = filter(
+            None,
+            [UniqueFeed.objects.entry_data(
+                entry, parsed) for entry in parsed.entries]
+        )
+        feed = FeedFactory.create()
+        with self.assertNumQueries(5):
+            store_entries(feed.url, data)
+        self.assertTrue(feed.entries.get().guid)
+
+    @patch("requests.get")
     def test_schedule_in(self, get):
         get.return_value = responses(304)
 

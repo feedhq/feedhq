@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<rss version="2.0" xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:media="http://search.yahoo.com/mrss/" xmlns:yt="http://gdata.youtube.com/schemas/2007" xmlns:atom="http://www.w3.org/2005/Atom">
+   <channel>
+      <title>the Box</title>
+      <description>Pipes Output</description>
+      <link>http://pipes.yahoo.com/pipes/pipe.info?_id=foobar</link>
+      <atom:link rel="next" href="http://pipes.yahoo.com/pipes/pipe.run?_id=foobar&amp;_render=rss&amp;page=2"/>
+      <pubDate>Sat, 13 Jul 2013 11:57:57 +0000</pubDate>
+      <generator>http://pipes.yahoo.com/pipes/</generator>
+      <item>
+         <title>Some output</title>
+         <link>http://example.com/i-have-a-link</link>
+         <guid isPermaLink="false"></guid>
+         <pubDate>Sat, 13 Jul 2013 11:43:43 +0000</pubDate>
+      </item>
+   </channel>
+</rss>
