@@ -280,7 +280,8 @@ class UniqueFeedManager(models.Manager):
             None,
             [self.entry_data(entry, parsed) for entry in parsed.entries]
         )
-        enqueue(store_entries, args=[url, entries], queue='store')
+        if len(entries):
+            enqueue(store_entries, args=[url, entries], queue='store')
 
     @classmethod
     def entry_data(cls, entry, parsed):
@@ -762,7 +763,8 @@ def pubsubhubbub_update(notification, request, links, **kwargs):
         [UniqueFeedManager.entry_data(
             entry, notification) for entry in notification.entries]
     )
-    enqueue(store_entries, args=[url, entries], queue='store')
+    if len(entries):
+        enqueue(store_entries, args=[url, entries], queue='store')
 updated.connect(pubsubhubbub_update)
 
 
