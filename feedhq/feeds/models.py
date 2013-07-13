@@ -301,6 +301,8 @@ class UniqueFeedManager(models.Manager):
         }
         if not data['guid']:
             data['guid'] = entry.link
+        if not data['guid']:
+            data['guid'] = entry.title
         assert data['guid']
         if 'description' in entry:
             data['subtitle'] = entry.description
