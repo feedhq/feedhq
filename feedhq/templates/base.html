@@ -43,45 +43,7 @@
 				{% block content %}{% endblock %}
 			</div>
 
-			<div id="keyboard" class="modal hide fade">
-				<div class="modal-header">
-					<a data-dismiss="modal" class="close icon-remove-circle"></a>
-					<h3>{% trans "Keyboard shortcuts" %}</h3>
-				</div>
-				<div class="modal-body">
-					<h4>{% trans "Site-wide shortcuts" %}</h4>
-
-					<code>?</code> {% trans "Show this help" %}<br>
-					<code>ESC</code> {% trans "Hide this help" %}<br>
-					<code>A</code> {% trans "Add a subscription" %}<br>
-					<code>R</code> {% trans "Refresh the current view" %}<br>
-
-					<h4>{% trans "Navigation" %}</h4>
-
-					<code>G</code> then <code>H</code> {% trans "Go to home" %}<br>
-					<code>G</code> then <code>A</code> {% trans "Go to all items" %}<br>
-					<code>G</code> then <code>U</code> {% trans "Go to unread items" %}<br>
-					<code>G</code> then <code>S</code> {% trans "Go to starred items" %}<br>
-					<code>G</code> then <code>D</code> {% trans "Go to the dashboard" %}<br>
-					<code>G</code> then <code>M</code> {% trans "Go to the feed management view" %}<br>
-
-					<h4>{% trans "Entries list" %}</h4>
-
-					<code>Shift+A</code> {% trans "Mark all as read in current view" %}<br>
-					<code>Enter</code> {% trans "Open the first item in the list" %}<br>
-
-					<h4>{% trans "Entry detail" %}</h4>
-
-					<code>J</code>/<code>K</code>, <code>→</code>/<code>←</code> {% trans "View next/previous item" %}<br>
-					<code>S</code> {% trans "Toggle star" %}<br>
-					<code>M</code> {% trans "Mark item as unread" %}<br>
-					<code>V</code> {% trans "View original page" %}<br>
-					<code>E</code> {% trans "Email item" %}<br>
-					<code>T</code> {% trans "Tweet item" %}<br>
-					<code>+</code> {% trans "Share on Google+" %}<br>
-					<code>I</code> {% trans "Read later" %}<br>
-				</div>
-			</div>
+			<div id="keyboard" class="modal hide fade" data-url="{% static "core/html/keyboard.html" %}"></div>
 
 			<div id="root_footer"></div>
 		</div>

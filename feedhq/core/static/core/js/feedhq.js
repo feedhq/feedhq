@@ -2,6 +2,17 @@
  * @preserve FeedHQ
  */
 (function($) {
+	var load_kb_modal = function() {
+		var kb = $('#keyboard')
+		kb.modal('show');
+		window.location.hash = 'keyboard';
+
+		console.log(kb.find('.modal-header').length);
+
+		if (kb.find('.modal-header').length === 0) {
+			kb.load(kb.data('url'));
+		}
+	};
 	$.extend($.fn, {
 		hl: function() {
 			if (!$('.feedhq-highlight')) {
@@ -17,8 +28,7 @@
 			var view = $('body').data('view');
 
 			Mousetrap.bind('?', function() {
-				$('#keyboard').modal('show');
-				window.location.hash = 'keyboard';
+				load_kb_modal();
 				return false;
 			});
 
@@ -203,8 +213,7 @@
 		$(document).hl().images().keys();
 
 		$('#shortcuts').click(function() {
-			$('#keyboard').modal('show');
-			window.location.hash = 'keyboard';
+			load_kb_modal();
 			return false;
 		});
 	});
