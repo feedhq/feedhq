@@ -399,7 +399,11 @@ class SubscriptionList(ReaderView):
                     "label": feed.category.name,
                 })
             if feed.ts is not None:
-                subscription["firstitemmsec"] = feed.ts.strftime("%s000")
+                try:
+                    subscription["firstitemmsec"] = feed.ts.strftime("%s000")
+                except ValueError as e:
+                    if 'is before 1900' not in e.args[0]:
+                        raise
             subscriptions.append(subscription)
         return Response({
             "subscriptions": subscriptions

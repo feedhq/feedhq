@@ -1,11 +1,13 @@
 import json
 import time
 
+from datetime import timedelta
 from urllib import urlencode
 
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
+from django.utils import timezone
 from mock import patch
 
 from feedhq.feeds.models import Feed, Entry, UniqueFeed
@@ -209,7 +211,8 @@ class ReaderApiTest(ApiTest):
         u = UniqueFeed.objects.get()
         u.link = 'http://example.com/foo'
         u.save(update_fields=['link'])
-        EntryFactory.create(feed=feed, user=user)
+        EntryFactory.create(feed=feed, user=user,
+                            date=timezone.now() - timedelta(days=365 * 150))
         with self.assertNumQueries(2):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(len(response.json['subscriptions']), 1)
