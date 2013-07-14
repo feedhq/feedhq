@@ -10,6 +10,7 @@
 	<div id="entry" class="feedhq-images feedhq-highlight">
 		<h2>{{ object.sanitized_title|safe }}
 			<a href="{% if only_unread %}{% url "feeds:unread_feed" object.feed.pk %}{% else %}{% url "feeds:feed" object.feed.pk %}{% endif %}" class="cat {{ object.feed.category.color|default:object.feed.color }}">{{ object.feed.name }}</a>
+			{% if object.feed.category %}<a href="{% if only_unread %}{% url "feeds:unread_category" object.feed.category.slug %}{% else %}{% url "feeds:category" object.feed.category.slug %}{% endif %}" class="cat opaque {{ object.feed.category.color }}">{{ object.feed.category.name }}</a>{% endif %}
 		</h2>
 		{% include "feeds/entry_links.html" %}
 		<div class="actions navlist">

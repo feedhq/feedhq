@@ -430,6 +430,14 @@ input, select {
 	}
 }
 
+.opaque {
+	opacity: 0.5;
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
 .popover {
 	position: absolute;
 	background: white;
