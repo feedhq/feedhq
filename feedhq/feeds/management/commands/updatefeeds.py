@@ -30,13 +30,13 @@ class Command(SentryCommand):
 
         ratio = UniqueFeed.UPDATE_PERIOD // 5
         limit = max(
-            1, UniqueFeed.objects.filter(muted=False).count() // ratio)
+            1, UniqueFeed.objects.filter(muted=False).count() // ratio) * 2
 
         # Avoid queueing if the default or store queue is already full
         conn = redis.Redis(**settings.REDIS)
         for name in ['default', 'store']:
             queue = Queue(name=name, connection=conn)
-            if queue.count > 2 * limit:
+            if queue.count > limit:
                 logger.info(
                     "{0} queue longer than limit, skipping update "
                     "({1} > {2})".format(name, queue.count, limit))
