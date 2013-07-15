@@ -165,10 +165,6 @@ you should probably do every month or so)::
 
     @monthly /path/to/env/bin/django-admin.py favicons --all
 
-And a final one to purge expired sessions from the DB::
-
-    @daily /path/to/env/bin/django-admin.py cleanup
-
 Here is a full list of management commands that you should schedule:
 
 * ``add_missing`` creates the missing denormalized URLs for crawling. Since
