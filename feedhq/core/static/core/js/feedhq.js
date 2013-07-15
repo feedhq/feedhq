@@ -7,11 +7,18 @@
 		kb.modal('show');
 		window.location.hash = 'keyboard';
 
-		console.log(kb.find('.modal-header').length);
-
 		if (kb.find('.modal-header').length === 0) {
 			kb.load(kb.data('url'));
 		}
+
+		kb.on('hidden', function() {
+			if ('replaceState' in history) {
+
+				history.replaceState(null, {}, window.location.href.split('#')[0]);
+			} else {
+				window.location.hash = '';
+			}
+		});
 	};
 	$.extend($.fn, {
 		hl: function() {
