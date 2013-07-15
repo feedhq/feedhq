@@ -23,6 +23,7 @@ urlpatterns = patterns(
 
     url(r'^import/$', views.import_feeds, name='import_feeds'),
     url(r'^subscribe/$', views.subscribe, name='subscribe'),
+    url(r'^keyboard/$', views.keyboard, name='keyboard'),
 
     # Categories
     url(r'^category/add/$', views.add_category, name='add_category'),

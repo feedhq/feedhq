@@ -38,6 +38,11 @@ logger = logging.getLogger(__name__)
 MEDIA_RE = re.compile(r'.*<(img|audio|video)\s+.*', re.UNICODE | re.DOTALL)
 
 
+class Keyboard(generic.TemplateView):
+    template_name = 'feeds/keyboard.html'
+keyboard = Keyboard.as_view()
+
+
 def paginate(object_list, page=1, nb_items=25, force_count=None):
     """
     Simple generic paginator for all the ``Entry`` lists
