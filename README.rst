@@ -224,6 +224,12 @@ Here is a full list of management commands that you should schedule:
   Resource consumption: low but initial synchronizations can take a lot of
   time when subscribing to lots of hubs.
 
+* ``clean_rq`` removes stale RQ jobs.
+
+  Recommended frequency: once a day.
+
+  Resource consumption: low. Only makes requests to Redis.
+
 Development
 -----------
 
