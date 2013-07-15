@@ -9,10 +9,10 @@ from feedhq.feeds.models import (Category, Feed, UniqueFeed, Entry, Favicon,
 from feedhq.feeds.tasks import update_feed
 
 from .factories import CategoryFactory, FeedFactory
-from . import responses, ClearRacheTestCase
+from . import responses, ClearRedisTestCase
 
 
-class ModelTests(ClearRacheTestCase):
+class ModelTests(ClearRedisTestCase):
     def test_category_model(self):
         """Behaviour of the ``Category`` model"""
         cat = CategoryFactory.create(name='New Cat', slug='new-cat')

@@ -4,7 +4,10 @@ from datetime import timedelta
 from mock import patch
 
 import feedparser
+import redis
+import times
 
+from django.conf import settings
 from django.core.management import call_command
 from django.utils import timezone
 from rache import pending_jobs, delete_job, schedule_job
@@ -15,10 +18,10 @@ from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
 
 from .factories import FeedFactory
-from . import responses, ClearRacheTestCase, test_file
+from . import responses, ClearRedisTestCase, test_file
 
 
-class UpdateTests(ClearRacheTestCase):
+class UpdateTests(ClearRedisTestCase):
     def test_update_feeds(self):
         u = UniqueFeed.objects.create(
             url='http://example.com/feed0',
@@ -309,3 +312,15 @@ class UpdateTests(ClearRacheTestCase):
             FeedFactory.create()
         with self.assertNumQueries(5):
             call_command('backup_scheduler')
+
+    def test_clean_rq(self):
+        r = redis.Redis(**settings.REDIS)
+        self.assertEqual(len(r.keys('rq:job:*')), 0)
+        r.hmset('rq:job:abc', {'bar': 'baz'})
+        r.hmset('rq:job:def', {'created_at': times.format(times.now(), 'UTC')})
+        r.hmset('rq:job:123', {
+            'created_at': times.format(
+                times.now() - timedelta(days=10), 'UTC')})
+        self.assertEqual(len(r.keys('rq:job:*')), 3)
+        call_command('clean_rq')
+        self.assertEqual(len(r.keys('rq:job:*')), 2)

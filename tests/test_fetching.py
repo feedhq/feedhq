@@ -18,10 +18,10 @@ from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT
 
 from .factories import FeedFactory
 from .test_feeds import test_file, responses
-from . import ClearRacheTestCase
+from . import ClearRedisTestCase
 
 
-class UpdateTests(ClearRacheTestCase):
+class UpdateTests(ClearRedisTestCase):
     @patch("requests.get")
     def test_parse_error(self, get):
         get.side_effect = LocationParseError("Failed to parse url")
@@ -290,7 +290,7 @@ class UpdateTests(ClearRacheTestCase):
         post.assert_not_called()
 
 
-class FaviconTests(ClearRacheTestCase):
+class FaviconTests(ClearRedisTestCase):
     @patch("requests.get")
     def test_declared_favicon(self, get):
         with open(test_file('bruno.im.png'), 'r') as f:
