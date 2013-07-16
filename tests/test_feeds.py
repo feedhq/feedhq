@@ -11,6 +11,7 @@ from django_push.subscriber.signals import updated
 from django_webtest import WebTest
 from httplib2 import Response
 from mock import patch
+from rache import schedule_job
 
 from feedhq.feeds.models import Category, Feed, Entry, UniqueFeed
 from feedhq.feeds.tasks import update_feed
@@ -899,16 +900,17 @@ class WebBaseTests(WebTest):
         FeedFactory.create(user=user, category=None)
         FeedFactory.create(user=user, category=None)
         unique = UniqueFeed.objects.all()[0]
-        unique.backoff_factor = 10
-        unique.error = UniqueFeed.NOT_A_FEED
-        unique.save()
+        schedule_job(unique.url, schedule_in=0, backoff_factor=10,
+                     error=UniqueFeed.NOT_A_FEED)
 
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Not a valid RSS/Atom feed')
 
-        unique.error = ''
+        schedule_job(unique.url, schedule_in=0, error='blah')
+        response = self.app.get(url, user=user)
+        self.assertContains(response, 'Error')
+
         unique.muted = True
-        unique.backoff_factor = 1
         unique.save()
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Error')

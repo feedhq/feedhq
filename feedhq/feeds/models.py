@@ -38,7 +38,7 @@ import pytz
 
 from .fields import URLField
 from .tasks import update_feed, update_favicon, store_entries
-from .utils import FAVICON_FETCHER, USER_AGENT, is_feed
+from .utils import FAVICON_FETCHER, USER_AGENT, is_feed, epoch_to_utc
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
 
@@ -385,7 +385,23 @@ class UniqueFeedManager(models.Manager):
         return int((response_time * 1.2) / 10) + 1
 
 
-class UniqueFeed(models.Model):
+class JobDataMixin(object):
+    @property
+    def job_details(self):
+        if not hasattr(self, '_job_details'):
+            self._job_details = job_details(self.url)
+        return self._job_details
+
+    @property
+    def scheduler_data(self):
+        return json.dumps(self.job_details, indent=4, sort_keys=True)
+
+    @property
+    def next_update(self):
+        return epoch_to_utc(self.job_details['schedule_at'])
+
+
+class UniqueFeed(JobDataMixin, models.Model):
     GONE = 'gone'
     TIMEOUT = 'timeout'
     PARSE_ERROR = 'parseerror'
@@ -483,23 +499,8 @@ class UniqueFeed(models.Model):
                 kwargs[attr] = getattr(self, attr)
         schedule_job(self.url, schedule_in=self.schedule_in, **kwargs)
 
-    @property
-    def job_details(self):
-        if not hasattr(self, '_job_details'):
-            self._job_details = job_details(self.url)
-        return self._job_details
 
-    @property
-    def scheduler_data(self):
-        return json.dumps(self.job_details, indent=4, sort_keys=True)
-
-    @property
-    def next_update(self):
-        return timezone.make_aware(datetime.datetime.utcfromtimestamp(
-            self.job_details['schedule_at']), pytz.utc)
-
-
-class Feed(models.Model):
+class Feed(JobDataMixin, models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=1023)
     url = URLField(_('URL'))
@@ -567,7 +568,11 @@ class Feed(models.Model):
         return COLORS[index][0]
 
     def error_display(self):
-        return UniqueFeed.MUTE_DICT.get(self.error, _('Error'))
+        try:
+            key = str(self.job_details['error'])
+        except TypeError:  # Job not scheduled
+            key = ''
+        return UniqueFeed.MUTE_DICT.get(key, _('Error'))
 
 
 class EntryManager(models.Manager):

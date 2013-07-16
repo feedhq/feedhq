@@ -18,7 +18,7 @@ from django.views import generic
 
 from ..decorators import login_required
 from ..tasks import enqueue
-from .models import Category, Feed, Entry, UniqueFeed
+from .models import Category, Entry, UniqueFeed
 from .forms import (CategoryForm, FeedForm, OPMLImportForm, ActionForm,
                     ReadForm, SubscriptionFormSet, UndoReadForm, user_lock)
 from .tasks import read_later
@@ -591,24 +591,14 @@ class ManageFeeds(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super(ManageFeeds, self).get_context_data(**kwargs)
-        feeds = Feed.objects.raw(
-            """
-            select
-                f.id, f.name, f.url, f.category_id, f.favicon,
-
-                u.muted, u.muted_reason as error, u.backoff_factor,
-
-                c.name as category_name, c.id as category_id,
-                c.slug as category_slug, c.color as category_color
-            from
-                feeds_feed f
-                left outer join feeds_category c on c.id = f.category_id
-                left outer join feeds_uniquefeed u on u.url = f.url
-            where
-                f.user_id = %s
-            order by
-                c.name, c.id, f.name
-            """, [self.request.user.pk])
+        feeds = self.request.user.feeds.select_related('category').order_by(
+            'category__name', 'category__id', 'name',
+        ).extra(select={
+            'muted': """
+                select muted from feeds_uniquefeed
+                where feeds_uniquefeed.url = feeds_feed.url
+            """,
+        })
 
         ctx['feeds'] = feeds
         return ctx

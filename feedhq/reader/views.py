@@ -1,4 +1,3 @@
-import datetime
 import json
 import logging
 import struct
@@ -22,6 +21,7 @@ from rest_framework.views import APIView
 
 from ..feeds.forms import FeedForm
 from ..feeds.models import Feed, UniqueFeed, Category
+from ..feeds.utils import epoch_to_utc
 from ..profiles.models import User
 from .authentication import GoogleLoginAuthentication
 from .exceptions import PermissionDenied, BadToken
@@ -86,12 +86,6 @@ def is_label(value, user_id):
             prefix = label_user_prefix
         return value[len(prefix):]
     return False
-
-
-def epoch_to_utc(value):
-    """Converts epoch (in seconds) values to a timezone-aware datetime."""
-    return timezone.make_aware(
-        datetime.datetime.fromtimestamp(value), timezone.utc)
 
 
 class ForceNegotiation(DefaultContentNegotiation):
