@@ -149,29 +149,53 @@ def parse_redis_url():
         path, q, querystring = parsed_redis.path.partition('?')
     else:
         path, q, querystring = parsed_redis.path, None, parsed_redis.query
-    if path[1:]:
-        config['db'] = int(path[1:])
+
     querystring = urlparse.parse_qs(querystring)
     for key in querystring.keys():
         querystring[key] = querystring[key][0]
     for key in config.keys():
         querystring.pop(key, None)
-    host, colon, port = parsed_redis.netloc.partition(':')
-    if '@' in host:
-        password, at, host = host.partition('@')
-        config['password'] = password
-    config['host'] = host
-    config['port'] = int(port)
+
+    if parsed_redis.netloc.endswith('unix'):
+        del config['port']
+        del config['host']
+        # the last item of the path could also be just part of the socket path
+        try:
+            config['db'] = int(os.path.split(path)[-1])
+        except ValueError:
+            pass
+        else:
+            path = os.path.join(*os.path.split(path)[:-1])
+        config['unix_socket_path'] = path
+        if parsed_redis.password:
+            config['password'] = parsed_redis.password
+    else:
+        if path[1:]:
+            config['db'] = int(path[1:])
+        if parsed_redis.password:
+            config['password'] = parsed_redis.password
+        if parsed_redis.port:
+            config['port'] = int(parsed_redis.port)
+        if parsed_redis.hostname:
+            config['host'] = parsed_redis.hostname
+
     return config, True if 'eager' in querystring else False
 
 REDIS, RQ_EAGER = parse_redis_url()
 RQ = REDIS
+if 'unix_socket_path' in REDIS:
+    location = '{unix_socket_path}'.format(**REDIS)
+else:
+    location = '{host}:{port}'.format(**REDIS)
+
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': '{host}:{port}'.format(**REDIS),
+        'LOCATION': location,
         'OPTIONS': {
             'DB': REDIS['db'],
+            'PASSWORD': REDIS['password'],
+            'PARSER_CLASS': 'redis.connection.HiredisParser'
         },
     },
 }
