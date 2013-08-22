@@ -25,8 +25,8 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'timezone', 'entries_per_page', 'oldest_first',
-                  'allow_media']
+        fields = ['username', 'timezone', 'entries_per_page', 'font',
+                  'oldest_first', 'allow_media']
 
     def clean_username(self):
         username = self.cleaned_data['username']
