@@ -31,6 +31,30 @@
 			});
 			return this;
 		},
+		more: function() {
+			if (!$('.feedhq-more')) {
+				return this;
+			}
+			$('.feedhq-more').click(function(event) {
+				event.preventDefault();
+				var link = $(this),
+					container = $('#entries');
+				link.text(link.attr('loading'));
+				$.get(link.attr('href'), function(fragment) {
+					$(fragment).appendTo(container);
+					var next = $('<div>').append(fragment).find('#next');
+					var next_href = next.attr('href');
+					if (typeof next_href == "undefined") {
+						link.remove();
+					} else {
+						link.attr('href', next_href);
+						link.text(link.attr('title'));
+					}
+				});
+				return this;
+			});
+			return this;
+		},
 		keys: function() {
 			var view = $('body').data('view');
 
@@ -217,7 +241,7 @@
 			return false;
 		});
 
-		$(document).hl().images().keys();
+		$(document).hl().images().keys().more();
 
 		$('#shortcuts').click(function() {
 			load_kb_modal();

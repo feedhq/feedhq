@@ -42,19 +42,25 @@
 					{% endif %}
 				{% endspaceless %}</div>
 			</div>
-			<div class="pagination">{% include "feeds/paginator.html" %}</div>
+			{% if not user.endless_pages %}
+				<div class="pagination">{% include "feeds/paginator.html" %}</div>
+			{% endif %}
 		</div>
 
 		<ul id="entries">
-			{% for entry in entries.object_list %}
-				{% include "feeds/entry_include.html" %}
-			{% empty %}
-				<li class="empty" >{% trans "Hooray, nothing to read!" %}</li>
-			{% endfor %}
+			{% include entries_template %}
 		</ul>
 
-		<div class="figures bottom">
-			<div class="pagination">{% include "feeds/paginator.html" %}</div>
-		</div>
+		{% if user.endless_pages %}
+			{% if entries.paginator.num_pages > 1 and entries.has_next %}
+				<a href="{{ base_url }}{{ entries.next_page_number }}/" try="{{ base_url }}{{ entries.next_page_number|add:"1" }}/" title="{% trans "Load more" %}" loading="{% trans "Loading…" %}" class="feedhq-more">
+					{% trans "Load more" %}
+				</a>
+			{% endif %}
+		{% else %}
+			<div class="figures bottom">
+				<div class="pagination">{% include "feeds/paginator.html" %}</div>
+			</div>
+		{% endif %}
 	{% endif %}
 {% endblock %}

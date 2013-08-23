@@ -1,0 +1,10 @@
+{% load i18n %}{% for entry in entries.object_list %}
+	{% include "feeds/entry_include.html" %}
+{% empty %}
+	<li class="empty" >{% trans "Hooray, nothing to read!" %}</li>
+{% endfor %}
+
+{% if entries.has_next %}
+	{# This is the span we need to figure out if there is a next page. #}
+	<span id="next" href="{{ base_url }}{{ entries.next_page_number }}/"></span>
+{% endif %}

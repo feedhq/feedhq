@@ -165,13 +165,20 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         'unread_url': unread_url,
         'base_url': base_url,
         'stars': starred,
+        'entries_template': 'feeds/entries_include.html',
     }
     if unread_count:
         context['form'] = ReadForm()
         context['action'] = request.get_full_path()
     if entries.paginator.count == 0 and request.user.feeds.count() == 0:
         context['noob'] = True
-    return render(request, 'feeds/entries_list.html', context)
+
+    if request.is_ajax():
+        template_name = context['entries_template']
+    else:
+        template_name = 'feeds/entries_list.html'
+
+    return render(request, template_name, context)
 
 
 class SuccessMixin(object):

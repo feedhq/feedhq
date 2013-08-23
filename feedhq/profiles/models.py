@@ -44,6 +44,11 @@ class User(PermissionsMixin, AbstractBaseUser):
                                 choices=TIMEZONES, default='UTC')
     entries_per_page = models.IntegerField(_('Entries per page'), default=50,
                                            choices=ENTRIES_PER_PAGE)
+    endless_pages = models.BooleanField(
+        _('Endless pages'), default=False,
+        help_text=_("Check this box if you'd like to use a 'load more' "
+                    "button instead of the page links."))
+
     oldest_first = models.BooleanField(
         _('Oldest entries first'), default=False,
         help_text=_("Check this box if you'd like to have the oldest "
