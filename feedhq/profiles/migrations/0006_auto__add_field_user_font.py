@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'User.font'
         db.add_column('auth_user', 'font',
-                      self.gf('django.db.models.fields.CharField')(default='default', max_length=75),
+                      self.gf('django.db.models.fields.CharField')(default='palatino', max_length=75),
                       keep_default=False)
 
 
