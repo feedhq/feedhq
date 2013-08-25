@@ -1,9 +1,15 @@
-{% load i18n %}
+{% load i18n feeds_tags staticfiles %}
 {# This is the span we need to figure out if there is a next page. #}
 <span class="entries-include" page="{{ entries.number }}"{% if entries.has_next %} next="{{ base_url }}{{ entries.next_page_number }}/"{% endif %}>
-    {% for entry in entries.object_list %}
-        {% include "feeds/entry_include.html" %}
-    {% empty %}
-        <li class="empty" >{% trans "Hooray, nothing to read!" %}</li>
-    {% endfor %}
+	{% for entry in entries.object_list %}
+		<li class="entry{% if not entry.read %} new{% endif%}">
+			<div class="title ellipsis" style="background-image: url('{% if entry.feed.favicon %}{{ entry.feed.favicon.url }}{% else %}{% static "core/img/icon-globe.png" %}{% endif %}');">
+				<a href="{% if only_unread %}{% url "feeds:unread_feed" entry.feed.pk %}{% else %}{% url "feeds:feed" entry.feed.pk %}{% endif %}" class="cat {{ entry.feed.category.color|default:entry.feed.color }}">{{ entry.feed }}</a>
+				<a {% if forloop.first %}data-mousetrap="enter" {% endif %}href="{% url "feeds:item" entry.id %}" title="{{ entry.sanitized_title }}">{{ entry.sanitized_title }}</a>
+			</div>
+			<div class="date" title="{{ entry.date|date:"c" }}">{{ entry.date|timezone:user.timezone|smart_date }}</div>
+		</li>
+	{% empty %}
+		<li class="empty" >{% trans "Hooray, nothing to read!" %}</li>
+	{% endfor %}
 </span>
