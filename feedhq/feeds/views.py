@@ -175,7 +175,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         context['read_all_form'] = ReadForm()
         context['read_page_form'] = ReadForm(pages_only=True, initial={
             'action': ReadForm.READ_PAGE,
-            'pages': json.dumps([page]),
+            'pages': json.dumps([int(page)]),
         })
         context['action'] = request.get_full_path()
     if entries.paginator.count == 0 and request.user.feeds.count() == 0:
