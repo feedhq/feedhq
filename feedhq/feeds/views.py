@@ -104,9 +104,13 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
     if user.oldest_first:
         entries = entries.order_by('date', 'id')
 
-    if request.method == "POST":
-        if request.POST['action'] == 'read':
-            form = ReadForm(entries, feed, category, user, data=request.POST)
+    if request.method == 'POST':
+        if request.POST['action'] in (ReadForm.READ_ALL, ReadForm.READ_PAGE):
+            pages_only = request.POST['action'] == ReadForm.READ_PAGE
+            form = ReadForm(entries, feed, category, user,
+                            pages_only=pages_only,
+                            nb_items=request.user.entries_per_page,
+                            data=request.POST)
             if form.is_valid():
                 pks = form.save()
                 undo_form = loader.render_to_string('feeds/undo_read.html', {
@@ -168,7 +172,11 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         'entries_template': 'feeds/entries_include.html',
     }
     if unread_count:
-        context['form'] = ReadForm()
+        context['read_all_form'] = ReadForm()
+        context['read_page_form'] = ReadForm(pages_only=True, initial={
+            'action': ReadForm.READ_PAGE,
+            'pages': json.dumps([page]),
+        })
         context['action'] = request.get_full_path()
     if entries.paginator.count == 0 and request.user.feeds.count() == 0:
         context['noob'] = True
