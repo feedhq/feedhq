@@ -36,7 +36,7 @@
 						<form method="post" action="{{ action }}" class="read" id="read-page">
 							{% include "form.html" with form=read_page_form %}
 							<button class="tultip" title="{% trans "Mark page as read" %}">
-								<i class="icon-ok-circle"></i>
+								<i class="icon-ok-circle"></i> {% trans "Page" %}
 							</button>
 						</form>
 					{% endif %}
@@ -44,7 +44,7 @@
 						<form data-mousetrap="shift+a" method="post" action="{{ action }}" class="read" id="read-all">
 							{% include "form.html" with form=read_all_form %}
 							<button class="tultip" title="{% trans "Mark all as read" %}">
-								<i class="icon-ok-sign"></i>
+								<i class="icon-ok-sign"></i> {% trans "All" %}
 							</button>
 						</form>
 					{% endif %}
