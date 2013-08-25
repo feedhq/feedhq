@@ -12,7 +12,7 @@ import floppyforms as forms
 import opml
 import requests
 
-from .models import Category, Feed
+from .models import Category, Feed, Entry
 from .utils import USER_AGENT, is_feed
 
 
@@ -165,34 +165,62 @@ class ActionForm(forms.Form):
 
 
 class ReadForm(forms.Form):
+    READ_ALL = 'read-all'
+    READ_PAGE = 'read-page'
+
     action = forms.ChoiceField(
         choices=(
-            ('read', 'read'),
+            (READ_ALL, 'read all'),
+            (READ_PAGE, 'read page'),
         ),
         widget=forms.HiddenInput,
-        initial='read',
+        initial='read-all',
     )
 
     def __init__(self, entries=None, feed=None, category=None, user=None,
-                 *args, **kwargs):
+                 pages_only=False, nb_items=25, *args, **kwargs):
         if entries is not None:
             entries = entries.filter(read=False)
         self.entries = entries
         self.feed = feed
         self.category = category
         self.user = user
+        self.pages_only = pages_only
+        self.nb_items = nb_items
         super(ReadForm, self).__init__(*args, **kwargs)
+        if self.pages_only:
+            self.fields['pages'] = forms.CharField(widget=forms.HiddenInput)
+
+    def clean_pages(self):
+        return json.loads(self.cleaned_data['pages'])
 
     def save(self):
-        pks = list(self.entries.values_list('pk', flat=True))
-        self.entries.update(read=True)
+        if self.pages_only:
+            # pages is a list of integers of page numbers to mark as read
+            pages = self.cleaned_data['pages']
+            # the start of the page list
+            start = (pages[0] - 1) * self.nb_items
+            # the end of the page list
+            end = pages[-1] * self.nb_items
+            entries = Entry.objects.filter(
+                pk__in=self.entries[start:end].values_list('pk', flat=True))
+        else:
+            entries = self.entries
+        pks = list(entries.values_list('pk', flat=True))
+        entries.update(read=True)
         if self.feed is not None:
             feeds = Feed.objects.filter(pk=self.feed.pk)
         elif self.category is not None:
             feeds = self.category.feeds.all()
         else:
             feeds = self.user.feeds.all()
-        feeds.update(unread_count=0)
+
+        if self.pages_only:
+            for feed in feeds:
+                Feed.objects.filter(pk=feed.pk).update(
+                    unread_count=feed.entries.filter(read=False).count())
+        else:
+            feeds.update(unread_count=0)
         return pks
 
 

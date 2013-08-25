@@ -38,18 +38,22 @@
 			$('.feedhq-more').click(function(event) {
 				event.preventDefault();
 				var link = $(this),
-					container = $('#entries');
+					container = $('#entries'),
+					pages = $('#id_pages');
+				var parsed_pages = $.parseJSON(pages.val());
 				link.text(link.attr('loading'));
 				$.get(link.attr('href'), function(fragment) {
 					$(fragment).appendTo(container);
-					var next = $('<div>').append(fragment).find('#next');
-					var next_href = next.attr('href');
-					if (typeof next_href == "undefined") {
+					var include = $('<div>').append(fragment).find('.entries-include');
+					var next = include.attr('next');
+					if (typeof next == "undefined") {
 						link.remove();
 					} else {
-						link.attr('href', next_href);
+						link.attr('href', next);
 						link.text(link.attr('title'));
 					}
+					parsed_pages.push(parseInt(include.attr('page')));
+					pages.val(JSON.stringify(parsed_pages));
 				});
 				return this;
 			});
