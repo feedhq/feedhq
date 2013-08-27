@@ -104,9 +104,13 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
     if user.oldest_first:
         entries = entries.order_by('date', 'id')
 
-    if request.method == "POST":
-        if request.POST['action'] == 'read':
-            form = ReadForm(entries, feed, category, user, data=request.POST)
+    if request.method == 'POST':
+        if request.POST['action'] in (ReadForm.READ_ALL, ReadForm.READ_PAGE):
+            pages_only = request.POST['action'] == ReadForm.READ_PAGE
+            form = ReadForm(entries, feed, category, user,
+                            pages_only=pages_only,
+                            nb_items=request.user.entries_per_page,
+                            data=request.POST)
             if form.is_valid():
                 pks = form.save()
                 undo_form = loader.render_to_string('feeds/undo_read.html', {
@@ -165,13 +169,24 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         'unread_url': unread_url,
         'base_url': base_url,
         'stars': starred,
+        'entries_template': 'feeds/entries_include.html',
     }
     if unread_count:
-        context['form'] = ReadForm()
+        context['read_all_form'] = ReadForm()
+        context['read_page_form'] = ReadForm(pages_only=True, initial={
+            'action': ReadForm.READ_PAGE,
+            'pages': json.dumps([int(page)]),
+        })
         context['action'] = request.get_full_path()
     if entries.paginator.count == 0 and request.user.feeds.count() == 0:
         context['noob'] = True
-    return render(request, 'feeds/entries_list.html', context)
+
+    if request.is_ajax():
+        template_name = context['entries_template']
+    else:
+        template_name = 'feeds/entries_list.html'
+
+    return render(request, template_name, context)
 
 
 class SuccessMixin(object):
