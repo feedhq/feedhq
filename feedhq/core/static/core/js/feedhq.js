@@ -59,6 +59,14 @@
 			});
 			return this;
 		},
+		read: function() {
+			if (!$('.read')) {
+				return this;
+			}
+			$('.read').submit(function(event) {
+				return window.confirm($(this).attr('prompt'));
+			})
+		},
 		keys: function() {
 			var view = $('body').data('view');
 
@@ -245,7 +253,7 @@
 			return false;
 		});
 
-		$(document).hl().images().keys().more();
+		$(document).hl().images().keys().more().read();
 
 		$('#shortcuts').click(function() {
 			load_kb_modal();

@@ -33,18 +33,18 @@
 					<a href="{{ all_url }}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %} <span class="ct">{{ total_count }}</span></a>
 					{% if unread_url %}<a href="{{ unread_url }}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %} <span class="ct">{{ unread_count }}</span></a>{% endif %}
 					{% if read_page_form %}
-						<form method="post" action="{{ action }}" class="read" id="read-page">
+						<form method="post" action="{{ action }}" class="read" id="read-page" prompt="{% trans "Are you sure you want to mark the items on this page as read?" %}">
 							{% include "form.html" with form=read_page_form %}
 							<button class="tultip" title="{% trans "Mark page as read" %}">
-								<i class="icon-ok-circle"></i> {% trans "Page" %}
+								<i class="icon-ok-circle"></i>
 							</button>
 						</form>
 					{% endif %}
 					{% if read_all_form %}
-						<form data-mousetrap="shift+a" method="post" action="{{ action }}" class="read" id="read-all">
+						<form data-mousetrap="shift+a" method="post" action="{{ action }}" prompt="{% trans "Are you sure you want to mark all items as read?" %}" class="read" id="read-all">
 							{% include "form.html" with form=read_all_form %}
 							<button class="tultip" title="{% trans "Mark all as read" %}">
-								<i class="icon-ok-sign"></i> {% trans "All" %}
+								<i class="icon-ok-sign"></i>
 							</button>
 						</form>
 					{% endif %}
