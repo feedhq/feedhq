@@ -94,6 +94,30 @@
 
 			return this;
 		},
+		ffos: function() {
+			if (!$('.ffos-install')) {
+				return this;
+			}
+			var base = location.protocol + '//' + window.location.host;
+			var manifest_url = base + "/manifest.webapp";
+			// only show the install button if it's a supported platform
+			if (typeof navigator.mozApps != 'undefined') {
+				var request = navigator.mozApps.checkInstalled(manifest_url);
+				request.onsuccess = function() {
+					// only install if not already installed
+					if (!request.result) {
+						$('.ffos-install').show().click(function(event) {
+							event.preventDefault();
+							var app = navigator.mozApps.install(manifest_url);
+							app.onsuccess = function(data) {
+								// remove install button after installation
+								$('.ffos-install').remove();
+							};
+						});
+					}
+				}
+			};
+		},
 		images: function() {
 			if (!$('.feedhq-images')) {
 				return this;
@@ -217,7 +241,7 @@
 			return false;
 		});
 
-		$(document).hl().images().keys();
+		$(document).hl().images().keys().ffos();
 
 		$('#shortcuts').click(function() {
 			load_kb_modal();
