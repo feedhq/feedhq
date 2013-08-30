@@ -32,16 +32,19 @@ class User(PermissionsMixin, AbstractBaseUser):
         (INSTAPAPER, u'Instapaper'),
     )
 
+    FONT_DROID_SANS = 'droid-sans'
     FONT_DROID_SERIF = 'droid-serif'
     FONT_GENTIUM_BASIC = 'gentium-basic'
     FONT_MERRIWEATHER = 'merriweather'
     FONT_PALATINO = 'palatino'
+    FONT_POLY = 'poly'
     FONT_PT_SERIF = 'pt-serif'
     FONT_ABEL = 'abel'
     FONT_HELVETICA = 'helvetica'
     FONT_MULI = 'muli'
     FONT_OPEN_SANS = 'open-sans'
     FONT_PT_SANS = 'pt-sans'
+    FONT_UBUNTU_CONDENSED = 'ubuntu-condensed'
     FONT_SOURCE_SANS_PRO = 'source-sans-pro'
 
     FONTS = (
@@ -51,15 +54,18 @@ class User(PermissionsMixin, AbstractBaseUser):
                 (FONT_GENTIUM_BASIC, 'Gentium Basic'),
                 (FONT_MERRIWEATHER, 'Merriweather'),
                 (FONT_PALATINO, _('Palatino (system font)')),
+                (FONT_POLY, 'Poly'),
                 (FONT_PT_SERIF, 'PT Serif'),
             )
         ), (
             _('Sans Serif'), (
                 (FONT_ABEL, 'Abel'),
+                (FONT_DROID_SANS, 'Droid Sans'),
                 (FONT_HELVETICA, _('Helvetica (system font)')),
                 (FONT_MULI, 'Muli'),
                 (FONT_OPEN_SANS, 'Open Sans'),
                 (FONT_PT_SANS, 'PT Sans'),
+                (FONT_UBUNTU_CONDENSED, 'Ubuntu Condensed'),
                 (FONT_SOURCE_SANS_PRO, 'Source Sans Pro'),
             )
         )
