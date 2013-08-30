@@ -84,39 +84,25 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
 
     if category is not None:
         category = get_object_or_404(user.categories.all(), slug=category)
-        if query:
-            entries = user.entries.search(query).filter(feed__category=category)
-        else:
-            entries = user.entries.filter(feed__category=category)
+        entries = user.entries.search(query).filter(feed__category=category)
         all_url = reverse('feeds:category', args=[category.slug])
         unread_url = reverse('feeds:unread_category', args=[category.slug])
 
     if feed is not None:
         feed = get_object_or_404(user.feeds.select_related('category'),
                                  pk=feed)
-        if query:
-            entries = feed.entries.search(query).filter(feed__category=category)
-        else:
-            entries = feed.entries.all()
+        entries = feed.entries.search(query)
         all_url = reverse('feeds:feed', args=[feed.id])
         unread_url = reverse('feeds:unread_feed', args=[feed.id])
         category = feed.category
 
     if starred is True:
-        if query:
-            entries = user.entries.search(query).filter(starred=True)
-        else:
-            entries = user.entries.filter(starred=True)
+        entries = user.entries.search(query).filter(starred=True)
         all_url = reverse('feeds:stars')
         unread_url = None
 
     if feed is None and category is None and starred is not True:
-        entries = user.entries.all()
-        if query:
-            entries = user.entries.search(query)
-        else:
-            entries = user.entries.all()
-
+        entries = user.entries.search(query)
         all_url = reverse('feeds:home')
         unread_url = reverse('feeds:unread')
 
