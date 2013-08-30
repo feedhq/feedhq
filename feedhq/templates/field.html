@@ -1,9 +1,11 @@
 {% load floppyforms %}
 {% if not field.is_hidden %}
 	<div class="field{% if forloop.first %} first{% endif %}{% if forloop.last %} last{% endif %}">
-		<div class="title">
-			<h6>{{ field.label_tag }}</h6>
-		</div>
+		{% if not hide_label %}
+			<div class="title">
+				<h6>{{ field.label_tag }}</h6>
+			</div>
+		{% endif %}
 		<div class="input">
 			<p>{% widget field %}</p>
 			{{ field.errors }}

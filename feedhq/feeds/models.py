@@ -33,6 +33,8 @@ from rache import schedule_job, delete_job, job_details
 from requests.exceptions import ConnectionError
 from requests.packages.urllib3.exceptions import (LocationParseError,
                                                   DecodeError)
+from djorm_pgfulltext.models import SearchManager
+from djorm_pgfulltext.fields import VectorField
 
 import pytz
 
@@ -575,7 +577,7 @@ class Feed(JobDataMixin, models.Model):
         return UniqueFeed.MUTE_DICT.get(key, _('Error'))
 
 
-class EntryManager(models.Manager):
+class SearchEntryManager(SearchManager):
     def unread(self):
         return self.filter(read=False).count()
 
@@ -601,8 +603,12 @@ class Entry(models.Model):
     starred = models.BooleanField(_('Starred'), default=False, db_index=True)
     broadcast = models.BooleanField(_('Broadcast'), default=False,
                                     db_index=True)
+    search_index = VectorField()
 
-    objects = EntryManager()
+    objects = SearchEntryManager(
+        fields=('title', 'subtitle'),
+        auto_update_search_field=True
+    )
 
     class Meta:
         # Display most recent entries first

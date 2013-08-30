@@ -22,6 +22,7 @@
 						{% if user.is_authenticated %}
 							<a class="unread" title="{% trans "Unread entries" %}" href="{% url "feeds:unread" %}">{{ user.entries.unread }}</a>
 						{% endif %}
+						{% block extra_title %}{% endblock extra_title %}
 					</h1>
 					{% block extra_header %}{% endblock %}
 					<div id="navigation">

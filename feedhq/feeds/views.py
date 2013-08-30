@@ -20,7 +20,8 @@ from ..decorators import login_required
 from ..tasks import enqueue
 from .models import Category, Entry, UniqueFeed
 from .forms import (CategoryForm, FeedForm, OPMLImportForm, ActionForm,
-                    ReadForm, SubscriptionFormSet, UndoReadForm, user_lock)
+                    ReadForm, SubscriptionFormSet, UndoReadForm, user_lock,
+                    SearchForm)
 from .tasks import read_later
 
 """
@@ -75,28 +76,47 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
     """
     user = request.user
     categories = user.categories.with_unread_counts()
+    search_form = SearchForm(request.GET)
+    if search_form.is_valid():
+        query = search_form.cleaned_data['q']
+    else:
+        query = None
 
     if category is not None:
         category = get_object_or_404(user.categories.all(), slug=category)
-        entries = user.entries.filter(feed__category=category)
+        if query:
+            entries = user.entries.search(query).filter(feed__category=category)
+        else:
+            entries = user.entries.filter(feed__category=category)
         all_url = reverse('feeds:category', args=[category.slug])
         unread_url = reverse('feeds:unread_category', args=[category.slug])
 
     if feed is not None:
         feed = get_object_or_404(user.feeds.select_related('category'),
                                  pk=feed)
-        entries = feed.entries.all()
+        if query:
+            entries = feed.entries.search(query).filter(feed__category=category)
+        else:
+            entries = feed.entries.all()
         all_url = reverse('feeds:feed', args=[feed.id])
         unread_url = reverse('feeds:unread_feed', args=[feed.id])
         category = feed.category
 
     if starred is True:
-        entries = user.entries.filter(starred=True)
+        if query:
+            entries = user.entries.search(query).filter(starred=True)
+        else:
+            entries = user.entries.filter(starred=True)
         all_url = reverse('feeds:stars')
         unread_url = None
 
     if feed is None and category is None and starred is not True:
         entries = user.entries.all()
+        if query:
+            entries = user.entries.search(query)
+        else:
+            entries = user.entries.all()
+
         all_url = reverse('feeds:home')
         unread_url = reverse('feeds:unread')
 
@@ -165,6 +185,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         'unread_url': unread_url,
         'base_url': base_url,
         'stars': starred,
+        'search_form': search_form,
     }
     if unread_count:
         context['form'] = ReadForm()

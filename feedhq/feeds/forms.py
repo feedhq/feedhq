@@ -164,6 +164,10 @@ class ActionForm(forms.Form):
     ))
 
 
+class SearchForm(forms.Form):
+    q = forms.CharField(required=False)
+
+
 class ReadForm(forms.Form):
     action = forms.ChoiceField(
         choices=(
