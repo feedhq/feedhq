@@ -6,6 +6,15 @@
 			{{ block.super }}
 {% endif %}{% endif %}{% endblock %}
 
+{% block extra_title %}
+	<form data-mousetrap="shift+f" method="get" action="{{ action }}" class="read" id="search">
+		{% include "field.html" with field=search_form.q hide_label=True %}
+		<button class="tultip" title="{% trans "Search" %}">
+			<i class="icon-search"></i>
+		</button>
+	</form>
+{% endblock extra_title %}
+
 {% block content %}
 	{% if noob %}
 		<div class="help"><div class="content">
