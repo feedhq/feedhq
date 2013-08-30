@@ -1,5 +1,6 @@
-@import url(//fonts.googleapis.com/css?family=Gentium+Basic);
+@import url(//fonts.googleapis.com/css?family=Gentium+Basic:400,700);
 
 body {
     font-family: 'Gentium Basic', serif;
+    font-weight: 400;
 }

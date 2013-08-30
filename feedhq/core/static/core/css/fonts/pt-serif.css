@@ -1,5 +1,6 @@
-@import url(//fonts.googleapis.com/css?family=PT+Serif);
+@import url(//fonts.googleapis.com/css?family=PT+Serif:400,700);
 
 body {
     font-family: 'PT Serif', serif;
+    font-weight: 400;
 }
