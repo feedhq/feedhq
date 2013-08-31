@@ -14,6 +14,7 @@ from feedhq.feeds.models import UniqueFeed, timedelta_to_seconds
 from feedhq.feeds.tasks import store_entries
 from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
+from feedhq.utils import get_redis_connection
 
 from .factories import FeedFactory
 from . import responses, ClearRedisTestCase, test_file
@@ -31,15 +32,17 @@ class UpdateTests(ClearRedisTestCase):
         ).schedule()
         with self.assertNumQueries(0):
             jobs = list(pending_jobs(
-                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60))
+                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
+                connection=get_redis_connection()))
             self.assertEqual(len(jobs), 1)
             self.assertEqual(jobs[0]['id'], u.url)
 
         u.delete()
-        delete_job(u.url)
+        delete_job(u.url, connection=get_redis_connection())
         with self.assertNumQueries(0):
             urls = list(pending_jobs(
-                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60))
+                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
+                connection=get_redis_connection()))
             self.assertEqual(len(urls), 0)
 
         u = UniqueFeed.objects.create(
@@ -49,14 +52,16 @@ class UpdateTests(ClearRedisTestCase):
         )
         with self.assertNumQueries(0):
             jobs = list(pending_jobs(
-                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60))
+                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
+                connection=get_redis_connection()))
             self.assertEqual(len(jobs), 0)
         u.backoff_factor = 9
         u.save()
         u.schedule()
         with self.assertNumQueries(0):
             jobs = list(pending_jobs(
-                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60))
+                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
+                connection=get_redis_connection()))
             self.assertEqual(len(jobs), 1)
             self.assertEqual(jobs[0]['id'], u.url)
             self.assertEqual(
@@ -65,7 +70,8 @@ class UpdateTests(ClearRedisTestCase):
         UniqueFeed.objects.update(last_update=timezone.now())
         with self.assertNumQueries(0):
             jobs = list(pending_jobs(
-                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60))
+                limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
+                connection=get_redis_connection()))
             self.assertEqual(len(jobs), 0)
 
         UniqueFeed.objects.create(
@@ -90,7 +96,8 @@ class UpdateTests(ClearRedisTestCase):
             last_loop=timezone.now() - timedelta(hours=2),
         ).schedule()
         jobs = list(pending_jobs(
-            limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60))
+            limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
+            connection=get_redis_connection()))
         self.assertEqual(len(jobs), 2)
         self.assertEqual(jobs[0]['id'], 'http://example.com/bar')
         self.assertEqual(jobs[1]['id'], 'http://example.com/foo')

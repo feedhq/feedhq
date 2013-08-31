@@ -7,6 +7,7 @@ from rache import job_details
 from feedhq.feeds.models import (Category, Feed, UniqueFeed, Entry, Favicon,
                                  UniqueFeedManager)
 from feedhq.feeds.tasks import update_feed
+from feedhq.utils import get_redis_connection
 
 from .factories import CategoryFactory, FeedFactory
 from . import responses, ClearRedisTestCase
@@ -43,7 +44,7 @@ class ModelTests(ClearRedisTestCase):
         # update()
         update_feed(feed.url)
 
-        data = job_details(feed.url)
+        data = job_details(feed.url, connection=get_redis_connection())
 
         self.assertEqual(data['title'], 'Sample Feed')
         self.assertEqual(data['link'], 'http://example.org/')
@@ -142,7 +143,8 @@ class ModelTests(ClearRedisTestCase):
                                      headers={'etag': 'foo',
                                               'last-modified': 'bar'})
         FeedFactory.create()
-        data = job_details(UniqueFeed.objects.get().url)
+        data = job_details(UniqueFeed.objects.get().url,
+                           connection=get_redis_connection())
         self.assertEqual(data['etag'], 'foo')
         self.assertEqual(data['modified'], 'bar')
 

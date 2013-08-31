@@ -3,8 +3,9 @@ import os
 from io import BytesIO as BaseBytesIO
 
 from django.test import TestCase
-from rache import r
 from requests import Response
+
+from feedhq.utils import get_redis_connection
 
 
 TEST_DATA = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
@@ -40,5 +41,5 @@ def responses(code, path=None, redirection=None,
 class ClearRedisTestCase(TestCase):
     def tearDown(self):  # noqa
         """Clean up the rache:* redis keys"""
-        r.flushall()
+        get_redis_connection().flushall()
     setUp = tearDown

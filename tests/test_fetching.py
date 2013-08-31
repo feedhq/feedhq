@@ -14,7 +14,8 @@ from rq.timeouts import JobTimeoutException
 
 from feedhq.feeds.models import Favicon, UniqueFeed, Feed, Entry
 from feedhq.feeds.tasks import update_feed
-from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT
+from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT, epoch_to_utc
+from feedhq.utils import get_redis_connection
 
 from .factories import FeedFactory
 from .test_feeds import test_file, responses
@@ -36,7 +37,7 @@ class UpdateTests(ClearRedisTestCase):
                                       ": gzip, but failed to decode it.")
         FeedFactory.create()
         unique = UniqueFeed.objects.get()
-        data = job_details(unique.url)
+        data = job_details(unique.url, connection=get_redis_connection())
         self.assertEqual(data['backoff_factor'], 2)
         self.assertEqual(data['error'], UniqueFeed.DECODE_ERROR)
 
@@ -46,7 +47,7 @@ class UpdateTests(ClearRedisTestCase):
         FeedFactory.create()
         f = UniqueFeed.objects.get()
         self.assertFalse(f.muted)
-        data = job_details(f.url)
+        data = job_details(f.url, connection=get_redis_connection())
         self.assertEqual(data['error'], f.CONNECTION_ERROR)
 
     @patch("requests.get")
@@ -56,7 +57,7 @@ class UpdateTests(ClearRedisTestCase):
         FeedFactory.create()
         f = UniqueFeed.objects.get()
         self.assertFalse(f.muted)
-        data = job_details(f.url)
+        data = job_details(f.url, connection=get_redis_connection())
         self.assertEqual(data['error'], f.TIMEOUT)
 
     @patch('requests.get')
@@ -134,13 +135,13 @@ class UpdateTests(ClearRedisTestCase):
             self.assertEqual(feed.error, None)
             self.assertEqual(feed.backoff_factor, 1)
             feed.schedule()
-            data = job_details(feed.url)
+            data = job_details(feed.url, connection=get_redis_connection())
 
             update_feed(feed.url, backoff_factor=data['backoff_factor'])
 
             feed = UniqueFeed.objects.get(url=feed.url)
             self.assertFalse(feed.muted)
-            data = job_details(feed.url)
+            data = job_details(feed.url, connection=get_redis_connection())
             self.assertEqual(data['error'], code)
             self.assertEqual(data['backoff_factor'], 2)
 
@@ -158,14 +159,14 @@ class UpdateTests(ClearRedisTestCase):
         self.assertEqual(feed.error, None)
         self.assertEqual(feed.backoff_factor, 1)
         feed.schedule()
-        data = job_details(feed.url)
+        data = job_details(feed.url, connection=get_redis_connection())
 
         get.return_value = responses(502)
         for i in range(12):
             update_feed(feed.url, backoff_factor=data['backoff_factor'])
             feed = UniqueFeed.objects.get(url=feed.url)
             self.assertFalse(feed.muted)
-            data = job_details(feed.url)
+            data = job_details(feed.url, connection=get_redis_connection())
             self.assertEqual(data['error'], 502)
             self.assertEqual(data['backoff_factor'], min(i + 2, 10))
 
@@ -175,13 +176,13 @@ class UpdateTests(ClearRedisTestCase):
         feed.backoff_factor = 1
         feed.save()
         feed.schedule()
-        data = job_details(feed.url)
+        data = job_details(feed.url, connection=get_redis_connection())
 
         for i in range(12):
             update_feed(feed.url, backoff_factor=data['backoff_factor'])
             feed = UniqueFeed.objects.get(url=feed.url)
             self.assertFalse(feed.muted)
-            data = job_details(feed.url)
+            data = job_details(feed.url, connection=get_redis_connection())
             self.assertEqual(data['error'], 'timeout')
             self.assertEqual(data['backoff_factor'], min(i + 2, 10))
 
@@ -210,7 +211,7 @@ class UpdateTests(ClearRedisTestCase):
         update_feed(feed.url, error=feed.error,
                     backoff_factor=feed.backoff_factor)
 
-        data = job_details(feed.url)
+        data = job_details(feed.url, connection=get_redis_connection())
         self.assertEqual(data['backoff_factor'], 1)
         self.assertTrue('error' not in data)
 
@@ -261,7 +262,7 @@ class UpdateTests(ClearRedisTestCase):
         get.side_effect = JobTimeoutException
         self.assertEqual(UniqueFeed.objects.get().backoff_factor, 1)
         update_feed(feed.url)
-        data = job_details(feed.url)
+        data = job_details(feed.url, connection=get_redis_connection())
         self.assertEqual(data['backoff_factor'], 2)
 
     @patch('requests.post')
