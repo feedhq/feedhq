@@ -152,6 +152,42 @@ class UpdateTests(ClearRedisTestCase):
             feed.schedule()
 
     @patch('requests.get')
+    def test_too_many_requests(self, get):
+        get.return_value = responses(304)
+        feed = FeedFactory.create()
+
+        get.return_value = responses(429)
+        update_feed(feed.url, backoff_factor=1)
+        data = job_details(feed.url, connection=get_redis_connection())
+        # retry in 1 min
+        self.assertTrue(
+            58 <
+            (epoch_to_utc(data['schedule_at']) - timezone.now()).seconds <
+            60
+        )
+
+    @patch('requests.get')
+    def test_too_many_requests_retry(self, get):
+        get.return_value = responses(304)
+        feed = FeedFactory.create()
+
+        get.return_value = responses(429, headers={'Retry-After': '3600'})
+        update_feed(feed.url, backoff_factor=1)
+        data = job_details(feed.url, connection=get_redis_connection())
+        # Retry in 1 hour
+        self.assertTrue(
+            3590 <
+            (epoch_to_utc(data['schedule_at']) - timezone.now()).seconds <
+            3600
+        )
+
+        # Other requests to same domain
+        get.reset_mock()
+        get.assert_not_called()
+        update_feed(feed.url, backoff_factor=1)
+        get.assert_not_called()
+
+    @patch('requests.get')
     def test_backoff(self, get):
         get.return_value = responses(304)
         feed = FeedFactory.create()

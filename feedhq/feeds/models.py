@@ -18,6 +18,7 @@ import time
 
 from django.db import models
 from django.conf import settings
+from django.core.cache import cache
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
@@ -140,6 +141,17 @@ class UniqueFeedManager(models.Manager):
     def update_feed(self, url, etag=None, last_modified=None, subscribers=1,
                     request_timeout=10, backoff_factor=1, previous_error=None,
                     link=None, title=None, hub=None):
+
+        # Check if this domain has rate-limiting rules
+        domain = urlparse.urlparse(url).netloc
+        ratelimit_key = 'ratelimit:{0}'.format(domain)
+        retry_at = cache.get(ratelimit_key)
+        if retry_at:
+            retry_in = (epoch_to_utc(retry_at) - timezone.now()).seconds
+            schedule_job(url, schedule_in=retry_in,
+                         connection=get_redis_connection())
+            return
+
         if subscribers == 1:
             subscribers_text = '1 subscriber'
         else:
@@ -215,6 +227,18 @@ class UniqueFeedManager(models.Manager):
 
         elif response.status_code not in [200, 204, 304]:
             logger.debug(u"{0} returned {1}".format(url, response.status_code))
+
+            if response.status_code == 429:
+                # Too Many Requests
+                # Prevent next jobs from fetching the URL before retry-after
+                retry_in = int(response.headers.get('Retry-After', 60))
+                retry_at = timezone.now() + datetime.timedelta(
+                    seconds=retry_in)
+                cache.set(ratelimit_key,
+                          int(retry_at.strftime('%s')),
+                          retry_in)
+                schedule_job(url, schedule_in=retry_in)
+                return
 
         else:
             # Avoid going back to 1 directly if it isn't safe given the
