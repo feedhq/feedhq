@@ -1,13 +1,11 @@
 from optparse import make_option
 import os
 
-from django.conf import settings
-
 from raven import Client
-from redis import Redis
 from rq import Queue, Connection, Worker
 
 from . import SentryCommand
+from ....utils import get_redis_connection
 
 
 def sentry_handler(job, *exc_info):
@@ -37,7 +35,7 @@ class Command(SentryCommand):
     help = "Run a RQ worker on selected queues."
 
     def handle_sentry(self, *args, **options):
-        conn = Redis(**settings.REDIS)
+        conn = get_redis_connection()
         with Connection(conn):
             queues = map(Queue, args)
             worker = Worker(queues, exc_handler=sentry_handler)

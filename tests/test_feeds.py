@@ -18,6 +18,7 @@ from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.templatetags.feeds_tags import smart_date
 from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
+from feedhq.utils import get_redis_connection
 from feedhq.wsgi import application  # noqa
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
@@ -901,12 +902,14 @@ class WebBaseTests(WebTest):
         FeedFactory.create(user=user, category=None)
         unique = UniqueFeed.objects.all()[0]
         schedule_job(unique.url, schedule_in=0, backoff_factor=10,
-                     error=UniqueFeed.NOT_A_FEED)
+                     error=UniqueFeed.NOT_A_FEED,
+                     connection=get_redis_connection())
 
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Not a valid RSS/Atom feed')
 
-        schedule_job(unique.url, schedule_in=0, error='blah')
+        schedule_job(unique.url, schedule_in=0, error='blah',
+                     connection=get_redis_connection())
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Error')
 

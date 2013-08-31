@@ -8,6 +8,8 @@ from django_push.subscriber.models import Subscription
 from rache import schedule_job
 from rq.timeouts import JobTimeoutException
 
+from ..utils import get_redis_connection
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,7 +30,8 @@ def update_feed(url, etag=None, modified=None, subscribers=1,
             url, backoff_factor,
         ))
         schedule_job(url, schedule_in=UniqueFeed.delay(backoff_factor),
-                     backoff_factor=backoff_factor)
+                     backoff_factor=backoff_factor,
+                     connection=get_redis_connection())
 
 
 def read_later(entry_pk):

@@ -1,20 +1,19 @@
 import datetime
 import logging
-import redis
 import pytz
 
 from dateutil import parser
-from django.conf import settings
 from itertools import product
 
 from . import SentryCommand
+from ....utils import get_redis_connection
 
 logger = logging.getLogger(__name__)
 
 
 class Command(SentryCommand):
     def handle_sentry(self, **options):
-        r = redis.Redis(**settings.REDIS)
+        r = get_redis_connection()
         prefix = 'rq:job:'
         keys = (
             "".join(chars) for chars in product('0123456789abcdef', repeat=1)

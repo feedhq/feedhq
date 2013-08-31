@@ -9,6 +9,7 @@ from ratelimitbackend import admin
 
 from .fields import URLField
 from .models import Category, UniqueFeed, Feed, Entry, Favicon
+from ..utils import get_redis_connection
 
 
 class URLOverrideMixin(object):
@@ -62,7 +63,8 @@ class UniqueFeedAdmin(ModelAdmin):
         ) + super(UniqueFeedAdmin, self).get_urls()
 
     def graph_data(self, request):
-        jobs = list(scheduled_jobs(with_times=True))
+        jobs = list(scheduled_jobs(with_times=True,
+                                   connection=get_redis_connection()))
 
         timespan = jobs[-1][1] - jobs[0][1]
         interval = math.ceil(timespan / 500)

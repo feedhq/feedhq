@@ -41,6 +41,7 @@ from .tasks import update_feed, update_favicon, store_entries
 from .utils import FAVICON_FETCHER, USER_AGENT, is_feed, epoch_to_utc
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
+from ..utils import get_redis_connection
 
 logger = logging.getLogger(__name__)
 
@@ -227,7 +228,7 @@ class UniqueFeedManager(models.Manager):
         if response.status_code == 304:
             logger.debug(u"Feed not modified, {0}".format(url))
             schedule_job(url, schedule_in=UniqueFeed.delay(new_backoff, hub),
-                         **update)
+                         connection=get_redis_connection(), **update)
             return
 
         if 'etag' in response.headers:
@@ -274,7 +275,7 @@ class UniqueFeedManager(models.Manager):
                      schedule_in=UniqueFeed.delay(
                          update.get('backoff_factor', backoff_factor),
                          update['hub']),
-                     **update)
+                     connection=get_redis_connection(), **update)
 
         entries = filter(
             None,
@@ -359,10 +360,10 @@ class UniqueFeedManager(models.Manager):
             if not settings.TESTS:
                 enqueue_favicon(new_url)
         self.filter(url=old_url).delete()
-        delete_job(old_url)
+        delete_job(old_url, connection=get_redis_connection())
 
     def mute_feed(self, url, reason):
-        delete_job(url)
+        delete_job(url, connection=get_redis_connection())
         self.filter(url=url).update(muted=True, error=reason,
                                     last_update=timezone.now())
 
@@ -373,7 +374,8 @@ class UniqueFeedManager(models.Manager):
             ))
         backoff_factor = min(UniqueFeed.MAX_BACKOFF, backoff_factor + 1)
         schedule_job(url, schedule_in=UniqueFeed.delay(backoff_factor),
-                     error=error, backoff_factor=backoff_factor)
+                     error=error, backoff_factor=backoff_factor,
+                     connection=get_redis_connection())
 
     def safe_backoff(self, response_time):
         """
@@ -389,7 +391,8 @@ class JobDataMixin(object):
     @property
     def job_details(self):
         if not hasattr(self, '_job_details'):
-            self._job_details = job_details(self.url)
+            self._job_details = job_details(self.url,
+                                            connection=get_redis_connection())
         return self._job_details
 
     @property
@@ -497,7 +500,8 @@ class UniqueFeed(JobDataMixin, models.Model):
         for attr in self.JOB_ATTRS:
             if getattr(self, attr):
                 kwargs[attr] = getattr(self, attr)
-        schedule_job(self.url, schedule_in=self.schedule_in, **kwargs)
+        schedule_job(self.url, schedule_in=self.schedule_in,
+                     connection=get_redis_connection(), **kwargs)
 
 
 class Feed(JobDataMixin, models.Model):

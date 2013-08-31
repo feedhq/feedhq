@@ -1,5 +1,3 @@
-import time
-
 from datetime import timedelta
 from mock import patch
 
@@ -10,7 +8,7 @@ import times
 from django.conf import settings
 from django.core.management import call_command
 from django.utils import timezone
-from rache import pending_jobs, delete_job, schedule_job
+from rache import pending_jobs, delete_job
 
 from feedhq.feeds.models import UniqueFeed, timedelta_to_seconds
 from feedhq.feeds.tasks import store_entries

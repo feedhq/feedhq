@@ -3,8 +3,9 @@ import logging
 from more_itertools import chunked
 from rache import scheduled_jobs, delete_job
 
-from ...models import UniqueFeed
 from . import SentryCommand
+from ...models import UniqueFeed
+from ....utils import get_redis_connection
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,8 @@ class Command(SentryCommand):
     """
 
     def handle_sentry(self, *args, **kwargs):
-        existing_jobs = set(scheduled_jobs())
+        connection = get_redis_connection()
+        existing_jobs = set(scheduled_jobs(connection=connection))
         target = set(UniqueFeed.objects.filter(muted=False).values_list(
             'url', flat=True))
 
@@ -26,7 +28,7 @@ class Command(SentryCommand):
             logger.info(
                 "Deleting {0} jobs from the scheduler".format(len(to_delete)))
             for job_id in to_delete:
-                delete_job(job_id)
+                delete_job(job_id, connection=connection)
 
         to_add = target - existing_jobs
         if to_add:

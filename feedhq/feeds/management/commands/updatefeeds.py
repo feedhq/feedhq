@@ -1,11 +1,10 @@
-import redis
 import logging
 
-from django.conf import settings
 from rache import pending_jobs
 from rq import Queue
 
 from ....tasks import enqueue
+from ....utils import get_redis_connection
 from ...models import UniqueFeed
 from ...tasks import update_feed
 from . import SentryCommand
@@ -33,7 +32,7 @@ class Command(SentryCommand):
             1, UniqueFeed.objects.filter(muted=False).count() // ratio) * 2
 
         # Avoid queueing if the default or store queue is already full
-        conn = redis.Redis(**settings.REDIS)
+        conn = get_redis_connection()
         for name in ['default', 'store']:
             queue = Queue(name=name, connection=conn)
             if queue.count > limit:
@@ -42,7 +41,8 @@ class Command(SentryCommand):
                     "({1} > {2})".format(name, queue.count, limit))
 
         jobs = pending_jobs(limit=limit,
-                            reschedule_in=UniqueFeed.UPDATE_PERIOD * 60)
+                            reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
+                            connection=get_redis_connection())
         for job in jobs:
             url = job.pop('id')
             job.pop('last_update', None)

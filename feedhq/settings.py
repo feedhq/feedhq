@@ -172,6 +172,7 @@ CACHES = {
         'LOCATION': '{host}:{port}'.format(**REDIS),
         'OPTIONS': {
             'DB': REDIS['db'],
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
         },
     },
 }
