@@ -280,39 +280,6 @@ class UpdateTests(ClearRedisTestCase):
         secs = timedelta_to_seconds(UniqueFeed.objects.get().schedule_in)
         self.assertTrue(secs > 10000)
 
-    @patch("requests.get")
-    def test_scheduler_backup(self, get):
-        get.return_value = responses(304)
-
-        feed = FeedFactory.create()
-        with self.assertNumQueries(1):
-            call_command('backup_scheduler')
-
-        schedule_job(feed.url, schedule_in=10, subscribers=10, etag='foobar',
-                     backoff_factor=2, last_update=int(time.time()) + 10,
-                     title="f" * 2049)
-
-        with self.assertNumQueries(1):
-            call_command('backup_scheduler')
-
-        schedule_job(feed.url, schedule_in=10, title='12')
-
-        with self.assertNumQueries(1):
-            call_command('backup_scheduler')
-
-        unique = UniqueFeed.objects.get()
-        self.assertEqual(unique.subscribers, 10)
-        self.assertEqual(unique.backoff_factor, 2)
-        self.assertEqual(unique.etag, 'foobar')
-        self.assertEqual(unique.modified, '')
-        delta = (unique.last_update - timezone.now()).seconds
-        self.assertTrue(5 < delta < 10)
-
-        for i in range(4):
-            FeedFactory.create()
-        with self.assertNumQueries(5):
-            call_command('backup_scheduler')
-
     def test_clean_rq(self):
         r = redis.Redis(**settings.REDIS)
         self.assertEqual(len(r.keys('rq:job:*')), 0)
