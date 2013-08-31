@@ -39,6 +39,7 @@ class Command(SentryCommand):
                 logger.info(
                     "{0} queue longer than limit, skipping update "
                     "({1} > {2})".format(name, queue.count, limit))
+                return
 
         jobs = pending_jobs(limit=limit,
                             reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
