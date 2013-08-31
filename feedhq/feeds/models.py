@@ -226,7 +226,6 @@ class UniqueFeedManager(models.Manager):
                 update['backoff_factor'] = new_backoff
 
         if response.status_code == 304:
-            logger.debug(u"Feed not modified, {0}".format(url))
             schedule_job(url, schedule_in=UniqueFeed.delay(new_backoff, hub),
                          connection=get_redis_connection(), **update)
             return
