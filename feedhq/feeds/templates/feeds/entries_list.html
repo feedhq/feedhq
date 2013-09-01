@@ -35,6 +35,7 @@
 					{% if feed %}
 					<a href="{% url "feeds:edit_feed" feed.id %}" class="tultip" title="{% trans "Edit feed" %}">
 						<i class="icon-edit"></i>
+						<span class="legend">{% trans "Edit feed" %}</span>
 					</a>
 					{% endif %}
 					{% if form %}
