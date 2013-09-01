@@ -205,7 +205,7 @@
 			}
 		}, 0);
 
-		new FastClick(document.body);
+		FastClick.attach(document.body);
 
 		var touchDevice = 'ontouchstart' in document.documentElement;
 
