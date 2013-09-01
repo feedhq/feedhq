@@ -41,5 +41,5 @@ def responses(code, path=None, redirection=None,
 class ClearRedisTestCase(TestCase):
     def tearDown(self):  # noqa
         """Clean up the rache:* redis keys"""
-        get_redis_connection().flushall()
+        get_redis_connection().flushdb()
     setUp = tearDown
