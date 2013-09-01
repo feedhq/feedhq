@@ -38,30 +38,45 @@
 						<span class="legend">{% trans "Edit feed" %}</span>
 					</a>
 					{% endif %}
-					{% if form %}
-						<form data-mousetrap="shift+a" method="post" action="{{ action }}" class="read" id="read">
-							{% include "form.html" %}
+					{% if read_page_form %}
+						<form method="post" action="{{ action }}" class="read" id="read-page" prompt="{% trans "Are you sure you want to mark the items on this page as read?" %}">
+							{% include "form.html" with form=read_page_form %}
+							<button class="tultip" title="{% trans "Mark page as read" %}">
+								<i class="icon-ok-circle"></i>
+								<span class="legend">{% trans "Mark page as read" %}</span>
+							</button>
+						</form>
+					{% endif %}
+					{% if read_all_form %}
+						<form data-mousetrap="shift+a" method="post" action="{{ action }}" prompt="{% trans "Are you sure you want to mark all items as read?" %}" class="read" id="read-all">
+							{% include "form.html" with form=read_all_form %}
 							<button class="tultip" title="{% trans "Mark all as read" %}">
-								<i class="icon-ok"></i>
+								<i class="icon-ok-sign"></i>
 								<span class="legend">{% trans "Mark all as read" %}</span>
 							</button>
 						</form>
 					{% endif %}
 				{% endspaceless %}</div>
 			</div>
-			<div class="pagination">{% include "feeds/paginator.html" %}</div>
+			{% if not user.endless_pages %}
+				<div class="pagination">{% include "feeds/paginator.html" %}</div>
+			{% endif %}
 		</div>
 
 		<ul id="entries">
-			{% for entry in entries.object_list %}
-				{% include "feeds/entry_include.html" %}
-			{% empty %}
-				<li class="empty" >{% trans "Hooray, nothing to read!" %}</li>
-			{% endfor %}
+			{% include entries_template %}
 		</ul>
 
-		<div class="figures bottom">
-			<div class="pagination">{% include "feeds/paginator.html" %}</div>
-		</div>
+		{% if user.endless_pages %}
+			{% if entries.paginator.num_pages > 1 and entries.has_next %}
+				<a href="{{ base_url }}{{ entries.next_page_number }}/" title="{% trans "Load more" %}" loading="{% trans "Loading…" %}" class="feedhq-more">
+					{% trans "Load more" %}
+				</a>
+			{% endif %}
+		{% else %}
+			<div class="figures bottom">
+				<div class="pagination">{% include "feeds/paginator.html" %}</div>
+			</div>
+		{% endif %}
 	{% endif %}
 {% endblock %}

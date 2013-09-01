@@ -597,7 +597,7 @@ class WebBaseTests(WebTest):
         response = self.app.get(url, user=user)
         self.assertContains(response, '"Mark all as read"')
 
-        form = response.forms['read']
+        form = response.forms['read-all']
         response = form.submit()
         self.assertRedirects(response, url)
         response = response.follow()

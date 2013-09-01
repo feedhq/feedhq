@@ -594,6 +594,16 @@ input, select {
 		overflow: auto;
 	}
 
+	.feedhq-more {
+		display: block;
+		text-align: center;
+		padding: 0.3em;
+		margin: 0.5em 0;
+		width: 100%;
+		text-decoration: none;
+		background-color: $light-background-color;
+	}
+
 	.all-feeds {
 		li {
 			padding: 5px 0;
