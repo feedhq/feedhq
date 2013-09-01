@@ -39,7 +39,7 @@
 					</a>
 					{% endif %}
 					{% if read_page_form %}
-						<form method="post" action="{{ action }}" class="read" id="read-page" prompt="{% trans "Are you sure you want to mark the items on this page as read?" %}">
+						<form data-mousetrap="shift+a" method="post" action="{{ action }}" class="read" id="read-page">
 							{% include "form.html" with form=read_page_form %}
 							<button class="tultip" title="{% trans "Mark page as read" %}">
 								<i class="icon-ok-circle"></i>
@@ -48,7 +48,7 @@
 						</form>
 					{% endif %}
 					{% if read_all_form %}
-						<form data-mousetrap="shift+a" method="post" action="{{ action }}" prompt="{% trans "Are you sure you want to mark all items as read?" %}" class="read" id="read-all">
+						<form data-mousetrap="mod+shift+a" method="post" action="{{ action }}" class="read" id="read-all">
 							{% include "form.html" with form=read_all_form %}
 							<button class="tultip" title="{% trans "Mark all as read" %}">
 								<i class="icon-ok-sign"></i>
@@ -69,7 +69,7 @@
 
 		{% if user.endless_pages %}
 			{% if entries.paginator.num_pages > 1 and entries.has_next %}
-				<a href="{{ base_url }}{{ entries.next_page_number }}/" title="{% trans "Load more" %}" loading="{% trans "Loading…" %}" class="feedhq-more">
+				<a href="{{ base_url }}{{ entries.next_page_number }}/" title="{% trans "Load more" %}" data-loading="{% trans "Loading…" %}" class="feedhq-more">
 					{% trans "Load more" %}
 				</a>
 			{% endif %}

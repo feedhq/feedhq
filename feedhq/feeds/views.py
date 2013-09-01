@@ -108,9 +108,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         if request.POST['action'] in (ReadForm.READ_ALL, ReadForm.READ_PAGE):
             pages_only = request.POST['action'] == ReadForm.READ_PAGE
             form = ReadForm(entries, feed, category, user,
-                            pages_only=pages_only,
-                            nb_items=request.user.entries_per_page,
-                            data=request.POST)
+                            pages_only=pages_only, data=request.POST)
             if form.is_valid():
                 pks = form.save()
                 undo_form = loader.render_to_string('feeds/undo_read.html', {

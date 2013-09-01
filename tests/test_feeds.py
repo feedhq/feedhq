@@ -615,6 +615,14 @@ class WebBaseTests(WebTest):
         self.assertEqual(user.entries.filter(read=False).count(), 30)
         self.assertEqual(user.entries.filter(read=True).count(), 0)
 
+        form = response.forms['read-page']
+        some_entries = user.entries.all()[:5].values_list('pk', flat=True)
+        form['entries'] = json.dumps(list(some_entries))
+        response = form.submit()
+        self.assertRedirects(response, url)
+        response = response.follow()
+        self.assertContains(response, "5 entries have been marked as read")
+
     @patch('requests.get')
     def test_promote_html_content_type(self, get):
         get.return_value = responses(200, 'content-description.xml')

@@ -1,4 +1,4 @@
-<form method="post" action="{{ action }}" id="undo">
+<form data-mousetrap="mod+z" method="post" action="{{ action }}" id="undo">
 	{% csrf_token %}
 	{% for field in form %}{{ field }}{% endfor %}
 	<input type="submit" value="{% trans "Undo" %}">

@@ -180,7 +180,7 @@ class ReadForm(forms.Form):
     )
 
     def __init__(self, entries=None, feed=None, category=None, user=None,
-                 pages_only=False, nb_items=25, *args, **kwargs):
+                 pages_only=False, *args, **kwargs):
         if entries is not None:
             entries = entries.filter(read=False)
         self.entries = entries
@@ -188,24 +188,18 @@ class ReadForm(forms.Form):
         self.category = category
         self.user = user
         self.pages_only = pages_only
-        self.nb_items = nb_items
         super(ReadForm, self).__init__(*args, **kwargs)
         if self.pages_only:
-            self.fields['pages'] = forms.CharField(widget=forms.HiddenInput)
+            self.fields['entries'] = forms.CharField(widget=forms.HiddenInput)
 
-    def clean_pages(self):
-        return json.loads(self.cleaned_data['pages'])
+    def clean_entries(self):
+        return json.loads(self.cleaned_data['entries'])
 
     def save(self):
         if self.pages_only:
-            # pages is a list of integers of page numbers to mark as read
-            pages = self.cleaned_data['pages']
-            # the start of the page list
-            start = (pages[0] - 1) * self.nb_items
-            # the end of the page list
-            end = pages[-1] * self.nb_items
-            entries = Entry.objects.filter(
-                pk__in=self.entries[start:end].values_list('pk', flat=True))
+            # pages is a list of IDs to mark as read
+            entries = self.user.entries.filter(
+                pk__in=self.cleaned_data['entries'])
         else:
             entries = self.entries
         pks = list(entries.values_list('pk', flat=True))
@@ -218,6 +212,7 @@ class ReadForm(forms.Form):
             feeds = self.user.feeds.all()
 
         if self.pages_only:
+            # TODO combine code with mark-all-as-read?
             for feed in feeds:
                 Feed.objects.filter(pk=feed.pk).update(
                     unread_count=feed.entries.filter(read=False).count())
