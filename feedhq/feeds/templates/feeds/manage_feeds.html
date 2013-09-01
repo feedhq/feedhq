@@ -6,13 +6,13 @@
 	<h2>{% trans "Manage feeds" %}</h2>
 	<ul class="all-feeds">
 		{% for feed in feeds %}
-			{% ifchanged feed.category_name %}
+			{% ifchanged feed.category.name %}
 				<h2>
-					{% if feed.category_slug %}
-						<div class="colors"><div class="color {{ feed.category_color }}"></div></div>
-						{{ feed.category_name }}
-						<a href="{% url "feeds:edit_category" feed.category_slug %}">{% trans "edit" %}</a>
-						<a href="{% url "feeds:delete_category" feed.category_slug %}">{% trans "delete" %}</a>
+					{% if feed.category.slug %}
+						<div class="colors"><div class="color {{ feed.category.color }}"></div></div>
+						{{ feed.category.name }}
+						<a href="{% url "feeds:edit_category" feed.category.slug %}">{% trans "edit" %}</a>
+						<a href="{% url "feeds:delete_category" feed.category.slug %}">{% trans "delete" %}</a>
 					{% endif %}
 				</h2>
 			{% endifchanged %}

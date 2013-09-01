@@ -20,6 +20,7 @@
 					<input type="hidden" name="action" value="read_later">
 					<button class="tultip" type="submit" title="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}">
 						<i class="icon-book"></i>
+						<span class="legend">{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}</span>
 					</button>
 				</form>
 			{% endif %}
@@ -28,6 +29,7 @@
 				<input type="hidden" name="action" value="unread">
 				<button class="tultip" type="submit" title="{% trans "Unread" %}">
 					<i class="icon-eye-open"></i>
+					<span class="legend">{% trans "Unread" %}</span>
 				</button>
 			</form>
 			<form method="post" action="{% url "feeds:item" object.id %}" id="star" data-mousetrap="s">
@@ -36,22 +38,24 @@
 					<input type="hidden" name="action" value="unstar">
 					<button class="tultip" type="submit" title="{% trans "Unstar" %}">
 						<i class="icon-star-empty"></i>
+						<span class="legend">{% trans "Unstar" %}</span>
 					</button>
 				{% else %}
 					<input type="hidden" name="action" value="star">
 					<button class="tultip" type="submit" title="{% trans "Star" %}">
 						<i class="icon-star"></i>
+						<span class="legend">{% trans "Star" %}</span>
 					</button>
 				{% endif %}
 			</form>
 			{% if user.sharing_email %}
-				<a class="tultip" data-mousetrap="e" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.link }}"><i class="icon-envelope-alt"></i></a>
+				<a class="tultip" data-mousetrap="e" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.link }}"><i class="icon-envelope-alt"></i><span class="legend">{% trans "Email" %}</span></a>
 			{% endif %}
 			{% if user.sharing_twitter %}
-				<a target="_blank" class="tultip" data-mousetrap="t" title="{% trans "Tweet" %}" href="https://twitter.com/home?status={{ object.tweet|urlencode }}"><i class="icon-twitter"></i></a>
+				<a target="_blank" class="tultip" data-mousetrap="t" title="{% trans "Tweet" %}" href="https://twitter.com/home?status={{ object.tweet|urlencode }}"><i class="icon-twitter"></i><span class="legend">{% trans "Tweet" %}</span></a>
 			{% endif %}
 			{% if user.sharing_gplus %}
-				<a target="_blank" class="tultip" data-mousetrap="+" title="{% trans "Share on Google+" %}" href="https://plus.google.com/share?url={{ object.link }}"><i class="icon-google-plus"></i></a>
+				<a target="_blank" class="tultip" data-mousetrap="+" title="{% trans "Share on Google+" %}" href="https://plus.google.com/share?url={{ object.link }}"><i class="icon-google-plus"></i><span class="legend">{% trans "Share on Google+" %}</span></a>
 			{% endif %}
 		</div>
 		{% if has_media and not user.allow_media %}

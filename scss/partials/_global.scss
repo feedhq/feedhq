@@ -76,6 +76,13 @@ ol {
 	list-style-type: decimal;
 }
 
+span.legend {
+	position: absolute;
+	left: -999em;
+	width: 1em;
+	overflow: hidden;
+}
+
 .cat, .color {
 	color: white !important;
 	font-weight: normal !important;
