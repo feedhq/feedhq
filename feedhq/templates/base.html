@@ -6,6 +6,9 @@
 		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="shortcut icon" href="{% static "core/img/icon-rss.png" %}">
 		<link rel="stylesheet" type="text/css" href="{% static "core/css/screen.css" %}">
+		{% if user.is_authenticated %}
+		<link rel="stylesheet" type="text/css" href="{% static "core/css/fonts/"|add:user.font|add:".css" %}">
+		{% endif %}
 		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-57.png" %}">
 		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-72.png" %}" sizes="72x72">
 		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-114.png" %}" sizes="114x114">

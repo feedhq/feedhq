@@ -143,7 +143,8 @@ span.legend {
 }
 
 body {
-	font: 20px/1.3em Palatino, Georgia, serif;
+	font-size: 20px;
+	line-height: 1.3em;
 	-webkit-text-adjust: 100%;
 	-webkit-text-size-adjust: 100%;
 	color: $text;
