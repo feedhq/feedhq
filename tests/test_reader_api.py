@@ -556,6 +556,27 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['items']), 30)
         self.assertFalse('continuation' in response.json)
 
+        with self.assertNumQueries(2):
+            response = self.client.get(url, {
+                'n': 100,
+                'ot': int(time.time()) - 3600 * 24 * 2},
+                **clientlogin(token))
+        self.assertEqual(len(response.json['items']), 30)
+
+        with self.assertNumQueries(2):
+            response = self.client.get(url, {
+                'n': 10,
+                'ot': int(time.time()) - 3600 * 24 * 2},
+                **clientlogin(token))
+        self.assertEqual(len(response.json['items']), 10)
+
+        with self.assertNumQueries(2):
+            response = self.client.get(url, {
+                'n': 100,
+                'ot': int(time.time()) + 1},
+                **clientlogin(token))
+        self.assertEqual(len(response.json['items']), 0)
+
         url = reverse('reader:stream_contents',
                       args=['user/-/state/com.google/starred'])
         with self.assertNumQueries(2):
