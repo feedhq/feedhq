@@ -38,7 +38,8 @@ from requests.packages.urllib3.exceptions import (LocationParseError,
 import pytz
 
 from .fields import URLField
-from .tasks import update_feed, update_favicon, store_entries
+from .tasks import (update_feed, update_favicon, store_entries,
+                    ensure_subscribed)
 from .utils import FAVICON_FETCHER, USER_AGENT, is_feed, epoch_to_utc
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
@@ -293,6 +294,13 @@ class UniqueFeedManager(models.Manager):
                     update['hub'] = link.href
         if 'hub' not in update:
             update['hub'] = None
+        else:
+            subs_key = u'pshb:{0}'.format(url)
+            enqueued = cache.get(subs_key)
+            if not enqueued:
+                cache.set(subs_key, True, 3600 * 24)
+                enqueue(ensure_subscribed, args=[url, update['hub']],
+                        queue='store')
 
         schedule_job(url,
                      schedule_in=UniqueFeed.delay(

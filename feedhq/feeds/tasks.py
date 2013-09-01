@@ -1,9 +1,12 @@
 import logging
+import requests
 
 from collections import defaultdict
 from datetime import timedelta
 
+from django.conf import settings
 from django.db.models import Q
+from django.utils import timezone
 from django_push.subscriber.models import Subscription
 from rache import schedule_job
 from rq.timeouts import JobTimeoutException
@@ -44,8 +47,31 @@ def update_favicon(feed_url, force_update=False):
     Favicon.objects.update_favicon(feed_url, force_update=force_update)
 
 
-def subscribe(topic_url, hub_url):
-    Subscription.objects.subscribe(topic_url, hub_url)
+def ensure_subscribed(topic_url, hub_url):
+    """Makes sure the PubSubHubbub subscription is verified"""
+    if settings.TESTS:
+        if str(type(requests.post)) != "<class 'mock.MagicMock'>":
+            raise ValueError("Not Mocked")
+
+    if hub_url is None:
+        return
+
+    call, args = None, ()
+    try:
+        s = Subscription.objects.get(topic=topic_url, hub=hub_url)
+    except Subscription.DoesNotExist:
+        logger.debug(u"Subscribing to {0} via {1}".format(topic_url, hub_url))
+        call = Subscription.objects.subscribe
+        args = topic_url, hub_url
+    else:
+        if (
+            not s.verified or
+            s.lease_expiration < timezone.now() + timedelta(days=1)
+        ):
+            logger.debug(u"Renewing subscription {0}".format(s.pk))
+            call = s.subscribe
+    if call is not None:
+        call(*args)
 
 
 def store_entries(feed_url, entries):

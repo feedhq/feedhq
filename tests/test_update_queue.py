@@ -2,12 +2,12 @@ from datetime import timedelta
 from mock import patch
 
 import feedparser
-import redis
 import times
 
-from django.conf import settings
+from django.core.cache import cache
 from django.core.management import call_command
 from django.utils import timezone
+from django_push.subscriber.models import Subscription
 from rache import pending_jobs, delete_job
 
 from feedhq.feeds.models import UniqueFeed, timedelta_to_seconds
@@ -286,7 +286,7 @@ class UpdateTests(ClearRedisTestCase):
         self.assertTrue(secs > 10000)
 
     def test_clean_rq(self):
-        r = redis.Redis(**settings.REDIS)
+        r = get_redis_connection()
         self.assertEqual(len(r.keys('rq:job:*')), 0)
         r.hmset('rq:job:abc', {'bar': 'baz'})
         r.hmset('rq:job:def', {'created_at': times.format(times.now(), 'UTC')})
@@ -296,3 +296,66 @@ class UpdateTests(ClearRedisTestCase):
         self.assertEqual(len(r.keys('rq:job:*')), 3)
         call_command('clean_rq')
         self.assertEqual(len(r.keys('rq:job:*')), 2)
+
+    @patch('requests.post')
+    @patch('requests.get')
+    def test_ensure_subscribed(self, get, post):
+        get.return_value = responses(200, 'hub.atom')
+        post.return_value = responses(202)
+
+        feed = FeedFactory.create()
+        subscription = Subscription.objects.get()
+        post.assert_called_with(
+            u'http://pubsubhubbub.appspot.com/',
+            data={
+                u'hub.callback': u'http://localhost/subscriber/{0}/'.format(
+                    subscription.pk),
+                u'hub.verify': [u'sync', u'async'],
+                u'hub.topic': feed.url,
+                u'hub.mode': u'subscribe'},
+            auth=None)
+        self.assertEqual(feed.url, subscription.topic)
+
+        post.reset_mock()
+        self.assertFalse(post.called)
+        subscription.lease_expiration = timezone.now()
+        subscription.save()
+
+        feed.delete()
+        cache.delete(u'pshb:{0}'.format(feed.url))
+        feed = FeedFactory.create(url=feed.url)
+        post.assert_called_with(
+            u'http://pubsubhubbub.appspot.com/',
+            data={
+                u'hub.callback': u'http://localhost/subscriber/{0}/'.format(
+                    subscription.pk),
+                u'hub.verify': [u'sync', u'async'],
+                u'hub.topic': feed.url,
+                u'hub.mode': u'subscribe'},
+            auth=None)
+
+        post.reset_mock()
+        self.assertFalse(post.called)
+        subscription.lease_expiration = timezone.now() + timedelta(days=5)
+        subscription.save()
+        feed.delete()
+        cache.delete(u'pshb:{0}'.format(feed.url))
+        feed = FeedFactory.create(url=feed.url)
+        post.assert_called_with(
+            u'http://pubsubhubbub.appspot.com/',
+            data={
+                u'hub.callback': u'http://localhost/subscriber/{0}/'.format(
+                    subscription.pk),
+                u'hub.verify': [u'sync', u'async'],
+                u'hub.topic': feed.url,
+                u'hub.mode': u'subscribe'},
+            auth=None)
+
+        post.reset_mock()
+        self.assertFalse(post.called)
+        subscription.verified = True
+        subscription.save()
+        feed.delete()
+        cache.delete(u'pshb:{0}'.format(feed.url))
+        feed = FeedFactory.create(url=feed.url)
+        self.assertFalse(post.called)
