@@ -11,7 +11,7 @@ import floppyforms as forms
 import opml
 import requests
 
-from .models import Category, Feed, Entry
+from .models import Category, Feed
 from .utils import USER_AGENT, is_feed
 from ..utils import get_redis_connection
 
