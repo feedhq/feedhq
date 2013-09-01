@@ -32,6 +32,11 @@
 					{% if stars %}<i class="icon-star"></i>&nbsp;{% endif %}
 					<a href="{{ all_url }}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %} <span class="ct">{{ total_count }}</span></a>
 					{% if unread_url %}<a href="{{ unread_url }}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %} <span class="ct">{{ unread_count }}</span></a>{% endif %}
+					{% if feed %}
+					<a href="{% url "feeds:edit_feed" feed.id %}" class="tultip" title="{% trans "Edit feed" %}">
+						<i class="icon-edit"></i>
+					</a>
+					{% endif %}
 					{% if form %}
 						<form data-mousetrap="shift+a" method="post" action="{{ action }}" class="read" id="read">
 							{% include "form.html" %}
