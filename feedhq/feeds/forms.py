@@ -2,7 +2,6 @@ import contextlib
 import json
 import urlparse
 
-from django.core.cache import cache
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
@@ -14,13 +13,14 @@ import requests
 
 from .models import Category, Feed
 from .utils import USER_AGENT, is_feed
+from ..utils import get_redis_connection
 
 
 @contextlib.contextmanager
 def user_lock(cache_key, user_id):
     key = "lock:{0}:{1}".format(cache_key, user_id)
 
-    redis = cache._client
+    redis = get_redis_connection()
     got_lock = redis.setnx(key, user_id)
     if not got_lock:
         raise forms.ValidationError(

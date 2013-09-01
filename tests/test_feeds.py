@@ -4,7 +4,6 @@ import json
 
 from datetime import timedelta
 
-from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django_push.subscriber.signals import updated
@@ -207,12 +206,13 @@ class WebBaseTests(WebTest):
         ])
 
         cache_key = "lock:feed_check:{0}".format(user.pk)
-        cache._client.set(cache_key, user.pk)
+        redis = get_redis_connection()
+        redis.set(cache_key, user.pk)
         response = form.submit()
         self.assertFormError(response, 'form', 'url', [
             "This action can only be done one at a time.",
         ])
-        cache._client.delete(cache_key)
+        redis.delete(cache_key)
 
         get.return_value = responses(200, 'brutasse.atom')
         response = form.submit()
