@@ -84,7 +84,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     entries_per_page = models.IntegerField(_('Entries per page'), default=50,
                                            choices=ENTRIES_PER_PAGE)
     endless_pages = models.BooleanField(
-        _('Endless pages'), default=False,
+        _('Endless pages'), default=True,
         help_text=_("Check this box if you'd like to use a 'load more' "
                     "button instead of the page links."))
 
