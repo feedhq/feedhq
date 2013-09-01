@@ -458,7 +458,7 @@ def import_feeds(request):
 
             entries = opml.parse(request.FILES['file'])
             try:
-                with user_lock('opml_import', request.user.pk):
+                with user_lock('opml_import', request.user.pk, timeout=30):
                     imported = save_outline(request.user, None, entries,
                                             existing_feeds)
             except ValidationError:

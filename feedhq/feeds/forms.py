@@ -17,11 +17,13 @@ from ..utils import get_redis_connection
 
 
 @contextlib.contextmanager
-def user_lock(cache_key, user_id):
+def user_lock(cache_key, user_id, timeout=None):
     key = "lock:{0}:{1}".format(cache_key, user_id)
 
     redis = get_redis_connection()
     got_lock = redis.setnx(key, user_id)
+    if timeout is not None and got_lock:
+        redis.setex(key, timeout, user_id)
     if not got_lock:
         raise forms.ValidationError(
             _("This action can only be done one at a time."))
@@ -98,7 +100,7 @@ class FeedForm(UserFormMixin, forms.ModelForm):
                 _("It seems you're already subscribed to this feed."))
 
         # Check this is actually a feed
-        with user_lock("feed_check", self.user.pk):
+        with user_lock("feed_check", self.user.pk, timeout=30):
             headers = {
                 'User-Agent': USER_AGENT % 'checking feed',
                 'Accept': feedparser.ACCEPT_HEADER,
