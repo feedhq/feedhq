@@ -69,7 +69,7 @@
 
 		{% if user.endless_pages %}
 			{% if entries.paginator.num_pages > 1 and entries.has_next %}
-				<a href="{{ base_url }}{{ entries.next_page_number }}/" title="{% trans "Load more" %}" data-loading="{% trans "Loading…" %}" class="feedhq-more">
+				<a href="{{ base_url }}{{ entries.next_page_number }}/" title="{% trans "Load more" %}" data-loading="{% trans "Loading…" %}" class="feedhq-more" data-mousetrap="l">
 					{% trans "Load more" %}
 				</a>
 			{% endif %}
