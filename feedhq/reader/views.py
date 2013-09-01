@@ -514,7 +514,37 @@ class Subscribed(ReaderView):
 subscribed = Subscribed.as_view()
 
 
-def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
+def get_q(stream, user_id, exception=False):
+    """Given a stream ID, returns a Q object for this stream."""
+    stream_q = None
+    if stream.startswith("feed/"):
+        url = stream[len("feed/"):]
+        stream_q = Q(feed__url=url)
+    elif is_stream(stream, user_id):
+        state = is_stream(stream, user_id)
+        if state == 'read':
+            stream_q = Q(read=True)
+        elif state == 'kept-unread':
+            stream_q = Q(read=False)
+        elif state in ['broadcast', 'broadcast-friends']:
+            stream_q = Q(broadcast=True)
+        elif state == 'reading-list':
+            stream_q = Q()
+        elif state == 'starred':
+            stream_q = Q(starred=True)
+    elif is_label(stream, user_id):
+        name = is_label(stream, user_id)
+        stream_q = Q(feed__category__name=name)
+    else:
+        msg = u"Unrecognized stream: {0}".format(stream)
+        logger.info(msg)
+        if exception:
+            raise exceptions.ParseError(msg)
+    return stream_q
+
+
+def get_stream_q(streams, user_id, exclude=None, include=None, limit=None,
+                 offset=None):
     """
     Returns a Q object that can be used to filter a queryset of entries.
 
@@ -530,59 +560,24 @@ def get_stream_q(streams, user_id, exclude=None, limit=None, offset=None):
         streams = [streams]
 
     for stream in streams:
-        stream_q = None
-        if stream.startswith("feed/"):
-            url = stream[len("feed/"):]
-            stream_q = Q(feed__url=url)
-        elif is_stream(stream, user_id):
-            state = is_stream(stream, user_id)
-            if state == 'read':
-                stream_q = Q(read=True)
-            elif state == 'kept-unread':
-                stream_q = Q(read=False)
-            elif state == 'broadcast':
-                stream_q = Q(broadcast=True)
-            elif state == 'reading-list':
-                stream_q = Q()
-            elif state == 'starred':
-                stream_q = Q(starred=True)
-        elif is_label(stream, user_id):
-            name = is_label(stream, user_id)
-            stream_q = Q(feed__category__name=name)
-        else:
-            msg = u"Unrecognized stream: {0}".format(stream)
-            logger.info(msg)
-            raise exceptions.ParseError(msg)
+        stream_q = get_q(stream, user_id, exception=True)
         if stream_q is not None:
             if q is None:
                 q = stream_q
             else:
                 q |= stream_q
 
+    # ?it=user/stuff or feed/stuff to only include something from the query
+    if include is not None:
+        for inc in include:
+            include_q = get_q(inc, user_id)
+            if include_q is not None and q is not None:
+                q &= include_q
+
     # ?xt=user/stuff or feed/stuff to exclude something from the query
     if exclude is not None:
         for ex in exclude:
-            exclude_q = None
-            if ex.startswith('feed/'):
-                exclude_q = Q(feed__url=ex[len('feed/'):])
-            elif is_stream(ex, user_id):
-                exclude_state = is_stream(ex, user_id)
-                if exclude_state == 'starred':
-                    exclude_q = Q(starred=True)
-                elif exclude_state in ['broadcast', 'broadcast-friends']:
-                    exclude_q = Q(broadcast=True)
-                elif exclude_state == 'kept-unread':
-                    exclude_q = Q(read=False)
-                elif exclude_state == 'read':
-                    exclude_q = Q(read=True)
-                else:
-                    logger.info(u"Unknown user state: {0}".format(
-                        exclude_state))
-            elif is_label(ex, user_id):
-                exclude_label = is_label(ex, user_id)
-                exclude_q = Q(feed__category__name=exclude_label)
-            else:
-                logger.info(u"Unknown state: {0}".format(ex))
+            exclude_q = get_q(ex, user_id)
             if exclude_q is not None and q is not None:
                 q &= ~exclude_q
 
@@ -786,6 +781,7 @@ class StreamContents(ReaderView):
         entries = request.user.entries.filter(
             get_stream_q(content_id, request.user.pk,
                          exclude=request.GET.getlist('xt'),
+                         include=request.GET.getlist('it'),
                          limit=request.GET.get('ot'),
                          offset=request.GET.get('nt')),
         ).select_related('feed', 'feed__category')
@@ -834,6 +830,7 @@ class StreamItemsIds(ReaderView):
             get_stream_q(
                 request.GET['s'], request.user.pk,
                 exclude=request.GET.getlist('xt'),
+                include=request.GET.getlist('it'),
                 limit=request.GET.get('ot'),
                 offset=request.GET.get('nt'))).order_by('date')
 

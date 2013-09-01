@@ -506,6 +506,13 @@ class ReaderApiTest(ApiTest):
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 19)
 
+        # ?it= includes stuff
+        with self.assertNumQueries(2):
+            response = self.client.get(
+                url, {'it': 'user/-/state/com.google/starred', 'n': 40},
+                **clientlogin(token))
+        self.assertEqual(len(response.json['items']), 10)
+
         with self.assertNumQueries(2):
             response = self.client.get(
                 url, {'xt': 'user/-/state/com.google/broadcast', 'n': 40},
