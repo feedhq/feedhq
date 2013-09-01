@@ -1096,6 +1096,9 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "already subscribed", status_code=400)
 
+        feed = Feed.objects.get()
+        self.assertEqual(feed.name, "brutasse's Activity")
+
     def test_disable_tag(self, get):
         get.return_value = responses(304)
 

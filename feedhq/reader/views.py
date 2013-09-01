@@ -484,7 +484,9 @@ class QuickAddSubscription(ReaderView):
             if 'url' in errors:
                 raise exceptions.ParseError(errors['url'][0])
 
-        name = urlparse.urlparse(url).netloc
+        name = form.cleaned_data['title']
+        if not name:
+            name = urlparse.urlparse(url).netloc
         request.user.feeds.create(name=name, url=url)
         return Response({
             "numResults": 1,
