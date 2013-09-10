@@ -208,9 +208,6 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(response.json, {"subscriptions": []})
 
         feed = FeedFactory.create(category__user=user, user=user)
-        u = UniqueFeed.objects.get()
-        u.link = 'http://example.com/foo'
-        u.save(update_fields=['link'])
         EntryFactory.create(feed=feed, user=user,
                             date=timezone.now() - timedelta(days=365 * 150))
         with self.assertNumQueries(2):

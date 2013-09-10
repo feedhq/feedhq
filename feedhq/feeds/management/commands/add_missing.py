@@ -1,5 +1,3 @@
-from collections import Counter
-
 from django.conf import settings
 
 from ...models import Feed, UniqueFeed, enqueue_favicon
@@ -22,11 +20,10 @@ class Command(SentryCommand):
                 ) and
                 u.is_suspended = false
             """)
-        uniques = []
-        urls = Counter([f.url for f in missing])
-        for url in urls:
-            uniques.append(UniqueFeed(url=url, subscribers=urls[url]))
-        UniqueFeed.objects.bulk_create(uniques)
+        urls = set([f.url for f in missing])
+        UniqueFeed.objects.bulk_create([
+            UniqueFeed(url=url) for url in urls
+        ])
 
         if not settings.TESTS:
             missing_favicons = UniqueFeed.objects.raw(

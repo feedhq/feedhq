@@ -19,12 +19,13 @@ class Command(SentryCommand):
         if args:
             pk = args[0]
             feed = UniqueFeed.objects.get(pk=pk)
+            data = feed.job_details
             return update_feed(
-                feed.url, etag=feed.etag, modified=feed.modified,
-                subscribers=feed.subscribers,
-                request_timeout=feed.request_timeout,
-                backoff_factor=feed.backoff_factor, error=feed.error,
-                link=feed.link, title=feed.title, hub=feed.hub,
+                feed.url, etag=data.get('etag'), modified=data.get('modified'),
+                subscribers=data['subscribers'],
+                backoff_factor=data['backoff_factor'], error=data.get('error'),
+                link=data.get('link'), title=data.get('title'),
+                hub=data.get('hub'),
             )
 
         ratio = UniqueFeed.UPDATE_PERIOD // 5

@@ -2,9 +2,11 @@
 
 {% block after_field_sets %}
 	<h2>{% trans "Scheduler data" %}</h2>
+	{% if adminform.form.instance.muted %}
+		<p>{% trans "This feed is muted." %}</p>
+	{% else %}
+		<p>{% trans "Next update scheduled in:" %} {{ adminform.form.instance.next_update|timeuntil }}. ({{ adminform.form.instance.next_update|timezone:user.timezone|date }})</p>
 
-	<p>{% trans "Next update scheduled in:" %} {{ adminform.form.instance.next_update|timeuntil }}. ({{ adminform.form.instance.next_update|timezone:user.timezone|date }})</p>
-
-	<pre><code>{{ adminform.form.instance.scheduler_data|safe }}
-	</code></pre>
+		<pre><code>{{ adminform.form.instance.scheduler_data|safe }}</code></pre>
+	{% endif %}
 {% endblock %}

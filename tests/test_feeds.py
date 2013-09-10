@@ -21,7 +21,7 @@ from feedhq.utils import get_redis_connection
 from feedhq.wsgi import application  # noqa
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
-from . import test_file, responses
+from . import test_file, responses, patch_job
 
 
 class WebBaseTests(WebTest):
@@ -837,8 +837,9 @@ class WebBaseTests(WebTest):
         response = form.submit()
         self.assertContains(response, "already subscribed")
 
-        UniqueFeed.objects.create(url='http://example.com/feed',
-                                  title='Awesome')
+        u = UniqueFeed.objects.create(url='http://example.com/feed')
+        u.schedule()
+        patch_job(u.url, title='Awesome')
         response = self.app.get(
             url, {'feeds': ",".join(['http://bruno.im/atom/latest/',
                                      'http://example.com/feed'])})

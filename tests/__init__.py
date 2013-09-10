@@ -3,6 +3,7 @@ import os
 from io import BytesIO as BaseBytesIO
 
 from django.test import TestCase
+from rache import job_key
 from requests import Response
 
 from feedhq.utils import get_redis_connection
@@ -43,3 +44,12 @@ class ClearRedisTestCase(TestCase):
         """Clean up the rache:* redis keys"""
         get_redis_connection().flushdb()
     setUp = tearDown
+
+
+def patch_job(name, **kwargs):
+    redis = get_redis_connection()
+    for key, value in kwargs.items():
+        if value is None:
+            redis.hdel(job_key(name), key)
+            kwargs.pop(key)
+    redis.hmset(job_key(name), kwargs)

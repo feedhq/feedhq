@@ -3,6 +3,7 @@ import logging
 import struct
 import urlparse
 
+from datetime import timedelta
 from urllib import urlencode
 
 from django.core.cache import cache
@@ -684,7 +685,7 @@ def get_unique_map(user, force=False):
     value = cache.get(cache_key)
     if value is None or force:
         unique = UniqueFeed.objects.raw(
-            "select id, url, link from feeds_uniquefeed u "
+            "select id, url, muted from feeds_uniquefeed u "
             "where exists ("
             "select 1 from feeds_feed f "
             "left join auth_user s "
@@ -744,8 +745,11 @@ class StreamContents(ReaderView):
                         'href': unique.link,
                         'type': 'text/html',
                     }],
-                    'updated': int(unique.last_update.strftime("%s")),
                 })
+                updated = unique.last_update
+                if updated is None:
+                    updated = timezone.now() - timedelta(days=7)
+                base['updated'] = int(updated.strftime('%s'))
 
         elif is_stream(content_id, request.user.pk):
             uniques = get_unique_map(request.user)

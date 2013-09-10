@@ -2,7 +2,7 @@
 from datetime import timedelta
 from django.utils import timezone
 from mock import patch
-from rache import job_details
+from rache import job_details, schedule_job
 
 from feedhq.feeds.models import (Category, Feed, UniqueFeed, Entry, Favicon,
                                  UniqueFeedManager)
@@ -92,17 +92,14 @@ class ModelTests(ClearRedisTestCase):
 
         unique = UniqueFeed(url='http://foo.com')
         self.assertEqual('%s' % unique, 'http://foo.com')
-        unique.title = 'Lol'
-        self.assertEqual('%s' % unique, 'Lol')
 
         self.assertIs(UniqueFeedManager.entry_data({}, None), None)
 
         unique.schedule()
         details = unique.job_details
         at = details.pop('schedule_at')
+        details.pop('last_update')
         self.assertEqual(details, {
-            u"request_timeout": 10,
-            u"title": "Lol",
             u"backoff_factor": 1,
             u"subscribers": 1,
             u"id": "http://foo.com",
@@ -115,6 +112,18 @@ class ModelTests(ClearRedisTestCase):
         self.assertTrue(unique.next_update > timezone.now())
         self.assertTrue(unique.next_update <
                         timezone.now() + timedelta(seconds=60 * 61))
+
+        schedule_job(unique.url, title='Lol', schedule_in=0)
+        del unique._job_details
+        details = unique.job_details
+        details.pop('schedule_at')
+        details.pop('last_update')
+        self.assertEqual(details, {
+            u"title": u"Lol",
+            u"backoff_factor": 1,
+            u"subscribers": 1,
+            u"id": "http://foo.com",
+        })
 
     def test_favicon_model(self):
         fav = Favicon(url='http://example.com/')

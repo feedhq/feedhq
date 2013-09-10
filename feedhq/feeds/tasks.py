@@ -16,14 +16,14 @@ from ..utils import get_redis_connection
 logger = logging.getLogger(__name__)
 
 
+# TODO remove unused request_timeout
 def update_feed(url, etag=None, modified=None, subscribers=1,
                 request_timeout=10, backoff_factor=1, error=None, link=None,
                 title=None, hub=None):
     from .models import UniqueFeed
     try:
         UniqueFeed.objects.update_feed(
-            url, etag=etag, last_modified=modified,
-            subscribers=subscribers, request_timeout=request_timeout,
+            url, etag=etag, last_modified=modified, subscribers=subscribers,
             backoff_factor=backoff_factor, previous_error=error, link=link,
             title=title, hub=hub)
     except JobTimeoutException:

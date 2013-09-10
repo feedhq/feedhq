@@ -549,9 +549,9 @@ class Subscribe(generic.FormView):
         name_prefill = {}
         if new_urls:
             uniques = UniqueFeed.objects.filter(
-                url__in=new_urls).values_list('title', 'url')
-            for title, url in uniques:
-                name_prefill[url] = title
+                url__in=new_urls)
+            for unique in uniques:
+                name_prefill[unique.url] = unique.job_details.get('title')
 
         return [{
             'name': name_prefill.get(url),
@@ -609,6 +609,10 @@ class ManageFeeds(generic.TemplateView):
         ).extra(select={
             'muted': """
                 select muted from feeds_uniquefeed
+                where feeds_uniquefeed.url = feeds_feed.url
+            """,
+            'error': """
+                select muted_reason from feeds_uniquefeed
                 where feeds_uniquefeed.url = feeds_feed.url
             """,
         })

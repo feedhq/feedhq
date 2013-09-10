@@ -1,3 +1,5 @@
+import time
+
 from datetime import timedelta
 from mock import patch
 
@@ -17,14 +19,18 @@ from feedhq.profiles.models import User
 from feedhq.utils import get_redis_connection
 
 from .factories import FeedFactory
-from . import responses, ClearRedisTestCase, test_file
+from . import responses, ClearRedisTestCase, test_file, patch_job
 
 
 class UpdateTests(ClearRedisTestCase):
     def test_update_feeds(self):
         u = UniqueFeed.objects.create(
             url='http://example.com/feed0',
-            last_update=timezone.now() - timedelta(hours=1),
+        )
+        u.schedule()
+        patch_job(
+            u.url,
+            last_update=(timezone.now() - timedelta(hours=1)).strftime('%s')
         )
         u.schedule()
         UniqueFeed.objects.create(
@@ -47,16 +53,19 @@ class UpdateTests(ClearRedisTestCase):
 
         u = UniqueFeed.objects.create(
             url='http://example.com/backoff',
-            last_update=timezone.now() - timedelta(hours=28),
-            backoff_factor=10,
         )
+        u.schedule()
+        patch_job(
+            u.url, backoff_factor=10,
+            last_update=(timezone.now() - timedelta(hours=28)).strftime('%s')
+        )
+        u.schedule()
         with self.assertNumQueries(0):
             jobs = list(pending_jobs(
                 limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
                 connection=get_redis_connection()))
             self.assertEqual(len(jobs), 0)
-        u.backoff_factor = 9
-        u.save()
+        patch_job(u.url, backoff_factor=9)
         u.schedule()
         with self.assertNumQueries(0):
             jobs = list(pending_jobs(
@@ -67,7 +76,8 @@ class UpdateTests(ClearRedisTestCase):
             self.assertEqual(
                 UniqueFeed.TIMEOUT_BASE * jobs[0]['backoff_factor'], 180)
 
-        UniqueFeed.objects.update(last_update=timezone.now())
+        patch_job(u.url, last_update=int(time.time()))
+        u.schedule()
         with self.assertNumQueries(0):
             jobs = list(pending_jobs(
                 limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
@@ -78,23 +88,31 @@ class UpdateTests(ClearRedisTestCase):
             url='http://example.com/lol',
         )
 
-        UniqueFeed.objects.update(
-            last_update=timezone.now() - timedelta(hours=54))
+        for u in UniqueFeed.objects.all():
+            patch_job(u.url, last_update=(
+                timezone.now() - timedelta(hours=54)).strftime('%s'))
 
         # No subscribers -> deletion
         with self.assertNumQueries(2):
             call_command('delete_unsubscribed')
         self.assertEqual(UniqueFeed.objects.count(), 0)
 
-        UniqueFeed.objects.create(
+        u = UniqueFeed.objects.create(
             url='http://example.com/foo',
-            last_update=timezone.now() - timedelta(hours=2),
-        ).schedule()
-        UniqueFeed.objects.create(
+        )
+        u.schedule()
+        patch_job(
+            u.url,
+            last_update=(timezone.now() - timedelta(hours=2)).strftime('%s'))
+        u.schedule()
+        u = UniqueFeed.objects.create(
             url='http://example.com/bar',
-            last_update=timezone.now() - timedelta(hours=2),
-            last_loop=timezone.now() - timedelta(hours=2),
-        ).schedule()
+        )
+        u.schedule()
+        patch_job(
+            u.url,
+            last_update=(timezone.now() - timedelta(hours=2)).strftime('%s'))
+        u.schedule()
         jobs = list(pending_jobs(
             limit=5, reschedule_in=UniqueFeed.UPDATE_PERIOD * 60,
             connection=get_redis_connection()))
@@ -132,12 +150,6 @@ class UpdateTests(ClearRedisTestCase):
         with self.assertNumQueries(2):
             call_command('add_missing')
 
-        unique = UniqueFeed.objects.get(url=feed.url)
-        self.assertEqual(unique.url, feed.url)
-        self.assertEqual(unique.subscribers, 3)
-        other = UniqueFeed.objects.exclude(pk=unique.pk).get()
-        self.assertEqual(other.subscribers, 1)
-
         with self.assertNumQueries(1):
             call_command('add_missing')
 
@@ -146,11 +158,10 @@ class UpdateTests(ClearRedisTestCase):
         get.return_value = responses(304)
 
         for i in range(24):
-            FeedFactory.create()
-        UniqueFeed.objects.all().update(
-            last_loop=timezone.now() - timedelta(hours=10),
-            last_update=timezone.now() - timedelta(hours=10),
-        )
+            f = FeedFactory.create()
+            patch_job(f.url, last_update=(
+                timezone.now() - timedelta(hours=10)).strftime('%s'))
+            UniqueFeed.objects.get(url=f.url).schedule()
 
         unique = UniqueFeed.objects.all()[0]
         with self.assertNumQueries(1):
@@ -277,11 +288,11 @@ class UpdateTests(ClearRedisTestCase):
     def test_schedule_in(self, get):
         get.return_value = responses(304)
 
-        FeedFactory.create()
+        f = FeedFactory.create()
         secs = timedelta_to_seconds(UniqueFeed.objects.get().schedule_in)
         self.assertTrue(3598 <= secs < 3600)
 
-        UniqueFeed.objects.update(backoff_factor=2)
+        patch_job(f.url, backoff_factor=2)
         secs = timedelta_to_seconds(UniqueFeed.objects.get().schedule_in)
         self.assertTrue(secs > 10000)
 

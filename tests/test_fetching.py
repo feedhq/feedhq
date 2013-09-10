@@ -6,7 +6,7 @@ from django.utils import timezone
 from django_push.subscriber.models import Subscription
 from httplib import IncompleteRead
 from mock import patch, PropertyMock
-from rache import job_details
+from rache import job_details, schedule_job
 from requests import RequestException
 from requests.packages.urllib3.exceptions import (LocationParseError,
                                                   DecodeError)
@@ -19,7 +19,7 @@ from feedhq.utils import get_redis_connection
 
 from .factories import FeedFactory
 from .test_feeds import test_file, responses
-from . import ClearRedisTestCase
+from . import ClearRedisTestCase, patch_job
 
 
 class UpdateTests(ClearRedisTestCase):
@@ -132,8 +132,8 @@ class UpdateTests(ClearRedisTestCase):
             get.return_value = responses(code)
             feed = UniqueFeed.objects.get(url=feed.url)
             self.assertFalse(feed.muted)
-            self.assertEqual(feed.error, None)
-            self.assertEqual(feed.backoff_factor, 1)
+            self.assertEqual(feed.job_details.get('error'), None)
+            self.assertEqual(feed.job_details['backoff_factor'], 1)
             feed.schedule()
             data = job_details(feed.url, connection=get_redis_connection())
 
@@ -146,10 +146,7 @@ class UpdateTests(ClearRedisTestCase):
             self.assertEqual(data['backoff_factor'], 2)
 
             # Restore status for next iteration
-            feed.backoff_factor = 1
-            feed.error = None
-            feed.save(update_fields=['backoff_factor', 'error'])
-            feed.schedule()
+            schedule_job(feed.url, backoff_factor=1, error=None, schedule_in=0)
 
     @patch('requests.get')
     def test_too_many_requests(self, get):
@@ -192,8 +189,9 @@ class UpdateTests(ClearRedisTestCase):
         get.return_value = responses(304)
         feed = FeedFactory.create()
         feed = UniqueFeed.objects.get(url=feed.url)
-        self.assertEqual(feed.error, None)
-        self.assertEqual(feed.backoff_factor, 1)
+        detail = feed.job_details
+        self.assertFalse('error' in detail)
+        self.assertEqual(detail['backoff_factor'], 1)
         feed.schedule()
         data = job_details(feed.url, connection=get_redis_connection())
 
@@ -208,10 +206,7 @@ class UpdateTests(ClearRedisTestCase):
 
         get.side_effect = RequestException
         feed = UniqueFeed.objects.get()
-        feed.error = None
-        feed.backoff_factor = 1
-        feed.save()
-        feed.schedule()
+        patch_job(feed.url, error=None, backoff_factor=1)
         data = job_details(feed.url, connection=get_redis_connection())
 
         for i in range(12):
@@ -296,7 +291,8 @@ class UpdateTests(ClearRedisTestCase):
         get.return_value = responses(304)
         feed = FeedFactory.create()
         get.side_effect = JobTimeoutException
-        self.assertEqual(UniqueFeed.objects.get().backoff_factor, 1)
+        self.assertEqual(
+            UniqueFeed.objects.get().job_details['backoff_factor'], 1)
         update_feed(feed.url)
         data = job_details(feed.url, connection=get_redis_connection())
         self.assertEqual(data['backoff_factor'], 2)
@@ -307,13 +303,12 @@ class UpdateTests(ClearRedisTestCase):
         call_command('sync_pubsubhubbub')
         post.assert_not_called()
 
-        u = UniqueFeed.objects.create(url='http://example.com',
-                                      hub='http://hub.example.com')
-        call_command('sync_pubsubhubbub')
-        post.assert_called()
-        post.reset()
+        u = UniqueFeed.objects.create(url='http://example.com')
+        Subscription.objects.create(topic=u.url,
+                                    hub='http://hub.example.com',
+                                    verified=True,
+                                    lease_expiration=timezone.now())
 
-        Subscription.objects.update(lease_expiration=timezone.now())
         call_command('sync_pubsubhubbub')
         post.assert_called()
         post.reset()
@@ -330,6 +325,10 @@ class UpdateTests(ClearRedisTestCase):
 class FaviconTests(ClearRedisTestCase):
     @patch("requests.get")
     def test_declared_favicon(self, get):
+        get.return_value = responses(304)
+        feed = FeedFactory.create(url='http://example.com/feed')
+        patch_job(feed.url, link='http://example.com')
+
         with open(test_file('bruno.im.png'), 'r') as f:
             fav = f.read()
 
@@ -337,8 +336,9 @@ class FaviconTests(ClearRedisTestCase):
             status_code = 200
             content = fav
             headers = {'foo': 'bar'}
+        get.reset_mock()
         get.return_value = Response()
-        Favicon.objects.update_favicon('http://example.com/')
+        Favicon.objects.update_favicon(feed.url)
         get.assert_called_with(
             'http://example.com/favicon.ico',
             headers={'User-Agent': FAVICON_FETCHER},
@@ -347,14 +347,22 @@ class FaviconTests(ClearRedisTestCase):
 
     @patch("requests.get")
     def test_favicon_empty_document(self, get):
+        get.return_value = responses(304)
+        feed = FeedFactory.create(url='http://example.com/feed')
+        patch_job(feed.url, link='http://example.com')
+
         class Response:
             status_code = 200
             content = '<?xml version="1.0" encoding="iso-8859-1"?>'
             headers = {}
         get.return_value = Response()
-        Favicon.objects.update_favicon('http://example.com')
+        Favicon.objects.update_favicon(feed.url)
 
     @patch("requests.get")
     def test_favicon_parse_error(self, get):
+        get.return_value = responses(304)
+        feed = FeedFactory.create(url='http://example.com/feed')
+        patch_job(feed.url, link='http://example.com')
+
         get.side_effect = LocationParseError("Failed to parse url")
-        Favicon.objects.update_favicon('http://example.com')
+        Favicon.objects.update_favicon(feed.url)

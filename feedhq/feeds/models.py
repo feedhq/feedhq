@@ -40,7 +40,8 @@ import pytz
 from .fields import URLField
 from .tasks import (update_feed, update_favicon, store_entries,
                     ensure_subscribed)
-from .utils import FAVICON_FETCHER, USER_AGENT, is_feed, epoch_to_utc
+from .utils import (FAVICON_FETCHER, USER_AGENT, is_feed, epoch_to_utc,
+                    get_job, JobNotFound)
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
 from ..utils import get_redis_connection
@@ -140,8 +141,8 @@ class Category(models.Model):
 
 class UniqueFeedManager(models.Manager):
     def update_feed(self, url, etag=None, last_modified=None, subscribers=1,
-                    request_timeout=10, backoff_factor=1, previous_error=None,
-                    link=None, title=None, hub=None):
+                    backoff_factor=1, previous_error=None, link=None,
+                    title=None, hub=None):
 
         # Check if this domain has rate-limiting rules
         domain = urlparse.urlparse(url).netloc
@@ -176,8 +177,9 @@ class UniqueFeedManager(models.Manager):
         start = datetime.datetime.now()
         error = None
         try:
-            response = requests.get(url, headers=headers,
-                                    timeout=request_timeout)
+            response = requests.get(
+                url, headers=headers,
+                timeout=UniqueFeed.request_timeout(backoff_factor))
         except (requests.RequestException, socket.timeout, socket.error,
                 IncompleteRead, DecodeError) as e:
             logger.debug("Error fetching %s, %s" % (url, str(e)))
@@ -213,7 +215,7 @@ class UniqueFeedManager(models.Manager):
                     redirection = response.url
 
             if redirection is not None and redirection != url:
-                self.handle_redirection(url, redirection, subscribers)
+                self.handle_redirection(url, redirection)
 
         update = {'last_update': int(time.time())}
 
@@ -246,12 +248,12 @@ class UniqueFeedManager(models.Manager):
             # actual response time.
             if previous_error and error is None:
                 update['error'] = None
-            new_backoff = min(backoff_factor, self.safe_backoff(elapsed))
-            if new_backoff != backoff_factor:
-                update['backoff_factor'] = new_backoff
+            backoff_factor = min(backoff_factor, self.safe_backoff(elapsed))
+            update['backoff_factor'] = backoff_factor
 
         if response.status_code == 304:
-            schedule_job(url, schedule_in=UniqueFeed.delay(new_backoff, hub),
+            schedule_job(url,
+                         schedule_in=UniqueFeed.delay(backoff_factor, hub),
                          connection=get_redis_connection(), **update)
             return
 
@@ -290,7 +292,7 @@ class UniqueFeedManager(models.Manager):
 
         if 'links' in parsed.feed:
             for link in parsed.feed.links:
-                if link.rel == 'hub' and link.href != hub:
+                if link.rel == 'hub':
                     update['hub'] = link.href
         if 'hub' not in update:
             update['hub'] = None
@@ -381,11 +383,10 @@ class UniqueFeedManager(models.Manager):
                 entry_date = timezone.now()
         return entry_date, date_generated
 
-    def handle_redirection(self, old_url, new_url, subscribers):
+    def handle_redirection(self, old_url, new_url):
         logger.debug(u"{0} moved to {1}".format(old_url, new_url))
         Feed.objects.filter(url=old_url).update(url=new_url)
-        unique, created = self.get_or_create(
-            url=new_url, defaults={'subscribers': subscribers})
+        unique, created = self.get_or_create(url=new_url)
         if created:
             unique.schedule()
             if not settings.TESTS:
@@ -395,8 +396,7 @@ class UniqueFeedManager(models.Manager):
 
     def mute_feed(self, url, reason):
         delete_job(url, connection=get_redis_connection())
-        self.filter(url=url).update(muted=True, error=reason,
-                                    last_update=timezone.now())
+        self.filter(url=url).update(muted=True, error=reason)
 
     def backoff_feed(self, url, error, backoff_factor):
         if backoff_factor == UniqueFeed.MAX_BACKOFF - 1:
@@ -421,9 +421,10 @@ class UniqueFeedManager(models.Manager):
 class JobDataMixin(object):
     @property
     def job_details(self):
+        if hasattr(self, 'muted') and self.muted:
+            return {}
         if not hasattr(self, '_job_details'):
-            self._job_details = job_details(self.url,
-                                            connection=get_redis_connection())
+            self._job_details = get_job(self.url)
         return self._job_details
 
     @property
@@ -433,6 +434,16 @@ class JobDataMixin(object):
     @property
     def next_update(self):
         return epoch_to_utc(self.job_details['schedule_at'])
+
+    @property
+    def last_update(self):
+        update = self.job_details.get('last_update')
+        if update is not None:
+            return epoch_to_utc(update)
+
+    @property
+    def link(self):
+        return self.job_details.get('link', self.url)
 
 
 class UniqueFeed(JobDataMixin, models.Model):
@@ -467,25 +478,9 @@ class UniqueFeed(JobDataMixin, models.Model):
     MUTE_DICT = dict(MUTE_CHOICES)
 
     url = URLField(_('URL'), unique=True)
-    title = models.CharField(_('Title'), max_length=2048, blank=True)
-    link = URLField(_('Link'), blank=True)
-    etag = models.CharField(_('Etag'), max_length=1023, null=True, blank=True)
-    modified = models.CharField(_('Modified'), max_length=1023, null=True,
-                                blank=True)
-    last_update = models.DateTimeField(_('Last update'), default=timezone.now,
-                                       db_index=True)
     muted = models.BooleanField(_('Muted'), default=False, db_index=True)
-    # Muted is only for 410, this is populated even when the feed is not
-    # muted. It's more an indicator of the reason the backoff factor isn't 1.
     error = models.CharField(_('Error'), max_length=50, null=True, blank=True,
                              choices=MUTE_CHOICES, db_column='muted_reason')
-    hub = URLField(_('Hub'), null=True, blank=True)
-    backoff_factor = models.PositiveIntegerField(_('Backoff factor'),
-                                                 default=1)
-    last_loop = models.DateTimeField(_('Last loop'), default=timezone.now,
-                                     db_index=True)
-    subscribers = models.PositiveIntegerField(_('Subscribers'), default=1,
-                                              db_index=True)
 
     objects = UniqueFeedManager()
 
@@ -494,11 +489,9 @@ class UniqueFeed(JobDataMixin, models.Model):
     BACKOFF_EXPONENT = 1.5
     TIMEOUT_BASE = 20
     JOB_ATTRS = ['modified', 'etag', 'backoff_factor', 'error', 'link',
-                 'title', 'hub', 'subscribers', 'request_timeout']
+                 'title', 'hub', 'subscribers', 'last_update']
 
     def __unicode__(self):
-        if self.title:
-            return u'%s' % self.title
         return u'%s' % self.url
 
     def truncated_url(self):
@@ -508,9 +501,9 @@ class UniqueFeed(JobDataMixin, models.Model):
     truncated_url.short_description = _('URL')
     truncated_url.admin_order_field = 'url'
 
-    @property
-    def request_timeout(self):
-        return 10 * self.backoff_factor
+    @classmethod
+    def request_timeout(cls, backoff_factor):
+        return 10 * backoff_factor
 
     @classmethod
     def delay(cls, backoff_factor, hub=None):
@@ -523,16 +516,30 @@ class UniqueFeed(JobDataMixin, models.Model):
     @property
     def schedule_in(self):
         return (
-            self.last_update + self.delay(self.backoff_factor, self.hub)
+            self.last_update + self.delay(self.job_details['backoff_factor'],
+                                          self.job_details.get('hub'))
         ) - timezone.now()
 
-    def schedule(self):
-        kwargs = {}
-        for attr in self.JOB_ATTRS:
-            if getattr(self, attr):
-                kwargs[attr] = getattr(self, attr)
-        schedule_job(self.url, schedule_in=self.schedule_in,
-                     connection=get_redis_connection(), **kwargs)
+    def schedule(self, schedule_in=None, **job):
+        if hasattr(self, '_job_details'):
+            del self._job_details
+        connection = get_redis_connection()
+        kwargs = {
+            'subscribers': 1,
+            'backoff_factor': 1,
+            'last_update': int(time.time()),
+        }
+        kwargs.update(job)
+        if schedule_in is None:
+            try:
+                for attr in self.JOB_ATTRS:
+                    if attr in self.job_details:
+                        kwargs[attr] = self.job_details[attr]
+                schedule_in = self.schedule_in
+            except JobNotFound:
+                schedule_in = self.delay(kwargs['backoff_factor'])
+        schedule_job(self.url, schedule_in=schedule_in,
+                     connection=connection, **kwargs)
 
 
 class Feed(JobDataMixin, models.Model):
@@ -564,21 +571,23 @@ class Feed(JobDataMixin, models.Model):
     def save(self, *args, **kwargs):
         feed_created = self.pk is None
         super(Feed, self).save(*args, **kwargs)
-        # FIXME maybe find another way to ensure consistency
         unique, created = UniqueFeed.objects.get_or_create(url=self.url)
         if feed_created or created:
+            try:
+                details = self.job_details
+            except JobNotFound:
+                details = {}
             enqueue(update_feed, kwargs={
                 'url': self.url,
-                'subscribers': unique.subscribers,
-                'request_timeout': unique.backoff_factor * 10,
-                'backoff_factor': unique.backoff_factor,
-                'error': unique.error,
-                'link': unique.link,
-                'title': unique.title,
-                'hub': unique.hub,
+                'subscribers': details.get('subscribers', 1),
+                'backoff_factor': details.get('backoff_factor', 1),
+                'error': details.get('error'),
+                'link': details.get('link'),
+                'title': details.get('title'),
+                'hub': details.get('hub'),
             }, queue='high', timeout=20)
             if not settings.TESTS:
-                enqueue_favicon(unique.link)
+                enqueue_favicon(unique.url)
 
     @property
     def media_safe(self):
@@ -603,10 +612,10 @@ class Feed(JobDataMixin, models.Model):
         return COLORS[index][0]
 
     def error_display(self):
-        try:
+        if self.muted:
+            key = self.error
+        else:
             key = str(self.job_details['error'])
-        except TypeError:  # Job not scheduled
-            key = ''
         return UniqueFeed.MUTE_DICT.get(key, _('Error'))
 
 
@@ -812,19 +821,17 @@ updated.connect(pubsubhubbub_update)
 
 
 class FaviconManager(models.Manager):
-    def update_favicon(self, link, force_update=False):
-        if not link:
+    def update_favicon(self, url, force_update=False):
+        if not url:
             return
-        parsed = list(urlparse.urlparse(link))
+        parsed = list(urlparse.urlparse(url))
         if not parsed[0].startswith('http'):
             return
-        favicon, created = self.get_or_create(url=link)
-        urls = UniqueFeed.objects.filter(link=link).values_list('url',
-                                                                flat=True)
-        feeds = Feed.objects.filter(url__in=urls, favicon='')
+        favicon, created = self.get_or_create(url=url)
+        feeds = Feed.objects.filter(url=url, favicon='')
         if (not created and not force_update) and favicon.favicon:
             # Still, add to existing
-            favicon_urls = list(self.filter(url=link).exclude(
+            favicon_urls = list(self.filter(url=url).exclude(
                 favicon='').values_list('favicon', flat=True))
             if not favicon_urls:
                 return favicon
@@ -836,6 +843,12 @@ class FaviconManager(models.Manager):
             return favicon
 
         ua = {'User-Agent': FAVICON_FETCHER}
+
+        link = job_details(url, connection=get_redis_connection()).get('link')
+
+        if link is None:
+            # TODO maybe re-fetch feed
+            return favicon
 
         try:
             page = requests.get(link, headers=ua, timeout=10).content
@@ -914,7 +927,7 @@ class FaviconManager(models.Manager):
 
 
 class Favicon(models.Model):
-    url = URLField(_('Domain URL'), db_index=True, unique=True)
+    url = URLField(_('URL'), db_index=True, unique=True)
     favicon = models.FileField(upload_to='favicons', blank=True,
                                storage=OverwritingStorage())
 

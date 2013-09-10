@@ -17,6 +17,7 @@ class Command(SentryCommand):
     )
 
     def handle_sentry(self, *args, **kwargs):
-        links = UniqueFeed.objects.values_list('link', flat=True).distinct()
-        for link in links:
-            enqueue_favicon(link, force_update=kwargs['all'])
+        urls = UniqueFeed.objects.filter(muted=False).values_list(
+            'url', flat=True).distinct()
+        for url in urls:
+            enqueue_favicon(url, force_update=kwargs['all'])

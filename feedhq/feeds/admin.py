@@ -44,10 +44,9 @@ class CategoryAdmin(ModelAdmin):
 
 
 class UniqueFeedAdmin(ModelAdmin):
-    list_display = ('truncated_url', 'last_update', 'muted', 'error',
-                    'backoff_factor')
-    list_filter = ('muted', 'error', 'backoff_factor')
-    search_fields = ('url', 'title', 'link')
+    list_display = ('truncated_url', 'last_update', 'muted', 'error')
+    list_filter = ('muted', 'error')
+    search_fields = ('url',)
 
     class Media:
         js = (
