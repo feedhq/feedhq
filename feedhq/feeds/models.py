@@ -927,6 +927,9 @@ class FaviconManager(models.Manager):
               'ISO-8859 text' in icon_type or
               'Lotus' in icon_type or
               'SVG' in icon_type or
+              'Sendmail frozen' in icon_type or
+              'GLS_BINARY_LSB_FIRST' in icon_type or
+              'PDF' in icon_type or
               'PCX' in icon_type):
             logger.debug("Ignored content type for %s: %s" % (link, icon_type))
             return favicon
