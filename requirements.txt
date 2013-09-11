@@ -2,6 +2,7 @@ Django==1.5.2
 Pillow==2.1.0
 South==0.8.2
 bleach==1.2.2
+defusedxml==0.4.1
 django-classy-tags==0.4
 dj-database-url==0.2.2
 django-floppyforms==1.1

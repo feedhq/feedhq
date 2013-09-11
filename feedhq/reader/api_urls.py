@@ -26,6 +26,9 @@ urlpatterns = patterns(
     url(r'^subscription/export$', views.export_subscriptions,
         name='subscription_export'),
 
+    url(r'^subscription/import$', views.import_subscriptions,
+        name='subscription_import'),
+
     url(r'^subscribed$', views.subscribed, name='subscribed'),
 
     url(r'^stream/contents/(?P<content_id>.+)?$', views.stream_contents,

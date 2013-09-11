@@ -6,24 +6,30 @@ import urlparse
 from datetime import timedelta
 from urllib import urlencode
 
+import opml
+
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.core.validators import email_re
 from django.db import connection, transaction
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
 from django.shortcuts import render
 from django.utils import timezone
+from lxml.etree import XMLSyntaxError
 
 from rest_framework import exceptions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.negotiation import DefaultContentNegotiation
+from rest_framework.parsers import XMLParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..feeds.forms import FeedForm
+from ..feeds.forms import FeedForm, user_lock
 from ..feeds.models import Feed, UniqueFeed, Category
 from ..feeds.utils import epoch_to_utc
+from ..feeds.views import save_outline
 from ..profiles.models import User
 from .authentication import GoogleLoginAuthentication
 from .exceptions import PermissionDenied, BadToken
@@ -1093,3 +1099,29 @@ class OPMLExport(ReaderView):
         response['Content-Type'] = 'text/xml; charset=utf-8'
         return response
 export_subscriptions = OPMLExport.as_view()
+
+
+class OPMLImport(ReaderView):
+    http_method_names = ['post']
+    renderer_classes = [PlainRenderer]
+    parser_classes = [XMLParser]
+    require_post_token = False
+
+    def post(self, request, *args, **kwargs):
+        try:
+            entries = opml.from_string(request.body)
+        except XMLSyntaxError:
+            raise exceptions.ParseError(
+                "This file doesn't seem to be a valid OPML file.")
+
+        existing_feeds = set(request.user.feeds.values_list('url', flat=True))
+        try:
+            with user_lock('opml_import', request.user.pk, timeout=30):
+                imported = save_outline(request.user, None, entries,
+                                        existing_feeds)
+        except ValidationError:
+            raise exceptions.ParseError(
+                "Another concurrent OPML import is happening "
+                "for this user.")
+        return Response("OK: {0}".format(imported))
+import_subscriptions = OPMLImport.as_view()

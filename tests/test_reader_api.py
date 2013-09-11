@@ -12,9 +12,10 @@ from mock import patch
 
 from feedhq.feeds.models import Feed, Entry, UniqueFeed
 from feedhq.reader.views import GoogleReaderXMLRenderer, item_id
+from feedhq.utils import get_redis_connection
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
-from . import responses
+from . import responses, test_file
 
 
 def clientlogin(token):
@@ -1220,3 +1221,29 @@ class ReaderApiTest(ApiTest):
             self.assertContains(response, u'xmlUrl="{0}"'.format(feed.url))
         for category in user.categories.all():
             self.assertContains(response, u'title="{0}"'.format(category.name))
+
+    def test_api_import(self, get):
+        get.return_value = responses(304)
+        user = UserFactory.create()
+        token = self.auth_token(user)
+        url = reverse('reader:subscription_import')
+        with open(test_file('sample.opml'), 'r') as f:
+            response = self.client.post(
+                url, f.read(), content_type='application/xml',
+                **clientlogin(token))
+        self.assertContains(response, "OK: 2")
+
+        response = self.client.post(
+            url, "foobar", content_type='application/xml',
+            **clientlogin(token))
+        self.assertContains(response, "doesn't seem to be a valid OPML file",
+                            status_code=400)
+
+        redis = get_redis_connection()
+        redis.set('lock:opml_import:{0}'.format(user.pk), True)
+        with open(test_file('sample.opml'), 'r') as f:
+            response = self.client.post(
+                url, f.read(), content_type='application/xml',
+                **clientlogin(token))
+        self.assertContains(response, "concurrent OPML import",
+                            status_code=400)
