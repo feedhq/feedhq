@@ -30,7 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_push.subscriber.signals import updated
 from httplib import IncompleteRead
 from lxml.etree import ParserError
-from rache import schedule_job, delete_job, job_details
+from rache import schedule_job, delete_job
 from requests.exceptions import ConnectionError
 from requests.packages.urllib3.exceptions import (LocationParseError,
                                                   DecodeError)
@@ -844,7 +844,10 @@ class FaviconManager(models.Manager):
 
         ua = {'User-Agent': FAVICON_FETCHER}
 
-        link = job_details(url, connection=get_redis_connection()).get('link')
+        try:
+            link = get_job(url).get('link')
+        except JobNotFound:
+            link = cache.get(u'feed_link:{0}'.format(url))
 
         if link is None:
             # TODO maybe re-fetch feed

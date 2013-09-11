@@ -2,6 +2,7 @@ import contextlib
 import json
 import urlparse
 
+from django.core.cache import cache
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
@@ -121,6 +122,10 @@ class FeedForm(UserFormMixin, forms.ModelForm):
             raise forms.ValidationError(
                 _("This URL doesn't seem to be a valid feed."))
         self.cleaned_data['title'] = parsed.feed.title
+        # Cache this in case update_favicon needs it and it's not in the
+        # scheduler data yet.
+        if hasattr(parsed.feed, 'link'):
+            cache.set(u'feed_link:{0}'.format(url), parsed.feed.link, 600)
         return url
 
     def save(self, commit=True):
