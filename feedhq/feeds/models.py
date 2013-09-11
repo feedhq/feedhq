@@ -454,7 +454,10 @@ class JobDataMixin(object):
 
     @property
     def link(self):
-        return self.job_details.get('link', self.url)
+        try:
+            return self.job_details.get('link', self.url)
+        except JobNotFound:
+            return self.url
 
 
 class UniqueFeed(JobDataMixin, models.Model):
