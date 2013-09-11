@@ -18,17 +18,17 @@
 			{% endifchanged %}
 			<li>
 				{{ feed.favicon_img }} {{ feed.name }}
-				{% if feed.job_details.hub %}<span class="real-time tultip" title="{% trans "This feed sends its updates directly to FeedHQ when new content is published" %}"><i class="icon-bolt"></i>real-time</span>{% endif %}
+				{% if feed.safe_job_details.hub %}<span class="real-time tultip" title="{% trans "This feed sends its updates directly to FeedHQ when new content is published" %}"><i class="icon-bolt"></i>real-time</span>{% endif %}
 				<a href="{% url "feeds:edit_feed" feed.id %}">{% trans "edit" %}</a> 
 				<a href="{% url "feeds:delete_feed" feed.id %}">{% trans "delete" %}</a>
 
-				{% if feed.muted or feed.job_details.backoff_factor == 10 %}
+				{% if feed.muted or feed.safe_job_details.backoff_factor == 10 %}
 					<br>
 					<span class="message">{% trans "Fetching this feed fails with the following error:" %} <strong>{{ feed.error_display }}</strong></span>
 				{% endif %}
 				<br><a class="url" href="{{ feed.url }}" target="_blank">{{ feed.url }}</a>
-				<span class="next-fetch tultip"{% if not feed.job_details %} title="{% trans "This feed isn't scheduled for updates yet" %}"{% endif %}> -
-					{% if feed.job_details %}
+				<span class="next-fetch tultip"{% if not feed.safe_job_details %} title="{% trans "This feed isn't scheduled for updates yet" %}"{% endif %}> -
+					{% if feed.safe_job_details %}
 						{% blocktrans with feed.next_update|timeuntil as next_update %}next update: in <strong>{{ next_update }}</strong>{% endblocktrans %}
 					{% else %}{% trans "next update: unknown" %}{% endif %}
 				</span>

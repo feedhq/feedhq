@@ -428,6 +428,17 @@ class JobDataMixin(object):
         return self._job_details
 
     @property
+    def safe_job_details(self):
+        """
+        For use in templates -- when raising JobNotFound is not
+        acceptable.
+        """
+        try:
+            return self.job_details
+        except JobNotFound:
+            return
+
+    @property
     def scheduler_data(self):
         return json.dumps(self.job_details, indent=4, sort_keys=True)
 
