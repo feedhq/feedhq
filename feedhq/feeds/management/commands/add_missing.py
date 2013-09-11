@@ -28,13 +28,13 @@ class Command(SentryCommand):
         if not settings.TESTS:
             missing_favicons = UniqueFeed.objects.raw(
                 """
-                select id, link from feeds_uniquefeed u
+                select id, url from feeds_uniquefeed u
                 where
-                    u.link != '' and
+                    u.url != '' and
                     not exists (
                         select 1 from feeds_favicon f
-                        where f.url = u.link
+                        where f.url = u.url
                     )
                 """)
             for feed in missing_favicons:
-                enqueue_favicon(feed.link)
+                enqueue_favicon(feed.url)
