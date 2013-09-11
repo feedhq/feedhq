@@ -9,5 +9,5 @@
 
 	<p>{% trans "Subscriptions can be exported in a standard format. You can download them as an OPML file and import them back into another feed reader." %}</p>
 
-	<p><a href="{% url "opml_export" %}">{% trans "Download OPML export" %}</a>.</p>
+	<p><a href="{% url "reader:subscription_export" %}">{% trans "Download OPML export" %}</a>.</p>
 {% endblock %}

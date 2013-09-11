@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.sites.models import RequestSite
 from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 
@@ -70,18 +70,6 @@ sharing = login_required(Sharing.as_view())
 class Export(UserMixin, generic.TemplateView):
     template_name = 'profiles/export.html'
 export = login_required(Export.as_view())
-
-
-@login_required
-def opml_export(request):
-    """OPML export"""
-    response = render(
-        request, 'profiles/opml_export.opml',
-        {'categories': request.user.categories.all(),
-         'orphan_feeds': request.user.feeds.filter(category__isnull=True)})
-    response['Content-Disposition'] = 'attachment; filename=feedhq-export.opml'
-    response['Content-Type'] = 'text/xml; charset=utf-8'
-    return response
 
 
 class ServiceView(generic.FormView):

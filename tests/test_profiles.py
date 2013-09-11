@@ -1,4 +1,3 @@
-import feedparser
 import json
 
 from django.core.urlresolvers import reverse
@@ -7,10 +6,7 @@ from django_webtest import WebTest
 from httplib2 import Response as _Response
 from mock import patch
 
-from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
-
-from . import responses
 
 
 class ProfilesTest(WebTest):
@@ -100,30 +96,6 @@ class ProfilesTest(WebTest):
         self.assertEqual(User.objects.get(pk=self.user.pk).username, 'test')
         response = form.submit()
         self.assertEqual(User.objects.get(pk=self.user.pk).username, 'foobar')
-
-    @patch("requests.get")
-    def test_opml_export(self, get):
-        url = reverse('opml_export')
-        response = self.app.get(url, user='test')
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue('attachment' in response['Content-Disposition'])
-        self.assertEqual(len(response.content), 126)  # No feed yet
-
-        cat = self.user.categories.create(name='Test', slug='test')
-
-        get.return_value = responses(304)
-        cat.feeds.create(name='Test Feed',
-                         url='http://example.com/test.atom',
-                         user=cat.user)
-        get.assert_called_with(
-            'http://example.com/test.atom',
-            headers={"User-Agent": USER_AGENT % '1 subscriber',
-                     "Accept": feedparser.ACCEPT_HEADER}, timeout=10)
-        self.user.feeds.create(name='Other thing',
-                               url='https://foo.com/bar.xml')
-        response = self.app.get(url, user='test')
-        self.assertContains(response, 'xmlUrl="http://example.com/test.atom"')
-        self.assertContains(response, 'xmlUrl="https://foo.com/bar.xml"')
 
     def test_read_later(self):
         url = reverse('read_later')

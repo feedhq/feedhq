@@ -1200,3 +1200,23 @@ class ReaderApiTest(ApiTest):
         url = reverse('reader:friend_list')
         response = self.client.get(url, **clientlogin(token))
         self.assertEqual(response.status_code, 200)
+
+    def test_api_export(self, get):
+        get.return_value = responses(304)
+        user = UserFactory.create()
+        token = self.auth_token(user)
+        url = reverse('reader:subscription_export')
+        response = self.client.get(url, **clientlogin(token))
+        self.assertContains(response, 'FeedHQ Feed List Export')
+        self.assertTrue('attachment' in response['Content-Disposition'])
+
+        for i in range(7):
+            FeedFactory.create(user=user, category__user=user)
+        for i in range(3):
+            FeedFactory.create(user=user, category=None)
+        response = self.client.get(url, **clientlogin(token))
+        for feed in user.feeds.all():
+            self.assertContains(response, u'title="{0}"'.format(feed.name))
+            self.assertContains(response, u'xmlUrl="{0}"'.format(feed.url))
+        for category in user.categories.all():
+            self.assertContains(response, u'title="{0}"'.format(category.name))

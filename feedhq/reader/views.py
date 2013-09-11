@@ -11,6 +11,7 @@ from django.core.validators import email_re
 from django.db import connection, transaction
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
+from django.shortcuts import render
 from django.utils import timezone
 
 from rest_framework import exceptions
@@ -1078,3 +1079,17 @@ class FriendList(ReaderView):
             }]
         })
 friend_list = FriendList.as_view()
+
+
+class OPMLExport(ReaderView):
+    def get(self, request, *args, **kwargs):
+        response = render(
+            request, 'profiles/opml_export.opml',
+            {'categories': request.user.categories.all(),
+             'orphan_feeds': request.user.feeds.filter(category__isnull=True)})
+        response['Content-Disposition'] = (
+            'attachment; filename=feedhq-export.opml'
+        )
+        response['Content-Type'] = 'text/xml; charset=utf-8'
+        return response
+export_subscriptions = OPMLExport.as_view()

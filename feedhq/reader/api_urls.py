@@ -23,6 +23,9 @@ urlpatterns = patterns(
     url(r'^subscription/quickadd$', views.quickadd_subscription,
         name='subscription_quickadd'),
 
+    url(r'^subscription/export$', views.export_subscriptions,
+        name='subscription_export'),
+
     url(r'^subscribed$', views.subscribed, name='subscribed'),
 
     url(r'^stream/contents/(?P<content_id>.+)?$', views.stream_contents,
@@ -56,9 +59,6 @@ urlpatterns = patterns(
 
 """
 Missing URLS:
-
-    subscription/
-        export
 
     /related/list
 
