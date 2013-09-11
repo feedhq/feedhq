@@ -963,6 +963,12 @@ class EditTag(ReaderView):
             elif tag in ['starred', 'broadcast', 'read']:
                 query[tag] = True
 
+            elif tag.starswith('tracking-'):
+                # There is no tracking. Carry on :)
+                # More context: http://googlesystem.blogspot.ch/2008/03/explore-your-interactions-with-google.html  # noqa
+                # FeedHQ doesn't have that historical data.
+                continue
+
             else:
                 logger.info(u"Unhandled tag {0}".format(tag))
                 raise exceptions.ParseError(
@@ -974,6 +980,11 @@ class EditTag(ReaderView):
 
             elif tag in ['starred', 'broadcast', 'read']:
                 query[tag] = False
+
+            elif tag.starswith('tracking-'):
+                # There is no tracking. Carry on :)
+                continue
+
             else:
                 logger.info(u"Unhandled tag {0}".format(tag))
                 raise exceptions.ParseError(
