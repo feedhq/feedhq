@@ -10,7 +10,7 @@
 			{% include "form.html" %}
 			<div class="submit">
 				<input type="submit" value="Recover my password">
-				<a href="/login/">Want to login instead?</a>
+				<a href="{% url 'login' %}">Want to login instead?</a>
 			</div>
 		</form>
 	{% else %}
