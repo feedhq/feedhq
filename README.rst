@@ -98,10 +98,14 @@ Optionally you can customize:
 * ``DEBUG``: set it to a non-empty value to enable the Django debug mode.
 * ``MEDIA_ROOT``: the absolute location where media files (user-generated) are
   stored. This must be a public directory on your webserver available under
-  the ``/media/`` URL.
+  ``MEDIA_URL``.
+* ``MEDIA_URL``: the URL that handles media files (user-generated) served from
+  ``MEDIA_ROOT``. By default, it is set to ``/media/``.
 * ``STATIC_ROOT``: the absolute location where static files (CSS/JS files) are
   stored. This must be a public directory on your webserver available under
   the ``/static/`` URL.
+* ``STATIC_URL``: the URL that serves static files (CSS/JS files) located in
+  ``STATIC_ROOT``. By default, it is set to ``/static/``.
 * ``SENTRY_DSN``: a DSN to enable `Sentry`_ debugging.
 * ``HTTPS``: set-it to a non-empty value to configure FeedHQ for SSL access.
 * ``EMAIL_URL``: a URL for configuring email. E.g.

@@ -20,13 +20,13 @@ from django.db import models
 from django.conf import settings
 from django.core.cache import cache
 from django.core.files.base import ContentFile
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.html import format_html
 from django.utils.text import unescape_entities
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, string_concat
 from django_push.subscriber.signals import updated
 from httplib import IncompleteRead
 from lxml.etree import ParserError
@@ -562,7 +562,9 @@ class Feed(JobDataMixin, models.Model):
     url = URLField(_('URL'))
     category = models.ForeignKey(
         Category, verbose_name=_('Category'), related_name='feeds',
-        help_text=_('<a href="/category/add/">Add a category</a>'),
+        help_text=string_concat('<a href="',
+                                reverse_lazy('feeds:add_category'), '">',
+                                _('Add a category'), '</a>'),
         null=True, blank=True,
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
