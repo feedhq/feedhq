@@ -356,6 +356,14 @@ class ReaderApiTest(ApiTest):
             entry = Entry.objects.get()
             self.assertFalse(getattr(entry, tag))
 
+        data['r'] = 'user/-/state/com.google/tracking-foo-bar'
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+        data['a'] = data['r']
+        del data['r']
+        response = self.client.post(url, data, **clientlogin(token))
+        self.assertContains(response, "OK")
+
         # Batch edition
         entry2 = EntryFactory.create(user=user, feed=entry.feed)
         self.assertEqual(user.entries.filter(broadcast=True).count(), 0)

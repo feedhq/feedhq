@@ -970,7 +970,7 @@ class EditTag(ReaderView):
             elif tag in ['starred', 'broadcast', 'read']:
                 query[tag] = True
 
-            elif tag.starswith('tracking-'):
+            elif tag.startswith('tracking-'):
                 # There is no tracking. Carry on :)
                 # More context: http://googlesystem.blogspot.ch/2008/03/explore-your-interactions-with-google.html  # noqa
                 # FeedHQ doesn't have that historical data.
@@ -988,7 +988,7 @@ class EditTag(ReaderView):
             elif tag in ['starred', 'broadcast', 'read']:
                 query[tag] = False
 
-            elif tag.starswith('tracking-'):
+            elif tag.startswith('tracking-'):
                 # There is no tracking. Carry on :)
                 continue
 
