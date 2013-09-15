@@ -30,7 +30,7 @@ def clientlogin(token):
 class ApiClient(Client):
     def request(self, **request):
         response = super(ApiClient, self).request(**request)
-        if response['Content-Type'] == 'application/json; charset=utf-8':
+        if response['Content-Type'] == 'application/json':
             response.json = json.loads(response.content)
         return response
 
@@ -192,7 +192,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, {'output': 'json'},
                                    **clientlogin(token))
         self.assertEqual(response['Content-Type'],
-                         'application/json; charset=utf-8')
+                         'application/json')
 
         response = self.client.get(url, {'output': 'xml'},
                                    **clientlogin(token))
