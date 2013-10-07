@@ -3,7 +3,16 @@
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 
 {% block content %}
-	<h2>{% trans "Dashboard" %}</h2>
+	<div class="figures full">
+		<div class="count">
+		<a href="{% if only_unread %}{% url 'feeds:unread_dashboard' %}{% else %}{% url 'feeds:dashboard' %}{% endif %}">{% trans "Dashboard" %}</a>
+
+		<div class="navlist">{% spaceless %}
+			<a href="{% url 'feeds:dashboard' %}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %}</a>
+			<a href="{% url 'feeds:unread_dashboard' %}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %}</a>
+		{% endspaceless %}</div>
+		</div>
+	</div>
 
 	<div class="col first">
 		{% for cat in categories %}
@@ -14,7 +23,9 @@
 					<br>
 				{% endif %}
 				<ul>{% for feed in cat.feeds.all %}
+						{% if feed.unread_count > 0 or not only_unread %}
 						<li{% if feed.favicon %} style="background-image: url('{{ feed.favicon.url }}');"{% endif %}{% if feed.unread_count %} class="new"{% endif %}><a href="{% url "feeds:feed" feed.pk %}">{{ feed }}</a>{% if feed.unread_count %} <a href="{% url "feeds:unread_feed" feed.pk %}" class="unread">{{ feed.unread_count }}{% endif %}</a></li>
+						{% endif %}
 				{% endfor %}</ul>
 			</div>
 			{% if forloop.counter in breaks %}</div><div class="col">{% endif %}

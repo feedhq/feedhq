@@ -563,6 +563,17 @@ class WebBaseTests(WebTest):
         self.assertContains(response, 'Dashboard')
 
     @patch('requests.get')
+    def test_unread_dashboard(self, get):
+        get.return_value = responses(304)
+        user = UserFactory.create()
+        url = reverse('feeds:unread_dashboard')
+        FeedFactory.create(category=None, user=user)
+        for i in range(5):
+            FeedFactory.create(category__user=user, user=user)
+        response = self.app.get(url, user=user)
+        self.assertContains(response, 'Dashboard')
+
+    @patch('requests.get')
     def test_unread_count(self, get):
         """Unread feed count everywhere"""
         user = UserFactory.create()

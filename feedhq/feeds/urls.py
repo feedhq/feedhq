@@ -12,6 +12,8 @@ urlpatterns = patterns(
         {'only_unread': True}, name='unread'),
 
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
+    url(r'^dashboard/unread/$', views.dashboard,
+        {'only_unread': True}, name='unread_dashboard'),
 
     url(r'^stars/$', views.entries_list,
         {'starred': True}, name='stars'),
