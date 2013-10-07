@@ -15,7 +15,7 @@ from feedhq.reader.views import GoogleReaderXMLRenderer, item_id
 from feedhq.utils import get_redis_connection
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
-from . import responses, test_file
+from . import responses, data_file
 
 
 def clientlogin(token):
@@ -1235,7 +1235,7 @@ class ReaderApiTest(ApiTest):
         user = UserFactory.create()
         token = self.auth_token(user)
         url = reverse('reader:subscription_import')
-        with open(test_file('sample.opml'), 'r') as f:
+        with open(data_file('sample.opml'), 'r') as f:
             response = self.client.post(
                 url, f.read(), content_type='application/xml',
                 **clientlogin(token))
@@ -1249,7 +1249,7 @@ class ReaderApiTest(ApiTest):
 
         redis = get_redis_connection()
         redis.set('lock:opml_import:{0}'.format(user.pk), True)
-        with open(test_file('sample.opml'), 'r') as f:
+        with open(data_file('sample.opml'), 'r') as f:
             response = self.client.post(
                 url, f.read(), content_type='application/xml',
                 **clientlogin(token))

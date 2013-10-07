@@ -18,7 +18,7 @@ class BytesIO(BaseBytesIO):
         return super(BytesIO, self).read(*args, **kwargs)
 
 
-def test_file(name):
+def data_file(name):
     return os.path.join(TEST_DATA, name)
 
 
@@ -27,7 +27,7 @@ def responses(code, path=None, redirection=None,
     response = Response()
     response.status_code = code
     if path is not None:
-        with open(test_file(path), 'r') as f:
+        with open(data_file(path), 'r') as f:
             response.raw = BytesIO(f.read())
     if redirection is not None:
         temp = Response()

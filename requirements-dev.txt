@@ -11,6 +11,9 @@ mccabe==0.2.1
 mock==1.0.1
 pep8==1.4.6
 pep8-naming==0.2.1
+py==1.4.16
 pyflakes==0.7.3
+pytest==2.4.0
+pytest-django==2.3.1
 transifex-client==0.9.1
 waitress==0.8.7

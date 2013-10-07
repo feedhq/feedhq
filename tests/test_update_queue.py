@@ -19,7 +19,7 @@ from feedhq.profiles.models import User
 from feedhq.utils import get_redis_connection
 
 from .factories import FeedFactory
-from . import responses, ClearRedisTestCase, test_file, patch_job
+from . import responses, ClearRedisTestCase, data_file, patch_job
 
 
 class UpdateTests(ClearRedisTestCase):
@@ -183,7 +183,7 @@ class UpdateTests(ClearRedisTestCase):
         call_command('delete_unsubscribed')
         self.assertEqual(UniqueFeed.objects.count(), 0)
 
-        parsed = feedparser.parse(test_file('sw-all.xml'))
+        parsed = feedparser.parse(data_file('sw-all.xml'))
         data = filter(
             None,
             [UniqueFeed.objects.entry_data(
@@ -214,7 +214,7 @@ class UpdateTests(ClearRedisTestCase):
         get.return_value = responses(304)
         feed = FeedFactory.create()
 
-        parsed = feedparser.parse(test_file('aldaily-06-27.xml'))
+        parsed = feedparser.parse(data_file('aldaily-06-27.xml'))
         data = filter(
             None,
             [UniqueFeed.objects.entry_data(
@@ -234,7 +234,7 @@ class UpdateTests(ClearRedisTestCase):
             store_entries(feed.url, data)
         self.assertEqual(feed.entries.count(), 4)
 
-        parsed = feedparser.parse(test_file('aldaily-06-30.xml'))
+        parsed = feedparser.parse(data_file('aldaily-06-30.xml'))
         data = filter(
             None,
             [UniqueFeed.objects.entry_data(
@@ -249,7 +249,7 @@ class UpdateTests(ClearRedisTestCase):
     def test_empty_guid(self, get):
         get.return_value = responses(304)
 
-        parsed = feedparser.parse(test_file('no-guid.xml'))
+        parsed = feedparser.parse(data_file('no-guid.xml'))
         data = filter(
             None,
             [UniqueFeed.objects.entry_data(
@@ -262,7 +262,7 @@ class UpdateTests(ClearRedisTestCase):
 
         feed.entries.all().delete()
 
-        parsed = feedparser.parse(test_file('no-link-guid.xml'))
+        parsed = feedparser.parse(data_file('no-link-guid.xml'))
         data = filter(
             None,
             [UniqueFeed.objects.entry_data(
@@ -276,7 +276,7 @@ class UpdateTests(ClearRedisTestCase):
     @patch("requests.get")
     def test_no_content(self, get):
         get.return_value = responses(304)
-        parsed = feedparser.parse(test_file('no-content.xml'))
+        parsed = feedparser.parse(data_file('no-content.xml'))
         data = filter(
             None,
             [UniqueFeed.objects.entry_data(

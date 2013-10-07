@@ -21,7 +21,7 @@ from feedhq.utils import get_redis_connection
 from feedhq.wsgi import application  # noqa
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
-from . import test_file, responses, patch_job
+from . import data_file, responses, patch_job
 
 
 class WebBaseTests(WebTest):
@@ -480,14 +480,14 @@ class WebBaseTests(WebTest):
         get.return_value = responses(304)
         form = response.forms['import']
 
-        with open(test_file('sample.opml'), 'r') as opml_file:
+        with open(data_file('sample.opml'), 'r') as opml_file:
             form['file'] = 'sample.opml', opml_file.read()
         response = form.submit().follow()
 
         self.assertContains(response, '2 feeds have been imported')
 
         # Re-import
-        with open(test_file('sample.opml'), 'r') as opml_file:
+        with open(data_file('sample.opml'), 'r') as opml_file:
             form['file'] = 'sample.opml', opml_file.read()
         response = form.submit().follow()
         self.assertContains(response, '0 feeds have been imported')
@@ -515,7 +515,7 @@ class WebBaseTests(WebTest):
         get.return_value = responses(304)
         form = response.forms['import']
 
-        with open(test_file('google-reader-subscriptions.xml'),
+        with open(data_file('google-reader-subscriptions.xml'),
                   'r') as opml_file:
             form['file'] = 'sample.opml', opml_file.read()
         response = form.submit().follow()
@@ -534,7 +534,7 @@ class WebBaseTests(WebTest):
 
         form = response.forms["import"]
 
-        with open(test_file('categories.opml'), 'r') as opml_file:
+        with open(data_file('categories.opml'), 'r') as opml_file:
             form['file'] = 'categories.opml', opml_file.read()
 
         response = form.submit().follow()
@@ -766,7 +766,7 @@ class WebBaseTests(WebTest):
             timeout=10)
 
         self.assertEqual(feed.entries.count(), 0)
-        path = test_file('bruno.im.atom')
+        path = data_file('bruno.im.atom')
         with open(path, 'r') as f:
             data = f.read()
         updated.send(sender=None, notification=data, request=None, links=None)
@@ -782,7 +782,7 @@ class WebBaseTests(WebTest):
 
     @patch('requests.get')
     def test_missing_links(self, get):
-        path = test_file('no-rel.atom')
+        path = data_file('no-rel.atom')
         with open(path, 'r') as f:
             data = f.read()
         updated.send(sender=None, notification=data, request=None, links=None)
@@ -794,7 +794,7 @@ class WebBaseTests(WebTest):
         get.return_value = responses(304)
         feed = FeedFactory.create(url=url, category__user=user, user=user)
 
-        path = test_file('no-rel.atom')
+        path = data_file('no-rel.atom')
         with open(path, 'r') as f:
             data = f.read()
         updated.send(sender=None, notification=data, request=None,

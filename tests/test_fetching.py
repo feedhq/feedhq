@@ -18,7 +18,7 @@ from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT, epoch_to_utc
 from feedhq.utils import get_redis_connection
 
 from .factories import FeedFactory
-from .test_feeds import test_file, responses
+from .test_feeds import data_file, responses
 from . import ClearRedisTestCase, patch_job
 
 
@@ -329,7 +329,7 @@ class FaviconTests(ClearRedisTestCase):
         feed = FeedFactory.create(url='http://example.com/feed')
         patch_job(feed.url, link='http://example.com')
 
-        with open(test_file('bruno.im.png'), 'r') as f:
+        with open(data_file('bruno.im.png'), 'r') as f:
             fav = f.read()
 
         class Response:
