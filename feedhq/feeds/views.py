@@ -498,12 +498,20 @@ def import_feeds(request):
 
 
 @login_required
-def dashboard(request):
+def dashboard(request, only_unread=False):
     categories = request.user.categories.prefetch_related(
         'feeds',
     ).annotate(unread_count=Sum('feeds__unread_count'))
 
-    uncategorized = request.user.feeds.filter(category__isnull=True)
+    if only_unread:
+        categories = categories.filter(unread_count__gt=0)
+
+    if only_unread:
+        uncategorized = request.user.feeds.filter(category__isnull=True,
+                                                  unread_count__gt=0)
+    else:
+        uncategorized = request.user.feeds.filter(category__isnull=True)
+
     has_orphans = bool(len(uncategorized))
 
     total = len(uncategorized) + sum(
@@ -529,6 +537,7 @@ def dashboard(request):
     context = {
         'categories': categories,
         'breaks': [col_1, col_2],
+        'only_unread': only_unread,
     }
     return render(request, 'feeds/dashboard.html', context)
 
