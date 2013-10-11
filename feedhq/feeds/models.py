@@ -899,8 +899,7 @@ class FaviconManager(models.Manager):
             return favicon
 
         icon_file = ContentFile(response.content)
-        m = magic.Magic()
-        icon_type = m.from_buffer(response.content)
+        icon_type = magic.from_buffer(response.content)
         if 'PNG' in icon_type:
             ext = 'png'
         elif ('MS Windows icon' in icon_type or
