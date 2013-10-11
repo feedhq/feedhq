@@ -1,5 +1,5 @@
 Django==1.5.4
-Pillow==2.1.0
+Pillow==2.2.1
 South==0.8.2
 bleach==1.2.2
 defusedxml==0.4.1
@@ -13,7 +13,7 @@ django-redis-cache==0.10.0
 django-rq-dashboard==0.2
 django-sekizai==0.7
 djangorestframework==2.3.8
-envdir==0.4.1
+envdir==0.5
 feedparser==5.1.3
 hiredis==0.1.1
 html5lib==0.95
@@ -25,10 +25,10 @@ opml==0.5
 procname==0.3
 psycopg2==2.5.1
 python-dateutil==2.1
-python-magic==0.4.3
-pytz==2013d
+python-magic==0.4.6
+pytz==2013.7
 rache==0.3.1
-raven==3.4.1
+raven==3.5.0
 redis==2.8.0
 requests==1.2.3
 rq==0.3.11
