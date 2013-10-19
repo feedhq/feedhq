@@ -1,0 +1,29 @@
+.popover {
+	position: absolute;
+	background: white;
+
+	&.bottom {
+		margin-top: 5px;
+		left: auto;
+	}
+}
+
+.popover-inner {
+	padding: 3px;
+	background: $text;
+	border-radius: 6px;
+}
+
+.popover-content {
+	background: white;
+	border-radius: 3px;
+	padding: 5px;
+	li {
+		list-style: none;
+	}
+
+	.icon {
+		font-size: 16px;
+		padding-right: 2px;
+	}
+}

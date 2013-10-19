@@ -28,7 +28,7 @@
 				{% if feed %}
 					<a class="{{ feed.category.color|default:feed.color }}" href="{% if only_unread %}{% url "feeds:unread_feed" feed.pk %}{% else %}{% url "feeds:feed" feed.pk %}{% endif %}">{{ feed }}</a>
 				{% endif %}{% endspaceless %}
-				<div class="navlist">{% spaceless %}
+				<div class="navlist inline">{% spaceless %}
 					{% if stars %}<i class="icon-star"></i>&nbsp;{% endif %}
 					<a href="{{ all_url }}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %} <span class="ct">{{ total_count }}</span></a>
 					{% if unread_url %}<a href="{{ unread_url }}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %} <span class="ct">{{ unread_count }}</span></a>{% endif %}

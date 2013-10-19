@@ -12,9 +12,11 @@
 			<li>{% blocktrans count counter=entry_count %}{{ entry_count }} entry will be deleted.{% plural %}{{ entry_count }} entries will be deleted.{% endblocktrans %}</li>
 		</ul>
 		{% include "form.html" %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Delete" %}">
-			<a href="{% url "feeds:category" object.slug %}">{% trans "Cancel" %}</a>
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Delete" %}">
+				<a href="{% url "feeds:category" object.slug %}">{% trans "Cancel" %}</a>
+			</div>
 		</div>
 	</form>
 {% endblock %}

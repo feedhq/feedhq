@@ -5,10 +5,12 @@
 {% block profile_content %}
 	<h2>{% trans "Sharing preferences" %}</h2>
 
-	<form method="post" action="{% url "sharing" %}" class="no" id="sharing">
+	<form method="post" action="{% url "sharing" %}" id="sharing">
 		{% include "form.html" %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Update preferences" %}">
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Update preferences" %}">
+			</div>
 		</div>
 	</form>
 {% endblock %}

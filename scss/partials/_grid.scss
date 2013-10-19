@@ -1,0 +1,95 @@
+//
+// Grid system
+// --------------------------------------------------
+
+// Number of columns in the grid system
+$grid-columns:							12 !default;
+// Padding, to be divided by two and applied to the left and right of all columns
+$grid-gutter-width:				 30px !default;
+
+// Small screen / tablet
+$screen-ld:									480px !default;
+$screen-sm:									768px !default;
+$screen-tablet:							$screen-sm !default;
+$screen-md:									992px !default;
+$screen-desktop:						 $screen-md !default;
+$screen-lg:									1200px !default;
+$screen-lg-desktop:					$screen-lg !default;
+$container-tablet:						((720px + $grid-gutter-width)) !default;
+$container-desktop:					 ((940px + $grid-gutter-width)) !default;
+$container-lg-desktop:				((1140px + $grid-gutter-width)) !default;
+
+// Centered container element
+@mixin container-fixed() {
+	margin-right: auto;
+	margin-left: auto;
+	padding-left:	($grid-gutter-width / 2);
+	padding-right: ($grid-gutter-width / 2);
+	@include content-clearfix;
+}
+
+// Creates a wrapper for a series of columns
+@mixin make-row($gutter: $grid-gutter-width) {
+	margin-left:	($gutter / -2);
+	margin-right: ($gutter / -2);
+	@include content-clearfix;
+}
+
+// mobile first defaults
+.row {
+	@include make-row;
+}
+
+*, *:before, *:after {
+	@include box-sizing(border-box);
+}
+
+// Set the container width, and override it for fixed navbars in media queries
+@mixin container() {
+	@include container-fixed;
+
+	@media (min-width: $screen-tablet) {
+		max-width: $container-tablet;
+	}
+
+	@media (min-width: $screen-desktop) {
+		max-width: $container-desktop;
+	}
+	@media (min-width: $screen-lg-desktop) {
+		max-width: $container-lg-desktop;
+	}
+}
+
+@mixin cols($n) {
+	position: relative;
+	// Prevent columns from collapsing when empty
+	min-height: 1px;
+	// Inner gutter via padding
+	padding-left:	($grid-gutter-width / 2);
+	padding-right: ($grid-gutter-width / 2);
+	width: percentage(($n/ $grid-columns));
+
+	@if $n < 12 {
+		float: left;
+	}
+}
+
+@mixin push($n) {
+	@if $n == 0 {
+		left: auto;
+	} @else {
+		left: percentage(($n / $grid-columns));
+	}
+}
+
+@mixin pull($n) {
+	@if $n == 0 {
+		right: auto;
+	} @else {
+		right: percentage(($n / $grid-columns));
+	}
+}
+
+@mixin offset($n) {
+	margin-left: percentage(($n / $grid-columns));
+}

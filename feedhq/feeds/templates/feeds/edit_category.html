@@ -6,9 +6,11 @@
 	<h2>{{ category.name }}</h2>
 	<form method="post" action="{% url "feeds:edit_category" category.slug %}" id="category">
 		{% include "form.html" %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Save changes" %}">
-			<a class="delete" href="{% url "feeds:delete_category" category.slug %}">{% trans "Delete this category" %}</a>
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Save changes" %}">
+				<a class="delete" href="{% url "feeds:delete_category" category.slug %}">{% trans "Delete this category" %}</a>
+			</div>
 		</div>
 	</form>
 {% endblock %}

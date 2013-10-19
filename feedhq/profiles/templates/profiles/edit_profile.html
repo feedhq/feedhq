@@ -5,10 +5,12 @@
 {% block profile_content %}
 	<h2>{% trans "Edit your profile" %}</h2>
 
-	<form method="post" action="{% url "profile" %}" class="no" id="profile">
+	<form method="post" action="{% url "profile" %}" id="profile">
 		{% include "form.html" %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Update profile" %}">
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Update profile" %}">
+			</div>
 		</div>
 	</form>
 {% endblock %}

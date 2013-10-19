@@ -1,45 +1,84 @@
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media (min-width: $screen-tablet) {
 	#header {
-		@include grid(9);
-
 		h1 {
-			@include cols(6);
+			@include cols(8);
 		}
 
 		#navigation {
-			@include cols(3);
+			@include cols(4);
 		}
-	}
-
-	#footer, #content, #categories, #options {
-		@include grid(9);
 	}
 
 	.figures {
 		.count {
-			@include cols(6);
 			white-space: inherit;
 		}
 	}
 
-	form {
-		margin: 0 column-width(0.5) + $gutter;
-		margin-top: 3em;
+	.pagination {
+		font-size: 1em;
 	}
 
-	.entry {
-		.title {
+	#entries {
+		margin-top: 0.5em;
+		margin-bottom: 0.5em;
+	}
+
+	#entry {
+		width: 620px;
+		margin-left: auto;
+		margin-right: auto;
+
+		.date {
 			@include cols(7);
-			width: column-width(7) - 20; // favicon
+		}
+
+		.actions {
+			@include cols(5);
+		}
+	}
+
+	form {
+		margin-top: 1em;
+
+		.title {
+			@include cols(4);
+			text-align: right;
+		}
+		.input {
+			@include cols(8);
+		}
+
+		.submit {
+			@include push(4);
+			@include cols(8);
 		}
 	}
 
 	.col {
-		@include cols(4.5);
+		@include cols(6);
 		margin-left: 0;
 	}
 
-	#content {
-		@include profile-mobile-menu;
+	.entry {
+		@include make-row;
+
+		.title {
+			@include cols(9.5);
+			padding-left: 35px;
+			background-position: 15px 6px;
+			white-space: nowrap;
+		}
+
+		.date {
+			@include cols(2.5);
+			font-size: $em * 1px;
+			border: none;
+		}
+	}
+
+	.modal {
+		width: 560px;
+		margin-left: -280px;
 	}
 }

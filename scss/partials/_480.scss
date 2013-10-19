@@ -1,70 +1,30 @@
-@media only screen and (min-width: 480px) and (max-width: 767px) {
-	#header {
-		@include grid(6);
-		padding: 0;
-	}
-
-	#footer, #content, #categories, #options {
-		@include grid(6);
-		padding: 0;
-	}
+@media (min-width: $screen-ld) {
+	@include sticky-footer(46px);
 
 	.figures {
-		@include cols(6);
-		margin-right: 0;
-
-		.count {
-			@include cols(6);
-			margin: 0;
-		}
-
-		&.bottom {
-			margin: 0 !important;
-		}
-
-		&.detail {
-			margin-left: 0;
-		}
-
 		&.full {
 			.count {
-				@include cols(3.5);
-				margin-left: 0;
+				@include cols(7);
 			}
 
 			.pagination {
-				@include cols(2.5);
-				margin-right: 0;
+				@include cols(5);
+				margin-top: 0;
 			}
 		}
 	}
 
-	#entries {
-		@include cols(6);
-		margin: 0.5em 0;
-	}
-
-	.entry {
-		.title {
-			width: column-width(6) - 20;
-		}
-	}
-
-	#entry {
-		.date {
-			@include cols(6);
-			margin: 0;
-			margin-bottom: 0;
-		}
-		.actions {
-			@include cols(6);
-			margin: 0;
-			margin-bottom: 1em;
-		}
+	.pagination a {
+		padding-top: 2px;
+		padding-bottom: 2px;
 	}
 
 	.col {
 		@include cols(6);
 		margin: 0;
+	}
+
+	.feedhq-previous, .feedhq-next {
+		font-size: inherit;
 	}
 }

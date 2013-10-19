@@ -6,9 +6,11 @@
 	<h2>{% trans "Add a feed" %}</h2>
 	<form method="post" action="{% url "feeds:add_feed" %}" id="feed">
 		{% include "form.html" %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Add feed" %}">
-			<a href="{% url "feeds:home" %}">{% trans "Cancel" %}</a>
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Add feed" %}">
+				<a href="{% url "feeds:home" %}">{% trans "Cancel" %}</a>
+			</div>
 		</div>
 	</form>
 {% endblock %}

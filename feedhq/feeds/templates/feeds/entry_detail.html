@@ -12,51 +12,53 @@
 			<a href="{% if only_unread %}{% url "feeds:unread_feed" object.feed.pk %}{% else %}{% url "feeds:feed" object.feed.pk %}{% endif %}" class="cat {{ object.feed.category.color|default:object.feed.color }}">{{ object.feed.name }}</a>
 			{% if object.feed.category %}<a href="{% if only_unread %}{% url "feeds:unread_category" object.feed.category.slug %}{% else %}{% url "feeds:category" object.feed.category.slug %}{% endif %}" class="cat opaque {{ object.feed.category.color }}">{{ object.feed.category.name }}</a>{% endif %}
 		</h2>
-		{% include "feeds/entry_links.html" %}
-		<div class="actions navlist">
-			{% if not object.read_later_url and user.read_later %}
-				<form method="post" action="{% url "feeds:item" object.id %}" id="read-later" data-mousetrap="i">
+		<div class="row">
+			{% include "feeds/entry_links.html" %}
+			<div class="actions navlist">
+				{% if not object.read_later_url and user.read_later %}
+					<form method="post" action="{% url "feeds:item" object.id %}" id="read-later" data-mousetrap="i">
+						{% csrf_token %}
+						<input type="hidden" name="action" value="read_later">
+						<button class="tultip" type="submit" title="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}">
+							<i class="icon-book"></i>
+							<span class="legend">{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}</span>
+						</button>
+					</form>
+				{% endif %}
+				<form method="post" action="{% url "feeds:item" object.id %}" id="unread" data-mousetrap="m">
 					{% csrf_token %}
-					<input type="hidden" name="action" value="read_later">
-					<button class="tultip" type="submit" title="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}">
-						<i class="icon-book"></i>
-						<span class="legend">{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}</span>
+					<input type="hidden" name="action" value="unread">
+					<button class="tultip" type="submit" title="{% trans "Unread" %}">
+						<i class="icon-eye-open"></i>
+						<span class="legend">{% trans "Unread" %}</span>
 					</button>
 				</form>
-			{% endif %}
-			<form method="post" action="{% url "feeds:item" object.id %}" id="unread" data-mousetrap="m">
-				{% csrf_token %}
-				<input type="hidden" name="action" value="unread">
-				<button class="tultip" type="submit" title="{% trans "Unread" %}">
-					<i class="icon-eye-open"></i>
-					<span class="legend">{% trans "Unread" %}</span>
-				</button>
-			</form>
-			<form method="post" action="{% url "feeds:item" object.id %}" id="star" data-mousetrap="s">
-				{% csrf_token %}
-				{% if object.starred %}
-					<input type="hidden" name="action" value="unstar">
-					<button class="tultip" type="submit" title="{% trans "Unstar" %}">
-						<i class="icon-star-empty"></i>
-						<span class="legend">{% trans "Unstar" %}</span>
-					</button>
-				{% else %}
-					<input type="hidden" name="action" value="star">
-					<button class="tultip" type="submit" title="{% trans "Star" %}">
-						<i class="icon-star"></i>
-						<span class="legend">{% trans "Star" %}</span>
-					</button>
+				<form method="post" action="{% url "feeds:item" object.id %}" id="star" data-mousetrap="s">
+					{% csrf_token %}
+					{% if object.starred %}
+						<input type="hidden" name="action" value="unstar">
+						<button class="tultip" type="submit" title="{% trans "Unstar" %}">
+							<i class="icon-star-empty"></i>
+							<span class="legend">{% trans "Unstar" %}</span>
+						</button>
+					{% else %}
+						<input type="hidden" name="action" value="star">
+						<button class="tultip" type="submit" title="{% trans "Star" %}">
+							<i class="icon-star"></i>
+							<span class="legend">{% trans "Star" %}</span>
+						</button>
+					{% endif %}
+				</form>
+				{% if user.sharing_email %}
+					<a class="tultip" data-mousetrap="e" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.link }}"><i class="icon-envelope-alt"></i><span class="legend">{% trans "Email" %}</span></a>
 				{% endif %}
-			</form>
-			{% if user.sharing_email %}
-				<a class="tultip" data-mousetrap="e" title="{% trans "Email" %}" href="mailto:?subject={{ object.title }}&body={{ object.link }}"><i class="icon-envelope-alt"></i><span class="legend">{% trans "Email" %}</span></a>
-			{% endif %}
-			{% if user.sharing_twitter %}
-				<a target="_blank" class="tultip" data-mousetrap="t" title="{% trans "Tweet" %}" href="https://twitter.com/home?status={{ object.tweet|urlencode }}"><i class="icon-twitter"></i><span class="legend">{% trans "Tweet" %}</span></a>
-			{% endif %}
-			{% if user.sharing_gplus %}
-				<a target="_blank" class="tultip" data-mousetrap="+" title="{% trans "Share on Google+" %}" href="https://plus.google.com/share?url={{ object.link }}"><i class="icon-google-plus"></i><span class="legend">{% trans "Share on Google+" %}</span></a>
-			{% endif %}
+				{% if user.sharing_twitter %}
+					<a target="_blank" class="tultip" data-mousetrap="t" title="{% trans "Tweet" %}" href="https://twitter.com/home?status={{ object.tweet|urlencode }}"><i class="icon-twitter"></i><span class="legend">{% trans "Tweet" %}</span></a>
+				{% endif %}
+				{% if user.sharing_gplus %}
+					<a target="_blank" class="tultip" data-mousetrap="+" title="{% trans "Share on Google+" %}" href="https://plus.google.com/share?url={{ object.link }}"><i class="icon-google-plus"></i><span class="legend">{% trans "Share on Google+" %}</span></a>
+				{% endif %}
+			</div>
 		</div>
 		{% if has_media and not user.allow_media %}
 			<div class="externalmedia">
@@ -86,7 +88,9 @@
 				{{ object.sanitized_nomedia_content|safe }}
 			{% endif %}
 		</div>
-		{% include "feeds/entry_links.html" %}
+		<div class="row">
+			{% include "feeds/entry_links.html" %}
+		</div>
 	</div>
-	{% include "feeds/entry_navigation.html" %}
+	{% include "feeds/entry_navigation.html" with place="bottom" %}
 {% endblock %}

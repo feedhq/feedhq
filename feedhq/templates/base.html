@@ -17,8 +17,10 @@
 	</head>
 	<body id="{% block bodyid %}default{% endblock %}" data-view="{% block view %}list{% endblock %}">
 		<div id="root">
+			<div>
 			<div id="header"{% block header_mode %}{% endblock %}>
-				<div>
+				<div class="container">
+				<div class="row">
 					<h1>{% if user.is_authenticated and only_unread %}{% url "feeds:unread" as home_url %}
 						{% else %}{% url "feeds:home" as home_url %}{% endif %}
 						<a class="home" href="{{ home_url }}" data-all="{% url "feeds:home" %}" data-unread="{% url "feeds:unread" %}" data-mousetrap="g h">FeedHQ</a>
@@ -32,6 +34,7 @@
 							{% include "navigation.html" %}
 						</ul>{% endspaceless %}
 					</div>
+				</div>
 				</div>
 			</div>
 			<div id="content">
@@ -47,11 +50,13 @@
 			</div>
 
 			<div id="keyboard" class="modal hide fade" data-url="{% url "feeds:keyboard" %}"></div>
-
+			</div>
 			<div id="root_footer"></div>
 		</div>
 		<div id="footer">
-			<div>{% include "footer.html" %}</div>
+			<div class="container">
+				<div>{% include "footer.html" %}</div>
+			</div>
 		</div>
 {% render_block "js" %}
 

@@ -1,8 +1,24 @@
-@include sticky-footer(46px);
+$font-size: 20;
 
-#root {
-	margin-bottom: -54px;
-}
+$em: $font-size;
+$red: #ff0000;
+$dark_red: #cc0000;
+$pale_green: #64992c;
+$green: #006633;
+$army_green: #636330;
+$pale_blue: #6694e3;
+$blue: #206cff;
+$dark_blue: #0000cc;
+$orange: #ec7000;
+$dark_orange: #b36d00;
+$black: #101010;
+$gray: #505050;
+
+$text: #222;
+$light-text: lighten($text, 30%);
+$border-color: lighten($text, 70%);
+$light-background-color: lighten($text, 80%);
+$navbar-em-background: darken($light-background-color, 7%);
 
 @mixin content-clearfix {
 	&:after {
@@ -23,7 +39,6 @@
 
 	> .profile-menu {
 		ul {
-			border-right: none;
 			border-bottom: 1px solid $border-color;
 		}
 
@@ -38,24 +53,6 @@
 		}
 	}
 }
-
-$red: #ff0000;
-$dark_red: #cc0000;
-$pale_green: #64992c;
-$green: #006633;
-$army_green: #636330;
-$pale_blue: #6694e3;
-$blue: #206cff;
-$dark_blue: #0000cc;
-$orange: #ec7000;
-$dark_orange: #b36d00;
-$black: #101010;
-$gray: #505050;
-
-$text: #222;
-$light-text: lighten($text, 30%);
-$border-color: lighten($text, 70%);
-$light-background-color: lighten($text, 80%);
 
 em, i {
 	font-style: italic;
@@ -162,43 +159,45 @@ input, select {
 	font-size: 1rem;
 }
 
-#header > div {
-	@include content-clearfix;
-	padding: 0.5em 0 0 0;
-	border-bottom: 1px solid #444;
-	min-height: 35px;
+#header {
+	background: lighten($light-background-color, 2%);
+	border-bottom: 1px solid $border-color;
+	
+	.row {
+		padding: 0.5em 0 0.4em 0;
 
-	h1 {
-		font-weight: bold;
+		h1 {
+			font-weight: bold;
 
-		a {
-			color: inherit;
-			text-decoration: none;
+			a {
+				color: inherit;
+				text-decoration: none;
 
-			&.unread {
-				padding: 0px 7px;
-				background: $light-background-color;
-				color: lighten($text, 25%);
-				display: inline-block;
-				height: 24px;
-				border-radius: 3px;
-				font-size: 16px;
+				&.unread {
+					padding: 0px 7px;
+					background: $navbar-em-background;
+					color: lighten($text, 25%);
+					display: inline-block;
+					height: 24px;
+					border-radius: 3px;
+					font-size: 16px;
 
-				&:hover {
-					background: $text;
-					color: white;
+					&:hover {
+						background: $text;
+						color: white;
+					}
 				}
-			}
 
-			&.add {
-				font-size: 0.6em;
-				font-weight: normal;
-				padding-left: 2px;
-				margin-right: 5px;
-				color: lighten($text, 20%);
+				&.add {
+					font-size: 0.6em;
+					font-weight: normal;
+					padding-left: 2px;
+					margin-right: 5px;
+					color: lighten($text, 20%);
 
-				&:hover {
-					color: lighten($text, 10%);
+					&:hover {
+						color: lighten($text, 10%);
+					}
 				}
 			}
 		}
@@ -208,6 +207,10 @@ input, select {
 #navigation {
 	text-align: right;
 
+	ul, li, form {
+		@include box-sizing(content-box);
+	}
+
 	> ul {
 		position: relative;
 		@include content-clearfix;
@@ -216,13 +219,16 @@ input, select {
 			display: inline-block;
 			margin-bottom: -5px;
 			padding-bottom: 5px;
-			max-width: 100%;
 
-			strong {
-				display: inline-block;
+			> a {
+				font-weight: bold;
 				max-width: 100%;
 				overflow: hidden;
 				text-overflow: ellipsis;
+
+				&.button {
+					font-weight: normal;
+				}
 			}
 
 			> ul {
@@ -232,7 +238,7 @@ input, select {
 				top: 100%;
 				right: 0;
 				background: white;
-				margin-top: 5px;
+				margin-top: 3px;
 				border: 2px solid $border-color;
 				font-size: 1rem;
 				padding: 5px 0;
@@ -252,6 +258,7 @@ input, select {
 
 				li {
 					position: relative;
+					width: 150px;
 
 					&.sep {
 						margin-bottom: 5px;
@@ -297,7 +304,9 @@ input, select {
 }
 
 .navlist {
-	display: inline;
+	&.inline {
+		display: inline;
+	}
 
 	input {
 		border: none;
@@ -315,6 +324,10 @@ input, select {
 	a {
 		padding: 0 8px;
 		color: $light-text;
+
+		&.tultip {
+			color: inherit;
+		}
 	}
 
 	button {
@@ -387,10 +400,6 @@ input, select {
 		font-size: 1.1em !important;
 	}
 
-	ul {
-		border-right: 1px solid $border-color;
-	}
-
 	li {
 
 		&:last-child {
@@ -445,120 +454,6 @@ input, select {
 	&:hover {
 		opacity: 1;
 	}
-}
-
-.popover {
-	position: absolute;
-	background: white;
-
-	&.bottom {
-		margin-top: 5px;
-		left: auto;
-	}
-}
-
-.popover-inner {
-	padding: 3px;
-	background: $text;
-	border-radius: 6px;
-}
-
-.popover-content {
-	background: white;
-	border-radius: 3px;
-	padding: 5px;
-	li {
-		list-style: none;
-	}
-
-	.icon {
-		font-size: 16px;
-		padding-right: 2px;
-	}
-}
-
-.tooltip {
-	position: absolute;
-	z-index: 1020;
-	display: block;
-	padding: 5px;
-	font-size: 14px;
-	opacity: 0;
-	filter: alpha(opacity=0);
-	visibility: visible;
-
-	&.in {
-		opacity: 0.8;
-		filter: alpha(opacity=80);
-	}
-
-	&.top {
-		margin-top: -2px;
-
-		.tooltip-arrow {
-			bottom: 0;
-			left: 50%;
-			margin-left: -5px;
-			border-top: 5px solid #000000;
-			border-right: 5px solid transparent;
-			border-left: 5px solid transparent;
-		}
-	}
-
-	&.right {
-		margin-right: -2px;
-
-		.tooltip-arrow {
-			top: 50%;
-			left: 0;
-			margin-top: -5px;
-			border-top: 5px solid transparent;
-			border-right: 5px solid #000000;
-			border-bottom: 5px solid transparent;
-		}
-	}
-
-	&.left {
-		margin-left: -2px;
-
-		.tooltip-arrow {
-			top: 50%;
-			right: 0;
-			margin-top: -5px;
-			border-top: 5px solid transparent;
-			border-bottom: 5px solid transparent;
-			border-left: 5px solid #000000;
-		}
-	}
-
-	&.bottom {
-		margin-bottom: -2px;
-
-		.tooltip-arrow {
-			top: 0;
-			left: 50%;
-			margin-left: -5px;
-			border-right: 5px solid transparent;
-			border-bottom: 5px solid #000000;
-			border-left: 5px solid transparent;
-		}
-	}
-}
-
-.tooltip-inner {
-	max-width: 200px;
-	padding: 3px 8px;
-	color: #ffffff;
-	text-align: center;
-	text-decoration: none;
-	background-color: #000000;
-	border-radius: 4px;
-}
-
-.tooltip-arrow {
-	position: absolute;
-	width: 0;
-	height: 0;
 }
 
 #content {
@@ -649,10 +544,6 @@ input, select {
 	@include clearfix;
 }
 
-.no label {
-	font-weight: bold;
-}
-
 #keyboard {
 	code {
 		border: none;
@@ -661,24 +552,30 @@ input, select {
 	}
 }
 
-#footer > div {
-	border-top: 1px solid #444;
-	padding: 0.5em 0;
-	margin-top: 0.5em;
-	color: lighten($text, 20%);
-	font-size: 0.8em;
+#root > div {
+	padding-bottom: 0.5rem;
+}
+
+#footer {
+	background: lighten($light-background-color, 2%);
+	border-top: 1px solid $border-color;
+
+	> div {
+		padding: 0.5em 0;
+		color: lighten($text, 20%);
+		font-size: 0.8em;
+	}
 }
 
 form {
 	.field {
-		padding: 5px 0;
-
+		padding-top: 5px;
+		padding-bottom: 5px;
 		p, ul, li {
 			margin: 0;
 		}
 	}
 	.title {
-		text-align: right;
 		h6 {
 			margin: 0 !important;
 		}
@@ -722,6 +619,7 @@ form {
 
 .colors {
 	.color {
+		@include box-sizing(content-box);
 		display: inline-block;
 		width: 20px;
 		height: 20px;
@@ -734,15 +632,11 @@ form {
 			padding: 7px;
 			margin: 0 3px 0 0;
 		}
-
-		&.selected {
-		}
 	}
 }
 
 .pagination {
 	text-align: right;
-	white-space: nowrap;
 
 	a, span {
 		padding: 0 4px;
@@ -789,8 +683,6 @@ form {
 }
 
 #entries {
-	margin: 0.5em 0;
-
 	.empty {
 		padding: 7em 1em 8em 1em;
 		background: darken(white, 5%);
@@ -834,14 +726,13 @@ form {
 }
 
 .ellipsis {
-	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
 .count {
 	overflow: hidden;
-	white-space: nowrap;
+
 	a.cat {
 		float: left;
 		padding: 0 2px;
@@ -851,6 +742,7 @@ form {
 	form {
 		display: inline-block;
 		margin: 0;
+		width: auto;
 	}
 }
 
@@ -876,16 +768,17 @@ pre code {
 		font-size: 1.5em;
 		line-height: 1.2em;
 		padding: 0.25em 0;
-		border-bottom: 1px solid #ddd;
+		border-bottom: 1px solid $border-color;
 	}
 
 	.externalmedia {
 		clear: both;
-		color: lighten($text, 20%);
-		border: 1px solid #ddd;
+		color: $light-text;
+		border: 1px solid $border-color;
 		padding: 5px;
 		font-size: 0.9rem;
 		margin-bottom: 5px;
+		margin-top: 5px;
 
 		input {
 			font-size: inherit;
@@ -895,6 +788,7 @@ pre code {
 		form {
 			margin: 0;
 			padding: 0;
+			width: 100%;
 		}
 	}
 
@@ -977,6 +871,13 @@ pre code {
 					}
 				}
 			}
+
+			.feedhq-image-link a {
+				display: block;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
+			}
 		}
 	}
 
@@ -991,11 +892,13 @@ pre code {
 	}
 
 	.actions {
+		@include content-clearfix;
 		text-align: right;
 
 		form {
 			margin: 0;
 			display: inline-block;
+			width: auto;
 		}
 
 		input {

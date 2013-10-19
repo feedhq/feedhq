@@ -2,14 +2,16 @@
 @import "compass/utilities/general/clearfix";
 @import "compass/layout";
 @import "compass/utilities";
-
-@import "frameless";
+@import "compass/css3/box-sizing";
 
 @import "partials/global";
+@import "partials/grid";
 @import "partials/github";
 @import "partials/modals";
+@import "partials/tooltip";
+@import "partials/popover";
 @import "partials/font-awesome";
-@import "partials/default_960";
-@import "partials/768";
 @import "partials/320";
 @import "partials/480";
+@import "partials/768";
+@import "partials/960";

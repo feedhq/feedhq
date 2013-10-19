@@ -5,11 +5,13 @@
 {% block profile_content %}
 	<h1>{% trans "Read It Later settings" %}</h1>
 
-	<form method="post" action="{% url "services" "readitlater" %}" class="no" id="readitlater">
+	<form method="post" action="{% url "services" "readitlater" %}" id="readitlater">
 		{% include "form.html" %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Check credentials" %}">
-			<a href="{% url "read_later" %}">{% trans "Cancel" %}</a>
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Check credentials" %}">
+				<a href="{% url "read_later" %}">{% trans "Cancel" %}</a>
+			</div>
 		</div>
 	</form>
 {% endblock %}

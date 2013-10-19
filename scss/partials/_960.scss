@@ -1,0 +1,49 @@
+@media (min-width: $screen-desktop) {
+	h2 {
+		clear: both;
+	}
+
+	form {
+		width: percentage(8 / $grid-columns);
+		margin: 0 auto;
+		margin-top: 3em;
+		position: relative;
+	}
+
+	#entry {
+		overflow: visible;
+	}
+
+	.col {
+		@include cols(4);
+		&.first {
+			margin-left: 0;
+		}
+	}
+
+	#content {
+		> .profile-menu {
+			@include cols(3);
+			margin-left: 0;
+
+			ul {
+				border-right: 1px solid $border-color;
+				border-bottom: none;
+			}
+
+			li, a {
+				display: block;
+			}
+
+			a {
+				margin-top: 1px;
+				padding: 5px;
+				font-size: 1em;
+			}
+		}
+
+		> .profile {
+			@include cols(9);
+		}
+	}
+}

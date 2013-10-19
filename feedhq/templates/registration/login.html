@@ -10,9 +10,11 @@
 		{% if next %}
 		<input type="hidden" name="next" value="{{ next }}" />{% endif %}
 		{% include "form.html" %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Sign in" %}">
-			<a href="{% url "password_reset_recover" %}">{% trans "Forgot your password?" %}</a>
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Sign in" %}">
+				<a href="{% url "password_reset_recover" %}">{% trans "Forgot your password?" %}</a>
+			</div>
 		</div>
 	</form>
 

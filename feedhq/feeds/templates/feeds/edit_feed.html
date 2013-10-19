@@ -6,9 +6,11 @@
 	<h2>{% blocktrans with name=feed.name %}Edit {{ name }}{% endblocktrans %}</h2>
 	<form method="post" action="{% url "feeds:edit_feed" feed.id %}" id="feed">
 		{% include "form.html" %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Save changes" %}">
-			<a class="delete" href="{% url "feeds:delete_feed" feed.id %}">{% trans "Delete this feed" %}</a>
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Save changes" %}">
+				<a class="delete" href="{% url "feeds:delete_feed" feed.id %}">{% trans "Delete this feed" %}</a>
+			</div>
 		</div>
 	</form>
 {% endblock %}

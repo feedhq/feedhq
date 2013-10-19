@@ -7,11 +7,13 @@
 
 	<p>{% trans "Please enter your Readability credentials. Note that Readability uses xAuth so we won't store your raw credentials but exchange them for a token that you can revoke at any time." %}</p>
 
-	<form method="post" action="{% url "services" "readability" %}" class="no" id="readability">
+	<form method="post" action="{% url "services" "readability" %}" id="readability">
 		{% include "form.html" %}
-		<div class="submit">
-			<input type="submit" value="{% trans "Check credentials" %}">
-			<a href="{% url "read_later" %}">{% trans "Cancel" %}</a>
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Check credentials" %}">
+				<a href="{% url "read_later" %}">{% trans "Cancel" %}</a>
+			</div>
 		</div>
 	</form>
 {% endblock %}

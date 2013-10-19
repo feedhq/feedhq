@@ -7,13 +7,14 @@
 		<div class="count">
 		<a href="{% if only_unread %}{% url 'feeds:unread_dashboard' %}{% else %}{% url 'feeds:dashboard' %}{% endif %}">{% trans "Dashboard" %}</a>
 
-		<div class="navlist">{% spaceless %}
+		<div class="navlist inline">{% spaceless %}
 			<a href="{% url 'feeds:dashboard' %}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %}</a>
 			<a href="{% url 'feeds:unread_dashboard' %}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %}</a>
 		{% endspaceless %}</div>
 		</div>
 	</div>
 
+	<div class="row">
 	<div class="col first">
 		{% for cat in categories %}
 			<div class="category">
@@ -30,5 +31,6 @@
 			</div>
 			{% if forloop.counter in breaks %}</div><div class="col">{% endif %}
 		{% endfor %}
+	</div>
 	</div>
 {% endblock %}
