@@ -19,7 +19,7 @@ class Command(SentryCommand):
             select * from subscriber_subscription s where not exists (
                 select 1 from feeds_uniquefeed u
                 where u.url = s.topic
-            )
+            ) and s.lease_expiration >= current_timestamp
             """))
         if len(extra):
             logger.info("Unsubscribing from {0} feeds".format(len(extra)))
