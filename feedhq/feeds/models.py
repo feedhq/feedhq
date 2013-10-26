@@ -678,7 +678,8 @@ class Entry(models.Model):
     ELEMENTS = (
         feedparser._HTMLSanitizer.acceptable_elements |
         feedparser._HTMLSanitizer.mathml_elements |
-        feedparser._HTMLSanitizer.svg_elements
+        feedparser._HTMLSanitizer.svg_elements |
+        set(['iframe', 'object', 'embed', 'script'])
     )
     ATTRIBUTES = (
         feedparser._HTMLSanitizer.acceptable_attributes |
@@ -730,7 +731,8 @@ class Entry(models.Model):
     def sanitized_nomedia_content(self):
         return bleach.clean(
             self.content,
-            tags=self.ELEMENTS - set(['img', 'audio', 'video']),
+            tags=self.ELEMENTS - set(['img', 'audio', 'video', 'iframe',
+                                      'object', 'embed', 'script']),
             attributes=self.ATTRIBUTES,
             styles=self.CSS_PROPERTIES,
             strip=True,

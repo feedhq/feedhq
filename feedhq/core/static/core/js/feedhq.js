@@ -143,8 +143,8 @@
 			});
 			return this;
 		},
-		images: function() {
-			if (!$('.feedhq-images')) {
+		media: function() {
+			if (!$('.feedhq-media')) {
 				return this;
 			}
 			var timer;
