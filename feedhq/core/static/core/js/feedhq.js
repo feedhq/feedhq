@@ -43,10 +43,9 @@
 				});
 				$('#id_entries').val(JSON.stringify(entries));
 			};
+			update_ids();
 
-			if ($('[data-next]').length) {
-				update_ids();
-			} else {
+			if (!$('[data-next]').length) {
 				$('#id_entries').parent('form').hide();
 			}
 
