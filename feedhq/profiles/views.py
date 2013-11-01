@@ -59,7 +59,7 @@ class ProfileView(UserMixin, generic.FormView):
     template_name = 'profiles/edit_profile.html'
 
     def get_initial(self):
-        return {'ttl': 365}
+        return {'ttl': self.request.user.ttl or 365}
 profile = login_required(ProfileView.as_view())
 
 
