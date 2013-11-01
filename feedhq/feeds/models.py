@@ -732,7 +732,7 @@ class Entry(models.Model):
         return bleach.clean(
             self.content,
             tags=self.ELEMENTS - set(['img', 'audio', 'video', 'iframe',
-                                      'object', 'embed', 'script']),
+                                      'object', 'embed', 'script', 'source']),
             attributes=self.ATTRIBUTES,
             styles=self.CSS_PROPERTIES,
             strip=True,

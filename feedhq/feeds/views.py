@@ -35,8 +35,9 @@ Entries are paginated.
 
 logger = logging.getLogger(__name__)
 
-MEDIA_RE = re.compile(r'.*<(img|audio|video|iframe|object|embed|script)\s+.*',
-                      re.UNICODE | re.DOTALL)
+MEDIA_RE = re.compile(
+    r'.*<(img|audio|video|iframe|object|embed|script|source)\s+.*',
+    re.UNICODE | re.DOTALL)
 
 
 class Keyboard(generic.TemplateView):
