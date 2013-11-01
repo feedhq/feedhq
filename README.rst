@@ -233,6 +233,13 @@ Here is a full list of management commands that you should schedule:
 
   Resource consumption: low. Only makes requests to Redis.
 
+* ``delete_old`` removes expired entries as determined by each user's entry TTL.
+
+  Recommended frequency: once a day.
+
+  Resource consumption: medium, makes ``DELETE`` queries to postgres (1 per
+  user).
+
 Development
 -----------
 

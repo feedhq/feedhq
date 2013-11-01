@@ -251,6 +251,9 @@ class UnreadCount(ReaderView):
     def get(self, request, *args, **kwargs):
         feeds = request.user.feeds.filter(
             unread_count__gt=0).annotate(ts=Max('entries__date'))
+        for feed in feeds:
+            if not feed.ts:
+                feed.ts = timezone.now()
         unread_counts = [{
             "id": u"feed/{0}".format(feed.url),
             "count": feed.unread_count,
