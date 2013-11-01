@@ -18,7 +18,7 @@ from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
 from feedhq.utils import get_redis_connection
 
-from .factories import FeedFactory
+from .factories import FeedFactory, UserFactory
 from . import responses, ClearRedisTestCase, data_file, patch_job
 
 
@@ -272,6 +272,22 @@ class UpdateTests(ClearRedisTestCase):
         with self.assertNumQueries(5):
             store_entries(feed.url, data)
         self.assertTrue(feed.entries.get().guid)
+
+    @patch("requests.get")
+    def test_ttl(self, get):
+        get.return_value = responses(304)
+        user = UserFactory.create(ttl=3)
+        feed = FeedFactory.create(user=user, category__user=user)
+
+        parsed = feedparser.parse(data_file('bruno.im.atom'))
+        data = filter(
+            None,
+            [UniqueFeed.objects.entry_data(
+                entry, parsed) for entry in parsed.entries]
+        )
+        with self.assertNumQueries(2):
+            store_entries(feed.url, data)
+        self.assertEqual(feed.entries.count(), 0)
 
     @patch("requests.get")
     def test_no_content(self, get):

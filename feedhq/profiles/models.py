@@ -111,6 +111,11 @@ class User(PermissionsMixin, AbstractBaseUser):
         help_text=_('Non-system fonts are served by Google Web Fonts.'),
     )
 
+    ttl = models.PositiveIntegerField(
+        _('Retention days'), null=True,
+        help_text=_('Number of days after which entries are deleted. The more '
+                    'history you keep, the less snappy FeedHQ becomes.'))
+
     objects = UserManager()
 
     class Meta:

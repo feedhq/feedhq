@@ -57,6 +57,9 @@ password = login_required(PasswordView.as_view())
 class ProfileView(UserMixin, generic.FormView):
     form_class = ProfileForm
     template_name = 'profiles/edit_profile.html'
+
+    def get_initial(self):
+        return {'ttl': 365}
 profile = login_required(ProfileView.as_view())
 
 

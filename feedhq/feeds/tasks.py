@@ -74,6 +74,11 @@ def ensure_subscribed(topic_url, hub_url):
         call(*args)
 
 
+def should_skip(date, ttl):
+    delta = timedelta(days=ttl)
+    return date + delta < timezone.now()
+
+
 def store_entries(feed_url, entries):
     from .models import Entry, Feed
     guids = set([entry['guid'] for entry in entries])
@@ -102,8 +107,9 @@ def store_entries(feed_url, entries):
         if filter_by_title:
             existing_titles[entry['feed_id']].add(entry['title'])
 
-    feeds = Feed.objects.filter(
-        url=feed_url, user__is_suspended=False).values('pk', 'user_id')
+    feeds = Feed.objects.select_related('user').filter(
+        url=feed_url, user__is_suspended=False).values('pk', 'user_id',
+                                                       'user__ttl')
 
     create = []
     update_unread_counts = set()
@@ -117,6 +123,11 @@ def store_entries(feed_url, entries):
             if (
                 filter_by_title and
                 entry['title'] in existing_titles[feed['pk']]
+            ):
+                continue
+            if (
+                feed['user__ttl'] and
+                should_skip(entry['date'], feed['user__ttl'])
             ):
                 continue
             create.append(Entry(user_id=feed['user_id'],

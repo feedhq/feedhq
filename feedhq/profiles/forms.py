@@ -26,7 +26,7 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'timezone', 'entries_per_page', 'font',
-                  'endless_pages', 'oldest_first', 'allow_media']
+                  'endless_pages', 'oldest_first', 'allow_media', 'ttl']
 
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -35,6 +35,16 @@ class ProfileForm(forms.ModelForm):
         ).exists():
             raise forms.ValidationError(_('This username is already taken.'))
         return username
+
+    def clean_ttl(self):
+        try:
+            ttl = int(self.cleaned_data['ttl'])
+        except ValueError:
+            raise forms.ValidationError(_('Please enter an integer value.'))
+        if ttl > 365 or ttl < 2:
+            raise forms.ValidationError(
+                _('Please enter a value between 2 and 365.'))
+        return ttl
 
 
 class SharingForm(forms.ModelForm):
