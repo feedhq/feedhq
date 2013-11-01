@@ -107,7 +107,7 @@ class User(PermissionsMixin, AbstractBaseUser):
                                       default=False)
 
     font = models.CharField(
-        _('Text font'), max_length=75, choices=FONTS, default=FONT_PALATINO,
+        _('Text font'), max_length=75, choices=FONTS, default=FONT_PT_SERIF,
         help_text=_('Non-system fonts are served by Google Web Fonts.'),
     )
 

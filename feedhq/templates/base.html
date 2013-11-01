@@ -8,6 +8,8 @@
 		<link rel="stylesheet" type="text/css" href="{% static "core/css/screen.css" %}">
 		{% if user.is_authenticated %}
 		<link rel="stylesheet" type="text/css" href="{% static "core/css/fonts/"|add:user.font|add:".css" %}">
+		{% else %}
+		<link rel="stylesheet" type="text/css" href="{% static "core/css/fonts/pt-serif.css" %}">
 		{% endif %}
 		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-57.png" %}">
 		<link rel="apple-touch-icon-precomposed" href="{% static "core/img/touch-icon-72.png" %}" sizes="72x72">
