@@ -851,6 +851,12 @@ class ReaderApiTest(ApiTest):
                       'output': 'atom-hifi'}, **clientlogin(token))
             self.assertEqual(response.status_code, 200)
 
+        with self.assertNumQueries(1):
+            response = self.client.post(
+                url, {'i': [entry1.pk, entry2.pk, entry3.pk],
+                      'output': 'atom-hifi'}, **clientlogin(token))
+            self.assertEqual(response.status_code, 200)
+
     def test_mark_all_as_read(self, get):
         get.return_value = responses(304)
         user = UserFactory.create()

@@ -898,6 +898,7 @@ class StreamItemsContents(ReaderView):
     http_method_names = ['get', 'post']
     renderer_classes = ReaderView.renderer_classes + [AtomRenderer,
                                                       AtomHifiRenderer]
+    require_post_token = False
 
     def get(self, request, *args, **kwargs):
         items = request.GET.getlist('i', request.DATA.getlist('i'))
