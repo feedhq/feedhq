@@ -18,7 +18,7 @@ feedparser==5.1.3
 hiredis==0.1.1
 html5lib==0.95
 httplib2==0.8
-lxml==3.2.3
+lxml==3.2.4
 more-itertools==2.2
 oauth2==1.5.211
 opml==0.5
@@ -26,9 +26,9 @@ procname==0.3
 psycopg2==2.5.1
 python-dateutil==2.2
 python-magic==0.4.6
-pytz==2013.7
+pytz==2013.8
 rache==0.3.1
-raven==3.5.1
+raven==3.5.2
 redis==2.8.0
 requests==1.2.3
 rq==0.3.11
