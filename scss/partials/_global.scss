@@ -17,6 +17,7 @@ $gray: #505050;
 $text: #222;
 $light-text: lighten($text, 30%);
 $border-color: lighten($text, 70%);
+$background-color: #fff;
 $light-background-color: lighten($text, 80%);
 $navbar-em-background: darken($light-background-color, 7%);
 
@@ -39,7 +40,7 @@ $navbar-em-background: darken($light-background-color, 7%);
 
 	> .profile-menu {
 		ul {
-			border-bottom: 1px solid $border-color;
+			@include border-bottom($border-color);
 		}
 
 		li, a {
@@ -161,7 +162,7 @@ input, select {
 
 #header {
 	background: lighten($light-background-color, 2%);
-	border-bottom: 1px solid $border-color;
+	@include border-bottom($border-color);
 	
 	.row {
 		padding: 0.5em 0 0.4em 0;
@@ -263,7 +264,7 @@ input, select {
 					&.sep {
 						margin-bottom: 5px;
 						padding-bottom: 5px;
-						border-bottom: 1px solid $light-background-color;
+						@include border-bottom($light-background-color);
 					}
 
 					a, input {
@@ -558,7 +559,7 @@ input, select {
 
 #footer {
 	background: lighten($light-background-color, 2%);
-	border-top: 1px solid $border-color;
+	@include border-top($border-color);
 
 	> div {
 		padding: 0.5em 0;
@@ -768,13 +769,13 @@ pre code {
 		font-size: 1.5em;
 		line-height: 1.2em;
 		padding: 0.25em 0;
-		border-bottom: 1px solid $border-color;
+		@include border-bottom($border-color);
 	}
 
 	.externalmedia {
 		clear: both;
 		color: $light-text;
-		border: 1px solid $border-color;
+		@include border($border-color, $background-color);
 		padding: 5px;
 		font-size: 0.9rem;
 		margin-bottom: 5px;
@@ -835,6 +836,7 @@ pre code {
 		table {
 			td, th {
 				padding: 5px;
+				border: 1px solid $border-color;
 			}
 			thead {
 				border-bottom: 1px solid $border-color;

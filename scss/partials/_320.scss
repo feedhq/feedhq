@@ -100,7 +100,7 @@ form {
 	.date {
 		font-size: 0.8em;
 		text-align: right;
-		border-bottom: 1px solid lighten($text, 75%);
+		@include border-bottom($border-color);
 	}
 }
 
