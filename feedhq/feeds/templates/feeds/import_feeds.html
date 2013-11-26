@@ -6,8 +6,6 @@
 	<h2>{% trans "Import data from an OPML file" %}</h2>
 	<p>{% url "export" as export_url %}{% blocktrans %}An OPML file is the standard way to export and import subscriptions from feed readers. If you are already using a feed reader, chances are it offers OPML export. <a href="{{ export_url }}">FeedHQ does</a>.{% endblocktrans %}</p>
 
-	<p>{% blocktrans %}If you're coming from Google Reader you can get an OPML dump by following <a href="http://www.google.com/reader/subscriptions/export">this link</a> (valid until July 1st, 2013). Just download the file it and upload it on the form below.{% endblocktrans %}</p>
-
 	<form enctype="multipart/form-data" method="post" action="{% url "feeds:import_feeds" %}" id="import">
 		{% include "form.html" %}
 		<div class="row">
