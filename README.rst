@@ -107,6 +107,7 @@ Optionally you can customize:
 * ``STATIC_URL``: the URL that serves static files (CSS/JS files) located in
   ``STATIC_ROOT``. By default, it is set to ``/static/``.
 * ``SENTRY_DSN``: a DSN to enable `Sentry`_ debugging.
+* ``SESSION_COOKIE_PATH``: the path set on the session cookie. E.g., ``/``.
 * ``HTTPS``: set-it to a non-empty value to configure FeedHQ for SSL access.
 * ``EMAIL_URL``: a URL for configuring email. E.g.
   ``smtp://user:password@host:port/?backend=my.EmailBackend&use_tls=true``.
