@@ -20,10 +20,8 @@
 
 		{% if entries.has_next %}
 			{% if entries.next_page_number != entries.paginator.num_pages %}
-				{% if entries.next_page_number|add:"1" == entries.paginator.num_pages %}
-					<a href="{{ base_url }}{{ entries.next_page_number }}/">{{ entries.next_page_number }}</a>
-				{% else %}
-					<a href="{{ base_url }}{{ entries.next_page_number }}/">{{ entries.next_page_number }}</a>
+				<a href="{{ base_url }}{{ entries.next_page_number }}/">{{ entries.next_page_number }}</a>
+				{% if entries.next_page_number|add:"1" != entries.paginator.num_pages %}
 					{% if entries.next_page_number == entries.paginator.num_pages|add:"-2" %}
 						<a href="{{ base_url }}{{ entries.paginator.num_pages|add:"-1" }}/">{{ entries.paginator.num_pages|add:"-1" }}</a>
 					{% else %}
