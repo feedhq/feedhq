@@ -143,6 +143,7 @@ class Login(APIView):
             clause = Q(email__iexact=self.querydict['Email'])
         else:
             clause = Q(username__iexact=self.querydict['Email'])
+        clause = clause & Q(is_active=True)
         try:
             user = User.objects.get(clause)
         except User.DoesNotExist:
