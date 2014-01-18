@@ -249,6 +249,12 @@ class ReaderApiTest(ApiTest):
                                    **clientlogin(token))
         self.assertContains(response, 'true')
 
+        # Bogus URL with one slash
+        feed_url = 'http:/example.com/subscribed-feed'
+        response = self.client.get(url, {'s': 'feed/{0}'.format(feed_url)},
+                                   **clientlogin(token))
+        self.assertContains(response, 'true')
+
     def test_edit_tag(self, get):
         get.return_value = responses(304)
         user = UserFactory.create()
@@ -648,8 +654,17 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['items']), 0)
 
         UniqueFeed.objects.all().delete()
+        feed_url = user.feeds.all()[0].url
         url = reverse('reader:stream_contents',
-                      args=[u'feed/{0}'.format(user.feeds.all()[0].url)])
+                      args=[u'feed/{0}'.format(feed_url)])
+        with self.assertNumQueries(4):
+            response = self.client.get(url, {'n': 40, 'output': 'atom'},
+                                       **clientlogin(token))
+            self.assertEqual(response.status_code, 200)
+
+        feed_url = feed_url.replace('://', ':/')
+        url = reverse('reader:stream_contents',
+                      args=[u'feed/{0}'.format(feed_url)])
         with self.assertNumQueries(4):
             response = self.client.get(url, {'n': 40, 'output': 'atom'},
                                        **clientlogin(token))

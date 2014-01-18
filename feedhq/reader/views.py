@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import struct
 import urlparse
 
@@ -39,6 +40,8 @@ from .renderers import (PlainRenderer, GoogleReaderXMLRenderer, AtomRenderer,
 
 
 logger = logging.getLogger(__name__)
+
+MISSING_SLASH_RE = re.compile("^(https?:\/)[^\/]")
 
 
 def item_id(value):
@@ -94,6 +97,15 @@ def is_label(value, user_id):
             prefix = label_user_prefix
         return value[len(prefix):]
     return False
+
+
+def feed_url(stream):
+    url = stream[len('feed/'):]
+    missing_slash = MISSING_SLASH_RE.match(url)
+    if missing_slash:
+        start = missing_slash.group(1)
+        url = u'{0}/{1}'.format(start, url[len(start):])
+    return url
 
 
 class ForceNegotiation(DefaultContentNegotiation):
@@ -432,7 +444,7 @@ class EditSubscription(ReaderView):
         if not request.DATA['s'].startswith('feed/'):
             raise exceptions.ParseError(
                 u"Unrecognized stream: {0}".format(request.DATA['s']))
-        url = request.DATA['s'][len('feed/'):]
+        url = feed_url(request.DATA['s'])
 
         if action == 'subscribe':
             form = FeedForm(data={'url': url}, user=request.user)
@@ -488,7 +500,7 @@ class QuickAddSubscription(ReaderView):
 
         url = request.DATA['quickadd']
         if url.startswith('feed/'):
-            url = url[len('feed/'):]
+            url = feed_url(url)
 
         form = FeedForm(data={'url': url}, user=request.user)
         if not form.is_valid():
@@ -519,7 +531,7 @@ class Subscribed(ReaderView):
         if not feed.startswith('feed/'):
             raise exceptions.ParseError(
                 "Unrecognized feed format. Use 'feed/<url>'")
-        url = feed[len('feed/'):]
+        url = feed_url(feed)
         return Response(str(
             request.user.feeds.filter(url=url).exists()
         ).lower())
@@ -530,7 +542,7 @@ def get_q(stream, user_id, exception=False):
     """Given a stream ID, returns a Q object for this stream."""
     stream_q = None
     if stream.startswith("feed/"):
-        url = stream[len("feed/"):]
+        url = feed_url(stream)
         stream_q = Q(feed__url=url)
     elif is_stream(stream, user_id):
         state = is_stream(stream, user_id)
@@ -730,7 +742,7 @@ class StreamContents(ReaderView):
         }
 
         if content_id.startswith("feed/"):
-            url = content_id[len("feed/"):]
+            url = feed_url(content_id)
             feeds = request.user.feeds.filter(url=url).order_by('pk')[:1]
             if len(feeds) == 0:
                 raise Http404
@@ -1036,7 +1048,7 @@ class MarkAllAsRead(ReaderView):
         stream = request.DATA['s']
 
         if stream.startswith('feed/'):
-            url = stream[len('feed/'):]
+            url = feed_url(stream)
             entries = entries.filter(feed__url=url)
         elif is_label(stream, request.user.pk):
             name = is_label(stream, request.user.pk)
