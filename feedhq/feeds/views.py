@@ -461,7 +461,7 @@ def save_outline(user, category, outline, existing):
 
 
 @login_required
-@transaction.commit_on_success
+@transaction.atomic
 def import_feeds(request):
     """Import feeds from an OPML source"""
     if request.method == 'POST':

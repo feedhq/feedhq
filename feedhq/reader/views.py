@@ -11,8 +11,7 @@ import opml
 
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
-from django.core.validators import email_re
-from django.db import connection, transaction
+from django.db import connection
 from django.db.models import Max, Sum, Min, Q
 from django.http import Http404
 from django.shortcuts import render
@@ -32,6 +31,7 @@ from ..feeds.models import Feed, UniqueFeed, Category
 from ..feeds.utils import epoch_to_utc
 from ..feeds.views import save_outline
 from ..profiles.models import User
+from ..utils import is_email
 from .authentication import GoogleLoginAuthentication
 from .exceptions import PermissionDenied, BadToken
 from .models import generate_auth_token, generate_post_token, check_post_token
@@ -151,7 +151,7 @@ class Login(APIView):
         self.querydict = querydict
 
     def post(self, request, *args, **kwargs):
-        if email_re.search(self.querydict['Email']):
+        if is_email(self.querydict['Email']):
             clause = Q(email__iexact=self.querydict['Email'])
         else:
             clause = Q(username__iexact=self.querydict['Email'])
@@ -1079,7 +1079,6 @@ class MarkAllAsRead(ReaderView):
                 where e.feed_id = f.id and read = false
             ) where f.user_id = %s
         """, [request.user.pk])
-        transaction.commit_unless_managed()
         return Response("OK")
 mark_all_as_read = MarkAllAsRead.as_view()
 

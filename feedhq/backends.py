@@ -1,9 +1,9 @@
 from django.contrib.auth.backends import ModelBackend
-from django.core.validators import email_re
 
 from ratelimitbackend.backends import RateLimitMixin
 
 from .profiles.models import User
+from .utils import is_email
 
 
 class CaseInsensitiveModelBackend(ModelBackend):
@@ -20,7 +20,7 @@ class CaseInsensitiveModelBackend(ModelBackend):
 class RateLimitMultiBackend(RateLimitMixin, CaseInsensitiveModelBackend):
     """A backend that allows login via username or email, rate-limited."""
     def authenticate(self, username=None, password=None, request=None):
-        if email_re.search(username):
+        if is_email(username):
             try:
                 username = User.objects.get(email__iexact=username).username
             except User.DoesNotExist:

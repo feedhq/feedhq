@@ -340,6 +340,7 @@ class UpdateTests(ClearRedisTestCase):
                 u'hub.verify': [u'sync', u'async'],
                 u'hub.topic': feed.url,
                 u'hub.mode': u'subscribe'},
+            timeout=None,
             auth=None)
         self.assertEqual(feed.url, subscription.topic)
 
@@ -359,6 +360,7 @@ class UpdateTests(ClearRedisTestCase):
                 u'hub.verify': [u'sync', u'async'],
                 u'hub.topic': feed.url,
                 u'hub.mode': u'subscribe'},
+            timeout=None,
             auth=None)
 
         post.reset_mock()
@@ -376,6 +378,7 @@ class UpdateTests(ClearRedisTestCase):
                 u'hub.verify': [u'sync', u'async'],
                 u'hub.topic': feed.url,
                 u'hub.mode': u'subscribe'},
+            timeout=None,
             auth=None)
 
         post.reset_mock()

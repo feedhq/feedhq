@@ -57,7 +57,7 @@ class OverwritingStorage(FileSystemStorage):
                     os.remove(temp_data_location)
                 raise
 
-        file_move_safe(temp_data_location, full_path)
+        file_move_safe(temp_data_location, full_path, allow_overwrite=True)
         content.close()
 
         if settings.FILE_UPLOAD_PERMISSIONS is not None:

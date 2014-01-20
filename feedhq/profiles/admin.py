@@ -10,6 +10,7 @@ from .models import User
 class ProfileUserChangeForm(UserChangeForm):
     class Meta:
         model = User
+        fields = '__all__'
 
 
 class ProfileUserAdmin(UserAdmin):
