@@ -680,7 +680,7 @@ class Entry(models.Model):
         feedparser._HTMLSanitizer.mathml_elements |
         feedparser._HTMLSanitizer.svg_elements |
         set(['iframe', 'object', 'embed', 'script'])
-    )
+    ) - set(['font'])
     ATTRIBUTES = (
         feedparser._HTMLSanitizer.acceptable_attributes |
         feedparser._HTMLSanitizer.mathml_attributes |
