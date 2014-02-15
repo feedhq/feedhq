@@ -7,7 +7,7 @@ import redis
 from redis_cache.cache import pool
 
 
-def get_redis_connection(alias='default'):
+def get_redis_connection():
     """
     Helper used for obtain a raw redis client.
     """
