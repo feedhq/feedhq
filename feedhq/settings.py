@@ -179,10 +179,7 @@ def parse_redis_url():
 
 REDIS, RQ_EAGER = parse_redis_url()
 RQ = REDIS
-if 'unix_socket_path' in REDIS:
-    location = '{unix_socket_path}'.format(**REDIS)
-else:
-    location = '{host}:{port}'.format(**REDIS)
+location = REDIS.get('unix_socket_path', '{host}:{port}'.format(**REDIS))
 
 CACHES = {
     'default': {

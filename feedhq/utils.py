@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
-from django.core.cache import get_cache
+from django.conf import settings
 from django.core.validators import EmailValidator, ValidationError
+
+import redis
+
+from redis_cache.cache import pool
 
 
 def get_redis_connection(alias='default'):
     """
     Helper used for obtain a raw redis client.
     """
-    cache = get_cache(alias)
-    return cache._client
+    connection_pool = pool.get_connection_pool(
+        parser_class=redis.connection.HiredisParser,
+        **settings.REDIS)
+    return redis.Redis(connection_pool=connection_pool, **settings.REDIS)
 
 
 def is_email(value):
