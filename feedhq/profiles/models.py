@@ -148,7 +148,6 @@ class User(PermissionsMixin, AbstractBaseUser):
                 continue
             value = self.entries.filter(feed_id=pk).aggregate(
                 date=Max('date'))['date']
-            if value is not None:
-                redis.zadd(self.last_update_key, url,
-                           float(value.strftime('%s')))
+            value = float(value.strftime('%s')) if value else 0
+            redis.zadd(self.last_update_key, url, value)
         return self.last_updates()

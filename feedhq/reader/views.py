@@ -274,19 +274,19 @@ class UnreadCount(ReaderView):
                 "id": u"feed/{0}".format(feed.url),
                 "count": feed.unread_count,
             }
-            if feed.url in last_updates:
-                feed_data['newestItemTimestampUsec'] = '{0}000000'.format(
-                    last_updates[feed.url])
+            ts = last_updates[feed.url]
+            if ts:
+                feed_data['newestItemTimestampUsec'] = '{0}000000'.format(ts)
             unread_counts.append(feed_data)
 
         # We can't annotate with Max('feeds__entries__date') when fetching the
         # categories since it creates duplicates and returns wrong counts.
         cat_ts = {}
         for feed in feeds:
-            if feed.category_id in cat_ts and feed.url in last_updates:
+            if feed.category_id in cat_ts and last_updates[feed.url]:
                 cat_ts[feed.category_id] = max(cat_ts[feed.category_id],
                                                last_updates[feed.url])
-            elif feed.url in last_updates:
+            elif last_updates[feed.url]:
                 cat_ts[feed.category_id] = last_updates[feed.url]
         categories = request.user.categories.annotate(
             unread_count=Sum('feeds__unread_count'),
