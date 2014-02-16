@@ -3,8 +3,11 @@ import pytz
 from django.contrib.auth.models import (AbstractBaseUser, UserManager,
                                         PermissionsMixin)
 from django.db import models
+from django.db.models import Max
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+
+from ..utils import get_redis_connection
 
 TIMEZONES = [
     (tz, _(tz)) for tz in pytz.common_timezones
@@ -123,3 +126,29 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     def get_short_name(self):
         return self.username
+
+    @property
+    def last_update_key(self):
+        return 'user:{0}:updates'.format(self.pk)
+
+    def last_updates(self):
+        redis = get_redis_connection()
+        values = redis.zrange(self.last_update_key, 0, 10**11, withscores=True)
+        updates = {}
+        for url, timestamp in values:
+            updates[url.decode('utf-8')] = int(timestamp)
+        return updates
+
+    def refresh_updates(self):
+        redis = get_redis_connection()
+        last_updates = self.last_updates()
+        urls = self.feeds.values_list('pk', 'url')
+        for pk, url in urls:
+            if url in last_updates:
+                continue
+            value = self.entries.filter(feed_id=pk).aggregate(
+                date=Max('date'))['date']
+            if value is not None:
+                redis.zadd(self.last_update_key, url,
+                           float(value.strftime('%s')))
+        return self.last_updates()

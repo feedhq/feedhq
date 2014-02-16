@@ -12,7 +12,7 @@ import opml
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import connection
-from django.db.models import Max, Sum, Min, Q
+from django.db.models import Sum, Q
 from django.http import Http404
 from django.shortcuts import render
 from django.utils import timezone
@@ -262,33 +262,39 @@ class UnreadCount(ReaderView):
     http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
-        feeds = request.user.feeds.filter(
-            unread_count__gt=0).annotate(ts=Max('entries__date'))
+        feeds = request.user.feeds.filter(unread_count__gt=0)
+        last_updates = request.user.last_updates()
+        unread_counts = []
+        forced = False
         for feed in feeds:
-            if not feed.ts:
-                feed.ts = timezone.now()
-        unread_counts = [{
-            "id": u"feed/{0}".format(feed.url),
-            "count": feed.unread_count,
-            "newestItemTimestampUsec": feed.ts.strftime("%s000000"),
-        } for feed in feeds]
+            if feed.url not in last_updates and not forced:
+                last_updates = request.user.refresh_updates()
+                forced = True
+            feed_data = {
+                "id": u"feed/{0}".format(feed.url),
+                "count": feed.unread_count,
+            }
+            if feed.url in last_updates:
+                feed_data['newestItemTimestampUsec'] = '{0}000000'.format(
+                    last_updates[feed.url])
+            unread_counts.append(feed_data)
 
         # We can't annotate with Max('feeds__entries__date') when fetching the
         # categories since it creates duplicates and returns wrong counts.
         cat_ts = {}
         for feed in feeds:
-            if feed.category_id in cat_ts:
+            if feed.category_id in cat_ts and feed.url in last_updates:
                 cat_ts[feed.category_id] = max(cat_ts[feed.category_id],
-                                               feed.ts)
-            else:
-                cat_ts[feed.category_id] = feed.ts
+                                               last_updates[feed.url])
+            elif feed.url in last_updates:
+                cat_ts[feed.category_id] = last_updates[feed.url]
         categories = request.user.categories.annotate(
             unread_count=Sum('feeds__unread_count'),
         ).filter(unread_count__gt=0)
         unread_counts += [{
             "id": label_key(request, cat),
             "count": cat.unread_count,
-            "newestItemTimestampUsec": cat_ts[cat.pk].strftime("%s000000"),
+            "newestItemTimestampUsec": '{0}000000'.format(cat_ts[cat.pk]),
         } for cat in categories]
 
         # Special items:
@@ -298,8 +304,8 @@ class UnreadCount(ReaderView):
                 "id": "user/{0}/state/com.google/reading-list".format(
                     request.user.pk),
                 "count": sum([f.unread_count for f in feeds]),
-                "newestItemTimestampUsec": max(
-                    cat_ts.values()).strftime("%s000000"),
+                "newestItemTimestampUsec": '{0}000000'.format(max(
+                    cat_ts.values())),
             }]
         return Response({
             "max": 1000,
@@ -393,9 +399,8 @@ class SubscriptionList(ReaderView):
     http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
-        feeds = request.user.feeds.annotate(
-            ts=Min('entries__date'),
-        ).select_related('category').order_by('category__name', 'name')
+        feeds = request.user.feeds.select_related('category',).order_by(
+            'category__name', 'name')
         uniques = UniqueFeed.objects.filter(url__in=[f.url for f in feeds])
         unique_map = {}
         for unique in uniques:
@@ -410,18 +415,14 @@ class SubscriptionList(ReaderView):
                 "categories": [],
                 "sortid": "B{0}".format(str(index).zfill(7)),
                 "htmlUrl": unique_map.get(feed.url, feed.url),
+                "firstitemmsec": (timezone.now() - timedelta(
+                    days=request.user.ttl or 365)).strftime("%s000"),
             }
             if feed.category is not None:
                 subscription['categories'].append({
                     "id": label_key(request, feed.category),
                     "label": feed.category.name,
                 })
-            if feed.ts is not None:
-                try:
-                    subscription["firstitemmsec"] = feed.ts.strftime("%s000")
-                except ValueError as e:
-                    if 'is before 1900' not in e.args[0]:
-                        raise
             subscriptions.append(subscription)
         return Response({
             "subscriptions": subscriptions

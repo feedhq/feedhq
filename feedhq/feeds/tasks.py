@@ -12,6 +12,7 @@ from rache import schedule_job
 from rq.timeouts import JobTimeoutException
 
 from ..utils import get_redis_connection
+from ..profiles.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +114,7 @@ def store_entries(feed_url, entries):
 
     create = []
     update_unread_counts = set()
+    refresh_updates = defaultdict(list)
     for feed in feeds:
         for entry in entries:
             if (
@@ -133,6 +135,7 @@ def store_entries(feed_url, entries):
             create.append(Entry(user_id=feed['user_id'],
                                 feed_id=feed['pk'], **entry))
             update_unread_counts.add(feed['pk'])
+            refresh_updates[feed['user_id']].append(entry['date'])
 
     if create:
         Entry.objects.bulk_create(create)
@@ -140,3 +143,11 @@ def store_entries(feed_url, entries):
     for pk in update_unread_counts:
         Feed.objects.filter(pk=pk).update(
             unread_count=Entry.objects.filter(feed_id=pk, read=False).count())
+
+    redis = get_redis_connection()
+    for user_id, dates in refresh_updates.items():
+        user = User(pk=user_id)
+        new_score = float(max(dates).strftime('%s'))
+        current_score = redis.zscore(user.last_update_key, feed_url)
+        if new_score > current_score:
+            redis.zadd(user.last_update_key, feed_url, new_score)

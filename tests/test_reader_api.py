@@ -420,11 +420,15 @@ class ReaderApiTest(ApiTest):
 
         feed = FeedFactory.create(category__user=user, user=user)
         for i in range(5):
-            EntryFactory.create(feed=feed, read=False)
+            EntryFactory.create(feed=feed, read=False, user=user)
         feed2 = FeedFactory.create(category=None, user=user)
-        EntryFactory.create(feed=feed2, read=False)
+        EntryFactory.create(feed=feed2, read=False, user=user)
         feed.update_unread_count()
         feed2.update_unread_count()
+
+        # need to populate last updates, extra queries required
+        with self.assertNumQueries(5):
+            response = self.client.get(url, **clientlogin(token))
 
         with self.assertNumQueries(2):
             response = self.client.get(url, **clientlogin(token))
