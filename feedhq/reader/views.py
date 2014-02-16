@@ -291,11 +291,15 @@ class UnreadCount(ReaderView):
         categories = request.user.categories.annotate(
             unread_count=Sum('feeds__unread_count'),
         ).filter(unread_count__gt=0)
-        unread_counts += [{
-            "id": label_key(request, cat),
-            "count": cat.unread_count,
-            "newestItemTimestampUsec": '{0}000000'.format(cat_ts[cat.pk]),
-        } for cat in categories]
+        for cat in categories:
+            info = {
+                "id": label_key(request, cat),
+                "count": cat.unread_count,
+            }
+            if cat.pk in cat_ts:
+                info["newestItemTimestampUsec"] = '{0}000000'.format(
+                    cat_ts[cat.pk])
+            unread_counts.append(info)
 
         # Special items:
         # reading-list is the global counter
