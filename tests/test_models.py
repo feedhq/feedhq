@@ -168,3 +168,7 @@ class ModelTests(ClearRedisTestCase):
         self.assertEqual(
             entry.content,
             '<a href="http://mozillaopennews.org%5D/">OpenNews</a>')
+
+    def test_not_scheduled_last_update(self):
+        u = UniqueFeed('ĥttp://example.com')
+        self.assertIsNone(u.last_update)

@@ -448,7 +448,10 @@ class JobDataMixin(object):
 
     @property
     def last_update(self):
-        update = self.job_details.get('last_update')
+        try:
+            update = self.job_details.get('last_update')
+        except JobNotFound:
+            return
         if update is not None:
             return epoch_to_utc(update)
 
