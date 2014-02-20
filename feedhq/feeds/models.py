@@ -752,7 +752,7 @@ class Entry(models.Model):
         return netloc.replace('www.', '')
 
     def tweet(self):
-        return u"{title} — {link} via @FeedHQ".format(
+        return u"{title} — {link}".format(
             title=self.title, link=self.link)
 
     def read_later(self):

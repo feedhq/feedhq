@@ -75,7 +75,7 @@ class ModelTests(ClearRedisTestCase):
         entry.title = 'Foo'
         entry.link = 'http://example.com/foo'
         self.assertEqual(entry.tweet(),
-                         u'Foo — http://example.com/foo via @FeedHQ')
+                         u'Foo — http://example.com/foo')
 
     @patch('requests.get')
     def test_uniquefeed_model(self, get):
