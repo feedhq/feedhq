@@ -1,4 +1,5 @@
 import datetime
+import six
 
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import StringIO
@@ -15,7 +16,7 @@ class PlainRenderer(BaseRenderer):
     format = '*'
 
     def render(self, data, *args, **kwargs):
-        if (isinstance(data, dict) and data.keys() == ['detail']):
+        if (isinstance(data, dict) and list(data.keys()) == ['detail']):
             return data['detail']
         return data
 
@@ -51,7 +52,7 @@ class GoogleReaderXMLRenderer(BaseXMLRenderer):
         if isinstance(data, dict) and data:
             xml.startElement("object", {})
             for key, value in data.items():
-                if isinstance(value, basestring) and value.isdigit():
+                if isinstance(value, six.string_types) and value.isdigit():
                     value = int(value)
                 if isinstance(value, (list, tuple)):
                     xml.startElement("list", {'name': key})
@@ -62,7 +63,7 @@ class GoogleReaderXMLRenderer(BaseXMLRenderer):
                     xml.startElement("number", {'name': key})
                     xml.characters(str(value))
                     xml.endElement("number")
-                elif isinstance(value, basestring):
+                elif isinstance(value, six.string_types):
                     xml.startElement("string", {'name': key})
                     xml.characters(value)
                     xml.endElement("string")
@@ -73,7 +74,7 @@ class GoogleReaderXMLRenderer(BaseXMLRenderer):
             xml.endElement("object")
         elif data == {}:
             pass
-        elif isinstance(data, basestring):
+        elif isinstance(data, six.string_types):
             xml.startElement("string", {})
             xml.characters(data)
             xml.endElement("string")
@@ -87,7 +88,7 @@ class AtomRenderer(BaseXMLRenderer):
     strip_declaration = False
 
     def _to_xml(self, xml, data):
-        if data.keys() == ['detail']:
+        if list(data.keys()) == ['detail']:
             xml.startElement('error', {})
             xml.characters(data['detail'])
             xml.endElement('error')

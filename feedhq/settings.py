@@ -1,6 +1,7 @@
 import dj_database_url
 import os
-import urlparse
+
+from six.moves.urllib import parse as urlparse
 
 from django.core.urlresolvers import reverse_lazy
 

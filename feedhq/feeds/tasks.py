@@ -148,6 +148,6 @@ def store_entries(feed_url, entries):
     for user_id, dates in refresh_updates.items():
         user = User(pk=user_id)
         new_score = float(max(dates).strftime('%s'))
-        current_score = redis.zscore(user.last_update_key, feed_url)
+        current_score = redis.zscore(user.last_update_key, feed_url) or 0
         if new_score > current_score:
             redis.zadd(user.last_update_key, feed_url, new_score)

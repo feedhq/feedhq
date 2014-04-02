@@ -4,13 +4,13 @@ import socket
 from django.core.management import call_command
 from django.utils import timezone
 from django_push.subscriber.models import Subscription
-from httplib import IncompleteRead
 from mock import patch, PropertyMock
 from rache import job_details, schedule_job
 from requests import RequestException
 from requests.packages.urllib3.exceptions import (LocationParseError,
                                                   DecodeError)
 from rq.timeouts import JobTimeoutException
+from six.moves.http_client import IncompleteRead
 
 from feedhq.feeds.models import Favicon, UniqueFeed, Feed, Entry
 from feedhq.feeds.tasks import update_feed
@@ -227,8 +227,8 @@ class UpdateTests(ClearRedisTestCase):
             headers={
                 'User-Agent': USER_AGENT % '2 subscribers',
                 'Accept': feedparser.ACCEPT_HEADER,
-                'If-None-Match': 'etag',
-                'If-Modified-Since': '1234',
+                'If-None-Match': b'etag',
+                'If-Modified-Since': b'1234',
             }, timeout=10)
 
     @patch("requests.get")
@@ -329,7 +329,7 @@ class FaviconTests(ClearRedisTestCase):
         feed = FeedFactory.create(url='http://example.com/feed')
         patch_job(feed.url, link='http://example.com')
 
-        with open(data_file('bruno.im.png'), 'r') as f:
+        with open(data_file('bruno.im.png'), 'rb') as f:
             fav = f.read()
 
         class Response:

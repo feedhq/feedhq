@@ -8,3 +8,4 @@ feedhq.egg-info
 artwork
 .coverage
 htmlcov
+.tox

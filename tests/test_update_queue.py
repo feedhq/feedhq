@@ -184,11 +184,11 @@ class UpdateTests(ClearRedisTestCase):
         self.assertEqual(UniqueFeed.objects.count(), 0)
 
         parsed = feedparser.parse(data_file('sw-all.xml'))
-        data = filter(
+        data = list(filter(
             None,
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
-        )
+        ))
 
         with self.assertNumQueries(2):  # no insert
             store_entries(feed.url, data)
@@ -201,18 +201,18 @@ class UpdateTests(ClearRedisTestCase):
         call_command('delete_unsubscribed')
         self.assertEqual(UniqueFeed.objects.count(), 1)
 
-        data = filter(
+        data = list(filter(
             None,
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
-        )
+        ))
         with self.assertNumQueries(5):  # insert
             store_entries(feed.url, data)
 
         self.assertEqual(feed.entries.count(), 0)
         self.assertEqual(feed2.entries.count(), 30)
         last_updates = feed2.user.last_updates()
-        self.assertEqual(last_updates.keys(), [feed2.url])
+        self.assertEqual(list(last_updates.keys()), [feed2.url])
 
     @patch('requests.get')
     def test_same_guids(self, get):
@@ -220,31 +220,31 @@ class UpdateTests(ClearRedisTestCase):
         feed = FeedFactory.create()
 
         parsed = feedparser.parse(data_file('aldaily-06-27.xml'))
-        data = filter(
+        data = list(filter(
             None,
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
-        )
+        ))
 
         with self.assertNumQueries(5):
             store_entries(feed.url, data)
         self.assertEqual(feed.entries.count(), 4)
 
-        data = filter(
+        data = list(filter(
             None,
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
-        )
+        ))
         with self.assertNumQueries(2):
             store_entries(feed.url, data)
         self.assertEqual(feed.entries.count(), 4)
 
         parsed = feedparser.parse(data_file('aldaily-06-30.xml'))
-        data = filter(
+        data = list(filter(
             None,
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
-        )
+        ))
 
         with self.assertNumQueries(5):
             store_entries(feed.url, data)
@@ -255,11 +255,11 @@ class UpdateTests(ClearRedisTestCase):
         get.return_value = responses(304)
 
         parsed = feedparser.parse(data_file('no-guid.xml'))
-        data = filter(
+        data = list(filter(
             None,
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
-        )
+        ))
         feed = FeedFactory.create()
         with self.assertNumQueries(5):
             store_entries(feed.url, data)
@@ -268,11 +268,11 @@ class UpdateTests(ClearRedisTestCase):
         feed.entries.all().delete()
 
         parsed = feedparser.parse(data_file('no-link-guid.xml'))
-        data = filter(
+        data = list(filter(
             None,
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
-        )
+        ))
         feed = FeedFactory.create()
         with self.assertNumQueries(5):
             store_entries(feed.url, data)
@@ -285,11 +285,11 @@ class UpdateTests(ClearRedisTestCase):
         feed = FeedFactory.create(user=user, category__user=user)
 
         parsed = feedparser.parse(data_file('bruno.im.atom'))
-        data = filter(
+        data = list(filter(
             None,
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
-        )
+        ))
         with self.assertNumQueries(2):
             store_entries(feed.url, data)
         self.assertEqual(feed.entries.count(), 0)
@@ -303,7 +303,7 @@ class UpdateTests(ClearRedisTestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         )
-        self.assertEqual(data, [])
+        self.assertEqual(list(data), [])
 
     @patch("requests.get")
     def test_schedule_in(self, get):

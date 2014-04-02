@@ -13,9 +13,9 @@ class GoogleLoginAuthentication(BaseAuthentication):
 
     def authenticate(self, request):
         """GoogleLogin auth=<token>"""
-        auth = get_authorization_header(request).split()
+        auth = get_authorization_header(request).decode('utf-8').split()
 
-        if not auth or auth[0].lower() != b'googlelogin':
+        if not auth or auth[0].lower() != 'googlelogin':
             raise PermissionDenied()
 
         if len(auth) == 1:

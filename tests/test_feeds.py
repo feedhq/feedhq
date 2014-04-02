@@ -480,27 +480,27 @@ class WebBaseTests(WebTest):
         get.return_value = responses(304)
         form = response.forms['import']
 
-        with open(data_file('sample.opml'), 'r') as opml_file:
+        with open(data_file('sample.opml'), 'rb') as opml_file:
             form['file'] = 'sample.opml', opml_file.read()
         response = form.submit().follow()
 
         self.assertContains(response, '2 feeds have been imported')
 
         # Re-import
-        with open(data_file('sample.opml'), 'r') as opml_file:
+        with open(data_file('sample.opml'), 'rb') as opml_file:
             form['file'] = 'sample.opml', opml_file.read()
         response = form.submit().follow()
         self.assertContains(response, '0 feeds have been imported')
 
         # Import an invalid thing
-        form['file'] = 'invalid', "foobar"
+        form['file'] = 'invalid', b"foobar"
         response = form.submit()
         self.assertFormError(response, 'form', 'file', [
             "This file doesn't seem to be a valid OPML file."
         ])
 
         # Empty file
-        form['file'] = 'name', ""
+        form['file'] = 'name', b""
         response = form.submit()
         self.assertFormError(response, 'form', 'file', [
             "The submitted file is empty."
@@ -516,7 +516,7 @@ class WebBaseTests(WebTest):
         form = response.forms['import']
 
         with open(data_file('google-reader-subscriptions.xml'),
-                  'r') as opml_file:
+                  'rb') as opml_file:
             form['file'] = 'sample.opml', opml_file.read()
         response = form.submit().follow()
 
@@ -534,7 +534,7 @@ class WebBaseTests(WebTest):
 
         form = response.forms["import"]
 
-        with open(data_file('categories.opml'), 'r') as opml_file:
+        with open(data_file('categories.opml'), 'rb') as opml_file:
             form['file'] = 'categories.opml', opml_file.read()
 
         response = form.submit().follow()
@@ -642,17 +642,11 @@ class WebBaseTests(WebTest):
             len(feed.entries.all()[0].content.split('F&#233;vrier 1953')), 2)
 
     @patch('requests.get')
-    @patch('oauth2.Client')
-    def test_add_to_readability(self, Client, get):  # noqa
-        client = Client.return_value
-        r = Response({
-            'status': 202,
-            'reason': 'Accepted',
-            'location': '/api/rest/v1/bookmarks/119',
-            'x-article-location': '/api/rest/v1/articles/xj28dwkx',
+    @patch('requests.post')
+    def test_add_to_readability(self, post, get):  # noqa
+        post.return_value = responses(202, headers={
+            'location': 'https://www.readability.com/api/rest/v1/bookmarks/19',
         })
-        value = json.dumps({'article': {'id': 'foo'}})
-        client.request.return_value = [r, value]
 
         user = UserFactory.create(
             read_later='readability',
@@ -664,10 +658,14 @@ class WebBaseTests(WebTest):
 
         get.return_value = responses(200, 'sw-all.xml')
         feed = FeedFactory.create(category__user=user, user=user)
-        get.assert_called_with(
+        get.assert_called_once_with(
             feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
                      'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
+
+        get.reset_mock()
+        get.return_value = responses(200, data=json.dumps(
+            {'article': {'id': 'foo'}}))
 
         entry_pk = Entry.objects.all()[0].pk
         url = reverse('feeds:item', args=[entry_pk])
@@ -676,24 +674,29 @@ class WebBaseTests(WebTest):
 
         form = response.forms['read-later']
         response = form.submit()
-        client.request.assert_called_with('/api/rest/v1/bookmarks/119',
-                                          method='GET')
+        self.assertEqual(len(post.call_args_list), 1)
+        self.assertEqual(len(get.call_args_list), 1)
+        args, kwargs = post.call_args
+        self.assertEqual(
+            args, ('https://www.readability.com/api/rest/v1/bookmarks',))
+        self.assertEqual(kwargs['data'], {
+            'url': 'http://simonwillison.net/2010/Mar/12/re2/'})
+        args, kwargs = get.call_args
+        self.assertEqual(
+            args, ('https://www.readability.com/api/rest/v1/bookmarks/19',))
         self.assertEqual(Entry.objects.get(pk=entry_pk).read_later_url,
                          'https://www.readability.com/articles/foo')
         response = self.app.get(url, user=user)
         self.assertNotContains(response, "Add to Instapaper")
 
     @patch("requests.get")
-    @patch('oauth2.Client')
-    def test_add_to_instapaper(self, Client, get):  # noqa
-        client = Client.return_value
-        r = Response({'status': 200})
-        client.request.return_value = [
-            r,
-            json.dumps([{'type': 'bookmark', 'bookmark_id': 12345,
-                         'title': 'Some bookmark',
-                         'url': 'http://example.com/some-bookmark'}])
-        ]
+    @patch('requests.post')
+    def test_add_to_instapaper(self, post, get):  # noqa
+        post.return_value = responses(200, data=json.dumps([{
+            'type': 'bookmark', 'bookmark_id': 12345,
+            'title': 'Some bookmark',
+            'url': 'http://example.com/some-bookmark',
+        }]))
 
         user = UserFactory.create(
             read_later='instapaper',
@@ -705,10 +708,11 @@ class WebBaseTests(WebTest):
         get.return_value = responses(304)
         feed = FeedFactory.create(category__user=user, user=user)
 
+        get.reset_mock()
         get.return_value = responses(200, 'sw-all.xml')
 
         update_feed(feed.url)
-        get.assert_called_with(
+        get.assert_called_once_with(
             feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
                      'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
@@ -720,12 +724,12 @@ class WebBaseTests(WebTest):
 
         form = response.forms['read-later']
         response = form.submit()
-        body = 'url=http%3A%2F%2Fsimonwillison.net%2F2010%2FMar%2F12%2Fre2%2F'
-        client.request.assert_called_with(
-            'https://www.instapaper.com/api/1/bookmarks/add',
-            body=body,
-            method='POST',
-        )
+        self.assertEqual(len(post.call_args_list), 1)
+        args, kwargs = post.call_args
+        self.assertEqual(args,
+                         ('https://www.instapaper.com/api/1/bookmarks/add',))
+        self.assertEqual(kwargs['data'],
+                         {'url': 'http://simonwillison.net/2010/Mar/12/re2/'})
         self.assertEqual(Entry.objects.get(pk=entry_pk).read_later_url,
                          'https://www.instapaper.com/read/12345')
         response = self.app.get(url, user=user)

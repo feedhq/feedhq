@@ -2,13 +2,13 @@ import json
 import time
 
 from datetime import timedelta
-from urllib import urlencode
 
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.utils import timezone
 from mock import patch
+from six.moves.urllib.parse import urlencode
 
 from feedhq.feeds.models import Feed, Entry, UniqueFeed
 from feedhq.reader.views import GoogleReaderXMLRenderer, item_id
@@ -31,7 +31,7 @@ class ApiClient(Client):
     def request(self, **request):
         response = super(ApiClient, self).request(**request)
         if response['Content-Type'] == 'application/json':
-            response.json = json.loads(response.content)
+            response.json = json.loads(response.content.decode('utf-8'))
         return response
 
 
@@ -46,7 +46,7 @@ class ApiTest(TestCase):
         url = reverse('reader:login')
         response = self.client.post(url, {'Email': user.email,
                                           'Passwd': 'test'})
-        for line in response.content.splitlines():
+        for line in response.content.decode('utf-8').splitlines():
             key, value = line.split('=', 1)
             if key == 'Auth':
                 return value
@@ -55,7 +55,7 @@ class ApiTest(TestCase):
         url = reverse('reader:token')
         response = self.client.get(url, **clientlogin(auth_token))
         self.assertEqual(response.status_code, 200)
-        return response.content
+        return response.content.decode('utf-8')
 
 
 class AuthTest(ApiTest):
@@ -113,7 +113,7 @@ class AuthTest(ApiTest):
         response = self.client.post(url, params)
         self.assertContains(response, 'Auth=')
 
-        for line in response.content.splitlines():
+        for line in response.content.decode('utf-8').splitlines():
             key, value = line.split('=', 1)
             self.assertEqual(len(value), 267)
 
@@ -273,7 +273,8 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(response['X-Reader-Google-Bad-Token'], 'true')
 
         token_url = reverse('reader:token')
-        post_token = self.client.post(token_url, **clientlogin(token)).content
+        post_token = self.client.post(
+            token_url, **clientlogin(token)).content.decode('utf-8')
 
         data = {
             'T': post_token,
@@ -775,13 +776,13 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(
             url, {'s': 'user/-/state/com.google/reading-list'},
             **clientlogin(token))
-        self.assertEqual(response.content, '0')
+        self.assertEqual(response.content, b'0')
 
         response = self.client.get(
             url, {'s': 'user/{0}/state/com.google/reading-list'.format(
                 user.pk)},
             **clientlogin(token))
-        self.assertEqual(response.content, '0')
+        self.assertEqual(response.content, b'0')
 
         feed = FeedFactory.create(category__user=user, user=user)
         for i in range(6):
@@ -792,22 +793,22 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(
             url, {'s': 'user/-/state/com.google/kept-unread'},
             **clientlogin(token))
-        self.assertEqual(response.content, '4')
+        self.assertEqual(response.content, b'4')
 
         response = self.client.get(
             url, {'s': 'user/-/state/com.google/read'},
             **clientlogin(token))
-        self.assertEqual(response.content, '6')
+        self.assertEqual(response.content, b'6')
 
         response = self.client.get(
             url, {'s': 'user/{0}/state/com.google/read'.format(user.pk)},
             **clientlogin(token))
-        self.assertEqual(response.content, '6')
+        self.assertEqual(response.content, b'6')
 
         response = self.client.get(
             url, {'s': 'user/-/state/com.google/kept-unread', 'a': 'true'},
             **clientlogin(token))
-        self.assertTrue(response.content.startswith('4#'))
+        self.assertTrue(response.content.startswith(b'4#'))
 
     def test_stream_items_contents(self, get):
         get.return_value = responses(304)
@@ -883,7 +884,8 @@ class ReaderApiTest(ApiTest):
         url = reverse('reader:mark_all_as_read')
 
         token_url = reverse('reader:token')
-        post_token = self.client.post(token_url, **clientlogin(token)).content
+        post_token = self.client.post(
+            token_url, **clientlogin(token)).content.decode('utf-8')
 
         feed = FeedFactory.create(category__user=user, user=user)
         for i in range(4):
@@ -1260,21 +1262,21 @@ class ReaderApiTest(ApiTest):
         user = UserFactory.create()
         token = self.auth_token(user)
         url = reverse('reader:subscription_import')
-        with open(data_file('sample.opml'), 'r') as f:
+        with open(data_file('sample.opml'), 'rb') as f:
             response = self.client.post(
                 url, f.read(), content_type='application/xml',
                 **clientlogin(token))
         self.assertContains(response, "OK: 2")
 
         response = self.client.post(
-            url, "foobar", content_type='application/xml',
+            url, b"foobar", content_type='application/xml',
             **clientlogin(token))
         self.assertContains(response, "doesn't seem to be a valid OPML file",
                             status_code=400)
 
         redis = get_redis_connection()
         redis.set('lock:opml_import:{0}'.format(user.pk), True)
-        with open(data_file('sample.opml'), 'r') as f:
+        with open(data_file('sample.opml'), 'rb') as f:
             response = self.client.post(
                 url, f.read(), content_type='application/xml',
                 **clientlogin(token))

@@ -52,7 +52,7 @@ class OverwritingStorage(FileSystemStorage):
                     os.write(fd, chunk)
                 locks.unlock(fd)
                 os.close(fd)
-            except Exception, e:
+            except Exception:
                 if os.path.exists(temp_data_location):
                     os.remove(temp_data_location)
                 raise

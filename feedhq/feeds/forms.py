@@ -1,11 +1,11 @@
 import contextlib
 import json
-import urlparse
 
 from django.core.cache import cache
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
+from six.moves.urllib import parse as urlparse
 
 import feedparser
 import floppyforms as forms

@@ -2,10 +2,8 @@ import json
 import logging
 import re
 import struct
-import urlparse
 
 from datetime import timedelta
-from urllib import urlencode
 
 import opml
 
@@ -25,6 +23,7 @@ from rest_framework.parsers import XMLParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from six.moves.urllib import parse as urlparse
 
 from ..feeds.forms import FeedForm, user_lock
 from ..feeds.models import Feed, UniqueFeed, Category
@@ -833,7 +832,7 @@ class StreamContents(ReaderView):
             qs['output'] = request.GET['output']
 
         if qs:
-            base['self'][0]['href'] += '?{0}'.format(urlencode(qs))
+            base['self'][0]['href'] += '?{0}'.format(urlparse.urlencode(qs))
 
         if continuation:
             base['continuation'] = continuation
@@ -964,11 +963,11 @@ class EditTag(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def post(self, request, *args, **kwargs):
-        if not 'i' in request.DATA:
+        if 'i' not in request.DATA:
             raise exceptions.ParseError(
                 "Missing 'i' in request data. "
                 "'tag:gogle.com,2005:reader/item/<item_id>'")
-        entry_ids = map(item_id, request.DATA.getlist('i'))
+        entry_ids = list(map(item_id, request.DATA.getlist('i')))
         add = 'a' in request.DATA
         remove = 'r' in request.DATA
         if not add and not remove:
@@ -978,11 +977,11 @@ class EditTag(ReaderView):
 
         to_add = []
         if add:
-            to_add = map(tag_value, request.DATA.getlist('a'))
+            to_add = list(map(tag_value, request.DATA.getlist('a')))
 
         to_remove = []
         if remove:
-            to_remove = map(tag_value, request.DATA.getlist('r'))
+            to_remove = list(map(tag_value, request.DATA.getlist('r')))
 
         query = {}
         for tag in to_add:

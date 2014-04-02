@@ -1,8 +1,8 @@
 import json
-import oauth2 as oauth
 import requests
-import urllib
-import urlparse
+
+from requests_oauthlib import OAuth1
+from six.moves.urllib import parse as urlparse
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -145,22 +145,19 @@ class CredentialsForm(ServiceForm):
 
     def check_xauth(self, key, secret, token_url):
         """Check a generic xAuth provider"""
-        consumer = oauth.Consumer(key, secret)
-        client = oauth.Client(consumer)
-        client.set_signature_method(oauth.SignatureMethod_HMAC_SHA1())
+        auth = OAuth1(key, secret)
         params = {
             'x_auth_username': self.cleaned_data['username'],
             'x_auth_password': self.cleaned_data['password'],
             'x_auth_mode': 'client_auth',
         }
-        response, token = client.request(token_url, method='POST',
-                                         body=urllib.urlencode(params))
-        if response.status != 200:
+        response = requests.post(token_url, auth=auth, data=params)
+        if response.status_code != 200:
             raise forms.ValidationError(
                 _("Unable to verify your %s credentials. Please double-check "
                   "and try again") % self.service,
             )
-        request_token = dict(urlparse.parse_qsl(token))
+        request_token = dict(urlparse.parse_qsl(response.text))
         self.user.read_later_credentials = json.dumps(request_token)
 
 

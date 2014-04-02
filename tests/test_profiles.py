@@ -8,6 +8,8 @@ from mock import patch
 
 from feedhq.profiles.models import User
 
+from . import responses
+
 
 class ProfilesTest(WebTest):
     def setUp(self):  # noqa
@@ -157,14 +159,10 @@ class ProfilesTest(WebTest):
             'Unable to verify your readitlaterlist credentials',
         )
 
-    @patch("oauth2.Client")
-    def test_valid_oauth_credentials(self, Client):  # noqa
-        client = Client.return_value
-
-        client.request.return_value = [
-            _Response({}),
-            "oauth_token=aabbccdd&oauth_token_secret=efgh1234"
-        ]
+    @patch("requests.post")
+    def test_valid_oauth_credentials(self, post):  # noqa
+        post.return_value = responses(
+            200, data="oauth_token=aabbccdd&oauth_token_secret=efgh1234")
 
         url = reverse("services", args=['readability'])
         response = self.app.get(url, user='test')
@@ -177,12 +175,12 @@ class ProfilesTest(WebTest):
             "You have successfully added Readability",
         )
 
-        client.request.assert_called_with(
-            "https://www.readability.com/api/rest/v1/oauth/access_token/",
-            method='POST',
-            body=('x_auth_mode=client_auth&x_auth_password=correct+password&'
-                  'x_auth_username=example'),
-        )
+        self.assertEqual(len(post.call_args_list), 1)
+        args, kwargs = post.call_args
+        self.assertEqual(kwargs['data'], {
+            'x_auth_username': 'example',
+            'x_auth_password': 'correct password',
+            'x_auth_mode': 'client_auth'})
 
         user = User.objects.get(pk=self.user.pk)
         self.assertEqual(user.read_later, 'readability')
@@ -191,11 +189,9 @@ class ProfilesTest(WebTest):
             "oauth_token_secret": "efgh1234",
         })
 
-    @patch("oauth2.Client")
-    def test_invalid_oauth_credentials(self, Client):  # noqa
-        client = Client.return_value
-        client.request.return_value = [_Response({'status': 401}),
-                                       "xAuth error"]
+    @patch("requests.post")
+    def test_invalid_oauth_credentials(self, post):
+        post.return_value = responses(401, data='xAuth error')
 
         url = reverse("services", args=['instapaper'])
         response = self.app.get(url, user='test')
@@ -208,13 +204,12 @@ class ProfilesTest(WebTest):
             form[key] = value
         response = form.submit()
         self.assertContains(response, "Unable to verify")
-        client.request.assert_called_with(
-            'https://www.instapaper.com/api/1/oauth/access_token',
-            body=('x_auth_mode=client_auth&'
-                  'x_auth_password=incorrect+password&'
-                  'x_auth_username=example'),
-            method='POST',
-        )
+        self.assertEqual(len(post.call_args_list), 1)
+        args, kwargs = post.call_args
+        self.assertEqual(kwargs['data'], {
+            'x_auth_password': 'incorrect password',
+            'x_auth_username': 'example',
+            'x_auth_mode': 'client_auth'})
 
     def test_disable_read_later(self):
         """Removing read later credentials"""

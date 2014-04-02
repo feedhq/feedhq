@@ -7,11 +7,9 @@ import json
 import logging
 import lxml.html
 import magic
-import oauth2 as oauth
-import urllib
-import urlparse
 import random
 import requests
+import six
 import socket
 import struct
 import time
@@ -23,17 +21,19 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.template.defaultfilters import slugify
 from django.utils import timezone
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_bytes, python_2_unicode_compatible
 from django.utils.html import format_html
 from django.utils.text import unescape_entities
 from django.utils.translation import ugettext_lazy as _, string_concat
 from django_push.subscriber.signals import updated
-from httplib import IncompleteRead
 from lxml.etree import ParserError
 from rache import schedule_job, delete_job
 from requests.exceptions import ConnectionError
 from requests.packages.urllib3.exceptions import (LocationParseError,
                                                   DecodeError)
+from requests_oauthlib import OAuth1
+from six.moves.http_client import IncompleteRead
+from six.moves.urllib import parse as urlparse
 
 import pytz
 
@@ -86,6 +86,7 @@ class CategoryManager(models.Manager):
             unread_count=models.Sum('feeds__unread_count'))
 
 
+@python_2_unicode_compatible
 class Category(models.Model):
     """Used to sort our feeds"""
     name = models.CharField(_('Name'), max_length=1023, db_index=True)
@@ -101,7 +102,7 @@ class Category(models.Model):
 
     objects = CategoryManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % self.name
 
     class Meta:
@@ -310,10 +311,10 @@ class UniqueFeedManager(models.Manager):
                          update['hub']),
                      connection=get_redis_connection(), **update)
 
-        entries = filter(
+        entries = list(filter(
             None,
             [self.entry_data(entry, parsed) for entry in parsed.entries]
-        )
+        ))
         if len(entries):
             enqueue(store_entries, args=[url, entries], queue='store')
 
@@ -463,6 +464,7 @@ class JobDataMixin(object):
             return self.url
 
 
+@python_2_unicode_compatible
 class UniqueFeed(JobDataMixin, models.Model):
     GONE = 'gone'
     TIMEOUT = 'timeout'
@@ -508,7 +510,7 @@ class UniqueFeed(JobDataMixin, models.Model):
     JOB_ATTRS = ['modified', 'etag', 'backoff_factor', 'error', 'link',
                  'title', 'hub', 'subscribers', 'last_update']
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % self.url
 
     def truncated_url(self):
@@ -559,6 +561,7 @@ class UniqueFeed(JobDataMixin, models.Model):
                      connection=connection, **kwargs)
 
 
+@python_2_unicode_compatible
 class Feed(JobDataMixin, models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=1023)
@@ -578,7 +581,7 @@ class Feed(JobDataMixin, models.Model):
     img_safe = models.BooleanField(_('Display images by default'),
                                    default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % self.name
 
     class Meta:
@@ -643,6 +646,7 @@ class EntryManager(models.Manager):
         return self.filter(read=False).count()
 
 
+@python_2_unicode_compatible
 class Entry(models.Model):
     """An entry is a cached feed item"""
     feed = models.ForeignKey(Feed, verbose_name=_('Feed'), null=True,
@@ -691,7 +695,7 @@ class Entry(models.Model):
     ) - set(['id', 'class'])
     CSS_PROPERTIES = feedparser._HTMLSanitizer.acceptable_css_properties
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % self.title
 
     @property
@@ -717,7 +721,7 @@ class Entry(models.Model):
                 except ValueError as e:
                     if e.args[0] != 'Invalid IPv6 URL':
                         raise
-                self._content = lxml.html.tostring(xml)
+                self._content = lxml.html.tostring(xml).decode('utf-8')
             else:
                 self._content = self.subtitle
         return self._content
@@ -775,36 +779,30 @@ class Entry(models.Model):
 
     def add_to_readability(self):
         url = 'https://www.readability.com/api/rest/v1/bookmarks'
-        client = self.oauth_client('readability')
-        params = {'url': self.link}
-        response, data = client.request(url, method='POST',
-                                        body=urllib.urlencode(params))
-        response, data = client.request(response['location'], method='GET')
+        auth = self.oauth_client('readability')
+        response = requests.post(url, auth=auth, data={'url': self.link})
+        response = requests.get(response.headers['location'], auth=auth)
         url = 'https://www.readability.com/articles/%s'
-        self.read_later_url = url % json.loads(data)['article']['id']
+        self.read_later_url = url % response.json()['article']['id']
         self.save(update_fields=['read_later_url'])
 
     def add_to_instapaper(self):
         url = 'https://www.instapaper.com/api/1/bookmarks/add'
-        client = self.oauth_client('instapaper')
-        params = {'url': self.link}
-        response, data = client.request(url, method='POST',
-                                        body=urllib.urlencode(params))
+        auth = self.oauth_client('instapaper')
+        response = requests.post(url, auth=auth, data={'url': self.link})
         url = 'https://www.instapaper.com/read/%s'
-        url = url % json.loads(data)[0]['bookmark_id']
+        url = url % response.json()[0]['bookmark_id']
         self.read_later_url = url
         self.save(update_fields=['read_later_url'])
 
     def oauth_client(self, service):
         service_settings = getattr(settings, service.upper())
-        consumer = oauth.Consumer(service_settings['CONSUMER_KEY'],
-                                  service_settings['CONSUMER_SECRET'])
         creds = json.loads(self.user.read_later_credentials)
-        token = oauth.Token(key=creds['oauth_token'],
-                            secret=creds['oauth_token_secret'])
-        client = oauth.Client(consumer, token)
-        client.set_signature_method(oauth.SignatureMethod_HMAC_SHA1())
-        return client
+        auth = OAuth1(service_settings['CONSUMER_KEY'],
+                      service_settings['CONSUMER_SECRET'],
+                      creds['oauth_token'],
+                      creds['oauth_token_secret'])
+        return auth
 
     def current_year(self):
         return self.date.year == timezone.now().year
@@ -831,11 +829,11 @@ def pubsubhubbub_update(notification, request, links, **kwargs):
     if url is None:
         return
 
-    entries = filter(
+    entries = list(filter(
         None,
         [UniqueFeedManager.entry_data(
             entry, notification) for entry in notification.entries]
-    )
+    ))
     if len(entries):
         enqueue(store_entries, args=[url, entries], queue='store')
 updated.connect(pubsubhubbub_update)
@@ -883,6 +881,8 @@ class FaviconManager(models.Manager):
             return favicon
 
         try:
+            if isinstance(page, six.text_type):
+                page = page.encode('utf-8')
             icon_path = lxml.html.fromstring(page.lower()).xpath(
                 '//link[@rel="icon" or @rel="shortcut icon"]/@href'
             )
@@ -904,7 +904,7 @@ class FaviconManager(models.Manager):
             return favicon
 
         icon_file = ContentFile(response.content)
-        icon_type = magic.from_buffer(response.content)
+        icon_type = magic.from_buffer(response.content).decode('utf-8')
         if 'PNG' in icon_type:
             ext = 'png'
         elif ('MS Windows icon' in icon_type or
@@ -952,6 +952,7 @@ class FaviconManager(models.Manager):
         return favicon
 
 
+@python_2_unicode_compatible
 class Favicon(models.Model):
     url = URLField(_('URL'), db_index=True, unique=True)
     favicon = models.FileField(upload_to='favicons', blank=True,
@@ -959,7 +960,7 @@ class Favicon(models.Model):
 
     objects = FaviconManager()
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Favicon for %s' % self.url
 
     def favicon_img(self):

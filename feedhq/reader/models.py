@@ -4,6 +4,7 @@ from django.core.cache import cache
 from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -49,6 +50,7 @@ def generate_post_token(user):
     return token
 
 
+@python_2_unicode_compatible
 class AuthToken(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
                              related_name='auth_tokens')
@@ -60,7 +62,7 @@ class AuthToken(models.Model):
     client = models.CharField(_('Client'), max_length=1023, blank=True)
     user_agent = models.TextField(_('User-Agent'), blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Token for {0}'.format(self.user)
 
     class Meta:
