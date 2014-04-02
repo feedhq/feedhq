@@ -6,7 +6,7 @@ psql -c 'CREATE DATABASE feedhq;' -U postgres
 if [ $TOXENV == "coverage" ]
 then
 	pip install -r requirements-dev.txt coverage coveralls
-	envdir tests/envdir coverage run `which django-admin.py` test
+	PYTHONPATH=. envdir tests/envdir coverage run `which django-admin.py` test
 	coveralls
 else
 	tox -e $TOXENV
