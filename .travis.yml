@@ -1,18 +1,23 @@
 language: python
-python:
-  - "2.7"
+python: "3.3"
+
 services:
   - redis-server
+
+env:
+  - TOXENV=py27
+  - TOXENV=py33
+  - TOXENV=lint
+  - TOXENV=coverage
+
 before_install:
-  - sudo apt-get install daemontools redis-server
+  - sudo apt-get -y install daemontools redis-server
+
 install:
-  - pip install -r requirements-dev.txt
-  - pip install coveralls
-before_script:
-  - flake8 feedhq
-  - flake8 tests
-script:
-  - psql -c 'CREATE DATABASE feedhq;' -U postgres
-  - PYTHONPATH=. make coverage
-after_success:
-  - coveralls
+  - pip install tox
+
+script: "./.travis.sh"
+
+matrix:
+  allow_failures:
+    - env: TOXENV=coverage

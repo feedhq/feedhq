@@ -145,7 +145,7 @@ def parse_redis_url():
         # Bug in python 2.7.3, fixed in 2.7.4
         path, q, querystring = parsed_redis.path.partition('?')
     else:
-        path, q, querystring = parsed_redis.path, None, parsed_redis.query
+        path, q, querystring = parsed_redis.path, None, parsed_redis.query  # noqa
 
     querystring = urlparse.parse_qs(querystring)
     for key in querystring.keys():
