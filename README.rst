@@ -1,11 +1,11 @@
 FeedHQ
 ======
 
-.. image:: https://travis-ci.org/feedhq/feedhq.png?branch=master
+.. image:: https://travis-ci.org/feedhq/feedhq.svg?branch=master
    :alt: Build Status
    :target: https://travis-ci.org/feedhq/feedhq
 
-.. image:: https://coveralls.io/repos/feedhq/feedhq/badge.png?branch=master
+.. image:: https://img.shields.io/coveralls/feedhq/feedhq/master.svg
    :alt: Coverage Status
    :target: https://coveralls.io/r/feedhq/feedhq?branch=master
 
