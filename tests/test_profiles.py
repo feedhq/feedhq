@@ -3,7 +3,6 @@ import json
 from django.core.urlresolvers import reverse
 
 from django_webtest import WebTest
-from httplib2 import Response as _Response
 from mock import patch
 
 from feedhq.profiles.models import User

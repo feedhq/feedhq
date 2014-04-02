@@ -320,7 +320,7 @@ class UniqueFeedManager(models.Manager):
 
     @classmethod
     def entry_data(cls, entry, parsed):
-        if not 'link' in entry:
+        if 'link' not in entry:
             return
         title = entry.title if 'title' in entry else u''
         if len(title) > 255:  # FIXME this is gross

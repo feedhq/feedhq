@@ -27,7 +27,7 @@ class Command(SentryCommand):
                 try:
                     subscription.unsubscribe()
                 except Exception:
-                    if settings.DEBUG or not 'SENTRY_DSN' in os.environ:
+                    if settings.DEBUG or 'SENTRY_DSN' not in os.environ:
                         raise
                     client = Client()
                     client.captureException()

@@ -8,7 +8,6 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django_push.subscriber.signals import updated
 from django_webtest import WebTest
-from httplib2 import Response
 from mock import patch
 from rache import schedule_job
 

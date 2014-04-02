@@ -145,7 +145,7 @@ class Login(APIView):
             querydict = request.DATA
         elif request.method == 'GET':
             querydict = request.GET
-        if not 'Email' in querydict or not 'Passwd' in querydict:
+        if 'Email' not in querydict or 'Passwd' not in querydict:
             raise PermissionDenied()
         self.querydict = querydict
 
@@ -322,7 +322,7 @@ class DisableTag(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def post(self, request, *args, **kwargs):
-        if not 's' in request.DATA and not 't' in request.DATA:
+        if 's' not in request.DATA and 't' not in request.DATA:
             raise exceptions.ParseError("Missing required 's' parameter")
 
         if 's' in request.DATA:
@@ -347,10 +347,10 @@ class RenameTag(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def post(self, request, *args, **kwargs):
-        if not 's' in request.DATA and not 't' in request.DATA:
+        if 's' not in request.DATA and 't' not in request.DATA:
             raise exceptions.ParseError("Missing required 's' parameter")
 
-        if not 'dest' in request.DATA:
+        if 'dest' not in request.DATA:
             raise exceptions.ParseError("Missing required 'dest' parameter")
 
         new_name = is_label(request.DATA['dest'], request.user.pk)
@@ -442,7 +442,7 @@ class EditSubscription(ReaderView):
         if action is None:
             raise exceptions.ParseError("Missing 'ac' parameter")
 
-        if not 's' in request.DATA:
+        if 's' not in request.DATA:
             raise exceptions.ParseError("Missing 's' parameter")
 
         if not request.DATA['s'].startswith('feed/'):
@@ -499,7 +499,7 @@ class QuickAddSubscription(ReaderView):
     http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
-        if not 'quickadd' in request.DATA:
+        if 'quickadd' not in request.DATA:
             raise exceptions.ParseError("Missing 'quickadd' parameter")
 
         url = request.DATA['quickadd']
@@ -529,7 +529,7 @@ class Subscribed(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def get(self, request, *args, **kwargs):
-        if not 's' in request.GET:
+        if 's' not in request.GET:
             raise exceptions.ParseError("Missing 's' parameter")
         feed = request.GET['s']
         if not feed.startswith('feed/'):
@@ -853,9 +853,9 @@ class StreamItemsIds(ReaderView):
     require_post_token = False
 
     def get(self, request, *args, **kwargs):
-        if not 'n' in request.GET:
+        if 'n' not in request.GET:
             raise exceptions.ParseError("Required 'n' parameter")
-        if not 's' in request.GET:
+        if 's' not in request.GET:
             raise exceptions.ParseError("Required 's' parameter")
         entries = request.user.entries.filter(
             get_stream_q(
@@ -899,7 +899,7 @@ class StreamItemsCount(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def get(self, request, *args, **kwargs):
-        if not 's' in request.GET:
+        if 's' not in request.GET:
             raise exceptions.ParseError("Missing 's' parameter")
         entries = request.user.entries.filter(get_stream_q(request.GET['s'],
                                                            request.user.pk))
@@ -1035,7 +1035,7 @@ class MarkAllAsRead(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def post(self, request, *args, **kwargs):
-        if not 's' in request.DATA:
+        if 's' not in request.DATA:
             raise exceptions.ParseError("Missing 's' parameter")
         entries = request.user.entries
         limit = None

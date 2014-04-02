@@ -69,7 +69,7 @@ class UniqueFeedAdmin(ModelAdmin):
         interval = math.ceil(timespan / 500)
         start = jobs[0][1]
         counts = [0]
-        for url, time in jobs:
+        for _url, time in jobs:
             while len(counts) * interval < time - start:
                 counts.append(0)
             counts[-1] += 1

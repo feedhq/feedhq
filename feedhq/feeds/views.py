@@ -556,7 +556,7 @@ class Subscribe(generic.FormView):
 
         existing_urls = set([e.url for e in self.existing])
 
-        new_urls = [url for url in urls if not url in existing_urls]
+        new_urls = [url for url in urls if url not in existing_urls]
         name_prefill = {}
         if new_urls:
             uniques = UniqueFeed.objects.filter(
