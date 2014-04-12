@@ -22,7 +22,7 @@ User-facing features
 
 * Great readability on all screen sizes (smatphones, tablets and desktops)
 
-* Mobile-friendly, retina-ready
+* Mobile-first, retina-ready
 
 * Reading list management with Instapaper, Readability or Read It Later
   support
