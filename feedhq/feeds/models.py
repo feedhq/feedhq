@@ -565,7 +565,7 @@ class UniqueFeed(JobDataMixin, models.Model):
 class Feed(JobDataMixin, models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=1023)
-    url = URLField(_('URL'))
+    url = URLField(_('URL'), db_index=True)
     category = models.ForeignKey(
         Category, verbose_name=_('Category'), related_name='feeds',
         help_text=string_concat('<a href="',
