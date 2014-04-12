@@ -22,7 +22,7 @@
 	};
 	$.extend($.fn, {
 		hl: function() {
-			if (!$('.feedhq-highlight')) {
+			if (!$('.feedhq-highlight').length) {
 				return this;
 			}
 			hljs.initHighlightingOnLoad();
@@ -304,7 +304,7 @@
 			return false;
 		});
 
-		$(document).hl().images().tables().keys().more();
+		$(document).hl().media().tables().keys().more();
 
 		$('#shortcuts').click(function() {
 			load_kb_modal();
