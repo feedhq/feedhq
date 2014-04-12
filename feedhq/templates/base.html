@@ -62,38 +62,8 @@
 		</div>
 {% render_block "js" %}
 
-{% if debug %}
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/fastclick.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/jquery.min.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/bootstrap-tooltip.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/bootstrap-modal.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/mousetrap.min.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/highlight.min.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/feedhq.js" %}"></script>
-{% endaddtoblock %}
-{% else %}
 {% addtoblock "js" %}
 <script type="text/javascript" src="{% static "core/js/bundle.min.js" %}"></script>
 {% endaddtoblock %}
-{% endif %}
 	</body>
 </html>
