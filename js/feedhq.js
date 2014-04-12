@@ -3,7 +3,7 @@
  */
 (function($) {
 	var load_kb_modal = function() {
-		var kb = $('#keyboard')
+		var kb = $('#keyboard');
 		kb.modal('show');
 		window.location.hash = 'keyboard';
 
@@ -27,7 +27,7 @@
 			}
 			hljs.initHighlightingOnLoad();
 			$('pre').each(function(index, element) {
-				hljs.highlightBlock(element, '	', false)
+				hljs.highlightBlock(element, '	', false);
 			});
 			return this;
 		},
@@ -123,7 +123,7 @@
 					if (link && link.attr('href')) {
 						window.location.href = link.attr('href');
 					}
-				}
+				};
 
 				Mousetrap.bind('v', function() {
 					window.open($('.date a').attr('href'), '_blank');
@@ -136,7 +136,7 @@
 		tables: function() {
 			var tables = $('.content table');
 			tables.each(function() {
-				var parent = $(this).parent()
+				var parent = $(this).parent();
 				if (parent[0].nodeName.toLowerCase() === 'div') {
 					parent.addClass('overflow');
 				}
@@ -172,15 +172,15 @@
 						var image = $(this);
 						if (link.hasClass('zoom1')) {
 							image.width('auto');
-						};
+						}
 
 						if (link.hasClass('fit')) {
 							image.width('100%');
-						};
+						}
 
 						if (link.hasClass('retina')) {
 							image.width(parseInt(image.attr('data-width')) / 2);
-						};
+						}
 					});
 					return false;
 				});
@@ -216,7 +216,7 @@
 					image = image.parent('a');
 					link = image.attr('href');
 				}
-				var inner = $(image).clone().wrap('<p>').parent().html()
+				var inner = $(image).clone().wrap('<p>').parent().html();
 				var container = $('<div class="feedhq-image"></div>');
 				var menu = $('<div class="imgmenu"></div>');
 				for (var index in menu_items) {

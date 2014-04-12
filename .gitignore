@@ -9,3 +9,4 @@ artwork
 .coverage
 htmlcov
 .tox
+node_modules

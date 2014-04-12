@@ -259,20 +259,16 @@ variable to avoid making network calls while running the tests.
 The Django debug toolbar is enabled when the ``DEBUG`` environment variable is
 true and the ``django-debug-toolbar`` package is installed.
 
-`Foreman`_ is used in development to start a lightweight Django server, run
-one `RQ`_ worker and interactively preprocess changes in SCSS files to CSS
-with `Compass`_. Environment variables are managed using a `python port`_ of
-Daemontools' ``envdir`` utility. A running `Redis`_ server, Ruby and
-`Bundler`_ are prerequisites for this workflow::
+`Foreman`_ is used in development to start a lightweight Django server and run
+`RQ`_ workers. Environment variables are managed using a `python port`_ of
+Daemontools' ``envdir`` utility. A running `Redis`_ server is required for
+this workflow::
 
-    bundle install
     make run
 
 .. _Foreman: http://ddollar.github.com/foreman/
 .. _RQ: http://python-rq.org/
-.. _Compass: http://compass-style.org/
 .. _Redis: http://redis.io/
-.. _Bundler: http://gembundler.com/
 .. _Daemontools: http://cr.yp.to/daemontools.html
 .. _python port: https://pypi.python.org/pypi/envdir
 
@@ -282,3 +278,18 @@ PubSubHubbub subscription requests without any valid callback URL.
 
 Environment variables for development are set in the ``envdir`` directory. For
 tests, they are located in the ``tests/envdir`` directory.
+
+When working on frontend assets (SCSS or js files), `watchman`_ can be used to
+automatically run compass and uglify on file changes. Install `watchman`_,
+`Compass`_ (``gem install bundle && bundle install``) and `npm`_ (part of
+nodejs) to get started. Then run::
+
+    make watch
+
+.. _watchman: https://github.com/facebook/watchman
+.. _Compass: http://compass-style.org/
+.. _npm: https://www.npmjs.org/
+
+Once you're done working with assets, simply kill watchman::
+
+    pkill watchman
