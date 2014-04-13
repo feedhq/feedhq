@@ -45,10 +45,6 @@
 			};
 			update_ids();
 
-			if (!$('[data-next]').length) {
-				$('#id_entries').parent('form').hide();
-			}
-
 			$('.feedhq-more').click(function(event) {
 				event.preventDefault();
 				var link = $(this),
