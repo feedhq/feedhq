@@ -30,12 +30,14 @@ class User(PermissionsMixin, AbstractBaseUser):
     READITLATER = 'readitlater'
     INSTAPAPER = 'instapaper'
     WALLABAG = 'wallabag'
+    POCKET = 'pocket'
     READ_LATER_SERVICES = (
         (NONE, _('None')),
         (READABILITY, u'Readability'),
         (READITLATER, u'Read it later'),
         (INSTAPAPER, u'Instapaper'),
         (WALLABAG, u'Wallabag'),
+        (POCKET, u'Pocket'),
     )
 
     FONT_DROID_SANS = 'droid-sans'

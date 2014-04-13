@@ -5,6 +5,8 @@ from requests_oauthlib import OAuth1
 from six.moves.urllib import parse as urlparse
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 
 import floppyforms as forms
@@ -89,6 +91,7 @@ class ServiceForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
         self.service = kwargs.pop('service')
+        self.request = kwargs.pop('request')
         super(ServiceForm, self).__init__(*args, **kwargs)
 
     def clean(self):
@@ -101,6 +104,27 @@ class ServiceForm(forms.Form):
 
     def check_none(self):
         self.user.read_later_credentials = ''
+
+
+class PocketForm(ServiceForm):
+    def check_pocket(self):
+        url = 'https://getpocket.com/v3/oauth/request'
+        redirect_uri = self.request.build_absolute_uri(
+            reverse('pocket_return'))
+        data = {
+            'consumer_key': settings.POCKET_CONSUMER_KEY,
+            'redirect_uri': redirect_uri,
+        }
+        response = requests.post(url, data=json.dumps(data),
+                                 headers={'Content-Type': 'application/json',
+                                          'X-Accept': 'application/json'})
+        print(response, response.text)
+        code = response.json()['code']
+        self.request.session['pocket_code'] = code
+        self.response = redirect(
+            'https://getpocket.com/auth/authorize?{0}'.format(
+                urlparse.urlencode({'request_token': code,
+                                    'redirect_uri': redirect_uri})))
 
 
 class WallabagForm(ServiceForm):

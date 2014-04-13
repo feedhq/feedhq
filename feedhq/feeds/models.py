@@ -782,6 +782,20 @@ class Entry(models.Model):
         # The readitlater API doesn't return anything back
         requests.post(url, data=data)
 
+    def add_to_pocket(self):
+        url = 'https://getpocket.com/v3/add'
+        data = json.loads(self.user.read_later_credentials)
+        data.update({
+            'consumer_key': settings.POCKET_CONSUMER_KEY,
+            'url': self.link,
+        })
+        response = requests.post(url, data=json.dumps(data),
+                                 headers={'Content-Type': 'application/json'})
+        self.read_later_url = 'https://getpocket.com/a/read/{0}'.format(
+            response.json()['item']['item_id']
+        )
+        self.save(update_fields=['read_later_url'])
+
     def add_to_readability(self):
         url = 'https://www.readability.com/api/rest/v1/bookmarks'
         auth = self.oauth_client('readability')

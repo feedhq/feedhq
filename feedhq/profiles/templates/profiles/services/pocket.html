@@ -1,0 +1,13 @@
+{% extends "profiles/read_later.html" %}
+
+{% block title %}{% trans "Authorize Pocket" %}{% endblock %}
+
+{% block profile_content %}
+	<h1>{% trans "Authorize Pocket" %}</h1>
+	<p>{% trans "You need to link your FeedHQ account to your Pocket account. Please submit the form below to proceed." %}</p>
+	<form method="post" action="{% url "services" "pocket" %}" id="pocket">
+		{% include "form.html" %}
+		<input type="submit" value="{% trans "Authorize Pocket" %}">
+		<a href="{% url "read_later" %}">{% trans "Cancel" %}</a>
+	</form>
+{% endblock %}

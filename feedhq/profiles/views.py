@@ -1,6 +1,10 @@
+import json
+import requests
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.models import RequestSite
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
 from django.views import generic
@@ -8,7 +12,8 @@ from django.views import generic
 from password_reset import views
 
 from .forms import (ChangePasswordForm, ProfileForm, CredentialsForm,
-                    ServiceForm, WallabagForm, DeleteAccountForm, SharingForm)
+                    ServiceForm, WallabagForm, DeleteAccountForm, SharingForm,
+                    PocketForm)
 from ..decorators import login_required
 
 
@@ -80,6 +85,7 @@ class ServiceView(generic.FormView):
         'readability': CredentialsForm,
         'readitlater': CredentialsForm,
         'instapaper': CredentialsForm,
+        'pocket': PocketForm,
         'wallabag': WallabagForm,
         'none': ServiceForm,
     }
@@ -91,6 +97,7 @@ class ServiceView(generic.FormView):
     def get_form_kwargs(self):
         kwargs = super(ServiceView, self).get_form_kwargs()
         kwargs.update({
+            'request': self.request,
             'user': self.request.user,
             'service': self.kwargs['service'],
         })
@@ -101,19 +108,42 @@ class ServiceView(generic.FormView):
 
     def form_valid(self, form):
         form.save()
+        if hasattr(form, 'response'):
+            return form.response
         if form.user.read_later:
             messages.success(
                 self.request,
                 _('You have successfully added %s as your reading list '
-                  'service') % form.user.get_read_later_display(),
+                  'service.') % form.user.get_read_later_display(),
             )
         else:
             messages.success(
                 self.request,
-                _('You have successfully disabled reading list integration'),
+                _('You have successfully disabled reading list integration.'),
             )
         return super(ServiceView, self).form_valid(form)
 services = login_required(ServiceView.as_view())
+
+
+class PocketReturn(generic.RedirectView):
+    def get_redirect_url(self):
+        response = requests.post(
+            'https://getpocket.com/v3/oauth/authorize',
+            data=json.dumps({'consumer_key': settings.POCKET_CONSUMER_KEY,
+                             'code': self.request.session['pocket_code']}),
+            headers={'Content-Type': 'application/json',
+                     'X-Accept': 'application/json'})
+        self.request.user.read_later_credentials = json.dumps(response.json())
+        self.request.user.read_later = self.request.user.POCKET
+        self.request.user.save(update_fields=['read_later',
+                                              'read_later_credentials'])
+        del self.request.session['pocket_code']
+        messages.success(
+            self.request,
+            _('You have successfully added Pocket as your reading list '
+              'service.'))
+        return reverse('read_later')
+pocket = PocketReturn.as_view()
 
 
 class Recover(views.Recover):

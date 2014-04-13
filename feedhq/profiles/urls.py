@@ -11,8 +11,9 @@ urlpatterns = patterns(
     url(r'^password/$', views.password, name='password'),
     url(r'^export/$', views.export, name='export'),
     url(r'^readlater/(?P<service>readability|readitlater|instapaper|'
-        r'wallabag|none)/$',
+        r'pocket|wallabag|none)/$',
         views.services, name='services'),
+    url(r'^readlater/pocket/return/$', views.pocket, name='pocket_return'),
     url(r'^readlater/$', views.read_later, name='read_later'),
     url(r'^destroy/$', views.destroy, name='destroy_account'),
     url(r'^destroy/done/$', views.destroy_done, name='destroy_done'),
