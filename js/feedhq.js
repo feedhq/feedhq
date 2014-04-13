@@ -32,7 +32,7 @@
 			return this;
 		},
 		more: function() {
-			if (!$('.feedhq-more')) {
+			if (!$('.feedhq-more').length) {
 				return this;
 			}
 
@@ -144,7 +144,7 @@
 			return this;
 		},
 		media: function() {
-			if (!$('.feedhq-media')) {
+			if (!$('.feedhq-media').length) {
 				return this;
 			}
 			var timer;
