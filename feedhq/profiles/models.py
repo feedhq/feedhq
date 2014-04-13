@@ -1,3 +1,4 @@
+import json
 import pytz
 
 from django.contrib.auth.models import (AbstractBaseUser, UserManager,
@@ -28,11 +29,13 @@ class User(PermissionsMixin, AbstractBaseUser):
     READABILITY = 'readability'
     READITLATER = 'readitlater'
     INSTAPAPER = 'instapaper'
+    WALLABAG = 'wallabag'
     READ_LATER_SERVICES = (
         (NONE, _('None')),
         (READABILITY, u'Readability'),
         (READITLATER, u'Read it later'),
         (INSTAPAPER, u'Instapaper'),
+        (WALLABAG, u'Wallabag'),
     )
 
     FONT_DROID_SANS = 'droid-sans'
@@ -130,6 +133,10 @@ class User(PermissionsMixin, AbstractBaseUser):
     @property
     def last_update_key(self):
         return 'user:{0}:updates'.format(self.pk)
+
+    @property
+    def wallabag_url(self):
+        return json.loads(self.read_later_credentials)['wallabag_url']
 
     def last_updates(self):
         redis = get_redis_connection()

@@ -10,7 +10,8 @@ urlpatterns = patterns(
     url(r'^bookmarklet/$', views.bookmarklet, name='bookmarklet'),
     url(r'^password/$', views.password, name='password'),
     url(r'^export/$', views.export, name='export'),
-    url(r'^readlater/(?P<service>readability|readitlater|instapaper|none)/$',
+    url(r'^readlater/(?P<service>readability|readitlater|instapaper|'
+        r'wallabag|none)/$',
         views.services, name='services'),
     url(r'^readlater/$', views.read_later, name='read_later'),
     url(r'^destroy/$', views.destroy, name='destroy_account'),

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import bleach
 import datetime
 import feedparser
@@ -704,6 +705,10 @@ class Entry(models.Model):
         if value.endswith("L"):
             value = value[:-1]
         return value[2:].zfill(16)
+
+    @property
+    def base64_url(self):
+        return base64.b64encode(self.link.encode('utf-8'))
 
     def sanitized_title(self):
         if self.title:

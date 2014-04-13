@@ -15,7 +15,7 @@
 		<div class="row">
 			{% include "feeds/entry_links.html" %}
 			<div class="actions navlist">
-				{% if not object.read_later_url and user.read_later %}
+				{% if not object.read_later_url and user.read_later and user.read_later != "wallabag" %}
 					<form method="post" action="{% url "feeds:item" object.id %}" id="read-later" data-mousetrap="i">
 						{% csrf_token %}
 						<input type="hidden" name="action" value="read_later">
@@ -24,6 +24,12 @@
 							<span class="legend">{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}</span>
 						</button>
 					</form>
+				{% endif %}
+				{% if user.read_later == "wallabag" %}
+					<a class="tultip" title="{% trans "Add to Wallabag" %}" href="{{ user.wallabag_url }}?action=add&url={{ object.base64_url }}&autoclose=true" target="_blank" data-mousetrap="i">
+						<i class="icon-book"></i>
+						<span class="legend">{% trans "Add to Wallabag" %}</span>
+					</a>
 				{% endif %}
 				<form method="post" action="{% url "feeds:item" object.id %}" id="unread" data-mousetrap="m">
 					{% csrf_token %}

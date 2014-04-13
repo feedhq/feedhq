@@ -8,7 +8,7 @@ from django.views import generic
 from password_reset import views
 
 from .forms import (ChangePasswordForm, ProfileForm, CredentialsForm,
-                    ServiceForm, DeleteAccountForm, SharingForm)
+                    ServiceForm, WallabagForm, DeleteAccountForm, SharingForm)
 from ..decorators import login_required
 
 
@@ -80,6 +80,7 @@ class ServiceView(generic.FormView):
         'readability': CredentialsForm,
         'readitlater': CredentialsForm,
         'instapaper': CredentialsForm,
+        'wallabag': WallabagForm,
         'none': ServiceForm,
     }
     success_url = reverse_lazy('read_later')

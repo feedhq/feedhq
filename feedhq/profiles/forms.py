@@ -103,6 +103,18 @@ class ServiceForm(forms.Form):
         self.user.read_later_credentials = ''
 
 
+class WallabagForm(ServiceForm):
+    url = forms.URLField(
+        label=_('Wallabag URL'),
+        help_text=_('Your Wallabag URL, e.g. '
+                    'https://www.framabag.org/u/username'))
+
+    def check_wallabag(self):
+        self.user.read_later_credentials = json.dumps({
+            'wallabag_url': self.cleaned_data['url'],
+        })
+
+
 class CredentialsForm(ServiceForm):
     """A form that checks an external service using Basic Auth on a URL"""
     username = forms.CharField(label=_('Username'))

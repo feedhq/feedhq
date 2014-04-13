@@ -1,0 +1,19 @@
+{% extends "profiles/read_later.html" %}
+
+{% block title %}{% trans "Wallabag settings" %}{% endblock %}
+
+{% block profile_content %}
+	<h1>{% trans "Wallabag settings" %}</h1>
+
+	<p>{% trans "Please enter the URL of your Wallabag instance." %}</p>
+
+	<form method="post" action="{% url "services" "wallabag" %}" id="wallabag">
+		{% include "form.html" %}
+		<div class="row">
+			<div class="submit">
+				<input type="submit" value="{% trans "Save" %}">
+				<a href="{% url "read_later" %}">{% trans "Cancel" %}</a>
+			</div>
+		</div>
+	</form>
+{% endblock %}
