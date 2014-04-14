@@ -10,9 +10,6 @@ env:
   - TOXENV=lint
   - TOXENV=coverage
 
-before_install:
-  - sudo apt-get -y install daemontools redis-server
-
 install:
   - pip install tox
 
