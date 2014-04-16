@@ -63,7 +63,7 @@ Installation
 
 Requirements:
 
-* Python 2.7
+* Python 2.7 or 3.3+ (experimental)
 * Redis (2.6+ recommended)
 * PostgreSQL (9.2+ recommended but anything >= 8.4 should work)
 
