@@ -108,7 +108,7 @@ class UpdateTests(ClearRedisTestCase):
     def test_content_handling(self, get):
         """The content section overrides the subtitle section"""
         get.return_value = responses(200, 'atom10.xml')
-        FeedFactory.create(name='Content', url='atom10.xml')
+        FeedFactory.create(name='Content', url='atom10.xml', user__ttl=99999)
         entry = Entry.objects.get()
         self.assertEqual(entry.sanitized_content(),
                          "<div>Watch out for <span> nasty tricks</span></div>")
@@ -276,7 +276,7 @@ class UpdateTests(ClearRedisTestCase):
     @patch('requests.get')
     def test_no_link(self, get):
         get.return_value = responses(200, 'rss20.xml')
-        feed = FeedFactory.create()
+        feed = FeedFactory.create(user__ttl=99999)
         update_feed(feed.url)
         self.assertEqual(Entry.objects.count(), 1)
 

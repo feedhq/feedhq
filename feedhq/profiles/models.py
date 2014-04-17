@@ -120,7 +120,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     )
 
     ttl = models.PositiveIntegerField(
-        _('Retention days'), null=True,
+        _('Retention days'), default=30,
         help_text=_('Number of days after which entries are deleted. The more '
                     'history you keep, the less snappy FeedHQ becomes.'))
 

@@ -196,7 +196,7 @@ class UpdateTests(ClearRedisTestCase):
         last_updates = feed.user.last_updates()
         self.assertEqual(last_updates, {})
 
-        feed2 = FeedFactory.create(url=feed.url)
+        feed2 = FeedFactory.create(url=feed.url, user__ttl=99999)
         self.assertEqual(UniqueFeed.objects.count(), 1)
         call_command('delete_unsubscribed')
         self.assertEqual(UniqueFeed.objects.count(), 1)
@@ -217,7 +217,7 @@ class UpdateTests(ClearRedisTestCase):
     @patch('requests.get')
     def test_same_guids(self, get):
         get.return_value = responses(304)
-        feed = FeedFactory.create()
+        feed = FeedFactory.create(user__ttl=99999)
 
         parsed = feedparser.parse(data_file('aldaily-06-27.xml'))
         data = list(filter(
@@ -260,7 +260,7 @@ class UpdateTests(ClearRedisTestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         ))
-        feed = FeedFactory.create()
+        feed = FeedFactory.create(user__ttl=99999)
         with self.assertNumQueries(5):
             store_entries(feed.url, data)
         self.assertTrue(feed.entries.get().guid)
@@ -273,7 +273,7 @@ class UpdateTests(ClearRedisTestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         ))
-        feed = FeedFactory.create()
+        feed = FeedFactory.create(user__ttl=99999)
         with self.assertNumQueries(5):
             store_entries(feed.url, data)
         self.assertTrue(feed.entries.get().guid)

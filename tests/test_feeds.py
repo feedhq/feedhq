@@ -322,7 +322,7 @@ class WebBaseTests(WebTest):
 
     @patch('requests.get')
     def test_entry(self, get):
-        user = UserFactory.create()
+        user = UserFactory.create(ttl=99999)
         get.return_value = responses(200, 'sw-all.xml')
         feed = FeedFactory.create(category__user=user, user=user)
 
@@ -575,7 +575,7 @@ class WebBaseTests(WebTest):
     @patch('requests.get')
     def test_unread_count(self, get):
         """Unread feed count everywhere"""
-        user = UserFactory.create()
+        user = UserFactory.create(ttl=99999)
         url = reverse('profile')
         response = self.app.get(url, user=user)
         self.assertContains(
@@ -595,7 +595,7 @@ class WebBaseTests(WebTest):
     @patch('requests.get')
     def test_mark_as_read(self, get):
         get.return_value = responses(304)
-        user = UserFactory.create()
+        user = UserFactory.create(ttl=99999)
         feed = FeedFactory.create(category__user=user, user=user)
         url = reverse('feeds:unread')
         response = self.app.get(url, user=user)
@@ -636,7 +636,7 @@ class WebBaseTests(WebTest):
     @patch('requests.get')
     def test_promote_html_content_type(self, get):
         get.return_value = responses(200, 'content-description.xml')
-        feed = FeedFactory.create()
+        feed = FeedFactory.create(user__ttl=99999)
         self.assertEqual(
             len(feed.entries.all()[0].content.split('F&#233;vrier 1953')), 2)
 
@@ -770,7 +770,7 @@ class WebBaseTests(WebTest):
 
     @patch('requests.get')
     def test_pubsubhubbub_handling(self, get):
-        user = UserFactory.create()
+        user = UserFactory.create(ttl=99999)
         url = 'http://bruno.im/atom/tag/django-community/'
         get.return_value = responses(304)
         feed = FeedFactory.create(url=url, category__user=user, user=user)
@@ -803,7 +803,7 @@ class WebBaseTests(WebTest):
 
     @patch('requests.get')
     def test_link_headers(self, get):
-        user = UserFactory.create()
+        user = UserFactory.create(ttl=99999)
         url = 'foo'
         get.return_value = responses(304)
         feed = FeedFactory.create(url=url, category__user=user, user=user)
@@ -875,7 +875,7 @@ class WebBaseTests(WebTest):
     def test_relative_links(self, get):
         get.return_value = responses(200, path='brutasse.atom')
 
-        user = UserFactory.create()
+        user = UserFactory.create(ttl=99999)
         FeedFactory.create(category__user=user, user=user,
                            url='https://github.com/brutasse.atom')
         entry = user.entries.all()[0]
