@@ -241,6 +241,13 @@ Here is a full list of management commands that you should schedule:
   Resource consumption: medium, makes ``DELETE`` queries to postgres (1 per
   user).
 
+* ``delete_expired_tokens`` removes expired API tokens. Tokens are valid for 7
+  days, after which they are renewed by client apps.
+
+  Recommended frequency: once a day.
+
+  Resource consumption: low (one ``DELETE`` query).
+
 Development
 -----------
 

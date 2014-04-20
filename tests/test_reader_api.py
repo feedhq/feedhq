@@ -4,6 +4,7 @@ import time
 from datetime import timedelta
 
 from django.core.cache import cache
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.utils import timezone
@@ -11,6 +12,7 @@ from mock import patch
 from six.moves.urllib.parse import urlencode
 
 from feedhq.feeds.models import Feed, Entry, UniqueFeed
+from feedhq.reader.models import AuthToken
 from feedhq.reader.views import GoogleReaderXMLRenderer, item_id
 from feedhq.utils import get_redis_connection
 
@@ -147,6 +149,16 @@ class AuthTest(ApiTest):
         with self.assertNumQueries(1):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(response.status_code, 403)
+
+    def test_delete_expired_tokens(self):
+        user = UserFactory.create()
+        token1 = self.auth_token(user)
+        token2 = self.auth_token(user)
+        self.assertEqual(AuthToken.objects.count(), 2)
+        AuthToken.objects.filter(token=token1).update(
+            date_created=timezone.now() - timedelta(days=8))
+        call_command('delete_expired_tokens')
+        self.assertEqual(AuthToken.objects.get().token, token2)
 
 
 class SerializerTest(ApiTest):

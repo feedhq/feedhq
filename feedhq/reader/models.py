@@ -9,7 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 
 
 POST_TOKEN_DURATION = 60 * 30  # 30 minutes
-AUTH_TOKEN_TIMEOUT = 3600 * 24 * 7  # 1 week
+AUTH_TOKEN_DAYS = 7  # 1 week
+AUTH_TOKEN_TIMEOUT = 3600 * 24 * AUTH_TOKEN_DAYS
 
 AUTH_TOKEN_LENGTH = 267
 POST_TOKEN_LENGTH = 57
