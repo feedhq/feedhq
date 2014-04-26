@@ -141,16 +141,26 @@ def store_entries(feed_url, entries):
             index=",".join(indices),
             doc_type='entries',
             body={
-                '_source': {'include': ['guid', 'raw_title', 'feed']},
-                'query': {
-                    'filtered': {
+                'aggs': {
+                    'existing': {
                         'filter': {'and': es_query},
+                        'aggs': {
+                            'feeds': {
+                                'terms': {'field': 'feed', 'size': 0},
+                                'aggs': {
+                                    'guids': {'terms': {'field': 'guid',
+                                                        'size': 0}},
+                                    'titles': {'terms': {'field': 'raw_title',
+                                                         'size': 0}},
+                                },
+                            },
+                        },
                     },
                 },
             },
-            params={'size': len(indices) * len(entries) * 5},
         )
-        existing_es = existing_es['hits']['hits']
+        existing_es = existing_es[
+            'aggregations']['existing']['feeds']['buckets']
     else:
         existing_es = []
 
@@ -163,14 +173,12 @@ def store_entries(feed_url, entries):
 
     existing_es_guids = defaultdict(set)
     existing_es_titles = defaultdict(set)
-    for es_entry in existing_es:
-        existing_es_guids[es_entry['_source']['feed']].add(
-            es_entry['_source']['guid']
-        )
+    for bucket in existing_es:
+        for sub in bucket['guids']['buckets']:
+            existing_es_guids[bucket['key']].add(sub['key'])
         if filter_by_title:
-            existing_es_titles[es_entry['_source']['feed']].add(
-                es_entry['_source']['raw_title']
-            )
+            for sub in bucket['titles']['buckets']:
+                existing_es_titles[bucket['key']].add(sub['key'])
 
     create = []
     ops = []
