@@ -16,7 +16,7 @@
 			{% include "feeds/entry_links.html" %}
 			<div class="actions navlist">
 				{% if not object.read_later_url and user.read_later and user.read_later != "wallabag" %}
-					<form method="post" action="{% url "feeds:item" object.id %}" id="read-later" data-mousetrap="i">
+					<form method="post" action="{% url "feeds:item" object.pk %}" id="read-later" data-mousetrap="i">
 						{% csrf_token %}
 						<input type="hidden" name="action" value="read_later">
 						<button class="tultip" type="submit" title="{% blocktrans with read_later=user.get_read_later_display %}Add to {{ read_later }}{% endblocktrans %}">
@@ -31,7 +31,7 @@
 						<span class="legend">{% trans "Add to Wallabag" %}</span>
 					</a>
 				{% endif %}
-				<form method="post" action="{% url "feeds:item" object.id %}" id="unread" data-mousetrap="m">
+				<form method="post" action="{% url "feeds:item" object.pk %}" id="unread" data-mousetrap="m">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="unread">
 					<button class="tultip" type="submit" title="{% trans "Unread" %}">
@@ -39,7 +39,7 @@
 						<span class="legend">{% trans "Unread" %}</span>
 					</button>
 				</form>
-				<form method="post" action="{% url "feeds:item" object.id %}" id="star" data-mousetrap="s">
+				<form method="post" action="{% url "feeds:item" object.pk %}" id="star" data-mousetrap="s">
 					{% csrf_token %}
 					{% if object.starred %}
 						<input type="hidden" name="action" value="unstar">
@@ -68,7 +68,7 @@
 		</div>
 		{% if has_media and not user.allow_media %}
 			<div class="externalmedia">
-				<form method="post" action="{% url "feeds:item" object.id %}" class="images" id="images">
+				<form method="post" action="{% url "feeds:item" object.pk %}" class="images" id="images">
 					{% csrf_token %}
 					<input type="hidden" name="action" value="images">
 					{% if object.feed.media_safe %}

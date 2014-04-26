@@ -4,7 +4,7 @@
 
 {% block content %}
 	<h2>{% trans "Confirm deletion" %}</h2>
-	<form method="post" action="{% url "feeds:delete_feed" object.id %}" id="delete">
+	<form method="post" action="{% url "feeds:delete_feed" object.pk %}" id="delete">
 		<p>{% blocktrans %}You are about to delete the feed: <em>{{ object }}</em>. Are you sure?{% endblocktrans %}</p>
 		<ul>
 			<li>{% trans "There is no undo." %}</li>
@@ -14,7 +14,7 @@
 		<div class="row">
 			<div class="submit">
 				<input type="submit" value="{% trans "Delete" %}">
-				<a href="{% url "feeds:feed" object.id %}">{% trans "Cancel"%}</a>
+				<a href="{% url "feeds:feed" object.pk %}">{% trans "Cancel"%}</a>
 			</div>
 		</div>
 	</form>
