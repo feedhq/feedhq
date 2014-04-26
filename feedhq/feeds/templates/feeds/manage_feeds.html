@@ -19,8 +19,8 @@
 			<li>
 				{{ feed.favicon_img }} {{ feed.name }}
 				{% if feed.safe_job_details.hub %}<span class="real-time tultip" title="{% trans "This feed sends its updates directly to FeedHQ when new content is published" %}"><i class="icon-bolt"></i>real-time</span>{% endif %}
-				<a href="{% url "feeds:edit_feed" feed.id %}">{% trans "edit" %}</a> 
-				<a href="{% url "feeds:delete_feed" feed.id %}">{% trans "delete" %}</a>
+				<a href="{% url "feeds:edit_feed" feed.pk %}">{% trans "edit" %}</a> 
+				<a href="{% url "feeds:delete_feed" feed.pk %}">{% trans "delete" %}</a>
 
 				{% if feed.muted or feed.safe_job_details.backoff_factor == 10 %}
 					<br>
