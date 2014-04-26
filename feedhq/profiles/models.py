@@ -7,7 +7,9 @@ from django.db import models
 from django.db.models import Max
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from elasticsearch.exceptions import RequestError
 
+from .. import es
 from ..utils import get_redis_connection
 
 TIMEZONES = [
@@ -123,6 +125,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         _('Retention days'), default=30,
         help_text=_('Number of days after which entries are deleted. The more '
                     'history you keep, the less snappy FeedHQ becomes.'))
+    es = models.NullBooleanField()
 
     objects = UserManager()
 
@@ -139,6 +142,20 @@ class User(PermissionsMixin, AbstractBaseUser):
     @property
     def wallabag_url(self):
         return json.loads(self.read_later_credentials)['wallabag_url']
+
+    @property
+    def unread_count(self):
+        if hasattr(self, '_unread_count'):
+            return self._unread_count
+        if self.es:
+            return es.client.count(es.user_index(self.pk),
+                                   doc_type='entries',
+                                   body={'query': {
+                                       'term': {
+                                           'read': False,
+                                       }}})['count']
+        else:
+            return self.entries.unread()
 
     def last_updates(self):
         redis = get_redis_connection()
@@ -160,3 +177,47 @@ class User(PermissionsMixin, AbstractBaseUser):
             value = float(value.strftime('%s')) if value else 0
             redis.zadd(self.last_update_key, url, value)
         return self.last_updates()
+
+    def create_index(self):
+        name = es.user_index(self.pk)
+        try:
+            es.client.indices.create(name, body={'mappings': {
+                "entries": {
+                    "properties": {
+                        "timestamp": {
+                            "format": "dateOptionalTime",
+                            "type": "date"
+                        },
+                        "guid": {
+                            "type": "string",
+                            "index": "not_analyzed",
+                        },
+                        "raw_title": {
+                            "type": "string",
+                            "index": "not_analyzed",
+                        },
+                    },
+                },
+            }})
+        except RequestError as e:
+            if 'IndexAlreadyExistsException' not in e.error:
+                raise
+        es.wait_for_yellow()
+        return name
+
+    def save(self, *args, **kwargs):
+        ret = super(User, self).save(*args, **kwargs)
+        if self.es:
+            self.create_index()
+        return ret
+
+    def index_entries(self):
+        if self.es:
+            return
+        name = self.create_index()
+        for feed in self.feeds.all():
+            entries = feed.entries.all()
+            docs = [doc.serialize() for doc in entries]
+            es.bulk(docs, index=name, raise_on_error=True)
+        self.es = True
+        self.save(update_fields=['es'])

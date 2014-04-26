@@ -3,6 +3,8 @@ import logging
 import opml
 import re
 
+from collections import defaultdict
+
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -15,7 +17,9 @@ from django.template.defaultfilters import slugify
 from django.utils.html import format_html
 from django.utils.translation import ugettext as _, ungettext
 from django.views import generic
+from elasticsearch.exceptions import RequestError
 
+from .. import es
 from ..decorators import login_required
 from ..tasks import enqueue
 from .models import Category, Entry, UniqueFeed
@@ -76,23 +80,31 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
     Note: only set category OR feed. Not both at the same time.
     """
     user = request.user
-    categories = user.categories.with_unread_counts()
+    es_kwargs = {'per_page': user.entries_per_page,
+                 'page': int(page),
+                 'only_unread': only_unread,
+                 'exclude': ['content', 'guid', 'tags', 'read_later_url',
+                             'author', 'broadcast', 'link', 'starred']}
 
     if category is not None:
-        category = get_object_or_404(user.categories.all(), slug=category)
-        entries = user.entries.filter(feed__category=category)
+        category = get_object_or_404(user.categories, slug=category)
         all_url = reverse('feeds:category', args=[category.slug])
         unread_url = reverse('feeds:unread_category', args=[category.slug])
+        es_kwargs['category'] = category.pk
+        entries = user.entries.filter(feed__category=category)
 
     if feed is not None:
         feed = get_object_or_404(user.feeds.select_related('category'),
                                  pk=feed)
-        entries = feed.entries.all()
-        all_url = reverse('feeds:feed', args=[feed.id])
-        unread_url = reverse('feeds:unread_feed', args=[feed.id])
+        all_url = reverse('feeds:feed', args=[feed.pk])
+        unread_url = reverse('feeds:unread_feed', args=[feed.pk])
+
         category = feed.category
+        es_kwargs['feed'] = feed.pk
+        entries = feed.entries.all()
 
     if starred is True:
+        es_kwargs['only_starred'] = True
         entries = user.entries.filter(starred=True)
         all_url = reverse('feeds:stars')
         unread_url = None
@@ -105,11 +117,12 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
     entries = entries.select_related('feed', 'feed__category')
     if user.oldest_first:
         entries = entries.order_by('date', 'id')
+        es_kwargs['order'] = 'asc'
 
     if request.method == 'POST':
         if request.POST['action'] in (ReadForm.READ_ALL, ReadForm.READ_PAGE):
             pages_only = request.POST['action'] == ReadForm.READ_PAGE
-            form = ReadForm(entries, feed, category, user,
+            form = ReadForm(entries, es_kwargs, feed, category, user,
                             pages_only=pages_only, data=request.POST)
             if form.is_valid():
                 pks = form.save()
@@ -140,25 +153,52 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         else:
             return redirect(all_url)
 
-    unread_count = entries.filter(read=False).count()
+    if user.es:
+        try:
+            entries = es.entries(user, **es_kwargs)
+        except RequestError as e:
+            if 'No mapping found' not in e.error:  # index is empty
+                raise
+            entries = []
+            facets = {'unread': {'count': 0}}
+            user._unread_count = unread_count = total_count = 0
+        else:
+            facets = entries['facets']
+            entries = entries['hits']
+            if 'category' in es_kwargs:
+                unread_count = facets['category_unread']['count']
+                total_count = facets['category_all']['count']
+            elif 'feed' in es_kwargs:
+                unread_count = facets['feed_unread']['count']
+                total_count = facets['feed_all']['count']
+            elif 'only_starred' in es_kwargs:
+                unread_count = 0
+                total_count = facets['starred']['count']
+            else:
+                unread_count = facets['unread']['count']
+                total_count = facets['all']['count']
+            user._unread_count = facets['unread']['count']
+        entries = {'object_list': entries}
+
+    else:
+        unread_count = entries.filter(read=False).count()
+        if only_unread:
+            total_count = entries.count()
+            entries = entries.filter(read=False)
+            entries, foo = paginate(entries, page=page,
+                                    force_count=unread_count,
+                                    nb_items=request.user.entries_per_page)
+        else:
+            entries, total_count = paginate(
+                entries, page=page, nb_items=request.user.entries_per_page)
+
+    request.session['back_url'] = request.get_full_path()
 
     # base_url is a variable that helps the paginator a lot. The drawback is
     # that the paginator can't use reversed URLs.
-    base_url = all_url
-    if only_unread:
-        total_count = entries.count()
-        entries = entries.filter(read=False)
-        base_url = unread_url
-        entries, foo = paginate(entries, page=page,
-                                force_count=unread_count,
-                                nb_items=request.user.entries_per_page)
-    else:
-        entries, total_count = paginate(entries, page=page,
-                                        nb_items=request.user.entries_per_page)
+    base_url = unread_url if only_unread else all_url
 
-    request.session['back_url'] = request.get_full_path()
     context = {
-        'categories': categories,
         'category': category,
         'feed': feed,
         'entries': entries,
@@ -169,6 +209,8 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         'unread_url': unread_url,
         'base_url': base_url,
         'stars': starred,
+        'all_unread': (facets['unread']['count'] if user.es
+                       else user.entries.unread()),
         'entries_template': 'feeds/entries_include.html',
     }
     if unread_count:
@@ -178,8 +220,15 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
             'pages': json.dumps([int(page)]),
         })
         context['action'] = request.get_full_path()
-    if entries.paginator.count == 0 and request.user.feeds.count() == 0:
-        context['noob'] = True
+    if user.es:
+        if (
+            len(entries['object_list']) == 0 and
+            request.user.feeds.count() == 0
+        ):
+            context['noob'] = True
+    else:
+        if entries.paginator.count == 0 and request.user.feeds.count() == 0:
+            context['noob'] = True
 
     if request.is_ajax():
         template_name = context['entries_template']
@@ -234,15 +283,44 @@ edit_category = login_required(EditCategory.as_view())
 class DeleteCategory(CategoryMixin, generic.DeleteView):
     success_url = reverse_lazy('feeds:manage')
 
-    def get_success_message(self):
-        return _('%(category)s has been successfully '
-                 'deleted') % {'category': self.object}
+    @transaction.atomic
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        pk = self.object.pk
+        name = self.object.name
+        self.object.delete()
+        if self.request.user.es:
+            es.client.delete_by_query(
+                index=es.user_index(self.request.user.pk),
+                doc_type='entries',
+                body={'query': {'term': {'category': pk}}},
+            )
+        messages.success(
+            self.request,
+            _('%(category)s has been successfully deleted') % {
+                'category': name})
+        success_url = self.get_success_url()
+        return redirect(success_url)
 
     def get_context_data(self, **kwargs):
-        kwargs.update({
-            'entry_count': Entry.objects.filter(
+        if self.request.user.es:
+            entry_count = es.client.count(
+                index=es.user_index(self.request.user.pk),
+                doc_type='entries',
+                body={
+                    'query': {
+                        'filtered': {
+                            'filter': {'term': {'category': self.object.pk}},
+                        },
+                    },
+                },
+            )['count']
+        else:
+            entry_count = Entry.objects.filter(
                 feed__category=self.object,
-            ).count(),
+            ).count()
+        kwargs.update({
+            'entry_count': entry_count,
             'feed_count': self.object.feeds.count(),
         })
         return super(DeleteCategory, self).get_context_data(**kwargs)
@@ -290,26 +368,60 @@ edit_feed = login_required(EditFeed.as_view())
 
 
 class DeleteFeed(FeedMixin, generic.DeleteView):
-    def get_success_message(self):
-        return _('%(feed)s has been successfully '
-                 'deleted') % {'feed': self.object.name}
-
     def get_context_data(self, **kwargs):
-        kwargs['entry_count'] = self.object.entries.count()
+        if self.request.user.es:
+            entry_count = es.client.count(
+                index=es.user_index(self.request.user.pk),
+                doc_type='entries',
+                body={
+                    'query': {
+                        'filtered': {
+                            'filter': {'term': {'feed': self.object.pk}},
+                        },
+                    },
+                },
+            )['count']
+        else:
+            entry_count = self.object.entries.count()
+        kwargs['entry_count'] = entry_count
         return super(DeleteFeed, self).get_context_data(**kwargs)
+
+    @transaction.atomic
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        pk = self.object.pk
+        name = self.object.name
+        self.object.delete()
+        if request.user.es:
+            es.client.delete_by_query(
+                index=es.user_index(request.user.pk),
+                doc_type='entries',
+                body={'query': {'term': {'feed': pk}}},
+            )
+        messages.success(
+            request,
+            _('%(feed)s has been successfully deleted') % {
+                'feed': name})
+        success_url = self.get_success_url()
+        return redirect(success_url)
 delete_feed = login_required(DeleteFeed.as_view())
 
 
 @login_required
 def item(request, entry_id):
-    qs = Entry.objects.filter(user=request.user).select_related(
-        'feed', 'feed__category',
-    )
-    entry = get_object_or_404(qs, pk=entry_id)
-    if not entry.read:
-        entry.read = True
-        entry.save(update_fields=['read'])
-        entry.feed.update_unread_count()
+    if request.user.es:
+        entry = es.entry(request.user, entry_id)
+        if not entry.read:
+            entry.update(read=True)
+    else:
+        qs = Entry.objects.filter(user=request.user).select_related(
+            'feed', 'feed__category',
+        )
+        entry = get_object_or_404(qs, pk=entry_id)
+        if not entry.read:
+            entry.read = True
+            entry.save(update_fields=['read'])
+            entry.feed.update_unread_count()
 
     back_url = request.session.get('back_url',
                                    default=entry.feed.get_absolute_url())
@@ -351,14 +463,37 @@ def item(request, entry_id):
         only_unread = True
 
     # The previous is actually the next by date, and vice versa
-    try:
-        previous = entry.get_next_by_date(**kw).get_absolute_url()
-    except entry.DoesNotExist:
-        previous = None
-    try:
-        next = entry.get_previous_by_date(**kw).get_absolute_url()
-    except entry.DoesNotExist:
-        next = None
+    if request.user.es:
+        kw.pop('user', None)
+        if 'feed' in kw:
+            kw['feed'] = kw['feed'].pk
+        if 'read' in kw:
+            kw['only_unread'] = not kw.pop('read')
+        if 'feed__category' in kw:
+            kw['category'] = kw.pop('feed__category').pk
+        if 'starred' in kw:
+            kw['only_starred'] = kw.pop('starred')
+        previous = es.entries(request.user, per_page=1, order='asc',
+                              date_gt=entry.date,
+                              include_facets=False, **kw)
+        previous = previous['hits'][0] if previous['hits'] else None
+        if previous is not None:
+            previous = previous.get_absolute_url()
+        next = es.entries(request.user, per_page=1, order='desc',
+                          date_lt=entry.date, include_facets=False,
+                          **kw)
+        next = next['hits'][0] if next['hits'] else None
+        if next is not None:
+            next = next.get_absolute_url()
+    else:
+        try:
+            previous = entry.get_next_by_date(**kw).get_absolute_url()
+        except Entry.DoesNotExist:
+            previous = None
+        try:
+            next = entry.get_previous_by_date(**kw).get_absolute_url()
+        except Entry.DoesNotExist:
+            next = None
 
     if request.user.oldest_first:
         previous, next = next, previous
@@ -383,23 +518,30 @@ def item(request, entry_id):
                     entry.feed.img_safe = True
                     entry.feed.save(update_fields=['img_safe'])
             elif action == 'unread':
-                entry.read = False
-                entry.save(update_fields=['read'])
-                entry.feed.update_unread_count()
+                if request.user.es:
+                    entry.update(read=False, refresh=True)
+                else:
+                    entry.read = False
+                    entry.save(update_fields=['read'])
+                    entry.feed.update_unread_count()
                 return redirect(back_url)
             elif action == 'read_later':
-                enqueue(read_later, args=[entry.pk], timeout=20, queue='high')
+                enqueue(read_later, args=[request.user.pk,
+                                          entry.pk, request.user.es],
+                        timeout=20, queue='high')
                 messages.success(
                     request,
                     _('Article successfully added to your reading list'),
                 )
             elif action in ['star', 'unstar']:
-                entry.starred = action == 'star'
-                entry.save(update_fields=['starred'])
+                if request.user.es:
+                    entry.update(starred=action == 'star', refresh=True)
+                else:
+                    entry.starred = action == 'star'
+                    entry.save(update_fields=['starred'])
 
     context = {
         'category': entry.feed.category,
-        'categories': request.user.categories.with_unread_counts(),
         'back_url': back_url,
         'only_unread': only_unread,
         'previous': previous,
@@ -501,31 +643,71 @@ def import_feeds(request):
 
 @login_required
 def dashboard(request, only_unread=False):
-    categories = request.user.categories.prefetch_related(
-        'feeds',
-    ).annotate(unread_count=Sum('feeds__unread_count'))
+    if request.user.es:
+        categories = request.user.categories.values()
+        feeds = request.user.feeds.all()
 
-    if only_unread:
-        categories = categories.filter(unread_count__gt=0)
+        for cat in categories:
+            cat['unread_count'] = 0
 
-    if only_unread:
-        uncategorized = request.user.feeds.filter(category__isnull=True,
-                                                  unread_count__gt=0)
+        feed_to_cat = {feed.pk: feed.category_id for feed in feeds}
+
+        category_feeds = defaultdict(list)
+        category_counts = defaultdict(int)
+
+        counts = es.counts(request.user, feed_to_cat.keys())
+        _all = 0
+        for feed in feeds:
+            feed.unread_count = counts[str(feed.pk)]['count']
+            _all += feed.unread_count
+            if feed.category_id is None:
+                continue
+            category_feeds[feed.category_id].append(feed)
+            category_counts[feed.category_id] += feed.unread_count
+
+        for c in categories:
+            c['unread_count'] = category_counts[c['id']]
+            c['feeds'] = {'all': category_feeds[c['id']]}
+
+        uncategorized = [feed for feed in feeds if feed.category_id is None]
+        for feed in uncategorized:
+            feed.unread_count = counts[str(feed.pk)]['count']
+
+        if only_unread:
+            categories = [c for c in categories if c['unread_count']]
+
+            for c in categories:
+                c['feeds'] = {'all': [feed for feed in c['feeds']['all']
+                                      if feed.unread_count]}
+            uncategorized = [feed for feed in uncategorized
+                             if feed.unread_count]
+        total = len(uncategorized) + sum(
+            (len(c['feeds']['all']) for c in categories)
+        )
+
     else:
+        categories = request.user.categories.prefetch_related(
+            'feeds',
+        ).annotate(unread_count=Sum('feeds__unread_count'))
         uncategorized = request.user.feeds.filter(category__isnull=True)
+
+        if only_unread:
+            categories = categories.filter(unread_count__gt=0)
+            uncategorized = request.user.feeds.filter(category__isnull=True,
+                                                      unread_count__gt=0)
+
+        total = len(uncategorized) + sum(
+            (len(c.feeds.all()) for c in categories)
+        )
 
     has_orphans = bool(len(uncategorized))
 
-    total = len(uncategorized) + sum(
-        (len(c.feeds.all()) for c in categories)
-    )
-
     if has_orphans:
         categories = [
-            {'feeds': uncategorized}
+            {'feeds': {'all': uncategorized}}
         ] + list(categories)
 
-    col_size = total / 3
+    col_size = total // 3
     col_1 = None
     col_2 = None
     done = len(uncategorized)
@@ -534,7 +716,10 @@ def dashboard(request, only_unread=False):
             col_1 = index + 1
         if col_2 is None and done > 2 * col_size:
             col_2 = index + 1
-        done += len(cat.feeds.all())
+        if request.user.es:
+            done += len(cat['feeds']['all'])
+        else:
+            done += len(cat.feeds.all())
 
     context = {
         'categories': categories,

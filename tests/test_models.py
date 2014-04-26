@@ -4,16 +4,17 @@ from django.utils import timezone
 from mock import patch
 from rache import job_details, schedule_job
 
+from feedhq import es
 from feedhq.feeds.models import (Category, Feed, UniqueFeed, Entry, Favicon,
                                  UniqueFeedManager)
 from feedhq.feeds.tasks import update_feed
 from feedhq.utils import get_redis_connection
 
 from .factories import CategoryFactory, FeedFactory
-from . import responses, ClearRedisTestCase
+from . import responses, TestCase
 
 
-class ModelTests(ClearRedisTestCase):
+class ModelTests(TestCase):
     def test_category_model(self):
         """Behaviour of the ``Category`` model"""
         cat = CategoryFactory.create(name='New Cat', slug='new-cat')
@@ -51,8 +52,11 @@ class ModelTests(ClearRedisTestCase):
         self.assertEqual(data['link'], 'http://example.org/')
 
         feed = Feed.objects.get(pk=feed.id)
-        self.assertEqual(feed.entries.count(), 1)
-        self.assertEqual(feed.entries.all()[0].title, 'First item title')
+        if feed.user.es:
+            [entry] = es.entries(feed.user)['hits']
+        else:
+            entry = feed.entries.get()
+        self.assertEqual(entry.title, 'First item title')
 
         self.assertEqual(feed.favicon_img(), '')
         feed.favicon = 'fav.png'
@@ -65,7 +69,10 @@ class ModelTests(ClearRedisTestCase):
         feed = FeedFactory.create()
         update_feed(feed.url)
         title = 'RE2: a principled approach to regular expression matching'
-        entry = Entry.objects.get(title=title)
+        if feed.user.es:
+            [entry] = es.entries(feed.user)['hits']
+        else:
+            entry = Entry.objects.get()
 
         # __unicode__
         self.assertEqual('%s' % entry, title)

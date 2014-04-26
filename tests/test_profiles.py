@@ -1,19 +1,19 @@
 import json
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from django_webtest import WebTest
 from mock import patch
 
 from feedhq.profiles.models import User
 
-from . import responses
+from . import responses, WebTest
 
 
 class ProfilesTest(WebTest):
     def setUp(self):  # noqa
         self.user = User.objects.create_user('test', 'test@example.com',
-                                             'pass')
+                                             'pass', es=settings.USE_ES)
 
     def test_profile(self):
         url = reverse('stats')
@@ -84,7 +84,8 @@ class ProfilesTest(WebTest):
         self.assertEqual(User.objects.get().entries_per_page, 50)
 
         # changing a username
-        new = User.objects.create_user('foobar', 'foo@bar.com', 'pass')
+        new = User.objects.create_user('foobar', 'foo@bar.com', 'pass',
+                                       es=settings.USE_ES)
 
         form['username'] = 'foobar'
         response = form.submit()

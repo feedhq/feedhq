@@ -21,6 +21,9 @@ DATABASES = {
     ),
 }
 
+ES_NODES = os.environ.get('ES_NODES', 'localhost:9200').split()
+ES_INDEX_PREFIX = os.environ.get('ES_INDEX_PREFIX', 'feedhq')
+
 TIME_ZONE = 'UTC'
 
 LANGUAGE_CODE = 'en-us'
@@ -306,6 +309,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
+        },
+        'elasticsearch': {
+            'handlers': ['console'],
+            'level': 'INFO',
         },
     },
 }

@@ -6,18 +6,19 @@ from datetime import timedelta
 from django.core.cache import cache
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
+from django.test import Client
 from django.utils import timezone
 from mock import patch
 from six.moves.urllib.parse import urlencode
 
+from feedhq import es
 from feedhq.feeds.models import Feed, Entry, UniqueFeed
 from feedhq.reader.models import AuthToken
 from feedhq.reader.views import GoogleReaderXMLRenderer, item_id
 from feedhq.utils import get_redis_connection
 
 from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
-from . import responses, data_file
+from . import responses, data_file, TestCase
 
 
 def clientlogin(token):
@@ -305,7 +306,8 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "Unrecognized item",
                             status_code=400)
 
-        entry = EntryFactory.create(user=user, feed__category__user=user)
+        entry = EntryFactory.create(user=user, feed__category__user=user,
+                                    feed__user=user)
         data['i'] = 'tag:google.com,2005:reader/item/{0}'.format(entry.hex_pk)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Specify a tag to add or remove",
@@ -320,7 +322,10 @@ class ReaderApiTest(ApiTest):
         data['r'] = 'user/{0}/state/com.google/kept-unread'.format(user.pk)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK", status_code=200)
-        e = user.entries.get()
+        if user.es:
+            [e] = es.entries(user)['hits']
+        else:
+            e = user.entries.get()
         self.assertTrue(e.starred)
         self.assertTrue(e.read)
 
@@ -331,32 +336,52 @@ class ReaderApiTest(ApiTest):
         data['r'] = 'user/-/state/com.google/kept-unread'
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
-        entry = Entry.objects.get()
+
+        if user.es:
+            [entry] = es.entries(user)['hits']
+        else:
+            entry = user.entries.get()
         self.assertTrue(entry.read)
 
-        entry.read = False
-        entry.save(update_fields=['read'])
+        if user.es:
+            entry.update(read=False)
+        else:
+            entry.read = False
+            entry.save(update_fields=['read'])
+
         del data['r']
         data['a'] = 'user/-/state/com.google/read'
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
-        entry = Entry.objects.get()
+        if user.es:
+            [entry] = es.entries(user)['hits']
+        else:
+            entry = user.entries.get()
         self.assertTrue(entry.read)
 
         # Mark as unread: add "kept-unread" or remove "read"
         data['a'] = 'user/-/state/com.google/kept-unread'
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
-        entry = Entry.objects.get()
+        if user.es:
+            [entry] = es.entries(user)['hits']
+        else:
+            entry = user.entries.get()
         self.assertFalse(entry.read)
 
-        entry.read = True
-        entry.save(update_fields=['read'])
+        if user.es:
+            entry.update(read=True)
+        else:
+            entry.read = True
+            entry.save(update_fields=['read'])
         del data['a']
         data['r'] = 'user/-/state/com.google/read'
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
-        entry = Entry.objects.get()
+        if user.es:
+            [entry] = es.entries(user)['hits']
+        else:
+            entry = user.entries.get()
         self.assertFalse(entry.read)
 
         # Star / unstar, broadcast / unbroadcast
@@ -365,14 +390,20 @@ class ReaderApiTest(ApiTest):
             data['a'] = 'user/-/state/com.google/{0}'.format(tag)
             response = self.client.post(url, data, **clientlogin(token))
             self.assertContains(response, "OK")
-            entry = Entry.objects.get()
+            if user.es:
+                [entry] = es.entries(user)['hits']
+            else:
+                entry = user.entries.get()
             self.assertTrue(getattr(entry, tag))
 
             data['r'] = data['a']
             del data['a']
             response = self.client.post(url, data, **clientlogin(token))
             self.assertContains(response, "OK")
-            entry = Entry.objects.get()
+            if user.es:
+                [entry] = es.entries(user)['hits']
+            else:
+                entry = user.entries.get()
             self.assertFalse(getattr(entry, tag))
 
         data['r'] = 'user/-/state/com.google/tracking-foo-bar'
@@ -385,13 +416,23 @@ class ReaderApiTest(ApiTest):
 
         # Batch edition
         entry2 = EntryFactory.create(user=user, feed=entry.feed)
-        self.assertEqual(user.entries.filter(broadcast=True).count(), 0)
+        if user.es:
+            count = es.entries(user, only_broadcast=True,
+                               per_page=0)['facets']['broadcast']['count']
+        else:
+            count = user.entries.filter(broadcast=True).count()
+        self.assertEqual(count, 0)
         response = self.client.post(url, {
             'i': [entry.pk, entry2.pk],
             'a': 'user/-/state/com.google/broadcast',
             'T': post_token,
         }, **clientlogin(token))
-        self.assertEqual(user.entries.filter(broadcast=True).count(), 2)
+        if user.es:
+            count = es.entries(user, only_broadcast=True,
+                               per_page=0)['facets']['broadcast']['count']
+        else:
+            count = user.entries.filter(broadcast=True).count()
+        self.assertEqual(count, 2)
 
     def test_hex_item_ids(self, get):
         entry = Entry(pk=162170919393841362)
@@ -439,11 +480,11 @@ class ReaderApiTest(ApiTest):
         feed.update_unread_count()
         feed2.update_unread_count()
 
-        # need to populate last updates, extra queries required
-        with self.assertNumQueries(5):
+        # need to populate last updates, extra queries required without ES
+        with self.assertNumQueries(1 if user.es else 5):
             response = self.client.get(url, **clientlogin(token))
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(1 if user.es else 2):
             response = self.client.get(url, **clientlogin(token))
 
         # 3 elements: reading-list, label and feed
@@ -466,8 +507,8 @@ class ReaderApiTest(ApiTest):
         url = reverse('reader:stream_contents',
                       args=['user/-/state/com.google/reading-list'])
 
-        # 2 are warmup queries, cached in following calls
-        with self.assertNumQueries(4):
+        # 2 warmup queries, cached in following calls
+        with self.assertNumQueries(2 if user.es else 4):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(response.json['author'], user.username)
         self.assertEqual(len(response.json['items']), 0)
@@ -510,22 +551,29 @@ class ReaderApiTest(ApiTest):
         ] + [
             EntryFactory.build(user=user, feed=feed, read=True, broadcast=True)
         ])
+        if user.es:
+            for entry in Entry.objects.all():
+                entry.index()
+            Entry.objects.all().delete()
+            es.client.indices.refresh(es.user_index(user.pk))
 
         # Warm up the uniques map cache
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2 if user.es else 3):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(response.json['continuation'], 'page2')
         self.assertEqual(len(response.json['items']), 20)
 
+        queries = 1 if user.es else 2
+
         # ?xt= excludes stuff
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(
                 url, {'xt': 'user/-/state/com.google/starred', 'n': 40},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 20)
 
         # Multiple ?xt= is valid.
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(
                 url, {'xt': [
                     'user/-/state/com.google/starred',
@@ -536,43 +584,43 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['items']), 19)
 
         # ?it= includes stuff
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(
                 url, {'it': 'user/-/state/com.google/starred', 'n': 40},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 10)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(
                 url, {'xt': 'user/-/state/com.google/broadcast', 'n': 40},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 29)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(
                 url, {'xt': 'user/-/state/com.google/kept-unread', 'n': 40},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 5)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(
                 url, {'xt': 'user/-/state/com.google/read', 'n': 40},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 25)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(
                 url, {'xt': u'feed/{0}'.format(feed.url)},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(
                 url, {'xt': u'user/-/label/{0}'.format(feed.category.name)},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {'c': 'page2'},
                                        **clientlogin(token))
         self.assertEqual(len(response.json['items']), 10)
@@ -580,26 +628,26 @@ class ReaderApiTest(ApiTest):
         self.assertTrue(response.json['self'][0]['href'].endswith(
             'reading-list?c=page2'))
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 30)
         self.assertFalse('continuation' in response.json)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {
                 'n': 100,
                 'ot': int(time.time()) - 3600 * 24 * 2},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 30)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {
                 'n': 10,
                 'ot': int(time.time()) - 3600 * 24 * 2},
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 10)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(0 if user.es else 2):
             response = self.client.get(url, {
                 'n': 100,
                 'ot': int(time.time()) + 1},
@@ -608,13 +656,13 @@ class ReaderApiTest(ApiTest):
 
         url = reverse('reader:stream_contents',
                       args=['user/-/state/com.google/starred'])
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 10)
 
         url = reverse('reader:stream_contents',
                       args=['user/-/state/com.google/broadcast-friends'])
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {'n': 40, 'output': 'atom'},
                                        **clientlogin(token))
         self.assertEqual(response.status_code, 200)
@@ -633,24 +681,24 @@ class ReaderApiTest(ApiTest):
 
         url = reverse('reader:stream_contents',
                       args=['user/-/state/com.google/broadcast'])
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 1)
 
         url = reverse('reader:stream_contents',
                       args=['user/-/state/com.google/broadcast'])
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {'ot': 12}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 1)
 
         url = reverse('reader:stream_contents',
                       args=['user/-/state/com.google/kept-unread'])
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 25)
 
         url = reverse('reader:stream_contents')  # defaults to reading-list
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 20)
 
@@ -666,7 +714,7 @@ class ReaderApiTest(ApiTest):
 
         url = reverse('reader:stream_contents',
                       args=['user/-/state/com.google/like'])
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(0 if user.es else 2):
             response = self.client.get(url, {'n': 40}, **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
 
@@ -695,7 +743,7 @@ class ReaderApiTest(ApiTest):
                       args=['user/-/state/com.google/reading-list'])
 
         # 2 are warmup queries, cached in following calls
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(2 if user.es else 4):
             response = self.client.get(url, **clientlogin(token))
         self.assertTrue(response['Content-Type'].startswith("text/xml"))
 
@@ -724,7 +772,8 @@ class ReaderApiTest(ApiTest):
                                    **clientlogin(token))
         self.assertEqual(response.status_code, 400)
 
-        with self.assertNumQueries(2):
+        queries = 1 if user.es else 2
+        with self.assertNumQueries(queries):
             response = self.client.post('{0}?{1}'.format(url, urlencode({
                 'n': 5, 's': 'user/-/state/com.google/reading-list',
                 'includeAllDirectStreamIds': 'true'})),
@@ -732,7 +781,7 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['itemRefs']), 5)
         self.assertEqual(response.json['continuation'], 'page2')
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.post('{0}?{1}'.format(url, urlencode({
                 'n': 5, 's': 'user/{0}/state/com.google/reading-list'.format(
                     user.pk),
@@ -741,7 +790,7 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['itemRefs']), 5)
         self.assertEqual(response.json['continuation'], 'page2')
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {
                 'n': 5, 's': 'splice/user/-/state/com.google/reading-list',
                 'includeAllDirectStreamIds': 'true'},
@@ -749,7 +798,7 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['itemRefs']), 5)
         self.assertEqual(response.json['continuation'], 'page2')
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {
                 'n': 5,
                 's': 'splice/user/{0}/state/com.google/reading-list'.format(
@@ -759,7 +808,7 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['itemRefs']), 5)
         self.assertEqual(response.json['continuation'], 'page2')
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(queries):
             response = self.client.get(url, {
                 'n': 5, 's': 'splice/user/-/state/com.google/reading-list',
                 'c': 'page2', 'includeAllDirectStreamIds': 'true'},
@@ -767,7 +816,7 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(len(response.json['itemRefs']), 5)
         self.assertFalse('continuation' in response.json)
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(0 if user.es else 2):
             response = self.client.get(url, {
                 'n': 50, 's': (
                     'splice/user/-/state/com.google/broadcast|'
@@ -910,6 +959,8 @@ class ReaderApiTest(ApiTest):
         EntryFactory.create(feed=feed2, user=user, starred=True)
         EntryFactory.create(feed=feed2, user=user, starred=True)
         EntryFactory.create(feed=feed2, user=user, broadcast=True)
+        if user.es:
+            es.client.indices.refresh(es.user_index(user.pk))
 
         data = {'T': post_token}
         response = self.client.post(url, data, **clientlogin(token))
@@ -922,82 +973,137 @@ class ReaderApiTest(ApiTest):
         data['s'] = u'feed/{0}'.format(feed2.url)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
-        self.assertEqual(Entry.objects.filter(read=True).count(), 4)
-        self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
+        if user.es:
+            counts = es.entries(user, per_page=0)['facets']
+            read = counts['all']['count'] - counts['unread']['count']
+        else:
+            read = Entry.objects.filter(read=True).count()
+            self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
+            for f in Feed.objects.all():
+                self.assertEqual(f.entries.filter(read=False).count(),
+                                 f.unread_count)
 
-        for f in Feed.objects.all():
-            self.assertEqual(f.entries.filter(read=False).count(),
-                             f.unread_count)
+        self.assertEqual(read, 4)
 
-        entry.read = False
-        entry.save(update_fields=['read'])
-        feed2.update_unread_count()
-        self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 1)
+        if user.es:
+            entry.update(read=False)
+        else:
+            entry.read = False
+            entry.save(update_fields=['read'])
+            feed2.update_unread_count()
+            self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 1)
 
         data['s'] = u'user/-/label/{0}'.format(feed2.category.name)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
-        self.assertEqual(Entry.objects.filter(read=True).count(), 4)
-        self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
 
-        for f in Feed.objects.all():
-            self.assertEqual(f.entries.filter(read=False).count(),
-                             f.unread_count)
+        if user.es:
+            counts = es.entries(user, per_page=0)['facets']
+            read = counts['all']['count'] - counts['unread']['count']
+        else:
+            read = Entry.objects.filter(read=True).count()
+            for f in Feed.objects.all():
+                self.assertEqual(f.entries.filter(read=False).count(),
+                                 f.unread_count)
+            self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
+        self.assertEqual(read, 4)
 
         data['s'] = u'user/{0}/label/{1}'.format(user.pk, feed2.category.name)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
-        self.assertEqual(Entry.objects.filter(read=True).count(), 4)
-        self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
 
-        for f in Feed.objects.all():
-            self.assertEqual(f.entries.filter(read=False).count(),
-                             f.unread_count)
+        if user.es:
+            counts = es.entries(user, per_page=0)['facets']
+            read = counts['all']['count'] - counts['unread']['count']
+        else:
+            read = Entry.objects.filter(read=True).count()
+            self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
+            for f in Feed.objects.all():
+                self.assertEqual(f.entries.filter(read=False).count(),
+                                 f.unread_count)
+        self.assertEqual(read, 4)
 
         data['s'] = 'user/-/state/com.google/starred'
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
-        self.assertEqual(Entry.objects.filter(read=True).count(), 5)
-        self.assertEqual(Feed.objects.get(pk=feed.pk).unread_count, 5)
-        self.assertEqual(Entry.objects.filter(starred=True,
-                                              read=False).count(), 0)
 
-        for feed in Feed.objects.all():
-            self.assertEqual(feed.entries.filter(read=False).count(),
-                             feed.unread_count)
+        if user.es:
+            counts = es.entries(user, per_page=0)['facets']
+            read = counts['all']['count'] - counts['unread']['count']
+            counts = es.entries(user, per_page=0, only_starred=True)['facets']
+            starred_unread = counts['starred_unread']['count']
+        else:
+            read = Entry.objects.filter(read=True).count()
+            self.assertEqual(Feed.objects.get(pk=feed.pk).unread_count, 5)
+            starred_unread = Entry.objects.filter(starred=True,
+                                                  read=False).count()
+            for feed in Feed.objects.all():
+                self.assertEqual(feed.entries.filter(read=False).count(),
+                                 feed.unread_count)
+        self.assertEqual(starred_unread, 0)
+        self.assertEqual(read, 5)
 
         data['s'] = 'user/-/state/com.google/reading-list'
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
-        self.assertEqual(Entry.objects.filter(read=False).count(), 0)
-        for feed in Feed.objects.all():
-            self.assertEqual(feed.unread_count, 0)
-            self.assertEqual(feed.entries.filter(read=False).count(), 0)
+        if user.es:
+            count = es.entries(user, per_page=0,
+                               only_unread=True)['facets']['unread']['count']
+        else:
+            count = Entry.objects.filter(read=False).count()
+            for feed in Feed.objects.all():
+                self.assertEqual(feed.unread_count, 0)
+                self.assertEqual(feed.entries.filter(read=False).count(), 0)
+        self.assertEqual(count, 0)
 
         data['s'] = 'user/-/state/com.google/read'  # yo dawg
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
-        self.assertEqual(Entry.objects.filter(read=False).count(), 0)
+        if user.es:
+            count = es.entries(user, per_page=0,
+                               only_unread=True)['facets']['unread']['count']
+        else:
+            count = Entry.objects.filter(read=False).count()
+        self.assertEqual(count, 0)
 
         data['s'] = 'user/{0}/state/com.google/read'.format(user.pk)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
-        self.assertEqual(Entry.objects.filter(read=False).count(), 0)
+        if user.es:
+            count = es.entries(user, per_page=0,
+                               only_unread=True)['facets']['unread']['count']
+        else:
+            count = Entry.objects.filter(read=False).count()
+        self.assertEqual(count, 0)
 
-        Entry.objects.update(read=False)
-        for feed in Feed.objects.all():
-            feed.update_unread_count()
+        if user.es:
+            entries = es.entries(user, per_page=100)['hits']
+            for entry in entries:
+                entry.update(read=False)
+        else:
+            Entry.objects.update(read=False)
+            for feed in Feed.objects.all():
+                feed.update_unread_count()
 
-        data['ts'] = int(time.mktime(
-            list(Entry.objects.all()[:5])[-1].date.timetuple()
-        )) * 1000000
+        if user.es:
+            entry = entries[:5][-1]
+        else:
+            entry = list(Entry.objects.all()[:5])[-1]
+
+        data['ts'] = int(time.mktime(entry.date.timetuple())) * 1000000
         data['s'] = 'user/-/state/com.google/reading-list'
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(1 if user.es else 2):
             self.client.post(url, data, **clientlogin(token))
-        self.assertEqual(Entry.objects.filter(read=False).count(), 5)
-        for feed in Feed.objects.all():
-            self.assertEqual(feed.entries.filter(read=False).count(),
-                             feed.unread_count)
+
+        if user.es:
+            unread = es.entries(user, per_page=0,
+                                only_unread=True)['facets']['unread']['count']
+        else:
+            unread = Entry.objects.filter(read=False).count()
+            for feed in Feed.objects.all():
+                self.assertEqual(feed.entries.filter(read=False).count(),
+                                 feed.unread_count)
+        self.assertEqual(unread, 5)
 
         data['ts'] = 'foo'
         response = self.client.post(url, data, **clientlogin(token))
@@ -1126,6 +1232,11 @@ class ReaderApiTest(ApiTest):
         self.assertIsNotNone(feed2.category)
         feed2.delete()
 
+        EntryFactory.create(user=user, feed=feed)
+
+        if user.es:
+            [entry] = es.entries(user, feed=feed.pk)['hits']
+
         # Unsubscribing
         data = {
             'T': post_token,
@@ -1135,6 +1246,9 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(Feed.objects.count(), 0)
+
+        if user.es:
+            self.assertEqual(len(es.entries(user)['hits']), 0)
 
         data['ac'] = 'test'
         response = self.client.post(url, data, **clientlogin(token))
@@ -1194,13 +1308,23 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(user.categories.count(), 0)
 
         cat = CategoryFactory.create(user=user, name=u'Other Cat')
-        FeedFactory.create(user=user, category=cat)
+        feed = FeedFactory.create(user=user, category=cat)
+        EntryFactory.create(user=user, feed=feed)
+
+        if user.es:
+            [entry] = es.entries(user)['hits']
+            self.assertEqual(entry.category.pk, cat.pk)
+
         del data['t']
         data['s'] = 'user/{0}/label/Other Cat'.format(user.pk)
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         self.assertEqual(user.categories.count(), 0)
         self.assertEqual(user.feeds.count(), 1)
+
+        if user.es:
+            [entry] = es.entries(user)['hits']
+            self.assertIs(entry.category, None)
 
     def test_rename_tag(self, get):
         user = UserFactory.create()

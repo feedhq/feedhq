@@ -6,6 +6,7 @@ from six.moves.urllib import parse as urlparse
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 
@@ -13,6 +14,7 @@ import floppyforms as forms
 
 from ratelimitbackend.forms import AuthenticationForm
 
+from .. import es
 from .models import User
 
 
@@ -118,7 +120,6 @@ class PocketForm(ServiceForm):
         response = requests.post(url, data=json.dumps(data),
                                  headers={'Content-Type': 'application/json',
                                           'X-Accept': 'application/json'})
-        print(response, response.text)
         code = response.json()['code']
         self.request.session['pocket_code'] = code
         self.response = redirect(
@@ -217,5 +218,9 @@ class DeleteAccountForm(forms.Form):
                                           'incorrect.'))
         return password
 
+    @transaction.atomic
     def save(self):
+        pk = self.user.pk
         self.user.delete()
+        if self.user.es:
+            es.client.indices.delete(es.user_index(pk))

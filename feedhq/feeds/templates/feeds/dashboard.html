@@ -19,7 +19,7 @@
 		{% for cat in categories %}
 			<div class="category">
 				{% if cat.slug %}
-					<h3><a href="{% url "feeds:category" cat.slug %}">{{ cat }}</a> <a class="cat {{ cat.color }}" href="{% url "feeds:unread_category" cat.slug %}">{{ cat.unread_count|default:"0" }}</a></h3>
+					<h3><a href="{% url "feeds:category" cat.slug %}">{{ cat.name }}</a> <a class="cat {{ cat.color }}" href="{% url "feeds:unread_category" cat.slug %}">{{ cat.unread_count|default:"0" }}</a></h3>
 				{% else %}
 					<br>
 				{% endif %}

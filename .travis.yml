@@ -3,15 +3,24 @@ python: "3.3"
 
 services:
   - redis-server
+  - elasticsearch
 
 env:
   - TOXENV=py27
   - TOXENV=py33
   - TOXENV=lint
   - TOXENV=coverage
+  - TOXENV=py27-es
+  - TOXENV=py33-es
 
 install:
   - pip install tox
+
+before_script:
+  - wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.1.1.deb
+  - service elasticsearch stop
+  - dpkg -i elasticsearch-1.1.1.deb
+  - service elasticsearch start
 
 script: "./.travis.sh"
 

@@ -12,17 +12,18 @@ from requests.packages.urllib3.exceptions import (LocationParseError,
 from rq.timeouts import JobTimeoutException
 from six.moves.http_client import IncompleteRead
 
+from feedhq import es
 from feedhq.feeds.models import Favicon, UniqueFeed, Feed, Entry
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT, epoch_to_utc
 from feedhq.utils import get_redis_connection
 
-from .factories import FeedFactory
+from .factories import FeedFactory, UserFactory
 from .test_feeds import data_file, responses
-from . import ClearRedisTestCase, patch_job
+from . import TestCase, patch_job
 
 
-class UpdateTests(ClearRedisTestCase):
+class UpdateTests(TestCase):
     @patch("requests.get")
     def test_parse_error(self, get):
         get.side_effect = LocationParseError("Failed to parse url")
@@ -108,8 +109,12 @@ class UpdateTests(ClearRedisTestCase):
     def test_content_handling(self, get):
         """The content section overrides the subtitle section"""
         get.return_value = responses(200, 'atom10.xml')
-        FeedFactory.create(name='Content', url='atom10.xml', user__ttl=99999)
-        entry = Entry.objects.get()
+        user = UserFactory.create(ttl=99999)
+        FeedFactory.create(name='Content', url='atom10.xml', user=user)
+        if user.es:
+            entry = es.entries(user)['hits'][0]
+        else:
+            entry = Entry.objects.get()
         self.assertEqual(entry.sanitized_content(),
                          "<div>Watch out for <span> nasty tricks</span></div>")
 
@@ -276,15 +281,26 @@ class UpdateTests(ClearRedisTestCase):
     @patch('requests.get')
     def test_no_link(self, get):
         get.return_value = responses(200, 'rss20.xml')
-        feed = FeedFactory.create(user__ttl=99999)
+        user = UserFactory.create(ttl=99999)
+        feed = FeedFactory.create(user=user, category__user=user)
         update_feed(feed.url)
-        self.assertEqual(Entry.objects.count(), 1)
+
+        if user.es:
+            count = es.entries(user, per_page=0)['facets']['all']['count']
+        else:
+            count = Entry.objects.count()
+        self.assertEqual(count, 1)
 
         get.return_value = responses(200, 'no-link.xml')
         feed.url = 'no-link.xml'
         feed.save(update_fields=['url'])
         update_feed(feed.url)
-        self.assertEqual(Entry.objects.count(), 1)
+
+        if user.es:
+            count = es.entries(user, per_page=0)['facets']['all']['count']
+        else:
+            count = Entry.objects.count()
+        self.assertEqual(count, 1)
 
     @patch('requests.get')
     def test_task_timeout_handling(self, get):
@@ -322,7 +338,7 @@ class UpdateTests(ClearRedisTestCase):
         post.assert_not_called()
 
 
-class FaviconTests(ClearRedisTestCase):
+class FaviconTests(TestCase):
     @patch("requests.get")
     def test_declared_favicon(self, get):
         get.return_value = responses(304)

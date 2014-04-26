@@ -2,10 +2,13 @@ import os
 
 from io import BytesIO as BaseBytesIO
 
-from django.test import TestCase
+from django.conf import settings
+from django.test import TestCase as BaseTestCase
+from django_webtest import WebTest as BaseWebTest
 from rache import job_key
 from requests import Response
 
+from feedhq import es
 from feedhq.utils import get_redis_connection
 
 
@@ -41,11 +44,35 @@ def responses(code, path=None, redirection=None, data=None,
     return response
 
 
-class ClearRedisTestCase(TestCase):
+class ESTests(object):
+    @classmethod
+    def tearDownClass(cls):  # noqa
+        super(ESTests, cls).tearDownClass()
+        delete_es_indices()
+
+    @classmethod
+    def setUpClass(cls):  # noqa
+        super(ESTests, cls).setUpClass()
+        delete_es_indices()
+
+
+class TestCase(ESTests, BaseTestCase):
     def tearDown(self):  # noqa
         """Clean up the rache:* redis keys"""
         get_redis_connection().flushdb()
     setUp = tearDown
+
+
+class WebTest(ESTests, BaseWebTest):
+    pass
+
+
+def delete_es_indices():
+    indices = es.client.indices.status('')['indices'].keys()
+    for index in indices:
+        if index.startswith(settings.ES_INDEX_PREFIX):
+            es.client.indices.delete(index)
+    es.wait_for_yellow()
 
 
 def patch_job(name, **kwargs):

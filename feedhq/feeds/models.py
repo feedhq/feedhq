@@ -22,6 +22,7 @@ from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.template.defaultfilters import slugify
 from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_bytes, python_2_unicode_compatible
 from django.utils.html import format_html
 from django.utils.text import unescape_entities
@@ -43,6 +44,7 @@ from .tasks import (update_feed, update_favicon, store_entries,
                     ensure_subscribed)
 from .utils import (FAVICON_FETCHER, USER_AGENT, is_feed, epoch_to_utc,
                     get_job, JobNotFound)
+from .. import es
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
 from ..utils import get_redis_connection
@@ -81,12 +83,6 @@ def enqueue_favicon(url, force_update=False):
             queue='favicons')
 
 
-class CategoryManager(models.Manager):
-    def with_unread_counts(self):
-        return self.values('id', 'name', 'slug', 'color').annotate(
-            unread_count=models.Sum('feeds__unread_count'))
-
-
 @python_2_unicode_compatible
 class Category(models.Model):
     """Used to sort our feeds"""
@@ -100,8 +96,6 @@ class Category(models.Model):
     # Categories have nice cute colors
     color = models.CharField(_('Color'), max_length=50, choices=COLORS,
                              default=random_color)
-
-    objects = CategoryManager()
 
     def __str__(self):
         return u'%s' % self.name
@@ -589,7 +583,7 @@ class Feed(JobDataMixin, models.Model):
         ordering = ('name',)
 
     def get_absolute_url(self):
-        return reverse('feeds:feed', args=[self.id])
+        return reverse('feeds:feed', args=[self.pk])
 
     def save(self, *args, **kwargs):
         feed_created = self.pk is None
@@ -647,8 +641,156 @@ class EntryManager(models.Manager):
         return self.filter(read=False).count()
 
 
+class BaseEntry(object):
+    ELEMENTS = (
+        feedparser._HTMLSanitizer.acceptable_elements |
+        feedparser._HTMLSanitizer.mathml_elements |
+        feedparser._HTMLSanitizer.svg_elements |
+        set(['iframe', 'object', 'embed', 'script'])
+    ) - set(['font'])
+    ATTRIBUTES = (
+        feedparser._HTMLSanitizer.acceptable_attributes |
+        feedparser._HTMLSanitizer.mathml_attributes |
+        feedparser._HTMLSanitizer.svg_attributes
+    ) - set(['id', 'class'])
+    CSS_PROPERTIES = feedparser._HTMLSanitizer.acceptable_css_properties
+
+    @property
+    def hex_pk(self):
+        value = hex(struct.unpack("L", struct.pack("l", self.pk))[0])
+        if value.endswith("L"):
+            value = value[:-1]
+        return value[2:].zfill(16)
+
+    @property
+    def base64_url(self):
+        return base64.b64encode(self.link.encode('utf-8'))
+
+    @property
+    def content(self):
+        if not hasattr(self, '_content'):
+            if self.subtitle:
+                xml = lxml.html.fromstring(self.subtitle)
+                try:
+                    xml.make_links_absolute(self.feed.url)
+                except ValueError as e:
+                    if e.args[0] != 'Invalid IPv6 URL':
+                        raise
+                self._content = lxml.html.tostring(xml).decode('utf-8')
+            else:
+                self._content = self.subtitle
+        return self._content
+
+    def sanitized_title(self):
+        if self.title:
+            return unescape_entities(bleach.clean(self.title, tags=[],
+                                                  strip=True))
+        return _('(No title)')
+
+    def sanitized_content(self):
+        return bleach.clean(
+            self.content,
+            tags=self.ELEMENTS,
+            attributes=self.ATTRIBUTES,
+            styles=self.CSS_PROPERTIES,
+            strip=True,
+        )
+
+    def sanitized_nomedia_content(self):
+        return bleach.clean(
+            self.content,
+            tags=self.ELEMENTS - set(['img', 'audio', 'video', 'iframe',
+                                      'object', 'embed', 'script', 'source']),
+            attributes=self.ATTRIBUTES,
+            styles=self.CSS_PROPERTIES,
+            strip=True,
+        )
+
+    def get_absolute_url(self):
+        return reverse('feeds:item', args=[self.pk])
+
+    def link_domain(self):
+        return urlparse.urlparse(self.link).netloc
+
+    def read_later_domain(self):
+        netloc = urlparse.urlparse(self.read_later_url).netloc
+        return netloc.replace('www.', '')
+
+    def tweet(self):
+        return u"{title} — {link}".format(
+            title=self.title, link=self.link)
+
+    def read_later(self):
+        """Adds this item to the user's read list"""
+        user = self.user
+        if not user.read_later:
+            return
+        url = getattr(self, 'add_to_%s' % self.user.read_later)()
+        if url is None:
+            return
+        if self.user.es:
+            self.update(read_later_url=url)
+        else:
+            self.read_later_url = url
+            self.save(update_fields=['read_later_url'])
+
+    def add_to_readitlater(self):
+        url = 'https://readitlaterlist.com/v2/add'
+        data = json.loads(self.user.read_later_credentials)
+        data.update({
+            'apikey': settings.API_KEYS['readitlater'],
+            'url': self.link,
+            'title': self.title,
+        })
+        # The readitlater API doesn't return anything back
+        requests.post(url, data=data)
+
+    def add_to_pocket(self):
+        url = 'https://getpocket.com/v3/add'
+        data = json.loads(self.user.read_later_credentials)
+        data.update({
+            'consumer_key': settings.POCKET_CONSUMER_KEY,
+            'url': self.link,
+        })
+        response = requests.post(url, data=json.dumps(data),
+                                 headers={'Content-Type': 'application/json'})
+        url = 'https://getpocket.com/a/read/{0}'.format(
+            response.json()['item']['item_id']
+        )
+        return url
+
+    def add_to_readability(self):
+        url = 'https://www.readability.com/api/rest/v1/bookmarks'
+        auth = self.oauth_client('readability')
+        response = requests.post(url, auth=auth, data={'url': self.link})
+        response = requests.get(response.headers['location'], auth=auth)
+        url = 'https://www.readability.com/articles/%s'
+        url = url % response.json()['article']['id']
+        return url
+
+    def add_to_instapaper(self):
+        url = 'https://www.instapaper.com/api/1/bookmarks/add'
+        auth = self.oauth_client('instapaper')
+        response = requests.post(url, auth=auth, data={'url': self.link})
+        url = 'https://www.instapaper.com/read/%s'
+        url = url % response.json()[0]['bookmark_id']
+        return url
+
+    def oauth_client(self, service):
+        service_settings = getattr(settings, service.upper())
+        creds = json.loads(self.user.read_later_credentials)
+        auth = OAuth1(service_settings['CONSUMER_KEY'],
+                      service_settings['CONSUMER_SECRET'],
+                      creds['oauth_token'],
+                      creds['oauth_token_secret'])
+        return auth
+
+    def current_year(self):
+        return self.date.year == timezone.now().year
+
+
 @python_2_unicode_compatible
-class Entry(models.Model):
+class Entry(BaseEntry, models.Model):
     """An entry is a cached feed item"""
     feed = models.ForeignKey(Feed, verbose_name=_('Feed'), null=True,
                              blank=True, related_name='entries')
@@ -683,148 +825,78 @@ class Entry(models.Model):
             ('user', 'broadcast'),
         )
 
-    ELEMENTS = (
-        feedparser._HTMLSanitizer.acceptable_elements |
-        feedparser._HTMLSanitizer.mathml_elements |
-        feedparser._HTMLSanitizer.svg_elements |
-        set(['iframe', 'object', 'embed', 'script'])
-    ) - set(['font'])
-    ATTRIBUTES = (
-        feedparser._HTMLSanitizer.acceptable_attributes |
-        feedparser._HTMLSanitizer.mathml_attributes |
-        feedparser._HTMLSanitizer.svg_attributes
-    ) - set(['id', 'class'])
-    CSS_PROPERTIES = feedparser._HTMLSanitizer.acceptable_css_properties
+    def __str__(self):
+        return u'%s' % self.title
+
+    def serialize(self):
+        data = {
+            '_type': 'entries',
+            '_id': self.pk,
+            'timestamp': self.date,
+            'title': self.title,
+            'raw_title': self.title,
+            'author': self.author,
+            'content': self.subtitle,
+            'link': self.link,
+            'guid': self.guid or self.link or self.title,
+            'read': self.read,
+            'read_later_url': self.read_later_url,
+            'starred': self.starred,
+            'broadcast': self.broadcast,
+            'tags': [],
+        }
+        if self.feed_id:
+            data['feed'] = self.feed_id
+        if self.feed and self.feed.category_id:
+            data['category'] = self.feed.category_id
+        return data
+
+    def index(self):
+        name = es.user_index(self.user_id)
+        data = es.client.index(name, doc_type='entries', body=self.serialize(),
+                               id=self.pk, params={'refresh': True})
+        data['_source'] = self.serialize()
+        data['_id'] = int(data['_id'])
+        return EsEntry(data)
+
+
+@python_2_unicode_compatible
+class EsEntry(BaseEntry):
+    __slots__ = (
+        'feed', 'category', 'guid', 'tags', 'read', 'timestamp', 'author',
+        'broadcast', 'date', 'link', 'title', 'starred',
+        'read_later_url', 'pk', 'subtitle', '_content', 'user',
+    )
+
+    def __init__(self, entry):
+        if isinstance(entry['_id'], six.string_types):
+            assert entry['_id'].isdigit()
+            entry['_id'] = int(entry['_id'])
+
+        self.pk = entry['_id']
+        self.subtitle = entry['_source'].pop('content', None)
+        for key, value in entry['_source'].items():
+            setattr(self, key, value)
+        if hasattr(self, 'timestamp'):
+            if isinstance(self.timestamp, six.string_types):
+                date = parse_datetime(self.timestamp)
+            else:
+                date = self.timestamp
+            self.date = date
 
     def __str__(self):
         return u'%s' % self.title
 
-    @property
-    def hex_pk(self):
-        value = hex(struct.unpack("L", struct.pack("l", self.pk))[0])
-        if value.endswith("L"):
-            value = value[:-1]
-        return value[2:].zfill(16)
+    def update(self, refresh=False, **attrs):
+        for key, value in attrs.items():
+            setattr(self, key, value)
+        es.client.update(es.user_index(self.user.pk), doc_type='entries',
+                         id=self.pk, body={'doc': attrs},
+                         params={'refresh': refresh})
 
-    @property
-    def base64_url(self):
-        return base64.b64encode(self.link.encode('utf-8'))
-
-    def sanitized_title(self):
-        if self.title:
-            return unescape_entities(bleach.clean(self.title, tags=[],
-                                                  strip=True))
-        return _('(No title)')
-
-    @property
-    def content(self):
-        if not hasattr(self, '_content'):
-            if self.subtitle:
-                xml = lxml.html.fromstring(self.subtitle)
-                try:
-                    xml.make_links_absolute(self.feed.url)
-                except ValueError as e:
-                    if e.args[0] != 'Invalid IPv6 URL':
-                        raise
-                self._content = lxml.html.tostring(xml).decode('utf-8')
-            else:
-                self._content = self.subtitle
-        return self._content
-
-    def sanitized_content(self):
-        return bleach.clean(
-            self.content,
-            tags=self.ELEMENTS,
-            attributes=self.ATTRIBUTES,
-            styles=self.CSS_PROPERTIES,
-            strip=True,
-        )
-
-    def sanitized_nomedia_content(self):
-        return bleach.clean(
-            self.content,
-            tags=self.ELEMENTS - set(['img', 'audio', 'video', 'iframe',
-                                      'object', 'embed', 'script', 'source']),
-            attributes=self.ATTRIBUTES,
-            styles=self.CSS_PROPERTIES,
-            strip=True,
-        )
-
-    def get_absolute_url(self):
-        return reverse('feeds:item', args=[self.id])
-
-    def link_domain(self):
-        return urlparse.urlparse(self.link).netloc
-
-    def read_later_domain(self):
-        netloc = urlparse.urlparse(self.read_later_url).netloc
-        return netloc.replace('www.', '')
-
-    def tweet(self):
-        return u"{title} — {link}".format(
-            title=self.title, link=self.link)
-
-    def read_later(self):
-        """Adds this item to the user's read list"""
-        user = self.user
-        if not user.read_later:
-            return
-        getattr(self, 'add_to_%s' % self.user.read_later)()
-
-    def add_to_readitlater(self):
-        url = 'https://readitlaterlist.com/v2/add'
-        data = json.loads(self.user.read_later_credentials)
-        data.update({
-            'apikey': settings.API_KEYS['readitlater'],
-            'url': self.link,
-            'title': self.title,
-        })
-        # The readitlater API doesn't return anything back
-        requests.post(url, data=data)
-
-    def add_to_pocket(self):
-        url = 'https://getpocket.com/v3/add'
-        data = json.loads(self.user.read_later_credentials)
-        data.update({
-            'consumer_key': settings.POCKET_CONSUMER_KEY,
-            'url': self.link,
-        })
-        response = requests.post(url, data=json.dumps(data),
-                                 headers={'Content-Type': 'application/json'})
-        self.read_later_url = 'https://getpocket.com/a/read/{0}'.format(
-            response.json()['item']['item_id']
-        )
-        self.save(update_fields=['read_later_url'])
-
-    def add_to_readability(self):
-        url = 'https://www.readability.com/api/rest/v1/bookmarks'
-        auth = self.oauth_client('readability')
-        response = requests.post(url, auth=auth, data={'url': self.link})
-        response = requests.get(response.headers['location'], auth=auth)
-        url = 'https://www.readability.com/articles/%s'
-        self.read_later_url = url % response.json()['article']['id']
-        self.save(update_fields=['read_later_url'])
-
-    def add_to_instapaper(self):
-        url = 'https://www.instapaper.com/api/1/bookmarks/add'
-        auth = self.oauth_client('instapaper')
-        response = requests.post(url, auth=auth, data={'url': self.link})
-        url = 'https://www.instapaper.com/read/%s'
-        url = url % response.json()[0]['bookmark_id']
-        self.read_later_url = url
-        self.save(update_fields=['read_later_url'])
-
-    def oauth_client(self, service):
-        service_settings = getattr(settings, service.upper())
-        creds = json.loads(self.user.read_later_credentials)
-        auth = OAuth1(service_settings['CONSUMER_KEY'],
-                      service_settings['CONSUMER_SECRET'],
-                      creds['oauth_token'],
-                      creds['oauth_token_secret'])
-        return auth
-
-    def current_year(self):
-        return self.date.year == timezone.now().year
+    def delete(self):
+        es.client.delete(es.user_index(self.user.pk), doc_type='entries',
+                         id=self.pk)
 
 
 def pubsubhubbub_update(notification, request, links, **kwargs):

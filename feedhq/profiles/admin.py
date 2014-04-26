@@ -20,7 +20,7 @@ class ProfileUserAdmin(UserAdmin):
                                   'entries_per_page',
                                   'read_later', 'read_later_credentials',
                                   'sharing_twitter', 'sharing_gplus',
-                                  'sharing_email', 'ttl')}),
+                                  'sharing_email', 'ttl', 'es')}),
     )
     list_display = ('username', 'email', 'is_staff', 'is_suspended')
     list_filter = UserAdmin.list_filter + ('is_suspended',)

@@ -31,5 +31,9 @@ INSTAPAPER = READABILITY = {
 if '-v2' not in sys.argv:
     LOGGING['loggers']['ratelimitbackend']['level'] = 'ERROR'
     LOGGING['loggers']['feedhq']['level'] = 'ERROR'
+    LOGGING['loggers']['elasticsearch']['level'] = 'ERROR'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media')
+
+USE_ES = os.environ.get('USE_ES', False)
+ES_INDEX_PREFIX = 'test-feedhq'

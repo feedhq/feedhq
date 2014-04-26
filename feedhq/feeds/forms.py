@@ -14,6 +14,7 @@ import requests
 
 from .models import Category, Feed
 from .utils import USER_AGENT, is_feed
+from .. import es
 from ..utils import get_redis_connection
 
 
@@ -184,11 +185,12 @@ class ReadForm(forms.Form):
         initial='read-all',
     )
 
-    def __init__(self, entries=None, feed=None, category=None, user=None,
-                 pages_only=False, *args, **kwargs):
+    def __init__(self, entries=None, es_kwargs=None, feed=None, category=None,
+                 user=None, pages_only=False, *args, **kwargs):
         if entries is not None:
             entries = entries.filter(read=False)
         self.entries = entries
+        self.es_kwargs = es_kwargs
         self.feed = feed
         self.category = category
         self.user = user
@@ -201,28 +203,57 @@ class ReadForm(forms.Form):
         return json.loads(self.cleaned_data['entries'])
 
     def save(self):
-        if self.pages_only:
-            # pages is a list of IDs to mark as read
-            entries = self.user.entries.filter(
-                pk__in=self.cleaned_data['entries'])
-        else:
-            entries = self.entries
-        pks = list(entries.values_list('pk', flat=True))
-        entries.update(read=True)
-        if self.feed is not None:
-            feeds = Feed.objects.filter(pk=self.feed.pk)
-        elif self.category is not None:
-            feeds = self.category.feeds.all()
-        else:
-            feeds = self.user.feeds.all()
+        if self.user.es:
+            index = es.user_index(self.user.pk)
+            if self.pages_only:
+                pks = self.cleaned_data['entries']
+            else:
+                # Fetch all IDs for current query.
+                self.es_kwargs['only_unread'] = True
+                self.es_kwargs.pop('page')
+                self.es_kwargs.pop('per_page')
+                # 2-step fetch: 1st to get the count, 2nd to get all ids
+                entries = es.entries(self.user, annotate_results=False,
+                                     per_page=0, **self.es_kwargs)
+                size = entries['facets']['unread']['count']
+                entries = es.entries(self.user, annotate_results=False,
+                                     include=['_id'], per_page=size,
+                                     include_facets=False, **self.es_kwargs)
+                pks = [e.pk for e in entries['hits']]
 
-        if self.pages_only:
-            # TODO combine code with mark-all-as-read?
-            for feed in feeds:
-                Feed.objects.filter(pk=feed.pk).update(
-                    unread_count=feed.entries.filter(read=False).count())
+            ops = [{
+                '_op_type': 'update',
+                '_index': index,
+                '_type': 'entries',
+                '_id': pk,
+                'doc': {'read': True},
+            } for pk in pks]
+            es.bulk(ops, raise_on_error=True)
+            es.client.indices.refresh(index)
+
         else:
-            feeds.update(unread_count=0)
+            if self.pages_only:
+                # pages is a list of IDs to mark as read
+                entries = self.user.entries.filter(
+                    pk__in=self.cleaned_data['entries'])
+            else:
+                entries = self.entries
+            pks = list(entries.values_list('pk', flat=True))
+            entries.update(read=True)
+            if self.feed is not None:
+                feeds = Feed.objects.filter(pk=self.feed.pk)
+            elif self.category is not None:
+                feeds = self.category.feeds.all()
+            else:
+                feeds = self.user.feeds.all()
+
+            if self.pages_only:
+                # TODO combine code with mark-all-as-read?
+                for feed in feeds:
+                    Feed.objects.filter(pk=feed.pk).update(
+                        unread_count=feed.entries.filter(read=False).count())
+            else:
+                feeds.update(unread_count=0)
         return pks
 
 
@@ -244,9 +275,21 @@ class UndoReadForm(forms.Form):
         return json.loads(self.cleaned_data['pks'])
 
     def save(self):
-        self.user.entries.filter(pk__in=self.cleaned_data['pks']).update(
-            read=False)
-        return len(self.cleaned_data['pks'])
+        pks = self.cleaned_data['pks']
+        if self.user.es:
+            index = es.user_index(self.user.pk)
+            ops = [{
+                '_op_type': 'update',
+                '_index': index,
+                '_type': 'entries',
+                '_id': pk,
+                'doc': {'read': False},
+            } for pk in pks]
+            es.bulk(ops, raise_on_error=True)
+            es.client.indices.refresh(index)
+        else:
+            self.user.entries.filter(pk__in=pks).update(read=False)
+        return len(pks)
 
 
 class SubscriptionForm(forms.Form):

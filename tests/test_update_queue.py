@@ -6,12 +6,14 @@ from mock import patch
 import feedparser
 import times
 
+from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
 from django.utils import timezone
 from django_push.subscriber.models import Subscription
 from rache import pending_jobs, delete_job
 
+from feedhq import es
 from feedhq.feeds.models import UniqueFeed, timedelta_to_seconds
 from feedhq.feeds.tasks import store_entries
 from feedhq.feeds.utils import USER_AGENT
@@ -19,10 +21,10 @@ from feedhq.profiles.models import User
 from feedhq.utils import get_redis_connection
 
 from .factories import FeedFactory, UserFactory
-from . import responses, ClearRedisTestCase, data_file, patch_job
+from . import responses, TestCase, data_file, patch_job
 
 
-class UpdateTests(ClearRedisTestCase):
+class UpdateTests(TestCase):
     def test_update_feeds(self):
         u = UniqueFeed.objects.create(
             url='http://example.com/feed0',
@@ -122,7 +124,8 @@ class UpdateTests(ClearRedisTestCase):
 
     @patch("requests.get")
     def test_update_call(self, get):
-        u = User.objects.create_user('foo', 'foo@example.com', 'pass')
+        u = User.objects.create_user('foo', 'foo@example.com', 'pass',
+                                     es=settings.USE_ES)
         c = u.categories.create(name='foo', slug='foo')
         get.return_value = responses(304)
         c.feeds.create(url='http://example.com/test', user=c.user)
@@ -206,11 +209,17 @@ class UpdateTests(ClearRedisTestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         ))
-        with self.assertNumQueries(5):  # insert
+        with self.assertNumQueries(30 + 2 if feed.user.es else 5):  # insert
             store_entries(feed.url, data)
 
-        self.assertEqual(feed.entries.count(), 0)
-        self.assertEqual(feed2.entries.count(), 30)
+        if feed.user.es:
+            count = es.counts(feed.user, [feed.pk])[str(feed.pk)]['count']
+            count2 = es.counts(feed2.user, [feed2.pk])[str(feed2.pk)]['count']
+        else:
+            count = feed.entries.count()
+            count2 = feed2.entries.count()
+        self.assertEqual(count, 0)
+        self.assertEqual(count2, 30)
         last_updates = feed2.user.last_updates()
         self.assertEqual(list(last_updates.keys()), [feed2.url])
 
@@ -226,9 +235,15 @@ class UpdateTests(ClearRedisTestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
 
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(2 + len(data) if feed.user.es else 5):
             store_entries(feed.url, data)
-        self.assertEqual(feed.entries.count(), 4)
+
+        if feed.user.es:
+            count = es.counts(feed.user, [feed.pk],
+                              only_unread=False)[str(feed.pk)]['count']
+        else:
+            count = feed.entries.count()
+        self.assertEqual(count, 4)
 
         data = list(filter(
             None,
@@ -237,7 +252,12 @@ class UpdateTests(ClearRedisTestCase):
         ))
         with self.assertNumQueries(2):
             store_entries(feed.url, data)
-        self.assertEqual(feed.entries.count(), 4)
+        if feed.user.es:
+            count = es.counts(feed.user, [feed.pk],
+                              only_unread=False)[str(feed.pk)]['count']
+        else:
+            count = feed.entries.count()
+        self.assertEqual(count, 4)
 
         parsed = feedparser.parse(data_file('aldaily-06-30.xml'))
         data = list(filter(
@@ -246,9 +266,15 @@ class UpdateTests(ClearRedisTestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
 
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(8 if feed.user.es else 5):
             store_entries(feed.url, data)
-        self.assertEqual(feed.entries.count(), 10)
+
+        if feed.user.es:
+            count = es.counts(feed.user, [feed.pk],
+                              only_unread=False)[str(feed.pk)]['count']
+        else:
+            count = feed.entries.count()
+        self.assertEqual(count, 10)
 
     @patch("requests.get")
     def test_empty_guid(self, get):
@@ -261,22 +287,34 @@ class UpdateTests(ClearRedisTestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
         feed = FeedFactory.create(user__ttl=99999)
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(3 if feed.user.es else 5):
             store_entries(feed.url, data)
-        self.assertTrue(feed.entries.get().guid)
 
-        feed.entries.all().delete()
+        if feed.user.es:
+            [entry] = es.entries(feed.user)['hits']
+        else:
+            entry = feed.entries.get()
+        self.assertTrue(entry.guid)
+
+        if feed.user.es:
+            entry.delete()
+        else:
+            feed.entries.all().delete()
 
         parsed = feedparser.parse(data_file('no-link-guid.xml'))
         data = list(filter(
             None,
             [UniqueFeed.objects.entry_data(
-                entry, parsed) for entry in parsed.entries]
+                entry, parsed) for entry in parsed.entries]  # noqa
         ))
         feed = FeedFactory.create(user__ttl=99999)
-        with self.assertNumQueries(5):
+        with self.assertNumQueries(3 if feed.user.es else 5):
             store_entries(feed.url, data)
-        self.assertTrue(feed.entries.get().guid)
+        if feed.user.es:
+            [entry] = es.entries(feed.user)['hits']
+        else:
+            entry = feed.entries.get()
+        self.assertTrue(entry.guid)
 
     @patch("requests.get")
     def test_ttl(self, get):
