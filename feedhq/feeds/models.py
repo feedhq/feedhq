@@ -295,7 +295,7 @@ class UniqueFeedManager(models.Manager):
         else:
             subs_key = u'pshb:{0}'.format(url)
             enqueued = cache.get(subs_key)
-            if not enqueued:
+            if not enqueued and not settings.DEBUG:
                 cache.set(subs_key, True, 3600 * 24)
                 enqueue(ensure_subscribed, args=[url, update['hub']],
                         queue='store')
