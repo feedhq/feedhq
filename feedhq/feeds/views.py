@@ -79,6 +79,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
 
     Note: only set category OR feed. Not both at the same time.
     """
+    page = int(page)
     user = request.user
     es_entries = es.manager.user(request.user).defer(
         'content', 'guid', 'tags', 'read_later_url',
@@ -164,7 +165,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
 
     if user.es:
         try:
-            entries = es_entries.fetch(page=int(page),
+            entries = es_entries.fetch(page=page,
                                        per_page=user.entries_per_page,
                                        annotate=user)
         except RequestError as e:
@@ -178,7 +179,20 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
             unread_count = aggs['entries']['unread']['doc_count']
             total_count = aggs['entries']['all']['doc_count']
             user._unread_count = aggs['entries']['all_unread']['doc_count']
-        entries = {'object_list': entries}
+        num_pages = total_count // user.entries_per_page
+        if total_count % user.entries_per_page:
+            num_pages += 1
+        entries = {
+            'object_list': entries,
+            'paginator': {
+                'num_pages': num_pages,
+            },
+            'has_previous': page > 1,
+            'has_next': page < num_pages,
+            'previous_page_number': page - 1,
+            'next_page_number': page + 1,
+            'number': page,
+        }
 
     else:
         unread_count = entries.filter(read=False).count()
