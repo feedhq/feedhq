@@ -314,6 +314,9 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
         },
+        'elasticsearch.trace': {
+            'handlers': ['null'],
+        },
     },
 }
 
