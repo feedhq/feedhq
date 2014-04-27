@@ -3,8 +3,10 @@ import os
 from io import BytesIO as BaseBytesIO
 
 from django.conf import settings
+from django.core.management import call_command
 from django.test import TestCase as BaseTestCase
 from django_webtest import WebTest as BaseWebTest
+from elasticsearch.exceptions import NotFoundError
 from rache import job_key
 from requests import Response
 
@@ -48,12 +50,16 @@ class ESTests(object):
     @classmethod
     def tearDownClass(cls):  # noqa
         super(ESTests, cls).tearDownClass()
-        delete_es_indices()
+        delete_es_index()
 
     @classmethod
     def setUpClass(cls):  # noqa
         super(ESTests, cls).setUpClass()
-        delete_es_indices()
+        try:
+            delete_es_index()
+        except NotFoundError:
+            pass
+        create_es_index()
 
     def counts(self, user, **kwargs):
         es_entries = es.manager.user(user)
@@ -74,11 +80,13 @@ class WebTest(ESTests, BaseWebTest):
     pass
 
 
-def delete_es_indices():
-    indices = es.client.indices.status('')['indices'].keys()
-    for index in indices:
-        if index.startswith(settings.ES_INDEX_PREFIX):
-            es.client.indices.delete(index)
+def delete_es_index():
+    es.client.indices.delete(settings.ES_INDEX)
+    es.wait_for_yellow()
+
+
+def create_es_index():
+    call_command('create_index')
     es.wait_for_yellow()
 
 

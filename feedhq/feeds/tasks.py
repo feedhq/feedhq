@@ -186,7 +186,6 @@ def store_entries(feed_url, entries):
     refresh_updates = defaultdict(list)
     for feed in feeds:
         if feed['user__es']:
-            index_name = es.user_index(feed['user_id'])
             for entry in entries:
                 if (
                     not filter_by_title and
@@ -209,7 +208,8 @@ def store_entries(feed_url, entries):
                 data['_id'] = es.next_id()
                 data['id'] = data['_id']
                 data['_type'] = 'entries'
-                data['_index'] = index_name
+                data['user'] = feed['user_id']
+                data['_index'] = settings.ES_INDEX
                 ops.append(data)
                 refresh_updates[feed['user_id']].append(entry['date'])
         else:

@@ -1,13 +1,13 @@
 import json
 import pytz
 
+from django.conf import settings
 from django.contrib.auth.models import (AbstractBaseUser, UserManager,
                                         PermissionsMixin)
 from django.db import models
 from django.db.models import Max
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from elasticsearch.exceptions import RequestError
 
 from .. import es
 from ..utils import get_redis_connection
@@ -178,43 +178,28 @@ class User(PermissionsMixin, AbstractBaseUser):
             redis.zadd(self.last_update_key, url, value)
         return self.last_updates()
 
-    def create_index(self):
+    def ensure_alias(self):
         name = es.user_index(self.pk)
-        try:
-            es.client.indices.create(name, body={'mappings': {
-                "entries": {
-                    "properties": {
-                        "timestamp": {
-                            "format": "dateOptionalTime",
-                            "type": "date"
-                        },
-                        "guid": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                        },
-                        "raw_title": {
-                            "type": "string",
-                            "index": "not_analyzed",
-                        },
-                    },
-                },
-            }})
-        except RequestError as e:
-            if 'IndexAlreadyExistsException' not in e.error:
-                raise
-        es.wait_for_yellow()
+        es.client.indices.put_alias(
+            index=settings.ES_INDEX,
+            name=name,
+            body={
+                'routing': self.pk,
+                'filter': {'term': {'user': self.pk}},
+            },
+        )
         return name
 
     def save(self, *args, **kwargs):
         ret = super(User, self).save(*args, **kwargs)
         if self.es:
-            self.create_index()
+            self.ensure_alias()
         return ret
 
     def index_entries(self):
         if self.es:
             return
-        name = self.create_index()
+        name = self.ensure_alias()
         for feed in self.feeds.all():
             entries = feed.entries.all()
             docs = [doc.serialize() for doc in entries]

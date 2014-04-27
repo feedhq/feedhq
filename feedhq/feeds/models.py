@@ -849,6 +849,8 @@ class Entry(BaseEntry, models.Model):
             'broadcast': self.broadcast,
             'tags': [],
         }
+        if self.user_id:
+            data['user'] = self.user_id
         if self.feed_id:
             data['feed'] = self.feed_id
         if self.feed and self.feed.category_id:

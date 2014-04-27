@@ -14,7 +14,7 @@ client = Elasticsearch(settings.ES_NODES,
 
 def user_index(user_id):
     assert isinstance(user_id, int), repr(user_id)
-    return '{0}-{1}'.format(settings.ES_INDEX_PREFIX, user_id)
+    return settings.ES_ALIAS_TEMPLATE.format(user_id)
 
 
 def wait_for_yellow():

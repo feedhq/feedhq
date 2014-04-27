@@ -22,7 +22,15 @@ DATABASES = {
 }
 
 ES_NODES = os.environ.get('ES_NODES', 'localhost:9200').split()
-ES_INDEX_PREFIX = os.environ.get('ES_INDEX_PREFIX', 'feedhq')
+ES_INDEX = os.environ.get('ES_INDEX', 'feedhq')
+# Aliases are created for each user for easy filtering / data isolation.
+# Alias template is .format()'ed with the user id as argument.
+ES_ALIAS_TEMPLATE = os.environ.get('ES_ALIAS_TEMPLATE', 'feedhq-{0}')
+# Shards can only be set at index creation time.
+# Over-allocate for future *node* growth.
+ES_SHARDS = int(os.environ.get('ES_SHARDS', 5))
+# Replicas can be changed at any time.
+ES_REPLICAS = int(os.environ.get('ES_REPLICAS', 1))
 
 TIME_ZONE = 'UTC'
 

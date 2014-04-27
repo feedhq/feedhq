@@ -36,4 +36,7 @@ if '-v2' not in sys.argv:
 MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media')
 
 USE_ES = os.environ.get('USE_ES', False)
-ES_INDEX_PREFIX = 'test-feedhq'
+ES_INDEX = 'test-feedhq'
+ES_ALIAS_TEMPLATE = 'test-feedhq-{0}'
+ES_SHARDS = 1
+ES_REPLICAS = 0
