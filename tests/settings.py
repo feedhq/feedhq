@@ -40,3 +40,6 @@ ES_INDEX = 'test-feedhq'
 ES_ALIAS_TEMPLATE = 'test-feedhq-{0}'
 ES_SHARDS = 1
 ES_REPLICAS = 0
+
+if USE_ES:
+    TEST_RUNNER = 'tests.runner.ESTestSuiteRunner'
