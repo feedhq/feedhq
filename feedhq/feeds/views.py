@@ -179,8 +179,9 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
             unread_count = aggs['entries']['unread']['doc_count']
             total_count = aggs['entries']['all']['doc_count']
             user._unread_count = aggs['entries']['all_unread']['doc_count']
-        num_pages = total_count // user.entries_per_page
-        if total_count % user.entries_per_page:
+        card = unread_count if only_unread else total_count
+        num_pages = card // user.entries_per_page
+        if card % user.entries_per_page:
             num_pages += 1
         entries = {
             'object_list': entries,
