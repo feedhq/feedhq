@@ -291,7 +291,8 @@ class UpdateTests(TestCase):
             store_entries(feed.url, data)
 
         if feed.user.es:
-            [entry] = es.entries(feed.user)['hits']
+            [entry] = es.manager.user(feed.user).fetch(
+                annotate=feed.user)['hits']
         else:
             entry = feed.entries.get()
         self.assertTrue(entry.guid)
@@ -311,7 +312,7 @@ class UpdateTests(TestCase):
         with self.assertNumQueries(3 if feed.user.es else 5):
             store_entries(feed.url, data)
         if feed.user.es:
-            [entry] = es.entries(feed.user)['hits']
+            [entry] = es.manager.user(feed.user).fetch()['hits']
         else:
             entry = feed.entries.get()
         self.assertTrue(entry.guid)

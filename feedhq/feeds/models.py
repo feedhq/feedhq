@@ -29,6 +29,7 @@ from django.utils.text import unescape_entities
 from django.utils.translation import ugettext_lazy as _, string_concat
 from django_push.subscriber.signals import updated
 from lxml.etree import ParserError
+from model_utils import FieldTracker
 from rache import schedule_job, delete_job
 from requests.exceptions import ConnectionError
 from requests.packages.urllib3.exceptions import (LocationParseError,
@@ -576,6 +577,8 @@ class Feed(JobDataMixin, models.Model):
     img_safe = models.BooleanField(_('Display images by default'),
                                    default=False)
 
+    tracker = FieldTracker()
+
     def __str__(self):
         return u'%s' % self.name
 
@@ -832,6 +835,7 @@ class Entry(BaseEntry, models.Model):
         data = {
             '_type': 'entries',
             '_id': self.pk,
+            'id': self.pk,
             'timestamp': self.date,
             'title': self.title,
             'raw_title': self.title,

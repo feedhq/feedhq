@@ -112,7 +112,7 @@ class UpdateTests(TestCase):
         user = UserFactory.create(ttl=99999)
         FeedFactory.create(name='Content', url='atom10.xml', user=user)
         if user.es:
-            entry = es.entries(user)['hits'][0]
+            [entry] = es.manager.user(user).fetch(annotate=user)['hits']
         else:
             entry = Entry.objects.get()
         self.assertEqual(entry.sanitized_content(),
@@ -286,7 +286,7 @@ class UpdateTests(TestCase):
         update_feed(feed.url)
 
         if user.es:
-            count = es.entries(user, per_page=0)['facets']['all']['count']
+            count = self.counts(user, all={})['all']
         else:
             count = Entry.objects.count()
         self.assertEqual(count, 1)
@@ -297,7 +297,7 @@ class UpdateTests(TestCase):
         update_feed(feed.url)
 
         if user.es:
-            count = es.entries(user, per_page=0)['facets']['all']['count']
+            count = self.counts(user, all={})['all']
         else:
             count = Entry.objects.count()
         self.assertEqual(count, 1)

@@ -6,6 +6,7 @@ defusedxml==0.4.1
 dj-database-url==0.3.0
 django-classy-tags==0.5.1
 django-floppyforms==1.1.1
+django-model-utils==2.0.3
 django-password-reset==0.7
 django-push==0.6.1
 django-ratelimit-backend==0.6.1

@@ -323,7 +323,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK", status_code=200)
         if user.es:
-            [e] = es.entries(user)['hits']
+            [e] = es.manager.user(user).fetch()['hits']
         else:
             e = user.entries.get()
         self.assertTrue(e.starred)
@@ -338,7 +338,8 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "OK")
 
         if user.es:
-            [entry] = es.entries(user)['hits']
+            [entry] = es.manager.user(user).fetch(
+                annotate=user)['hits']
         else:
             entry = user.entries.get()
         self.assertTrue(entry.read)
@@ -354,7 +355,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         if user.es:
-            [entry] = es.entries(user)['hits']
+            [entry] = es.manager.user(user).fetch()['hits']
         else:
             entry = user.entries.get()
         self.assertTrue(entry.read)
@@ -364,7 +365,8 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         if user.es:
-            [entry] = es.entries(user)['hits']
+            [entry] = es.manager.user(user).fetch(
+                annotate=user)['hits']
         else:
             entry = user.entries.get()
         self.assertFalse(entry.read)
@@ -379,7 +381,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "OK")
         if user.es:
-            [entry] = es.entries(user)['hits']
+            [entry] = es.manager.user(user).fetch()['hits']
         else:
             entry = user.entries.get()
         self.assertFalse(entry.read)
@@ -391,7 +393,7 @@ class ReaderApiTest(ApiTest):
             response = self.client.post(url, data, **clientlogin(token))
             self.assertContains(response, "OK")
             if user.es:
-                [entry] = es.entries(user)['hits']
+                [entry] = es.manager.user(user).fetch()['hits']
             else:
                 entry = user.entries.get()
             self.assertTrue(getattr(entry, tag))
@@ -401,7 +403,8 @@ class ReaderApiTest(ApiTest):
             response = self.client.post(url, data, **clientlogin(token))
             self.assertContains(response, "OK")
             if user.es:
-                [entry] = es.entries(user)['hits']
+                [entry] = es.manager.user(user).fetch(
+                    annotate=user)['hits']
             else:
                 entry = user.entries.get()
             self.assertFalse(getattr(entry, tag))
@@ -417,8 +420,7 @@ class ReaderApiTest(ApiTest):
         # Batch edition
         entry2 = EntryFactory.create(user=user, feed=entry.feed)
         if user.es:
-            count = es.entries(user, only_broadcast=True,
-                               per_page=0)['facets']['broadcast']['count']
+            count = self.counts(user, br={'broadcast': True})['br']
         else:
             count = user.entries.filter(broadcast=True).count()
         self.assertEqual(count, 0)
@@ -428,8 +430,7 @@ class ReaderApiTest(ApiTest):
             'T': post_token,
         }, **clientlogin(token))
         if user.es:
-            count = es.entries(user, only_broadcast=True,
-                               per_page=0)['facets']['broadcast']['count']
+            count = self.counts(user, br={'broadcast': True})['br']
         else:
             count = user.entries.filter(broadcast=True).count()
         self.assertEqual(count, 2)
@@ -974,8 +975,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         if user.es:
-            counts = es.entries(user, per_page=0)['facets']
-            read = counts['all']['count'] - counts['unread']['count']
+            read = self.counts(user, read={'read': True})['read']
         else:
             read = Entry.objects.filter(read=True).count()
             self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
@@ -998,8 +998,7 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, 'OK')
 
         if user.es:
-            counts = es.entries(user, per_page=0)['facets']
-            read = counts['all']['count'] - counts['unread']['count']
+            read = self.counts(user, read={'read': True})['read']
         else:
             read = Entry.objects.filter(read=True).count()
             for f in Feed.objects.all():
@@ -1013,8 +1012,7 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, 'OK')
 
         if user.es:
-            counts = es.entries(user, per_page=0)['facets']
-            read = counts['all']['count'] - counts['unread']['count']
+            read = self.counts(user, read={'read': True})['read']
         else:
             read = Entry.objects.filter(read=True).count()
             self.assertEqual(Feed.objects.get(pk=feed2.pk).unread_count, 0)
@@ -1028,10 +1026,11 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, 'OK')
 
         if user.es:
-            counts = es.entries(user, per_page=0)['facets']
-            read = counts['all']['count'] - counts['unread']['count']
-            counts = es.entries(user, per_page=0, only_starred=True)['facets']
-            starred_unread = counts['starred_unread']['count']
+            counts = self.counts(user, read={'read': True},
+                                 starred_unread={'read': False,
+                                                 'starred': True})
+            read = counts['read']
+            starred_unread = counts['starred_unread']
         else:
             read = Entry.objects.filter(read=True).count()
             self.assertEqual(Feed.objects.get(pk=feed.pk).unread_count, 5)
@@ -1047,8 +1046,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         if user.es:
-            count = es.entries(user, per_page=0,
-                               only_unread=True)['facets']['unread']['count']
+            count = self.counts(user, unread={'read': False})['unread']
         else:
             count = Entry.objects.filter(read=False).count()
             for feed in Feed.objects.all():
@@ -1060,8 +1058,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         if user.es:
-            count = es.entries(user, per_page=0,
-                               only_unread=True)['facets']['unread']['count']
+            count = self.counts(user, unread={'read': False})['unread']
         else:
             count = Entry.objects.filter(read=False).count()
         self.assertEqual(count, 0)
@@ -1070,14 +1067,14 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, 'OK')
         if user.es:
-            count = es.entries(user, per_page=0,
-                               only_unread=True)['facets']['unread']['count']
+            unread = self.counts(user, unread={'read': False})['unread']
         else:
             count = Entry.objects.filter(read=False).count()
         self.assertEqual(count, 0)
 
         if user.es:
-            entries = es.entries(user, per_page=100)['hits']
+            entries = es.manager.user(user).fetch(
+                per_page=100, annotate=user)['hits']
             for entry in entries:
                 entry.update(read=False)
         else:
@@ -1096,8 +1093,7 @@ class ReaderApiTest(ApiTest):
             self.client.post(url, data, **clientlogin(token))
 
         if user.es:
-            unread = es.entries(user, per_page=0,
-                                only_unread=True)['facets']['unread']['count']
+            unread = self.counts(user, unread={'read': False})['unread']
         else:
             unread = Entry.objects.filter(read=False).count()
             for feed in Feed.objects.all():
@@ -1235,7 +1231,8 @@ class ReaderApiTest(ApiTest):
         EntryFactory.create(user=user, feed=feed)
 
         if user.es:
-            [entry] = es.entries(user, feed=feed.pk)['hits']
+            [entry] = es.manager.user(user).filter(
+                feed=feed.pk).fetch()['hits']
 
         # Unsubscribing
         data = {
@@ -1248,7 +1245,7 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(Feed.objects.count(), 0)
 
         if user.es:
-            self.assertEqual(len(es.entries(user)['hits']), 0)
+            self.assertEqual(len(es.manager.user(user).fetch()['hits']), 0)
 
         data['ac'] = 'test'
         response = self.client.post(url, data, **clientlogin(token))
@@ -1312,7 +1309,8 @@ class ReaderApiTest(ApiTest):
         EntryFactory.create(user=user, feed=feed)
 
         if user.es:
-            [entry] = es.entries(user)['hits']
+            [entry] = es.manager.user(user).fetch(
+                annotate=user)['hits']
             self.assertEqual(entry.category.pk, cat.pk)
 
         del data['t']
@@ -1323,7 +1321,8 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(user.feeds.count(), 1)
 
         if user.es:
-            [entry] = es.entries(user)['hits']
+            [entry] = es.manager.user(user).fetch(
+                annotate=user)['hits']
             self.assertIs(entry.category, None)
 
     def test_rename_tag(self, get):

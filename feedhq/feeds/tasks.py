@@ -207,6 +207,7 @@ def store_entries(feed_url, entries):
                 data['category'] = feed['category_id']
                 data['feed'] = feed['pk']
                 data['_id'] = es.next_id()
+                data['id'] = data['_id']
                 data['_type'] = 'entries'
                 data['_index'] = index_name
                 ops.append(data)

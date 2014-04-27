@@ -53,7 +53,7 @@ class ModelTests(TestCase):
 
         feed = Feed.objects.get(pk=feed.id)
         if feed.user.es:
-            [entry] = es.entries(feed.user)['hits']
+            [entry] = es.manager.user(feed.user).fetch()['hits']
         else:
             entry = feed.entries.get()
         self.assertEqual(entry.title, 'First item title')
@@ -70,7 +70,7 @@ class ModelTests(TestCase):
         update_feed(feed.url)
         title = 'RE2: a principled approach to regular expression matching'
         if feed.user.es:
-            [entry] = es.entries(feed.user)['hits']
+            [entry] = es.manager.user(feed.user).fetch()['hits']
         else:
             entry = Entry.objects.get()
 

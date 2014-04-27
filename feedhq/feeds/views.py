@@ -80,17 +80,20 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
     Note: only set category OR feed. Not both at the same time.
     """
     user = request.user
-    es_kwargs = {'per_page': user.entries_per_page,
-                 'page': int(page),
-                 'only_unread': only_unread,
-                 'exclude': ['content', 'guid', 'tags', 'read_later_url',
-                             'author', 'broadcast', 'link', 'starred']}
+    es_entries = es.manager.user(request.user).defer(
+        'content', 'guid', 'tags', 'read_later_url',
+        'author', 'broadcast', 'link', 'starred',
+    ).query_aggregate('all_unread', read=False)
+    if only_unread:
+        es_entries = es_entries.filter(read=False)
 
     if category is not None:
         category = get_object_or_404(user.categories, slug=category)
         all_url = reverse('feeds:category', args=[category.slug])
         unread_url = reverse('feeds:unread_category', args=[category.slug])
-        es_kwargs['category'] = category.pk
+        es_entries = es_entries.filter(category=category.pk).query_aggregate(
+            'all', category=category.pk).query_aggregate(
+                'unread', category=category.pk, read=False)
         entries = user.entries.filter(feed__category=category)
 
     if feed is not None:
@@ -100,11 +103,15 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         unread_url = reverse('feeds:unread_feed', args=[feed.pk])
 
         category = feed.category
-        es_kwargs['feed'] = feed.pk
+        es_entries = es_entries.filter(feed=feed.pk).query_aggregate(
+            'all', feed=feed.pk).query_aggregate(
+                'unread', feed=feed.pk, read=False)
         entries = feed.entries.all()
 
     if starred is True:
-        es_kwargs['only_starred'] = True
+        es_entries = es_entries.filter(starred=True).query_aggregate(
+            'all', starred=True).query_aggregate(
+                'unread', starred=True, read=False)
         entries = user.entries.filter(starred=True)
         all_url = reverse('feeds:stars')
         unread_url = None
@@ -113,16 +120,18 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         entries = user.entries.all()
         all_url = reverse('feeds:home')
         unread_url = reverse('feeds:unread')
+        es_entries = es_entries.query_aggregate('all').query_aggregate(
+            'unread', read=False)
 
     entries = entries.select_related('feed', 'feed__category')
     if user.oldest_first:
         entries = entries.order_by('date', 'id')
-        es_kwargs['order'] = 'asc'
+        es_entries = es_entries.order_by('timestamp')
 
     if request.method == 'POST':
         if request.POST['action'] in (ReadForm.READ_ALL, ReadForm.READ_PAGE):
             pages_only = request.POST['action'] == ReadForm.READ_PAGE
-            form = ReadForm(entries, es_kwargs, feed, category, user,
+            form = ReadForm(entries, es_entries, feed, category, user,
                             pages_only=pages_only, data=request.POST)
             if form.is_valid():
                 pks = form.save()
@@ -155,29 +164,20 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
 
     if user.es:
         try:
-            entries = es.entries(user, **es_kwargs)
+            entries = es_entries.fetch(page=int(page),
+                                       per_page=user.entries_per_page,
+                                       annotate=user)
         except RequestError as e:
             if 'No mapping found' not in e.error:  # index is empty
                 raise
             entries = []
-            facets = {'unread': {'count': 0}}
             user._unread_count = unread_count = total_count = 0
         else:
-            facets = entries['facets']
+            aggs = entries['aggregations']
             entries = entries['hits']
-            if 'category' in es_kwargs:
-                unread_count = facets['category_unread']['count']
-                total_count = facets['category_all']['count']
-            elif 'feed' in es_kwargs:
-                unread_count = facets['feed_unread']['count']
-                total_count = facets['feed_all']['count']
-            elif 'only_starred' in es_kwargs:
-                unread_count = 0
-                total_count = facets['starred']['count']
-            else:
-                unread_count = facets['unread']['count']
-                total_count = facets['all']['count']
-            user._unread_count = facets['unread']['count']
+            unread_count = aggs['entries']['unread']['doc_count']
+            total_count = aggs['entries']['all']['doc_count']
+            user._unread_count = aggs['entries']['all_unread']['doc_count']
         entries = {'object_list': entries}
 
     else:
@@ -209,7 +209,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         'unread_url': unread_url,
         'base_url': base_url,
         'stars': starred,
-        'all_unread': (facets['unread']['count'] if user.es
+        'all_unread': (aggs['entries']['unread']['doc_count'] if user.es
                        else user.entries.unread()),
         'entries_template': 'feeds/entries_include.html',
     }
@@ -464,24 +464,22 @@ def item(request, entry_id):
 
     # The previous is actually the next by date, and vice versa
     if request.user.es:
-        kw.pop('user', None)
+        es_entries = es.manager.user(request.user)
         if 'feed' in kw:
-            kw['feed'] = kw['feed'].pk
+            es_entries = es_entries.filter(feed=kw['feed'].pk)
         if 'read' in kw:
-            kw['only_unread'] = not kw.pop('read')
+            es_entries = es_entries.filter(read=kw['read'])
         if 'feed__category' in kw:
-            kw['category'] = kw.pop('feed__category').pk
+            es_entries = es_entries.filter(category=kw['feed__category'].pk)
         if 'starred' in kw:
-            kw['only_starred'] = kw.pop('starred')
-        previous = es.entries(request.user, per_page=1, order='asc',
-                              date_gt=entry.date,
-                              include_facets=False, **kw)
+            es_entries = es_entries.filter(starred=kw['starred'])
+        previous = es_entries.filter(
+            timestamp__gt=entry.date).order_by('timestamp').fetch(per_page=1)
         previous = previous['hits'][0] if previous['hits'] else None
         if previous is not None:
             previous = previous.get_absolute_url()
-        next = es.entries(request.user, per_page=1, order='desc',
-                          date_lt=entry.date, include_facets=False,
-                          **kw)
+        next = es_entries.filter(
+            timestamp__lt=entry.date).order_by('-timestamp').fetch(per_page=1)
         next = next['hits'][0] if next['hits'] else None
         if next is not None:
             next = next.get_absolute_url()

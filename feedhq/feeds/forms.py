@@ -2,6 +2,7 @@ import contextlib
 import json
 
 from django.core.cache import cache
+from django.db import transaction
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
@@ -129,11 +130,31 @@ class FeedForm(UserFormMixin, forms.ModelForm):
             cache.set(u'feed_link:{0}'.format(url), parsed.feed.link, 600)
         return url
 
-    def save(self, commit=True):
+    @transaction.atomic
+    def save(self):
         feed = super(FeedForm, self).save(commit=False)
         feed.user = self.user
-        if commit:
-            feed.save()
+
+        if (
+            self.user.es and
+            feed.tracker.has_changed('category_id') and
+            feed.tracker.previous('id')
+        ):
+            new_cat = feed.category_id
+            entries = es.manager.user(self.user).filter(
+                feed=feed.pk).aggregate('id').fetch(per_page=0)
+            pks = [bucket['key'] for bucket in entries[
+                'aggregations']['entries']['query']['id']['buckets']]
+            if pks:
+                ops = [{
+                    '_op_type': 'update',
+                    '_type': 'entries',
+                    '_id': pk,
+                    'doc': {'category': new_cat},
+                } for pk in pks]
+                index = es.user_index(self.user.pk)
+                es.bulk(ops, index=index, raise_on_error=True)
+        feed.save()
         return feed
 
 
@@ -185,12 +206,12 @@ class ReadForm(forms.Form):
         initial='read-all',
     )
 
-    def __init__(self, entries=None, es_kwargs=None, feed=None, category=None,
+    def __init__(self, entries=None, es_entries=None, feed=None, category=None,
                  user=None, pages_only=False, *args, **kwargs):
         if entries is not None:
             entries = entries.filter(read=False)
         self.entries = entries
-        self.es_kwargs = es_kwargs
+        self.es_entries = es_entries
         self.feed = feed
         self.category = category
         self.user = user
@@ -209,17 +230,10 @@ class ReadForm(forms.Form):
                 pks = self.cleaned_data['entries']
             else:
                 # Fetch all IDs for current query.
-                self.es_kwargs['only_unread'] = True
-                self.es_kwargs.pop('page')
-                self.es_kwargs.pop('per_page')
-                # 2-step fetch: 1st to get the count, 2nd to get all ids
-                entries = es.entries(self.user, annotate_results=False,
-                                     per_page=0, **self.es_kwargs)
-                size = entries['facets']['unread']['count']
-                entries = es.entries(self.user, annotate_results=False,
-                                     include=['_id'], per_page=size,
-                                     include_facets=False, **self.es_kwargs)
-                pks = [e.pk for e in entries['hits']]
+                entries = self.es_entries.filter(
+                    read=False).aggregate('id').fetch(per_page=0)
+                pks = [bucket['key'] for bucket in entries[
+                    'aggregations']['entries']['query']['id']['buckets']]
 
             ops = [{
                 '_op_type': 'update',
@@ -228,8 +242,9 @@ class ReadForm(forms.Form):
                 '_id': pk,
                 'doc': {'read': True},
             } for pk in pks]
-            es.bulk(ops, raise_on_error=True)
-            es.client.indices.refresh(index)
+            if pks:
+                es.bulk(ops, raise_on_error=True)
+                es.client.indices.refresh(index)
 
         else:
             if self.pages_only:

@@ -317,9 +317,9 @@ class WebBaseTests(WebTest):
             from_url, user=user).status_code, 200)
 
         if user.es:
-            e = es.entries(
-                user, query='title:"jacobian\'s django-deployment-workshop"',
-                annotate_results=False)['hits'][0]
+            e = es.manager.user(user).filter(
+                query='title:"jacobian\'s django-deployment-workshop"',
+            ).fetch()['hits'][0]
         else:
             e = Entry.objects.get(
                 title="jacobian's django-deployment-workshop")
@@ -397,7 +397,8 @@ class WebBaseTests(WebTest):
                          user.entries.filter(read=False).count())
 
         if user.es:
-            last_item = es.entries(user, order='asc')['hits'][0]
+            last_item = es.manager.user(user).order_by(
+                'timestamp').fetch()['hits'][0]
         else:
             last_item = user.entries.order_by('date')[0]
         url = reverse('feeds:item', args=[last_item.pk])
@@ -477,13 +478,13 @@ class WebBaseTests(WebTest):
         form = response.forms['star']
         response = form.submit()
         if user.es:
-            self.assertTrue(es.entries(user)['hits'][0].starred)
+            self.assertTrue(es.manager.user(user).fetch()['hits'][0].starred)
         else:
             self.assertTrue(Entry.objects.get().starred)
         form = response.forms['star']
         response = form.submit()
         if user.es:
-            [entry] = es.entries(user)['hits']
+            [entry] = es.manager.user(user).fetch()['hits']
         else:
             entry = Entry.objects.get()
         self.assertFalse(entry.starred)
@@ -495,7 +496,7 @@ class WebBaseTests(WebTest):
         response = form.submit()
 
         if user.es:
-            [entry] = es.entries(user)['hits']
+            [entry] = es.manager.user(user).fetch()['hits']
         else:
             entry = Entry.objects.get()
         self.assertFalse(entry.read)
@@ -644,9 +645,10 @@ class WebBaseTests(WebTest):
         self.assertContains(response, '30 entries have been marked as read')
 
         if user.es:
-            counts = es.entries(user, per_page=0)['facets']
-            unread = counts['unread']['count']
-            read = counts['all']['count'] - unread
+            counts = self.counts(user, read={'read': True},
+                                 unread={'read': False})
+            unread = counts['unread']
+            read = counts['read']
         else:
             unread = user.entries.filter(read=False).count()
             read = user.entries.filter(read=True).count()
@@ -660,9 +662,10 @@ class WebBaseTests(WebTest):
         self.assertContains(response, "30 entries have been marked as unread")
 
         if user.es:
-            counts = es.entries(user, per_page=0)['facets']
-            unread = counts['unread']['count']
-            read = counts['all']['count'] - unread
+            counts = self.counts(user, read={'read': True},
+                                 unread={'read': False})
+            unread = counts['unread']
+            read = counts['read']
         else:
             unread = user.entries.filter(read=False).count()
             read = user.entries.filter(read=True).count()
@@ -671,8 +674,7 @@ class WebBaseTests(WebTest):
 
         form = response.forms['read-page']
         if user.es:
-            some_entries = es.entries(user, per_page=5, include=['_id'],
-                                      annotate_results=False)
+            some_entries = es.manager.user(user).only('_id').fetch(per_page=5)
             some_entries = [e.pk for e in some_entries['hits']]
         else:
             some_entries = user.entries.all()[:5].values_list('pk', flat=True)
@@ -688,7 +690,8 @@ class WebBaseTests(WebTest):
         user = UserFactory.create(ttl=99999)
         feed = FeedFactory.create(user=user)
         if user.es:
-            content = es.entries(user, per_page=1)['hits'][0].content
+            content = es.manager.user(user).fetch(
+                per_page=1, annotate=user)['hits'][0].content
         else:
             content = feed.entries.all()[0].content
         self.assertEqual(len(content.split('F&#233;vrier 1953')), 2)
@@ -720,7 +723,7 @@ class WebBaseTests(WebTest):
             {'article': {'id': 'foo'}}))
 
         if user.es:
-            entry_pk = es.entries(user)['hits'][0].pk
+            entry_pk = es.manager.user(user).fetch()['hits'][0].pk
         else:
             entry_pk = Entry.objects.all()[0].pk
         url = reverse('feeds:item', args=[entry_pk])
@@ -777,7 +780,7 @@ class WebBaseTests(WebTest):
                      'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
 
         if user.es:
-            entry_pk = es.entries(user)['hits'][0].pk
+            entry_pk = es.manager.user(user).fetch()['hits'][0].pk
         else:
             entry_pk = Entry.objects.all()[0].pk
         url = reverse('feeds:item', args=[entry_pk])
@@ -818,7 +821,7 @@ class WebBaseTests(WebTest):
                      'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
 
         if user.es:
-            entry_pk = es.entries(user)['hits'][0].pk
+            entry_pk = es.manager.user(user).fetch()['hits'][0].pk
         else:
             entry_pk = Entry.objects.all()[0].pk
         url = reverse('feeds:item', args=[entry_pk])
@@ -857,15 +860,15 @@ class WebBaseTests(WebTest):
         updated.send(sender=None, notification=data, request=None, links=None)
 
         if user.es:
-            counts = es.entries(user, feed=feed.pk, per_page=0)['facets']
-            entries = counts['feed_all']['count']
+            entries = self.counts(user, feed={'feed': feed.pk})['feed']
         else:
             entries = feed.entries.count()
         self.assertEqual(entries, 5)
 
         # Check content handling
         if user.es:
-            entries = es.entries(user, feed=feed.pk)['hits']
+            entries = es.manager.user(user).filter(
+                feed=feed.pk).fetch()['hits']
         else:
             entries = feed.entries.all()
 
@@ -874,11 +877,17 @@ class WebBaseTests(WebTest):
 
         # Check date handling
         if user.es:
-            eleven = es.entries(user, feed=feed.pk, date_gt='2010-12-31',
-                                date_lt='2012-01-01')
+            eleven = es.manager.user(user).filter(
+                feed=feed.pk,
+                timestamp__gt='2010-12-31',
+                timestamp__lt='2012-01-01'
+            ).fetch()
             eleven = len(eleven['hits'])
-            twelve = es.entries(user, feed=feed.pk, date_gt='2011-12-31',
-                                date_lt='2013-01-01')
+            twelve = es.manager.user(user).filter(
+                feed=feed.pk,
+                timestamp__gt='2011-12-31',
+                timestamp__lt='2013-01-01'
+            ).fetch()
             twelve = len(twelve['hits'])
         else:
             eleven = feed.entries.filter(date__year=2011).count()
@@ -975,7 +984,7 @@ class WebBaseTests(WebTest):
         FeedFactory.create(category__user=user, user=user,
                            url='https://github.com/brutasse.atom')
         if user.es:
-            entry = es.entries(user)['hits'][0]
+            entry = es.manager.user(user).fetch(annotate=user)['hits'][0]
         else:
             entry = user.entries.all()[0]
 

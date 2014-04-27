@@ -1,3 +1,6 @@
+from collections import defaultdict
+from copy import deepcopy
+
 from django.db import connection
 from django.conf import settings
 from elasticsearch import Elasticsearch
@@ -76,136 +79,6 @@ def mget(user, pks, annotate_results=True):
     return results
 
 
-def entries(user, feed=None, category=None, query=None,
-            only_unread=False, only_starred=False, only_broadcast=False,
-            per_page=50, page=1, order='desc', terms=None,
-            annotate_results=True, exclude=None, include=None,
-            include_facets=True, date_gt=None, date_lt=None):
-    from .feeds.models import EsEntry
-    if query is None:
-        query = {'match_all': {}}
-    else:
-        query = {'query_string': {'query': query}}
-
-    manual_terms = terms
-    terms = []
-    if only_unread:
-        terms.append({'term': {'read': False}})
-    facets = {
-        'unread': {
-            'global': True,
-            'filter': {'term': {'read': False}},
-        },
-    }
-    if only_starred:
-        terms.append({'term': {'starred': True}})
-        facets['starred'] = {
-            'global': True,
-            'filter': {'term': {'starred': True}},
-        }
-        facets['starred_unread'] = {
-            'global': True,
-            'filter': {
-                'and': [
-                    {'term': {'starred': True}},
-                    {'term': {'read': False}},
-                ],
-            },
-        }
-    if only_broadcast:
-        terms.append({'term': {'broadcast': True}})
-        facets['broadcast'] = {
-            'global': True,
-            'filter': {'term': {'broadcast': True}},
-        }
-    if feed is None and category is None:
-        facets['all'] = {
-            'global': True,
-            'filter': {'match_all': {}},
-        }
-    if category is not None:
-        terms.append({'term': {'category': category}})
-        facets['category_all'] = {
-            'global': True,
-            'filter': {'term': {'category': category}},
-        }
-        facets['category_unread'] = {
-            'global': True,
-            'filter': {
-                'and': [
-                    {'term': {'category': category}},
-                    {'term': {'read': False}},
-                ],
-            },
-        }
-    if feed is not None:
-        terms.append({'term': {'feed': feed}})
-        facets['feed_all'] = {
-            'global': True,
-            'filter': {'term': {'feed': feed}},
-        }
-        facets['feed_unread'] = {
-            'global': True,
-            'filter': {
-                'and': [
-                    {'term': {'feed': feed}},
-                    {'term': {'read': False}},
-                ],
-            },
-        }
-    if date_lt is not None:
-        terms.append({'range': {'timestamp': {'lt': date_lt}}})
-    if date_gt is not None:
-        terms.append({'range': {'timestamp': {'gt': date_gt}}})
-
-    if exclude is None:
-        exclude = []
-    source = {
-        'exclude': exclude,
-    }
-    if include is not None:
-        source['include'] = include
-
-    if manual_terms is not None:
-        terms = manual_terms
-    if terms:
-        terms = {'and': terms}
-    else:
-        terms = {'match_all': {}}
-
-    facets['query'] = {
-        'global': True,
-        'filter': terms
-    }
-
-    query = {
-        '_source': source,
-        'query': {
-            'filtered': {
-                'query': query,
-                'filter': terms,
-            },
-        },
-        'facets': facets,
-    }
-    if not include_facets:
-        query.pop('facets')
-    results = client.search(
-        index=user_index(user.pk),
-        doc_type='entries',
-        body=query,
-        params={
-            'from': (page - 1) * per_page,
-            'sort': 'timestamp:{0}'.format(order),
-            'size': per_page,
-        }
-    )
-    results['hits'] = [EsEntry(hit) for hit in results['hits']['hits']]
-    if annotate_results:
-        _annotate(results['hits'], user)
-    return results
-
-
 def _annotate(results, user):
     feed_ids = set([e.feed for e in results])
     if not feed_ids:
@@ -228,3 +101,230 @@ def next_id():
     finally:
         cursor.close()
     return value
+
+
+def _and_or_term(values):
+    if len(values) == 1:
+        return values[0]
+    return {'and': values}
+
+
+def _lookup(name, values):
+    _range = {}
+    _or = None
+    for lk in values.values():
+        for key, value in lk.items():
+            if key in ['lte', 'gte', 'lt', 'gt']:
+                _range[key] = value
+            elif key == 'in':
+                if len(value) == 1:
+                    _or = {'term': {name: value[0]}}
+                else:
+                    _or = {'or': [{'term': {name: val}} for val in value]}
+    if _range and _or:
+        raise ValueError("Will not combine range and __in lookups.")
+    if _range:
+        return {'range': {name: _range}}
+    elif _or:
+        return _or
+    raise ValueError("Empty lookup")
+
+
+class EntryQuery(object):
+    def __init__(self, **kwargs):
+        self.indices = ''
+        self.filters = {}
+        self.aggs = {}
+        self.terms_aggs = {}
+        self.query_agg = False
+        self.query_aggs = {}
+        self.query = None
+        self.source = {}
+        self.ordering = 'timestamp:desc'
+        self.filter(clone=False, **kwargs)
+
+    def _clone(self):
+        q = self.__class__()
+        q.indices = self.indices
+        q.filters = deepcopy(self.filters)
+        q.aggs = deepcopy(self.aggs)
+        q.terms_aggs = deepcopy(self.terms_aggs)
+        q.query_agg = self.query_agg
+        q.query_aggs = deepcopy(self.query_aggs)
+        q.query = self.query
+        q.source = deepcopy(self.source)
+        q.ordering = self.ordering
+        return q
+
+    def filter(self, clone=True, or_=False, **kwargs):
+        q = self._clone() if clone else self
+        q._apply_filters(or_=or_, **kwargs)
+        return q
+
+    def exclude(self, **kwargs):
+        q = self._clone()
+        q._apply_filters(negate=True, **kwargs)
+        return q
+
+    def _apply_filters(self, negate=False, or_=False, **kwargs):
+        lookups = defaultdict(dict)
+        filters = {}
+        for key, value in kwargs.items():
+            if '__' in key:
+                field, lookup = key.split('__')
+                lookups[field][lookup] = value
+                continue
+
+            if key == 'user':
+                if negate:
+                    raise ValueError("Can't exclude an index.")
+                self.indices = user_index(value)
+                continue
+
+            if key == 'query':
+                if negate:
+                    value = 'NOT {0}'.format(value)
+                self.query = value
+                continue
+
+            term = {'term': {key: value}}
+            if negate:
+                term = {'not': term}
+
+            filters[key] = term
+
+        for key, lookup in lookups.items():
+            filter_ = _lookup(key, lookups)
+            if negate:
+                filter_ = {'not': filter_}
+            filters[key] = filter_
+
+        if filters:
+            if or_:
+                if 'or' not in self.filters:
+                    self.filters['or'] = {'or': []}
+                self.filters['or']['or'].extend(filters.values())
+            else:
+                self.filters.update(filters)
+
+    def defer(self, *fields):
+        q = self._clone()
+        q.source['exclude'] = fields
+        return q
+
+    def only(self, *fields):
+        q = self._clone()
+        q.source['include'] = fields
+        return q
+
+    def aggregate(self, name, **kwargs):
+        """
+        Add an aggregation to the current query.
+
+        kwargs filter the aggregation.
+
+        To generate an aggregation based on the current query, just
+        pass '__query__' as aggregation name.
+        """
+        q = self._clone()
+
+        if name == '__query__':
+            q.query_agg = True
+            return q
+
+        filters = {}
+        lookups = defaultdict(dict)
+        for key, value in kwargs.items():
+            if '__' in key:
+                field, lookup = key.split('__')
+                lookups[field][lookup] = value
+                continue
+
+            filters[key] = {'term': {key: value}}
+
+        for key, lookup in lookups.items():
+            filters[key] = _lookup(key, lookup)
+
+        if filters:
+            q.aggs[name] = {'filter': _and_or_term(list(filters.values()))}
+        else:
+            q.terms_aggs[name] = {'terms': {'field': name, 'size': 0}}
+        return q
+
+    def query_aggregate(self, name, **kwargs):
+        q = self._clone()
+        filters = []
+        for key, value in kwargs.items():
+            filters.append({'term': {key: value}})
+        if filters:
+            q.query_aggs[name] = {'filter': _and_or_term(filters)}
+        else:
+            q.query_aggs[name] = {'filter': {'match_all': {}}}
+        return q
+
+    def order_by(self, criteria):
+        q = self._clone()
+        order = 'asc'
+        if criteria.startswith('-'):
+            order = 'desc'
+            criteria = criteria[1:]
+        q.ordering = '{0}:{1}'.format(criteria, order)
+        return q
+
+    def fetch(self, page=1, per_page=50, annotate=None):
+        from .feeds.models import EsEntry
+        filters = {}
+        if self.filters:
+            filters['filter'] = _and_or_term(list(self.filters.values()))
+        else:
+            filters['filter'] = {'match_all': {}}
+
+        if self.terms_aggs or self.query_agg:
+            self.aggs['query'] = {'filter': filters['filter']}
+            if self.terms_aggs:
+                self.aggs['query']['aggs'] = self.terms_aggs
+
+        if self.query_aggs:
+            self.aggs.update(self.query_aggs)
+
+        if self.query:
+            filters['query'] = query = {'query_string': {'query': self.query}}
+
+        query = {}
+
+        if filters:
+            query['query'] = {'filtered': filters}
+
+        if self.source:
+            query['_source'] = self.source
+
+        if self.aggs:
+            query['aggs'] = {
+                'entries': {
+                    'global': {},
+                    'aggs': self.aggs
+                },
+            }
+
+        results = client.search(
+            index=self.indices,
+            doc_type='entries',
+            body=query,
+            params={
+                'from': (page - 1) * per_page,
+                'sort': self.ordering,
+                'size': per_page,
+            },
+        )
+        results['hits'] = [EsEntry(hit) for hit in results['hits']['hits']]
+        if annotate is not None:
+            _annotate(results['hits'], annotate)
+        return results
+
+
+class EntryManager(object):
+    def user(self, user_or_id):
+        if not isinstance(user_or_id, int):
+            user_or_id = user_or_id.pk
+        return EntryQuery(user=user_or_id)
+manager = EntryManager()

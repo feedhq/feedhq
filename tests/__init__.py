@@ -55,6 +55,13 @@ class ESTests(object):
         super(ESTests, cls).setUpClass()
         delete_es_indices()
 
+    def counts(self, user, **kwargs):
+        es_entries = es.manager.user(user)
+        for name, filters in kwargs.items():
+            es_entries = es_entries.query_aggregate(name, **filters)
+        results = es_entries.fetch(per_page=0)['aggregations']['entries']
+        return {name: results[name]['doc_count'] for name in kwargs}
+
 
 class TestCase(ESTests, BaseTestCase):
     def tearDown(self):  # noqa
