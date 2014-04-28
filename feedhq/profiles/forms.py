@@ -14,6 +14,7 @@ import floppyforms as forms
 
 from ratelimitbackend.forms import AuthenticationForm
 
+from .. import es
 from .models import User
 
 
@@ -219,7 +220,11 @@ class DeleteAccountForm(forms.Form):
 
     @transaction.atomic
     def save(self):
+        user_id = self.user.pk
         self.user.delete()
         if self.user.es:
-            # TODO delete entries
-            pass
+            es.client.delete_by_query(
+                index=es.user_alias(user_id),
+                doc_type='entries',
+                body={'query': {'filtered': {'filter': {'match_all': {}}}}},
+            )

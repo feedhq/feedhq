@@ -8,6 +8,7 @@ from mock import patch
 from feedhq.profiles.models import User
 
 from . import responses, WebTest
+from .factories import EntryFactory
 
 
 class ProfilesTest(WebTest):
@@ -232,8 +233,16 @@ class ProfilesTest(WebTest):
         self.assertEqual(user.read_later, '')
         self.assertEqual(user.read_later_credentials, '')
 
-    def test_delete_account(self):
-        self.assertEqual(User.objects.count(), 1)
+    @patch('requests.get')
+    def test_delete_account(self, get):
+        get.return_value = responses(304)
+        user = User.objects.get()
+        EntryFactory.create(user=user)
+        if user.es:
+            count = self.counts(user, all={})['all']
+        else:
+            count = user.entries.count()
+        self.assertEqual(count, 1)
         url = reverse('destroy_account')
         response = self.app.get(url, user='test')
         self.assertContains(response, 'Delete your account')
@@ -246,6 +255,12 @@ class ProfilesTest(WebTest):
         form['password'] = 'pass'
         response = form.submit().follow()
         self.assertContains(response, "Good bye")
+
+        if user.es:
+            count = self.counts(user, all={})['all']
+        else:
+            count = user.entries.count()
+        self.assertEqual(count, 0)
 
     def test_login_via_username_or_email(self):
         url = reverse('login')
