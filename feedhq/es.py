@@ -72,6 +72,10 @@ def mget(user, pks, annotate_results=True):
     for doc in docs:
         if not doc['found']:
             continue
+        if doc['_source']['user'] != user.pk:
+            # XXX elasticsearch doesn't seem to do an mget within an alias
+            # scope but rather in the global context.
+            continue
         doc['_id'] = int(doc['_id'])
         results.append(EsEntry(doc))
     if annotate_results:
