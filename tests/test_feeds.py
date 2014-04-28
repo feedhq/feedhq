@@ -915,7 +915,7 @@ class WebBaseTests(WebTest):
         updated.send(sender=None, notification=data, request=None,
                      links=[{'url': 'foo', 'rel': 'self'}])
         if user.es:
-            self.assertEqual(es.client.count(es.user_index(user.pk),
+            self.assertEqual(es.client.count(es.user_alias(user.pk),
                                              doc_type='entries')['count'], 1)
         else:
             self.assertEqual(feed.entries.count(), 1)

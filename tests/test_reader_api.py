@@ -556,7 +556,7 @@ class ReaderApiTest(ApiTest):
             for entry in Entry.objects.all():
                 entry.index()
             Entry.objects.all().delete()
-            es.client.indices.refresh(es.user_index(user.pk))
+            es.client.indices.refresh(es.user_alias(user.pk))
 
         # Warm up the uniques map cache
         with self.assertNumQueries(2 if user.es else 3):
@@ -961,7 +961,7 @@ class ReaderApiTest(ApiTest):
         EntryFactory.create(feed=feed2, user=user, starred=True)
         EntryFactory.create(feed=feed2, user=user, broadcast=True)
         if user.es:
-            es.client.indices.refresh(es.user_index(user.pk))
+            es.client.indices.refresh(es.user_alias(user.pk))
 
         data = {'T': post_token}
         response = self.client.post(url, data, **clientlogin(token))

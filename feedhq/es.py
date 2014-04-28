@@ -12,7 +12,7 @@ client = Elasticsearch(settings.ES_NODES,
                        sniff_on_connection_fail=True)
 
 
-def user_index(user_id):
+def user_alias(user_id):
     assert isinstance(user_id, int), repr(user_id)
     return settings.ES_ALIAS_TEMPLATE.format(user_id)
 
@@ -46,7 +46,7 @@ def counts(user, feed_ids, only_unread=True):
     query = {
         'facets': facets,
     }
-    return client.search(index=user_index(user.pk),
+    return client.search(index=user_alias(user.pk),
                          doc_type='entries',
                          body=query,
                          params={'size': 0})['facets']
@@ -54,7 +54,7 @@ def counts(user, feed_ids, only_unread=True):
 
 def entry(user, id, annotate_results=True):
     from .feeds.models import EsEntry
-    result = client.get(user_index(user.pk), id)
+    result = client.get(user_alias(user.pk), id)
     entry = EsEntry(result)
     if annotate_results:
         entry.user = user
@@ -66,7 +66,7 @@ def entry(user, id, annotate_results=True):
 
 def mget(user, pks, annotate_results=True):
     from .feeds.models import EsEntry
-    docs = client.mget({'ids': pks}, index=user_index(user.pk),
+    docs = client.mget({'ids': pks}, index=user_alias(user.pk),
                        doc_type='entries')['docs']
     results = []
     for doc in docs:
@@ -178,7 +178,7 @@ class EntryQuery(object):
             if key == 'user':
                 if negate:
                     raise ValueError("Can't exclude an index.")
-                self.indices = user_index(value)
+                self.indices = user_alias(value)
                 continue
 
             if key == 'query':

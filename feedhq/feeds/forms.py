@@ -152,7 +152,7 @@ class FeedForm(UserFormMixin, forms.ModelForm):
                     '_id': pk,
                     'doc': {'category': new_cat},
                 } for pk in pks]
-                index = es.user_index(self.user.pk)
+                index = es.user_alias(self.user.pk)
                 es.bulk(ops, index=index, raise_on_error=True)
         feed.save()
         return feed
@@ -225,7 +225,7 @@ class ReadForm(forms.Form):
 
     def save(self):
         if self.user.es:
-            index = es.user_index(self.user.pk)
+            index = es.user_alias(self.user.pk)
             if self.pages_only:
                 pks = self.cleaned_data['entries']
             else:
@@ -292,7 +292,7 @@ class UndoReadForm(forms.Form):
     def save(self):
         pks = self.cleaned_data['pks']
         if self.user.es:
-            index = es.user_index(self.user.pk)
+            index = es.user_alias(self.user.pk)
             ops = [{
                 '_op_type': 'update',
                 '_index': index,

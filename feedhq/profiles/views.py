@@ -45,7 +45,7 @@ class Stats(UserMixin, generic.DetailView):
             'feeds': self.request.user.feeds.count(),
         })
         if self.request.user.es:
-            entries = es.client.count(es.user_index(self.request.user.pk),
+            entries = es.client.count(es.user_alias(self.request.user.pk),
                                       doc_type='entries')['count']
         else:
             entries = self.request.user.entries.count()

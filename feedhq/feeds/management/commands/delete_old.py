@@ -14,7 +14,7 @@ class Command(SentryCommand):
             limit = timezone.now() - timedelta(days=user.ttl)
             if user.es:
                 es.client.delete_by_query(
-                    index=es.user_index(user.pk),
+                    index=es.user_alias(user.pk),
                     doc_type='entries',
                     body={'query': {'range': {'timestamp': {'lte': limit}}}},
                 )

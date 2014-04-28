@@ -123,7 +123,7 @@ def store_entries(feed_url, entries):
     indices = []
     for feed in feeds:
         if feed['user__es']:
-            indices.append(es.user_index(feed['user_id']))
+            indices.append(es.user_alias(feed['user_id']))
 
     if indices:
         es.wait_for_yellow()

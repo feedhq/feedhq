@@ -265,7 +265,7 @@ class UnreadCount(ReaderView):
         unread_counts = []
         if request.user.es:
             results = es.client.search(
-                index=es.user_index(request.user.pk),
+                index=es.user_alias(request.user.pk),
                 doc_type='entries',
                 body={
                     'query': {
@@ -453,7 +453,7 @@ class DisableTag(ReaderView):
             'aggregations']['entries']['query']['id']['buckets']]
 
         if ids:
-            index = es.user_index(request.user.pk),
+            index = es.user_alias(request.user.pk),
             ops = [{
                 '_op_type': 'update',
                 '_index': index,
@@ -598,7 +598,7 @@ class EditSubscription(ReaderView):
                                                                  flat=True)
             if ids and request.user.es:
                 es.client.delete_by_query(
-                    index=es.user_index(request.user.pk),
+                    index=es.user_alias(request.user.pk),
                     doc_type='entries',
                     body={'query': {'filtered': {'filter': {'or': [
                         {'term': {'feed': pk}} for pk in ids
@@ -1328,7 +1328,7 @@ class EditTag(ReaderView):
                     '_id': pk,
                     'doc': query,
                 })
-            index = es.user_index(request.user.pk)
+            index = es.user_alias(request.user.pk)
             es.bulk(ops, index=index, raise_on_error=True)
             es.client.indices.refresh(index)
         else:
@@ -1408,7 +1408,7 @@ class MarkAllAsRead(ReaderView):
                     '_id': pk,
                     'doc': {'read': True},
                 } for pk in pks]
-                index = es.user_index(request.user.pk)
+                index = es.user_alias(request.user.pk)
                 es.bulk(ops, index=index, raise_on_error=True)
                 es.client.indices.refresh(index)
         else:

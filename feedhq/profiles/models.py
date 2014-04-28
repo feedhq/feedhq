@@ -148,7 +148,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         if hasattr(self, '_unread_count'):
             return self._unread_count
         if self.es:
-            return es.client.count(es.user_index(self.pk),
+            return es.client.count(es.user_alias(self.pk),
                                    doc_type='entries',
                                    body={'query': {
                                        'term': {
@@ -179,7 +179,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         return self.last_updates()
 
     def ensure_alias(self):
-        name = es.user_index(self.pk)
+        name = es.user_alias(self.pk)
         es.client.indices.put_alias(
             index=settings.ES_INDEX,
             name=name,

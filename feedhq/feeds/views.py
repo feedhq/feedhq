@@ -306,7 +306,7 @@ class DeleteCategory(CategoryMixin, generic.DeleteView):
         self.object.delete()
         if self.request.user.es:
             es.client.delete_by_query(
-                index=es.user_index(self.request.user.pk),
+                index=es.user_alias(self.request.user.pk),
                 doc_type='entries',
                 body={'query': {'term': {'category': pk}}},
             )
@@ -320,7 +320,7 @@ class DeleteCategory(CategoryMixin, generic.DeleteView):
     def get_context_data(self, **kwargs):
         if self.request.user.es:
             entry_count = es.client.count(
-                index=es.user_index(self.request.user.pk),
+                index=es.user_alias(self.request.user.pk),
                 doc_type='entries',
                 body={
                     'query': {
@@ -386,7 +386,7 @@ class DeleteFeed(FeedMixin, generic.DeleteView):
     def get_context_data(self, **kwargs):
         if self.request.user.es:
             entry_count = es.client.count(
-                index=es.user_index(self.request.user.pk),
+                index=es.user_alias(self.request.user.pk),
                 doc_type='entries',
                 body={
                     'query': {
@@ -409,7 +409,7 @@ class DeleteFeed(FeedMixin, generic.DeleteView):
         self.object.delete()
         if request.user.es:
             es.client.delete_by_query(
-                index=es.user_index(request.user.pk),
+                index=es.user_alias(request.user.pk),
                 doc_type='entries',
                 body={'query': {'term': {'feed': pk}}},
             )

@@ -858,7 +858,7 @@ class Entry(BaseEntry, models.Model):
         return data
 
     def index(self):
-        name = es.user_index(self.user_id)
+        name = es.user_alias(self.user_id)
         data = es.client.index(name, doc_type='entries', body=self.serialize(),
                                id=self.pk, params={'refresh': True})
         data['_source'] = self.serialize()
@@ -896,12 +896,12 @@ class EsEntry(BaseEntry):
     def update(self, refresh=False, **attrs):
         for key, value in attrs.items():
             setattr(self, key, value)
-        es.client.update(es.user_index(self.user.pk), doc_type='entries',
+        es.client.update(es.user_alias(self.user.pk), doc_type='entries',
                          id=self.pk, body={'doc': attrs},
                          params={'refresh': refresh})
 
     def delete(self):
-        es.client.delete(es.user_index(self.user.pk), doc_type='entries',
+        es.client.delete(es.user_alias(self.user.pk), doc_type='entries',
                          id=self.pk)
 
 
