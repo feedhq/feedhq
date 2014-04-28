@@ -7,6 +7,12 @@ from .... import es
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         es.client.indices.create(settings.ES_INDEX, body={
+            'settings': {
+                'index': {
+                    'number_of_shards': settings.ES_SHARDS,
+                    'number_of_replicas': settings.ES_REPLICAS,
+                },
+            },
             'mappings': {
                 "entries": {
                     "_routing": {
