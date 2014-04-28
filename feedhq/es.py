@@ -75,6 +75,8 @@ def mget(user, pks, annotate_results=True):
         if doc['_source']['user'] != user.pk:
             # XXX elasticsearch doesn't seem to do an mget within an alias
             # scope but rather in the global context.
+            # See url-access-control in the ES docs. Requires a server setting,
+            # safer to enforce here.
             continue
         doc['_id'] = int(doc['_id'])
         results.append(EsEntry(doc))
