@@ -59,7 +59,7 @@ def entry(user, id, annotate_results=True):
     if annotate_results:
         entry.user = user
         entry.feed = user.feeds.select_related('category').get(pk=entry.feed)
-        if entry.category:
+        if getattr(entry, 'category', None):
             entry.category = entry.feed.category
     return entry
 
