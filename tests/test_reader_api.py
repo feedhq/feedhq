@@ -425,7 +425,7 @@ class ReaderApiTest(ApiTest):
             count = user.entries.filter(broadcast=True).count()
         self.assertEqual(count, 0)
         response = self.client.post(url, {
-            'i': [entry.pk, entry2.pk],
+            'i': [entry.pk, entry2.pk, 123456789],
             'a': 'user/-/state/com.google/broadcast',
             'T': post_token,
         }, **clientlogin(token))

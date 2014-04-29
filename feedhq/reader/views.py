@@ -14,8 +14,8 @@ from django.db.models import Sum, Q
 from django.http import Http404
 from django.shortcuts import render
 from django.utils import timezone
+from elasticsearch.helpers import BulkIndexError
 from lxml.etree import XMLSyntaxError
-
 from rest_framework import exceptions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.negotiation import DefaultContentNegotiation
@@ -1329,7 +1329,12 @@ class EditTag(ReaderView):
                     'doc': query,
                 })
             index = es.user_alias(request.user.pk)
-            es.bulk(ops, index=index, raise_on_error=True)
+            try:
+                es.bulk(ops, index=index, raise_on_error=True)
+            except BulkIndexError as e:
+                for doc in e.args[1]:
+                    if doc['update']['status'] != 404:
+                        raise
             es.client.indices.refresh(index)
         else:
             request.user.entries.filter(pk__in=entry_ids).update(**query)
