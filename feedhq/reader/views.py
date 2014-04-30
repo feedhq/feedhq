@@ -264,6 +264,8 @@ class UnreadCount(ReaderView):
 
     def get(self, request, *args, **kwargs):
         unread_counts = []
+        last_updates = request.user.last_updates()
+        forced = False
         if request.user.es:
             results = es.client.search(
                 index=es.user_alias(request.user.pk),
@@ -284,13 +286,6 @@ class UnreadCount(ReaderView):
                                         'feeds': {
                                             'terms': {'field': 'feed',
                                                       'size': 0},
-                                            'aggs': {
-                                                'latest': {
-                                                    'max': {
-                                                        'field': 'timestamp',
-                                                    },
-                                                },
-                                            },
                                         },
                                     },
                                 },
@@ -306,10 +301,6 @@ class UnreadCount(ReaderView):
                         'feeds']['buckets']:
                     feeds[bucket['key']] = {
                         'count': bucket['doc_count'],
-                        'ts': bucket['latest']['value'],
-                        'newestItemTimestampUsec': '{0}000000'.format(
-                            int(bucket['latest']['value'])
-                        ),
                     }
                 if feeds:
                     _feeds = request.user.feeds.filter(
@@ -323,8 +314,11 @@ class UnreadCount(ReaderView):
                     latest = 0
                     for pk, url, category, name in _feeds:
                         data = feeds[pk]
+                        ts = last_updates.get(url, 0)
+                        if ts:
+                            data['newestItemTimestampUsec'] = (
+                                '{0}000000'.format(ts))
                         data['id'] = u'feeds/{0}'.format(url)
-                        ts = data.pop('ts')
                         unread_counts.append(data)
                         total += data['count']
                         latest = max(latest, ts)
@@ -364,9 +358,7 @@ class UnreadCount(ReaderView):
                             ),
                         })
         else:
-            last_updates = request.user.last_updates()
             feeds = request.user.feeds.filter(unread_count__gt=0)
-            forced = False
             for feed in feeds:
                 if feed.url not in last_updates and not forced:
                     last_updates = request.user.refresh_updates()
