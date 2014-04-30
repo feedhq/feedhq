@@ -237,6 +237,11 @@ def store_entries(feed_url, entries):
     if create:
         Entry.objects.bulk_create(create)
 
+        for pk in update_unread_counts:
+            Feed.objects.filter(pk=pk).update(
+                unread_count=Entry.objects.filter(feed_id=pk,
+                                                  read=False).count())
+
     if ops:
         es.bulk(ops, raise_on_error=True)
 
@@ -245,10 +250,6 @@ def store_entries(feed_url, entries):
             # during tests.
             indices = ",".join(set([doc['_index'] for doc in ops]))
             es.client.indices.refresh(indices)
-
-    for pk in update_unread_counts:
-        Feed.objects.filter(pk=pk).update(
-            unread_count=Entry.objects.filter(feed_id=pk, read=False).count())
 
     redis = get_redis_connection()
     for user_id, dates in refresh_updates.items():
