@@ -1333,7 +1333,7 @@ class EditTag(ReaderView):
                 es.bulk(ops, index=index, raise_on_error=True)
             except BulkIndexError as e:
                 for doc in e.args[1]:
-                    if doc['update']['status'] != 404:
+                    if doc['update']['status'] not in [404, 409]:
                         raise
             es.client.indices.refresh(index)
         else:

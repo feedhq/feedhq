@@ -17,7 +17,7 @@ from django.template.defaultfilters import slugify
 from django.utils.html import format_html
 from django.utils.translation import ugettext as _, ungettext
 from django.views import generic
-from elasticsearch.exceptions import RequestError
+from elasticsearch.exceptions import RequestError, ConflictError
 
 from .. import es
 from ..decorators import login_required
@@ -427,7 +427,12 @@ def item(request, entry_id):
     if request.user.es:
         entry = es.entry(request.user, entry_id)
         if not entry.read:
-            entry.update(read=True)
+            try:
+                entry.update(read=True)
+            except ConflictError:
+                # Double click // two operations at a time. Entry has already
+                # been marked as read.
+                pass
     else:
         qs = Entry.objects.filter(user=request.user).select_related(
             'feed', 'feed__category',
