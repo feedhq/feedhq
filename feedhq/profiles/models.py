@@ -203,6 +203,8 @@ class User(PermissionsMixin, AbstractBaseUser):
         for feed in self.feeds.all():
             entries = feed.entries.all()
             docs = [doc.serialize() for doc in entries]
+            if not docs:
+                continue
             es.bulk(docs, index=name, timeout=60, raise_on_error=True)
         self.es = True
         self.save(update_fields=['es'])
