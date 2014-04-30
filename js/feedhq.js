@@ -32,10 +32,6 @@
 			return this;
 		},
 		more: function() {
-			if (!$('.feedhq-more').length) {
-				return this;
-			}
-
 			var update_ids = function() {
 				var entries = [];
 				$('[data-id].new').each(function() {
@@ -44,6 +40,10 @@
 				$('#id_entries').val(JSON.stringify(entries));
 			};
 			update_ids();
+
+			if (!$('.feedhq-more').length) {
+				return this;
+			}
 
 			$('.feedhq-more').click(function(event) {
 				event.preventDefault();
