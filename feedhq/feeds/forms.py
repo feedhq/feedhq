@@ -5,6 +5,7 @@ from django.core.cache import cache
 from django.db import transaction
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
+from elasticsearch.helpers import BulkIndexError
 from lxml.etree import XMLSyntaxError
 from six.moves.urllib import parse as urlparse
 
@@ -243,7 +244,12 @@ class ReadForm(forms.Form):
                 'doc': {'read': True},
             } for pk in pks]
             if pks:
-                es.bulk(ops, raise_on_error=True)
+                try:
+                    es.bulk(ops, raise_on_error=True)
+                except BulkIndexError as e:
+                    for doc in e.args[1]:
+                        if doc['update']['status'] not in [404, 409]:
+                            raise
                 es.client.indices.refresh(index)
 
         else:
@@ -300,7 +306,12 @@ class UndoReadForm(forms.Form):
                 '_id': pk,
                 'doc': {'read': False},
             } for pk in pks]
-            es.bulk(ops, raise_on_error=True)
+            try:
+                es.bulk(ops, raise_on_error=True)
+            except BulkIndexError as e:
+                for doc in e.args[1]:
+                    if doc['update']['status'] not in [404, 409]:
+                        raise
             es.client.indices.refresh(index)
         else:
             self.user.entries.filter(pk__in=pks).update(read=False)
