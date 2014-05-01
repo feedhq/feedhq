@@ -318,7 +318,7 @@ class UnreadCount(ReaderView):
                         if ts:
                             data['newestItemTimestampUsec'] = (
                                 '{0}000000'.format(ts))
-                        data['id'] = u'feeds/{0}'.format(url)
+                        data['id'] = u'feed/{0}'.format(url)
                         unread_counts.append(data)
                         total += data['count']
                         latest = max(latest, ts)
