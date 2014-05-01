@@ -193,7 +193,7 @@ class UpdateTests(TestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
 
-        with self.assertNumQueries(2):  # no insert
+        with self.assertNumQueries(1):  # no insert
             store_entries(feed.url, data)
 
         last_updates = feed.user.last_updates()
@@ -209,7 +209,7 @@ class UpdateTests(TestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         ))
-        with self.assertNumQueries(30 + 2 if feed.user.es else 5):  # insert
+        with self.assertNumQueries(30 + 1 if feed.user.es else 5):  # insert
             store_entries(feed.url, data)
 
         if feed.user.es:
@@ -235,7 +235,7 @@ class UpdateTests(TestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
 
-        with self.assertNumQueries(2 + len(data) if feed.user.es else 5):
+        with self.assertNumQueries(1 + len(data) if feed.user.es else 5):
             store_entries(feed.url, data)
 
         if feed.user.es:
@@ -250,7 +250,7 @@ class UpdateTests(TestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         ))
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(1 if feed.user.es else 2):
             store_entries(feed.url, data)
         if feed.user.es:
             count = es.counts(feed.user, [feed.pk],
@@ -266,7 +266,7 @@ class UpdateTests(TestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
 
-        with self.assertNumQueries(8 if feed.user.es else 5):
+        with self.assertNumQueries(7 if feed.user.es else 5):
             store_entries(feed.url, data)
 
         if feed.user.es:
@@ -287,7 +287,7 @@ class UpdateTests(TestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
         feed = FeedFactory.create(user__ttl=99999)
-        with self.assertNumQueries(3 if feed.user.es else 5):
+        with self.assertNumQueries(2 if feed.user.es else 5):
             store_entries(feed.url, data)
 
         if feed.user.es:
@@ -309,7 +309,7 @@ class UpdateTests(TestCase):
                 entry, parsed) for entry in parsed.entries]  # noqa
         ))
         feed = FeedFactory.create(user__ttl=99999)
-        with self.assertNumQueries(3 if feed.user.es else 5):
+        with self.assertNumQueries(2 if feed.user.es else 5):
             store_entries(feed.url, data)
         if feed.user.es:
             [entry] = es.manager.user(feed.user).fetch()['hits']
@@ -329,7 +329,7 @@ class UpdateTests(TestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         ))
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(1 if user.es else 2):
             store_entries(feed.url, data)
         self.assertEqual(feed.entries.count(), 0)
 

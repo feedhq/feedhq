@@ -1413,14 +1413,13 @@ class MarkAllAsRead(ReaderView):
                     es.client.indices.refresh(index)
         else:
             entries.filter(**query).update(read=True)
-
-        cursor = connection.cursor()
-        cursor.execute("""
-            update feeds_feed f set unread_count = (
-                select count(*) from feeds_entry e
-                where e.feed_id = f.id and read = false
-            ) where f.user_id = %s
-        """, [request.user.pk])
+            cursor = connection.cursor()
+            cursor.execute("""
+                update feeds_feed f set unread_count = (
+                    select count(*) from feeds_entry e
+                    where e.feed_id = f.id and read = false
+                ) where f.user_id = %s
+            """, [request.user.pk])
         return Response("OK")
 mark_all_as_read = MarkAllAsRead.as_view()
 

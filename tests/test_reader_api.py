@@ -1089,7 +1089,7 @@ class ReaderApiTest(ApiTest):
 
         data['ts'] = int(time.mktime(entry.date.timetuple())) * 1000000
         data['s'] = 'user/-/state/com.google/reading-list'
-        with self.assertNumQueries(1 if user.es else 2):
+        with self.assertNumQueries(0 if user.es else 2):
             self.client.post(url, data, **clientlogin(token))
 
         if user.es:

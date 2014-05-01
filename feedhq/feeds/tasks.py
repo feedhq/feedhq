@@ -118,12 +118,16 @@ def store_entries(feed_url, entries):
         query &= Q(guid__in=guids)
         es_query.append({'or': [{'term': {'guid': g}} for g in guids]})
 
-    existing = Entry.objects.filter(query).values('guid', 'title', 'feed_id')
+    existing = None
 
     indices = []
     for feed in feeds:
         if feed['user__es']:
             indices.append(es.user_alias(feed['user_id']))
+        else:
+            if existing is None:
+                existing = Entry.objects.filter(query).values(
+                    'guid', 'title', 'feed_id')
 
     if indices:
         es.wait_for_yellow()
@@ -166,10 +170,11 @@ def store_entries(feed_url, entries):
 
     existing_guids = defaultdict(set)
     existing_titles = defaultdict(set)
-    for entry in existing:
-        existing_guids[entry['feed_id']].add(entry['guid'])
-        if filter_by_title:
-            existing_titles[entry['feed_id']].add(entry['title'])
+    if existing is not None:
+        for entry in existing:
+            existing_guids[entry['feed_id']].add(entry['guid'])
+            if filter_by_title:
+                existing_titles[entry['feed_id']].add(entry['title'])
 
     existing_es_guids = defaultdict(set)
     existing_es_titles = defaultdict(set)
