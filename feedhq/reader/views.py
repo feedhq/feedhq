@@ -15,7 +15,6 @@ from django.db.models import Sum, Q
 from django.http import Http404
 from django.shortcuts import render
 from django.utils import timezone
-from elasticsearch.helpers import BulkIndexError
 from lxml.etree import XMLSyntaxError
 from rest_framework import exceptions
 from rest_framework.authentication import SessionAuthentication
@@ -1322,12 +1321,8 @@ class EditTag(ReaderView):
                     'doc': query,
                 })
             index = es.user_alias(request.user.pk)
-            try:
+            with es.ignore_bulk_error(404, 409):
                 es.bulk(ops, index=index, raise_on_error=True)
-            except BulkIndexError as e:
-                for doc in e.args[1]:
-                    if doc['update']['status'] not in [404, 409]:
-                        raise
             if settings.TESTS:
                 es.client.indices.refresh(index)
         else:
@@ -1408,7 +1403,8 @@ class MarkAllAsRead(ReaderView):
                     'doc': {'read': True},
                 } for pk in pks]
                 index = es.user_alias(request.user.pk)
-                es.bulk(ops, index=index, raise_on_error=True)
+                with es.ignore_bulk_error(404, 409):
+                    es.bulk(ops, index=index, raise_on_error=True)
                 if settings.TESTS:
                     es.client.indices.refresh(index)
         else:

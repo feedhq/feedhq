@@ -1,10 +1,11 @@
 from collections import defaultdict
+from contextlib import contextmanager
 from copy import deepcopy
 
 from django.db import connection
 from django.conf import settings
 from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk as es_bulk
+from elasticsearch.helpers import bulk as es_bulk, BulkIndexError
 
 
 client = Elasticsearch(settings.ES_NODES,
@@ -334,3 +335,13 @@ class EntryManager(object):
             user_or_id = user_or_id.pk
         return EntryQuery(user=user_or_id)
 manager = EntryManager()
+
+
+@contextmanager
+def ignore_bulk_error(*statuses):
+    try:
+        yield
+    except BulkIndexError as e:
+        for doc in e.args[1]:
+            if doc['update']['status'] not in statuses:
+                raise
