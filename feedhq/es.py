@@ -82,22 +82,30 @@ def mget(user, pks, annotate_results=True):
         doc['_id'] = int(doc['_id'])
         results.append(EsEntry(doc))
     if annotate_results:
-        _annotate(results, user)
+        results = _annotate(results, user)
     return results
 
 
 def _annotate(results, user):
     feed_ids = set([e.feed for e in results])
     if not feed_ids:
-        return
+        return results
     feeds = user.feeds.filter(pk__in=feed_ids).select_related('category')
     by_pk = {feed.pk: feed for feed in feeds}
+
+    annotated = []
     for entry in results:
-        feed = by_pk[entry.feed]
+        try:
+            feed = by_pk[entry.feed]
+        except KeyError:
+            # FIXME feed deleted -- delete entries for this feed ID
+            continue
         if getattr(entry, 'category', None):
             entry.category = feed.category
         entry.feed = feed
         entry.user = user
+        annotated.append(entry)
+    return annotated
 
 
 def next_id():
@@ -325,7 +333,7 @@ class EntryQuery(object):
         )
         results['hits'] = [EsEntry(hit) for hit in results['hits']['hits']]
         if annotate is not None:
-            _annotate(results['hits'], annotate)
+            results['hits'] = _annotate(results['hits'], annotate)
         return results
 
 
