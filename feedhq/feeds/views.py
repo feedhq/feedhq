@@ -305,11 +305,7 @@ class DeleteCategory(CategoryMixin, generic.DeleteView):
         name = self.object.name
         self.object.delete()
         if self.request.user.es:
-            es.client.delete_by_query(
-                index=es.user_alias(self.request.user.pk),
-                doc_type='entries',
-                body={'query': {'term': {'category': pk}}},
-            )
+            request.user.delete_category_entries(pk)
         messages.success(
             self.request,
             _('%(category)s has been successfully deleted') % {
@@ -408,11 +404,7 @@ class DeleteFeed(FeedMixin, generic.DeleteView):
         name = self.object.name
         self.object.delete()
         if request.user.es:
-            es.client.delete_by_query(
-                index=es.user_alias(request.user.pk),
-                doc_type='entries',
-                body={'query': {'term': {'feed': pk}}},
-            )
+            request.user.delete_feed_entries(pk)
         messages.success(
             request,
             _('%(feed)s has been successfully deleted') % {

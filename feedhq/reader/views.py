@@ -589,13 +589,7 @@ class EditSubscription(ReaderView):
             ids = request.user.feeds.filter(url=url).values_list('pk',
                                                                  flat=True)
             if ids and request.user.es:
-                es.client.delete_by_query(
-                    index=es.user_alias(request.user.pk),
-                    doc_type='entries',
-                    body={'query': {'filtered': {'filter': {'or': [
-                        {'term': {'feed': pk}} for pk in ids
-                    ]}}}},
-                )
+                request.user.delete_feed_entries(*ids)
             request.user.feeds.filter(pk__in=ids).delete()
         elif action == 'edit':
             qs = request.user.feeds.filter(url=url)

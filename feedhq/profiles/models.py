@@ -208,3 +208,19 @@ class User(PermissionsMixin, AbstractBaseUser):
             es.bulk(docs, index=name, timeout=60, raise_on_error=True)
         self.es = True
         self.save(update_fields=['es'])
+
+    def delete_feed_entries(self, *pks):
+        return es.client.delete_by_query(
+            index=es.user_alias(self.pk),
+            doc_type='entries',
+            body={'query': {'filtered': {'filter': {'or': [
+                {'term': {'feed': pk}} for pk in pks
+            ]}}}},
+        )
+
+    def delete_category_entries(self, pk):
+        return es.client.delete_by_query(
+            index=es.user_alias(self.pk),
+            doc_type='entries',
+            body={'query': {'term': {'category': pk}}},
+        )
