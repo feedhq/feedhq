@@ -874,6 +874,9 @@ class EsEntry(BaseEntry):
         'read_later_url', 'pk', 'subtitle', '_content', 'user',
     )
 
+    def __repr__(self):
+        return '<{0}: {1}>'.format(self.__class__.__name__, self.pk)
+
     def __init__(self, entry):
         if isinstance(entry['_id'], six.string_types):
             assert entry['_id'].isdigit()
