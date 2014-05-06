@@ -1,6 +1,8 @@
 import json
 import pytz
 
+from datetime import timedelta
+
 from django.conf import settings
 from django.contrib.auth.models import (AbstractBaseUser, UserManager,
                                         PermissionsMixin)
@@ -224,3 +226,14 @@ class User(PermissionsMixin, AbstractBaseUser):
             doc_type='entries',
             body={'query': {'term': {'category': pk}}},
         )
+
+    def delete_old(self):
+        limit = timezone.now() - timedelta(days=self.ttl)
+        if self.es:
+            es.client.delete_by_query(
+                index=es.user_alias(self.pk),
+                doc_type='entries',
+                body={'query': {'range': {'timestamp': {'lte': limit}}}},
+            )
+        else:
+            self.entries.filter(date__lte=limit).delete()
