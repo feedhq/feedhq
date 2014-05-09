@@ -127,7 +127,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
     entries = entries.select_related('feed', 'feed__category')
     if user.oldest_first:
         entries = entries.order_by('date', 'id')
-        es_entries = es_entries.order_by('timestamp')
+        es_entries = es_entries.order_by('timestamp', 'id')
 
     if request.method == 'POST':
         if request.POST['action'] in (ReadForm.READ_ALL, ReadForm.READ_PAGE):
@@ -476,7 +476,7 @@ def item(request, entry_id):
 
     # The previous is actually the next by date, and vice versa
     if request.user.es:
-        es_entries = es.manager.user(request.user)
+        es_entries = es.manager.user(request.user).exclude(id=entry.pk)
         if 'feed' in kw:
             es_entries = es_entries.filter(feed=kw['feed'].pk)
         if 'read' in kw:
@@ -485,13 +485,13 @@ def item(request, entry_id):
             es_entries = es_entries.filter(category=kw['feed__category'].pk)
         if 'starred' in kw:
             es_entries = es_entries.filter(starred=kw['starred'])
-        previous = es_entries.filter(
-            timestamp__gt=entry.date).order_by('timestamp').fetch(per_page=1)
+        previous = es_entries.filter(timestamp__gte=entry.date).order_by(
+            'timestamp', 'id').fetch(per_page=1)
         previous = previous['hits'][0] if previous['hits'] else None
         if previous is not None:
             previous = previous.get_absolute_url()
-        next = es_entries.filter(
-            timestamp__lt=entry.date).order_by('-timestamp').fetch(per_page=1)
+        next = es_entries.filter(timestamp__lte=entry.date).order_by(
+            '-timestamp', '-id').fetch(per_page=1)
         next = next['hits'][0] if next['hits'] else None
         if next is not None:
             next = next.get_absolute_url()

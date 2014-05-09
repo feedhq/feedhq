@@ -155,7 +155,7 @@ class EntryQuery(object):
         self.query_aggs = {}
         self.query = None
         self.source = {}
-        self.ordering = 'timestamp:desc'
+        self.ordering = ['timestamp:desc', 'id:desc']
         self.filter(clone=False, **kwargs)
 
     def _clone(self):
@@ -277,13 +277,17 @@ class EntryQuery(object):
             q.query_aggs[name] = {'filter': {'match_all': {}}}
         return q
 
-    def order_by(self, criteria):
+    def order_by(self, *criteria):
+        if not criteria:
+            raise ValueError("Must provide fields to sort on")
         q = self._clone()
-        order = 'asc'
-        if criteria.startswith('-'):
-            order = 'desc'
-            criteria = criteria[1:]
-        q.ordering = '{0}:{1}'.format(criteria, order)
+        q.ordering = []
+        for crit in criteria:
+            order = 'asc'
+            if crit.startswith('-'):
+                order = 'desc'
+                crit = crit[1:]
+            q.ordering.append('{0}:{1}'.format(crit, order))
         return q
 
     def fetch(self, page=1, per_page=50, annotate=None):
@@ -327,7 +331,7 @@ class EntryQuery(object):
             body=query,
             params={
                 'from': (page - 1) * per_page,
-                'sort': self.ordering,
+                'sort': ",".join(self.ordering),
                 'size': per_page,
             },
         )
