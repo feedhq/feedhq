@@ -35,6 +35,9 @@ class Command(BaseCommand):
                         "user": {
                             "type": "long",
                         },
+                        "id": {
+                            "type": "long",
+                        },
                     },
                 },
             },
