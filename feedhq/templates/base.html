@@ -60,10 +60,8 @@
 				<div>{% include "footer.html" %}</div>
 			</div>
 		</div>
+<script type="text/javascript" src="{% static "core/js/bundle.min.js" %}"></script>
 {% render_block "js" %}
 
-{% addtoblock "js" %}
-<script type="text/javascript" src="{% static "core/js/bundle.min.js" %}"></script>
-{% endaddtoblock %}
 	</body>
 </html>
