@@ -2,14 +2,6 @@
 {% include "floppyforms/select.html" %}
 
 {% addtoblock "js" %}
-<script src="{% static "core/js/jquery.min.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
-<script src="{% static "core/js/bootstrap-tooltip.js" %}"></script>
-{% endaddtoblock %}
-
-{% addtoblock "js" %}
 <script type="text/javascript">
 	$(function() {
 		var select = $('#{{ attrs.id }}');
@@ -25,6 +17,7 @@
 			if (selected) {
 				color.addClass('selected');
 			}
+			color.tooltip();
 			colors.append(color);
 		});
 		select.hide()
