@@ -489,12 +489,26 @@ def item(request, entry_id):
             'timestamp', 'id').fetch(per_page=1)
         previous = previous['hits'][0] if previous['hits'] else None
         if previous is not None:
-            previous = previous.get_absolute_url()
+            if previous.date == entry.date:
+                previous = es_entries.filter(
+                    timestamp__gte=entry.date).filter(
+                    id__gt=entry.pk
+                ).order_by('timestamp', 'id').fetch(per_page=1)
+                previous = previous['hits'][0] if previous['hits'] else None
+            if previous is not None:
+                previous = previous.get_absolute_url()
         next = es_entries.filter(timestamp__lte=entry.date).order_by(
             '-timestamp', '-id').fetch(per_page=1)
         next = next['hits'][0] if next['hits'] else None
         if next is not None:
-            next = next.get_absolute_url()
+            if next.date == entry.date:
+                next = es_entries.filter(
+                    timestamp__lte=entry.date).filter(
+                    id__lt=entry.pk
+                ).order_by('-timestamp', '-id').fetch(per_page=1)
+                next = next['hits'][0] if next['hits'] else None
+            if next is not None:
+                next = next.get_absolute_url()
     else:
         try:
             previous = entry.get_next_by_date(**kw).get_absolute_url()
