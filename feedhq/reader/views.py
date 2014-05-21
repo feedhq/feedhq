@@ -7,7 +7,6 @@ from datetime import timedelta
 
 import opml
 
-from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import connection, transaction
@@ -1316,9 +1315,8 @@ class EditTag(ReaderView):
                 })
             index = es.user_alias(request.user.pk)
             with es.ignore_bulk_error(404, 409):
-                es.bulk(ops, index=index, raise_on_error=True)
-            if settings.TESTS:
-                es.client.indices.refresh(index)
+                es.bulk(ops, index=index, raise_on_error=True,
+                        params={'refresh': True})
         else:
             request.user.entries.filter(pk__in=entry_ids).update(**query)
             merged = to_add + to_remove
@@ -1399,9 +1397,8 @@ class MarkAllAsRead(ReaderView):
                 } for pk in pks]
                 index = es.user_alias(request.user.pk)
                 with es.ignore_bulk_error(404, 409):
-                    es.bulk(ops, index=index, raise_on_error=True)
-                if settings.TESTS:
-                    es.client.indices.refresh(index)
+                    es.bulk(ops, index=index, raise_on_error=True,
+                            params={'refresh': True})
         else:
             entries.filter(**query).update(read=True)
             cursor = connection.cursor()

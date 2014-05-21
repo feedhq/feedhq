@@ -244,8 +244,7 @@ class ReadForm(forms.Form):
             } for pk in pks]
             if pks:
                 with es.ignore_bulk_error(404, 409):
-                    es.bulk(ops, raise_on_error=True)
-                es.client.indices.refresh(index)
+                    es.bulk(ops, raise_on_error=True, params={'refresh': True})
 
         else:
             if self.pages_only:
@@ -302,8 +301,7 @@ class UndoReadForm(forms.Form):
                 'doc': {'read': False},
             } for pk in pks]
             with es.ignore_bulk_error(404, 409):
-                es.bulk(ops, raise_on_error=True)
-            es.client.indices.refresh(index)
+                es.bulk(ops, raise_on_error=True, params={'refresh': True})
         else:
             self.user.entries.filter(pk__in=pks).update(read=False)
         return len(pks)
