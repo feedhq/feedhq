@@ -8,6 +8,10 @@ from ... import es
 
 
 class Migration(DataMigration):
+    depends_on = (
+        ('feeds', '0016_auto__add_index_feed_url'),
+    )
+
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Don't use "from appname.models import ModelName".
