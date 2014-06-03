@@ -50,7 +50,7 @@ def counts(user, feed_ids, only_unread=True):
     return client.search(index=user_alias(user.pk),
                          doc_type='entries',
                          body=query,
-                         params={'size': 0})['facets']
+                         params={'size': 0}).get('facets', {})
 
 
 def entry(user, id, annotate_results=True):

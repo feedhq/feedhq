@@ -682,7 +682,7 @@ def dashboard(request, only_unread=False):
         counts = es.counts(request.user, feed_to_cat.keys())
         _all = 0
         for feed in feeds:
-            feed.unread_count = counts[str(feed.pk)]['count']
+            feed.unread_count = counts.get(str(feed.pk), {'count': 0})['count']
             _all += feed.unread_count
             if feed.category_id is None:
                 continue
