@@ -213,8 +213,9 @@ class UpdateTests(TestCase):
             store_entries(feed.url, data)
 
         if feed.user.es:
-            count = es.counts(feed.user, [feed.pk])[str(feed.pk)]['count']
-            count2 = es.counts(feed2.user, [feed2.pk])[str(feed2.pk)]['count']
+            count = es.counts(feed.user, [feed.pk])[str(feed.pk)]['doc_count']
+            count2 = es.counts(feed2.user,
+                               [feed2.pk])[str(feed2.pk)]['doc_count']
         else:
             count = feed.entries.count()
             count2 = feed2.entries.count()
@@ -240,7 +241,7 @@ class UpdateTests(TestCase):
 
         if feed.user.es:
             count = es.counts(feed.user, [feed.pk],
-                              only_unread=False)[str(feed.pk)]['count']
+                              only_unread=False)[str(feed.pk)]['doc_count']
         else:
             count = feed.entries.count()
         self.assertEqual(count, 4)
@@ -254,7 +255,7 @@ class UpdateTests(TestCase):
             store_entries(feed.url, data)
         if feed.user.es:
             count = es.counts(feed.user, [feed.pk],
-                              only_unread=False)[str(feed.pk)]['count']
+                              only_unread=False)[str(feed.pk)]['doc_count']
         else:
             count = feed.entries.count()
         self.assertEqual(count, 4)
@@ -271,7 +272,7 @@ class UpdateTests(TestCase):
 
         if feed.user.es:
             count = es.counts(feed.user, [feed.pk],
-                              only_unread=False)[str(feed.pk)]['count']
+                              only_unread=False)[str(feed.pk)]['doc_count']
         else:
             count = feed.entries.count()
         self.assertEqual(count, 10)

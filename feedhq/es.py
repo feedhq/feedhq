@@ -32,7 +32,7 @@ def bulk(ops, **kwargs):
 
 
 def counts(user, feed_ids, only_unread=True):
-    facets = {}
+    aggs = {}
     for pk in feed_ids:
         term = {'term': {'feed': pk}}
         if only_unread:
@@ -40,17 +40,17 @@ def counts(user, feed_ids, only_unread=True):
                 {'term': {'read': False}},
                 term,
             ]}
-        facets[pk] = {
+        aggs[pk] = {
             'global': True,
             'filter': term,
         }
     query = {
-        'facets': facets,
+        'aggs': aggs,
     }
     return client.search(index=user_alias(user.pk),
                          doc_type='entries',
                          body=query,
-                         params={'size': 0}).get('facets', {})
+                         params={'size': 0}).get('aggregations', {})
 
 
 def entry(user, id, annotate_results=True):

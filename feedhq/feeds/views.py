@@ -682,7 +682,8 @@ def dashboard(request, only_unread=False):
         counts = es.counts(request.user, feed_to_cat.keys())
         _all = 0
         for feed in feeds:
-            feed.unread_count = counts.get(str(feed.pk), {'count': 0})['count']
+            feed.unread_count = counts.get(str(feed.pk),
+                                           {'doc_count': 0})['doc_count']
             _all += feed.unread_count
             if feed.category_id is None:
                 continue
@@ -695,7 +696,7 @@ def dashboard(request, only_unread=False):
 
         uncategorized = [feed for feed in feeds if feed.category_id is None]
         for feed in uncategorized:
-            feed.unread_count = counts[str(feed.pk)]['count']
+            feed.unread_count = counts[str(feed.pk)]['doc_count']
 
         if only_unread:
             categories = [c for c in categories if c['unread_count']]
