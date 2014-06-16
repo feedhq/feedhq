@@ -4,8 +4,12 @@ import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.models import RequestSite
+from django.core import signing
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.forms import Form
 from django.shortcuts import redirect
+from django.template import loader
 from django.utils.translation import ugettext as _
 from django.views import generic
 
@@ -151,20 +155,54 @@ class Recover(views.Recover):
 recover = Recover.as_view()
 
 
-class Destroy(generic.FormView):
+class DestructionRequest(generic.FormView):
+    form_class = Form
+    template_name = 'profiles/user_request_delete.html'
+
+    def form_valid(self, form):
+        token = signing.dumps(self.request.user.pk, salt='delete_account')
+        url = reverse('destroy_confirm', args=[token])
+        context = {
+            'user': self.request.user,
+            'url': url,
+            'site': RequestSite(self.request),
+            'scheme': 'https' if self.request.is_secure() else 'http',
+        }
+        body = loader.render_to_string('email/account_delete.txt', context)
+        subject = _('FeedHQ account deletion request')
+        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL,
+                  [self.request.user.email])
+        return redirect('destroy_sent')
+destroy = login_required(DestructionRequest.as_view())
+
+
+class DestroyConfirm(generic.FormView):
     success_url = reverse_lazy('destroy_done')
     form_class = DeleteAccountForm
     template_name = 'profiles/user_confirm_delete.html'
 
+    def dispatch(self, request, token):
+        try:
+            signing.loads(token, max_age=20*60, salt='delete_account')
+            self.token = token
+        except signing.BadSignature:
+            return redirect(reverse('destroy_account'))
+        return super(DestroyConfirm, self).dispatch(request, token)
+
     def get_form_kwargs(self):
-        kwargs = super(Destroy, self).get_form_kwargs()
+        kwargs = super(DestroyConfirm, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
     def form_valid(self, form):
         form.save()
         return redirect(self.get_success_url())
-destroy = login_required(Destroy.as_view())
+destroy_confirm = login_required(DestroyConfirm.as_view())
+
+
+class DestroySent(generic.TemplateView):
+    template_name = 'profiles/account_delete_sent.html'
+destroy_sent = login_required(DestroySent.as_view())
 
 
 class DestroyDone(generic.TemplateView):

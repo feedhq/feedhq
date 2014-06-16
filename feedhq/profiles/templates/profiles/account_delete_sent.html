@@ -1,0 +1,11 @@
+{% extends "profiles/profile_base.html" %}
+
+{% block title %}{% trans "Delete your account" %}{% endblock %}
+
+{% block delete_selected %}current{% endblock %}
+
+{% block profile_content %}
+	<h2>{% trans "Verification email sent" %}</h2>
+	<p>{% trans "Please check your email. You should receive an email to confirm your account deletion. Click on the link it contains to proceed." %}</p>
+	<p>{% url "export" as dump_url %}{% blocktrans %}Before you go, you might be interested in a <a href="{{ dump_url }}">backup of your data</a>.{% endblocktrans %}</p>
+{% endblock %}
