@@ -685,8 +685,11 @@ def get_es_term(stream, user, exception=False):
             term = {'tags': state}
     elif is_label(stream, user.pk):
         name = is_label(stream, user.pk)
-        [category] = user.categories.filter(name=name).values_list('pk',
+        categories = user.categories.filter(name=name).values_list('pk',
                                                                    flat=True)
+        if not categories:
+            raise Http404
+        [category] = categories
         term = {'category': category}
     else:
         msg = u"Unrecognized stream: {0}".format(stream)

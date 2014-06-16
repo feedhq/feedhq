@@ -409,6 +409,11 @@ class WebBaseTests(WebTest):
         with self.assertRaises(ValueError):
             FeedFactory.create()
 
+    def test_item_404(self):
+        user = UserFactory.create()
+        url = reverse('feeds:item', args=[99999])
+        self.app.get(url, user=user, status=404)
+
     @patch("requests.get")
     def test_img(self, get):
         get.return_value = responses(304)

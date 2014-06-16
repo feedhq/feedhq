@@ -621,6 +621,14 @@ class ReaderApiTest(ApiTest):
                 **clientlogin(token))
         self.assertEqual(len(response.json['items']), 0)
 
+        if user.es:
+            with self.assertNumQueries(1):
+                response = self.client.get(
+                    reverse('reader:stream_contents',
+                            args=['user/-/label/__inexisting__']),
+                    **clientlogin(token))
+            self.assertEqual(response.status_code, 404)
+
         with self.assertNumQueries(queries):
             response = self.client.get(url, {'c': 'page2'},
                                        **clientlogin(token))

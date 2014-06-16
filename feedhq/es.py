@@ -4,7 +4,8 @@ from copy import deepcopy
 
 from django.db import connection
 from django.conf import settings
-from elasticsearch import Elasticsearch
+from django.http import Http404
+from elasticsearch import Elasticsearch, NotFoundError
 from elasticsearch.helpers import bulk as es_bulk, BulkIndexError
 
 
@@ -55,7 +56,10 @@ def counts(user, feed_ids, only_unread=True):
 
 def entry(user, id, annotate_results=True):
     from .feeds.models import EsEntry
-    result = client.get(user_alias(user.pk), id)
+    try:
+        result = client.get(user_alias(user.pk), id)
+    except NotFoundError:
+        raise Http404
     entry = EsEntry(result)
     if annotate_results:
         entry.user = user
