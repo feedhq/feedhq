@@ -126,7 +126,8 @@ class User(PermissionsMixin, AbstractBaseUser):
     ttl = models.PositiveIntegerField(
         _('Retention days'), default=30,
         help_text=_('Number of days after which entries are deleted. The more '
-                    'history you keep, the less snappy FeedHQ becomes.'))
+                    'history you keep, the less snappy FeedHQ becomes. '
+                    'Starred items are not deleted.'))
     es = models.NullBooleanField(default=True)
 
     objects = UserManager()
@@ -233,7 +234,12 @@ class User(PermissionsMixin, AbstractBaseUser):
             es.client.delete_by_query(
                 index=es.user_alias(self.pk),
                 doc_type='entries',
-                body={'query': {'range': {'timestamp': {'lte': limit}}}},
+                body={'query': {'filtered': {
+                    'filter': {'and': [
+                        {'range': {'timestamp': {'lte': limit}}},
+                        {'term': {'starred': False}},
+                    ]},
+                }}},
             )
         else:
             self.entries.filter(date__lte=limit).delete()
