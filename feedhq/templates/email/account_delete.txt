@@ -1,0 +1,6 @@
+Dear {{ user.username|default:user.email }},
+
+It seems you're willing to delete your FeedHQ account. To confirm, please
+follow the link below. You will be asked to enter your account password.
+
+{{ scheme }}://{{ site.domain }}{{ url }}

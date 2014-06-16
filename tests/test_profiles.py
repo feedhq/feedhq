@@ -1,6 +1,7 @@
 import json
 
 from django.conf import settings
+from django.core import mail
 from django.core.urlresolvers import reverse
 
 from mock import patch
@@ -248,6 +249,18 @@ class ProfilesTest(WebTest):
         self.assertContains(response, 'Delete your account')
 
         form = response.forms['delete']
+        response = form.submit().follow()
+        self.assertContains(response, 'check your email')
+
+        body = mail.outbox[0].body
+        url = body.split('localhost:80')[1].split('\n')[0]
+
+        response = self.app.get(url[:-5] + '/')
+        self.assertEqual(response.status_code, 302)
+
+        response = self.app.get(url, user='test')
+        form = response.forms['delete']
+
         form['password'] = 'test'
         response = form.submit()
         self.assertContains(response, 'The password you entered was incorrect')
