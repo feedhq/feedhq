@@ -146,6 +146,15 @@ located at ``feedhq.wsgi.application``.
 
 .. _Django deployment guide: http://docs.djangoproject.com/en/dev/howto/deployment/
 
+To create the Elasticsearch index::
+
+    django-admin.py create_index
+
+Then you'll need to create the appropriate PostgreSQL database and run::
+
+    django-admin.py syncdb
+    django-admin.py migrate
+
 Note that additionally to the web server, you need to run one or more
 consumers for the task queue. This is done with the ``rqworker`` management
 command::
