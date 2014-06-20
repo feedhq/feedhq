@@ -1,10 +1,9 @@
-from django.test import TestCase
 from mock import patch
 
 from feedhq.feeds.models import Favicon, Feed
 
 from .factories import FeedFactory
-from . import responses
+from . import responses, TestCase
 
 
 class FaviconTests(TestCase):

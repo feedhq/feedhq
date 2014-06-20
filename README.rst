@@ -66,6 +66,7 @@ Requirements:
 * Python 2.7 or 3.3+ (experimental)
 * Redis (2.6+ recommended)
 * PostgreSQL (9.2+ recommended but anything >= 8.4 should work)
+* Elasticsearch (1.1+ required)
 
 Getting the code::
 
@@ -113,6 +114,17 @@ Optionally you can customize:
   ``smtp://user:password@host:port/?backend=my.EmailBackend&use_tls=true``.
   The ``backend`` querystring parameter sets the Django ``EMAIL_BACKEND``
   setting. By default emails only go to the development console.
+* ``ES_NODES``: space-separated list of elasticsearch nodes to use for cluster
+  discovery. Defaults to ``localhost:9200``.
+* ``ES_INDEX``: the name of the elasticsearch index. Defaults to ``feedhq``.
+* ``ES_ALIAS_TEMPLATE``: string template to format the per-user alias that is
+  created in elasticsearch. Defaults to ``feedhq-{0}``.
+* ``ES_SHARDS``: number of shards that you want in your elasticsearch index.
+  This cannot be changed once you have created the index. Defaults to 5.
+* ``ES_REPLICAS``: number of times you want your shards to be replicated on
+  the elasticsearch cluster. Defaults to 1. Set it to 0 if you only have one
+  node. This is only used at index creation but the index setting can be
+  altered dynamically.
 
 .. _Sentry: https://www.getsentry.com/
 
@@ -133,6 +145,15 @@ documentation on the `Django deployment guide`_. The WSGI application is
 located at ``feedhq.wsgi.application``.
 
 .. _Django deployment guide: http://docs.djangoproject.com/en/dev/howto/deployment/
+
+To create the Elasticsearch index::
+
+    django-admin.py create_index
+
+Then you'll need to create the appropriate PostgreSQL database and run::
+
+    django-admin.py syncdb
+    django-admin.py migrate
 
 Note that additionally to the web server, you need to run one or more
 consumers for the task queue. This is done with the ``rqworker`` management

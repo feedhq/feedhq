@@ -9,13 +9,12 @@ import opml
 
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
-from django.db import connection
+from django.db import connection, transaction
 from django.db.models import Sum, Q
 from django.http import Http404
 from django.shortcuts import render
 from django.utils import timezone
 from lxml.etree import XMLSyntaxError
-
 from rest_framework import exceptions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.negotiation import DefaultContentNegotiation
@@ -25,6 +24,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from six.moves.urllib import parse as urlparse
 
+from .. import es
 from ..feeds.forms import FeedForm, user_lock
 from ..feeds.models import Feed, UniqueFeed, Category
 from ..feeds.utils import epoch_to_utc
@@ -261,55 +261,149 @@ class UnreadCount(ReaderView):
     http_method_names = ['get']
 
     def get(self, request, *args, **kwargs):
-        feeds = request.user.feeds.filter(unread_count__gt=0)
-        last_updates = request.user.last_updates()
         unread_counts = []
+        last_updates = request.user.last_updates()
         forced = False
-        for feed in feeds:
-            if feed.url not in last_updates and not forced:
-                last_updates = request.user.refresh_updates()
-                forced = True
-            feed_data = {
-                "id": u"feed/{0}".format(feed.url),
-                "count": feed.unread_count,
-            }
-            ts = last_updates[feed.url]
-            if ts:
-                feed_data['newestItemTimestampUsec'] = '{0}000000'.format(ts)
-            unread_counts.append(feed_data)
+        if request.user.es:
+            results = es.client.search(
+                index=es.user_alias(request.user.pk),
+                doc_type='entries',
+                body={
+                    'query': {
+                        'filtered': {
+                            'filter': {'term': {'read': False}},
+                        },
+                    },
+                    'aggs': {
+                        'all': {
+                            'global': {},
+                            'aggs': {
+                                'unread': {
+                                    'filter': {'term': {'read': False}},
+                                    'aggs': {
+                                        'feeds': {
+                                            'terms': {'field': 'feed',
+                                                      'size': 0},
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                params={'size': 0},
+            )
+            if 'aggregations' in results:
+                feeds = {}
+                for bucket in results['aggregations']['all']['unread'][
+                        'feeds']['buckets']:
+                    feeds[bucket['key']] = {
+                        'count': bucket['doc_count'],
+                    }
+                if feeds:
+                    _feeds = request.user.feeds.filter(
+                        pk__in=feeds.keys()
+                    ).select_related('category').values_list(
+                        'pk', 'url', 'category_id', 'category__name'
+                    )
 
-        # We can't annotate with Max('feeds__entries__date') when fetching the
-        # categories since it creates duplicates and returns wrong counts.
-        cat_ts = {}
-        for feed in feeds:
-            if feed.category_id in cat_ts and last_updates[feed.url]:
-                cat_ts[feed.category_id] = max(cat_ts[feed.category_id],
-                                               last_updates[feed.url])
-            elif last_updates[feed.url]:
-                cat_ts[feed.category_id] = last_updates[feed.url]
-        categories = request.user.categories.annotate(
-            unread_count=Sum('feeds__unread_count'),
-        ).filter(unread_count__gt=0)
-        for cat in categories:
-            info = {
-                "id": label_key(request, cat),
-                "count": cat.unread_count,
-            }
-            if cat.pk in cat_ts:
-                info["newestItemTimestampUsec"] = '{0}000000'.format(
-                    cat_ts[cat.pk])
-            unread_counts.append(info)
+                    categories = {}
+                    total = 0
+                    latest = 0
+                    for pk, url, category, name in _feeds:
+                        data = feeds[pk]
+                        ts = last_updates.get(url, 0)
+                        if ts:
+                            data['newestItemTimestampUsec'] = (
+                                '{0}000000'.format(ts))
+                        data['id'] = u'feed/{0}'.format(url)
+                        unread_counts.append(data)
+                        total += data['count']
+                        latest = max(latest, ts)
 
-        # Special items:
-        # reading-list is the global counter
-        if cat_ts.values():
-            unread_counts += [{
-                "id": "user/{0}/state/com.google/reading-list".format(
-                    request.user.pk),
-                "count": sum([f.unread_count for f in feeds]),
-                "newestItemTimestampUsec": '{0}000000'.format(max(
-                    cat_ts.values())),
-            }]
+                        if category is None:
+                            continue
+
+                        if category not in categories:
+                            categories[category] = {
+                                'name': name,
+                                'count': 0,
+                                'ts': 0
+                            }
+                        categories[category]['count'] += data['count']
+                        categories[category]['ts'] = max(
+                            categories[category]['ts'], ts)
+
+                    for pk, data in categories.items():
+                        info = {
+                            "id": label_key(request, data['name']),
+                            "count": data['count'],
+                            "newestItemTimestampUsec": '{0}000000'.format(
+                                int(data['ts']),
+                            ),
+                        }
+                        unread_counts.append(info)
+
+                    if total:
+                        unread_counts.append({
+                            "id": (
+                                "user/{0}/state/com.google/"
+                                "reading-list").format(
+                                request.user.pk),
+                            "count": total,
+                            "newestItemTimestampUsec": '{0}000000'.format(
+                                int(latest)
+                            ),
+                        })
+        else:
+            feeds = request.user.feeds.filter(unread_count__gt=0)
+            for feed in feeds:
+                if feed.url not in last_updates and not forced:
+                    last_updates = request.user.refresh_updates()
+                    forced = True
+                feed_data = {
+                    "id": u"feed/{0}".format(feed.url),
+                    "count": feed.unread_count,
+                }
+                ts = last_updates[feed.url]
+                if ts:
+                    feed_data[
+                        'newestItemTimestampUsec'] = '{0}000000'.format(ts)
+                unread_counts.append(feed_data)
+
+            # We can't annotate with Max('feeds__entries__date') when fetching
+            # the categories since it creates duplicates and returns wrong
+            # counts.
+            cat_ts = {}
+            for feed in feeds:
+                if feed.category_id in cat_ts and last_updates[feed.url]:
+                    cat_ts[feed.category_id] = max(cat_ts[feed.category_id],
+                                                   last_updates[feed.url])
+                elif last_updates[feed.url]:
+                    cat_ts[feed.category_id] = last_updates[feed.url]
+            categories = request.user.categories.annotate(
+                unread_count=Sum('feeds__unread_count'),
+            ).filter(unread_count__gt=0)
+            for cat in categories:
+                info = {
+                    "id": label_key(request, cat.name),
+                    "count": cat.unread_count,
+                }
+                if cat.pk in cat_ts:
+                    info["newestItemTimestampUsec"] = '{0}000000'.format(
+                        cat_ts[cat.pk])
+                unread_counts.append(info)
+
+            # Special items:
+            # reading-list is the global counter
+            if cat_ts.values():
+                unread_counts += [{
+                    "id": "user/{0}/state/com.google/reading-list".format(
+                        request.user.pk),
+                    "count": sum([f.unread_count for f in feeds]),
+                    "newestItemTimestampUsec": '{0}000000'.format(max(
+                        cat_ts.values())),
+                }]
         return Response({
             "max": 1000,
             "unreadcounts": unread_counts,
@@ -321,6 +415,7 @@ class DisableTag(ReaderView):
     http_method_names = ['post']
     renderer_classes = [PlainRenderer]
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         if 's' not in request.DATA and 't' not in request.DATA:
             raise exceptions.ParseError("Missing required 's' parameter")
@@ -337,7 +432,27 @@ class DisableTag(ReaderView):
                 "Tag '{0}' does not exist".format(name))
 
         category.feeds.update(category=None)
+        cat_pk = category.pk
         category.delete()
+        if not request.user.es:
+            return Response("OK")
+
+        entries = es.manager.user(request.user).filter(
+            category=cat_pk,
+        ).aggregate('id').fetch(per_page=0)
+        ids = [bucket['key'] for bucket in entries[
+            'aggregations']['entries']['query']['id']['buckets']]
+
+        if ids:
+            index = es.user_alias(request.user.pk),
+            ops = [{
+                '_op_type': 'update',
+                '_index': index,
+                '_type': 'entries',
+                '_id': pk,
+                'doc': {'category': None},
+            } for pk in ids]
+            es.bulk(ops, raise_on_error=True)
         return Response("OK")
 disable_tag = DisableTag.as_view()
 
@@ -390,7 +505,7 @@ class TagList(ReaderView):
         index = 3
         for cat in request.user.categories.order_by('name'):
             tags.append({
-                "id": label_key(request, cat),
+                "id": label_key(request, cat.name),
                 "sortid": "A{0}".format(str(index).zfill(7)),
             })
             index += 1
@@ -423,7 +538,7 @@ class SubscriptionList(ReaderView):
             }
             if feed.category is not None:
                 subscription['categories'].append({
-                    "id": label_key(request, feed.category),
+                    "id": label_key(request, feed.category.name),
                     "label": feed.category.name,
                 })
             subscriptions.append(subscription)
@@ -470,7 +585,11 @@ class EditSubscription(ReaderView):
                 category=category)
 
         elif action == 'unsubscribe':
-            request.user.feeds.filter(url=url).delete()
+            ids = request.user.feeds.filter(url=url).values_list('pk',
+                                                                 flat=True)
+            if ids and request.user.es:
+                request.user.delete_feed_entries(*ids)
+            request.user.feeds.filter(pk__in=ids).delete()
         elif action == 'edit':
             qs = request.user.feeds.filter(url=url)
             query = {}
@@ -542,14 +661,52 @@ class Subscribed(ReaderView):
 subscribed = Subscribed.as_view()
 
 
-def get_q(stream, user_id, exception=False):
+def get_es_term(stream, user, exception=False):
+    term = {}
+    if stream.startswith("feed/"):
+        url = feed_url(stream)
+        # TODO enforce unique URL per user in the schema
+        term['feed__in'] = [
+            pk for pk in user.feeds.filter(url=url).values_list('pk',
+                                                                flat=True)]
+    elif is_stream(stream, user.pk):
+        state = is_stream(stream, user.pk)
+        if state == 'read':
+            term = {'read': True}
+        elif state == 'kept-unread':
+            term = {'read': False}
+        elif state in ['broadcast', 'broadcast-friends']:
+            term = {'broadcast': True}
+        elif state == 'reading-list':
+            pass
+        elif state == 'starred':
+            term = {'starred': True}
+        else:
+            term = {'tags': state}
+    elif is_label(stream, user.pk):
+        name = is_label(stream, user.pk)
+        categories = user.categories.filter(name=name).values_list('pk',
+                                                                   flat=True)
+        if not categories:
+            raise Http404
+        [category] = categories
+        term = {'category': category}
+    else:
+        msg = u"Unrecognized stream: {0}".format(stream)
+        logger.info(msg)
+        if exception:
+            raise exceptions.ParseError(msg)
+    return term
+
+
+def get_q(stream, user, exception=False):
     """Given a stream ID, returns a Q object for this stream."""
     stream_q = None
     if stream.startswith("feed/"):
         url = feed_url(stream)
         stream_q = Q(feed__url=url)
-    elif is_stream(stream, user_id):
-        state = is_stream(stream, user_id)
+    elif is_stream(stream, user.pk):
+        state = is_stream(stream, user.pk)
         if state == 'read':
             stream_q = Q(read=True)
         elif state == 'kept-unread':
@@ -560,8 +717,8 @@ def get_q(stream, user_id, exception=False):
             stream_q = Q()
         elif state == 'starred':
             stream_q = Q(starred=True)
-    elif is_label(stream, user_id):
-        name = is_label(stream, user_id)
+    elif is_label(stream, user.pk):
+        name = is_label(stream, user.pk)
         stream_q = Q(feed__category__name=name)
     else:
         msg = u"Unrecognized stream: {0}".format(stream)
@@ -571,7 +728,53 @@ def get_q(stream, user_id, exception=False):
     return stream_q
 
 
-def get_stream_q(streams, user_id, exclude=None, include=None, limit=None,
+def _streams(streams):
+    if streams.startswith('splice/'):
+        streams = streams[len('splice/'):].split('|')
+    else:
+        streams = [streams]
+    return streams
+
+
+def get_es_entries(streams, user, exclude=None, include=None, limit=None,
+                   offset=None):
+    streams = _streams(streams)
+    entries = es.manager.user(user)
+    for stream in streams:
+        entries = entries.filter(or_=True,
+                                 **get_es_term(stream, user, exception=True))
+
+    if include is not None:
+        for inc in include:
+            entries = entries.filter(**get_es_term(inc, user))
+
+    if exclude is not None:
+        for exc in exclude:
+            entries = entries.exclude(**get_es_term(exc, user))
+
+    if limit is not None:
+        try:
+            timestamp = int(limit)
+        except ValueError:
+            raise exceptions.ParseError(
+                "Malformed 'ot' parameter. Must be a unix timstamp")
+        else:
+            limit = epoch_to_utc(timestamp)
+            entries = entries.filter(timestamp__gte=limit)
+
+    if offset is not None:
+        try:
+            timestamp = int(offset)
+        except ValueError:
+            raise exceptions.ParseError(
+                "Malformed 'nt' parameter. Must be a unix timstamp")
+        else:
+            offset = epoch_to_utc(timestamp)
+            entries = entries.filter(timestamp__lte=offset)
+    return entries
+
+
+def get_stream_q(streams, user, exclude=None, include=None, limit=None,
                  offset=None):
     """
     Returns a Q object that can be used to filter a queryset of entries.
@@ -582,13 +785,10 @@ def get_stream_q(streams, user_id, exclude=None, include=None, limit=None,
     offset: unix timestamp to which to consider entries
     """
     q = None
-    if streams.startswith('splice/'):
-        streams = streams[len('splice/'):].split('|')
-    else:
-        streams = [streams]
+    streams = _streams(streams)
 
     for stream in streams:
-        stream_q = get_q(stream, user_id, exception=True)
+        stream_q = get_q(stream, user, exception=True)
         if stream_q is not None:
             if q is None:
                 q = stream_q
@@ -598,14 +798,14 @@ def get_stream_q(streams, user_id, exclude=None, include=None, limit=None,
     # ?it=user/stuff or feed/stuff to only include something from the query
     if include is not None:
         for inc in include:
-            include_q = get_q(inc, user_id)
+            include_q = get_q(inc, user)
             if include_q is not None and q is not None:
                 q &= include_q
 
     # ?xt=user/stuff or feed/stuff to exclude something from the query
     if exclude is not None:
         for ex in exclude:
-            exclude_q = get_q(ex, user_id)
+            exclude_q = get_q(ex, user)
             if exclude_q is not None and q is not None:
                 q &= ~exclude_q
 
@@ -636,32 +836,40 @@ def get_stream_q(streams, user_id, exclude=None, include=None, limit=None,
     return q
 
 
-def pagination(entries, n=None, c=None):
+def bounds(n=None, c=None):
     # ?n=20 (default), ?c=<continuation> for offset
     if n is None:
         n = 20
     if c is None:
         c = 'page1'
     try:
-        pagination_by = int(n)
+        per_page = int(n)
     except ValueError:
         raise exceptions.ParseError("'n' must be an integer")
     try:
         page = int(c[4:])
     except ValueError:
         raise exceptions.ParseError("Invalid 'c' continuation string")
+    return per_page, page
 
+
+def continuation_(count, per_page, page):
     continuation = None
-    if page * pagination_by < entries.count():
+    if per_page * page < count:
         continuation = 'page{0}'.format(page + 1)
+    return continuation
 
-    start = max(0, (page - 1) * pagination_by)
-    end = page * pagination_by
+
+def pagination(count, n=None, c=None):
+    per_page, page = bounds(n, c)
+    continuation = continuation_(count, per_page, page)
+    start = max(0, (page - 1) * per_page)
+    end = page * per_page
     return start, end, continuation
 
 
-def label_key(request, label):
-    return u"user/{0}/label/{1}".format(request.user.pk, label.name)
+def label_key(request, name):
+    return u"user/{0}/label/{1}".format(request.user.pk, name)
 
 
 def serialize_entry(request, entry, uniques):
@@ -695,7 +903,7 @@ def serialize_entry(request, entry, uniques):
     }
     if entry.feed.category is not None:
         item['categories'].append(
-            label_key(request, entry.feed.category))
+            label_key(request, entry.feed.category.name))
     if entry.read:
         item['categories'].append(read)
     if entry.starred:
@@ -809,20 +1017,45 @@ class StreamContents(ReaderView):
             logger.info(msg)
             raise exceptions.ParseError(msg)
 
-        entries = request.user.entries.filter(
-            get_stream_q(content_id, request.user.pk,
-                         exclude=request.GET.getlist('xt'),
-                         include=request.GET.getlist('it'),
-                         limit=request.GET.get('ot'),
-                         offset=request.GET.get('nt')),
-        ).select_related('feed', 'feed__category')
-
         # Ordering
         # ?r=d|n last entry first (default), ?r=o oldest entry first
         ordering = 'date' if request.GET.get('r', 'd') == 'o' else '-date'
 
-        start, end, continuation = pagination(entries, n=request.GET.get('n'),
-                                              c=request.GET.get('c'))
+        if request.user.es:
+            per_page, page = bounds(n=request.GET.get('n'),
+                                    c=request.GET.get('c'))
+            entries = get_es_entries(
+                content_id, request.user,
+                exclude=request.GET.getlist('xt'),
+                include=request.GET.getlist('it'),
+                limit=request.GET.get('ot'),
+                offset=request.GET.get('nt'),
+            ).aggregate(
+                '__query__'
+            ).order_by(ordering.replace('date', 'timestamp')).fetch(
+                page=page, per_page=per_page, annotate=request.user)
+
+            continuation = continuation_(
+                entries['aggregations']['entries']['query']['doc_count'],
+                per_page,
+                page,
+            )
+            entries = entries['hits']
+            start = max(0, (page - 1) * per_page)
+        else:
+            entries = request.user.entries.filter(
+                get_stream_q(content_id, request.user,
+                             exclude=request.GET.getlist('xt'),
+                             include=request.GET.getlist('it'),
+                             limit=request.GET.get('ot'),
+                             offset=request.GET.get('nt')),
+            ).select_related('feed', 'feed__category')
+
+            start, end, continuation = pagination(entries.count(),
+                                                  n=request.GET.get('n'),
+                                                  c=request.GET.get('c'))
+
+            entries = entries.order_by(ordering)[start:end]
 
         qs = {}
         if start > 0:
@@ -838,7 +1071,7 @@ class StreamContents(ReaderView):
             base['continuation'] = continuation
 
         forced = False  # Make at most 1 full refetch
-        for entry in entries.order_by(ordering)[start:end]:
+        for entry in entries:
             if entry.feed.url not in uniques and not forced:
                 uniques = get_unique_map(request.user, force=True)
                 forced = True
@@ -857,38 +1090,80 @@ class StreamItemsIds(ReaderView):
             raise exceptions.ParseError("Required 'n' parameter")
         if 's' not in request.GET:
             raise exceptions.ParseError("Required 's' parameter")
-        entries = request.user.entries.filter(
-            get_stream_q(
-                request.GET['s'], request.user.pk,
+
+        include_stream_ids = request.GET.get(
+            "includeAllDirectStreamIds") == 'true'
+
+        data = {}
+        if request.user.es:
+            per_page, page = bounds(n=request.GET.get('n'),
+                                    c=request.GET.get('c'))
+            annotate = None
+            if include_stream_ids:
+                annotate = request.user
+            entries = get_es_entries(
+                request.GET['s'], request.user,
                 exclude=request.GET.getlist('xt'),
                 include=request.GET.getlist('it'),
                 limit=request.GET.get('ot'),
-                offset=request.GET.get('nt'))).order_by('date')
+                offset=request.GET.get('nt'),
+            ).aggregate('__query__').only(
+                'timestamp', 'feed').fetch(page=page, per_page=per_page,
+                                           annotate=annotate)
+            continuation = continuation_(
+                entries['aggregations']['entries']['query']['doc_count'],
+                per_page,
+                page,
+            )
+            if continuation:
+                data['continuation'] = continuation
 
-        start, end, continuation = pagination(entries, n=request.GET.get('n'),
-                                              c=request.GET.get('c'))
-
-        data = {}
-        if continuation:
-            data['continuation'] = continuation
-
-        if request.GET.get("includeAllDirectStreamIds") == 'true':
-            entries = entries.select_related('feed').values('pk', 'date',
-                                                            'feed__url')
-            item_refs = [{
-                'id': str(e['pk']),
-                'directStreamIds': [
-                    u'feed/{0}'.format(e['feed__url']),
-                ],
-                'timestampUsec': e['date'].strftime("%s000000"),
-            } for e in entries[start:end]]
+            if include_stream_ids:
+                item_refs = [{
+                    'id': str(e.pk),
+                    'directStreamIds': [
+                        u'feed/{0}'.format(e.feed.url),
+                    ],
+                    'timestampUsec': e.date.strftime("%s000000"),
+                } for e in entries['hits']]
+            else:
+                item_refs = [{
+                    'id': str(e.pk),
+                    'directStreamIds': [],
+                    'timestampUsec': e.date.strftime("%s000000"),
+                } for e in entries['hits']]
         else:
-            entries = entries.values('pk', 'date')
-            item_refs = [{
-                'id': str(e['pk']),
-                'directStreamIds': [],
-                'timestampUsec': e['date'].strftime("%s000000"),
-            } for e in entries[start:end]]
+            entries = request.user.entries.filter(
+                get_stream_q(
+                    request.GET['s'], request.user,
+                    exclude=request.GET.getlist('xt'),
+                    include=request.GET.getlist('it'),
+                    limit=request.GET.get('ot'),
+                    offset=request.GET.get('nt'))).order_by('date')
+            start, end, continuation = pagination(entries.count(),
+                                                  n=request.GET.get('n'),
+                                                  c=request.GET.get('c'))
+
+            if continuation:
+                data['continuation'] = continuation
+
+            if include_stream_ids:
+                entries = entries.select_related('feed').values('pk', 'date',
+                                                                'feed__url')
+                item_refs = [{
+                    'id': str(e['pk']),
+                    'directStreamIds': [
+                        u'feed/{0}'.format(e['feed__url']),
+                    ],
+                    'timestampUsec': e['date'].strftime("%s000000"),
+                } for e in entries[start:end]]
+            else:
+                entries = entries.values('pk', 'date')
+                item_refs = [{
+                    'id': str(e['pk']),
+                    'directStreamIds': [],
+                    'timestampUsec': e['date'].strftime("%s000000"),
+                } for e in entries[start:end]]
         data['itemRefs'] = item_refs
         return Response(data)
     post = get
@@ -901,12 +1176,23 @@ class StreamItemsCount(ReaderView):
     def get(self, request, *args, **kwargs):
         if 's' not in request.GET:
             raise exceptions.ParseError("Missing 's' parameter")
-        entries = request.user.entries.filter(get_stream_q(request.GET['s'],
-                                                           request.user.pk))
-        data = str(entries.count())
+        if request.user.es:
+            entries = get_es_entries(
+                request.GET['s'], request.user,
+            ).aggregate('__query__').fetch(per_page=1)
+            count = entries['aggregations']['entries']['query']['doc_count']
+            entries = entries['hits']
+        else:
+            entries = request.user.entries.filter(
+                get_stream_q(request.GET['s'], request.user))
+            count = entries.count()
+        data = str(count)
         if request.GET.get('a') == 'true':
-            data = '{0}#{1}'.format(
-                data, entries.order_by('-date')[0].date.strftime("%B %d, %Y"))
+            if request.user.es:
+                max_date = entries[0].date
+            else:
+                max_date = entries.order_by('-date')[0].date
+            data = '{0}#{1}'.format(data, max_date.strftime("%B %d, %Y"))
         return Response(data)
 stream_items_count = StreamItemsCount.as_view()
 
@@ -923,10 +1209,13 @@ class StreamItemsContents(ReaderView):
             raise exceptions.ParseError(
                 "Required 'i' parameter: items IDs to send back")
 
-        ids = map(item_id, items)
+        ids = list(map(item_id, items))
 
-        entries = request.user.entries.filter(pk__in=ids).select_related(
-            'feed', 'feed__category')
+        if request.user.es:
+            entries = es.mget(request.user, ids)
+        else:
+            entries = request.user.entries.filter(pk__in=ids).select_related(
+                'feed', 'feed__category')
 
         if not entries:
             raise exceptions.ParseError("No items found")
@@ -1018,14 +1307,28 @@ class EditTag(ReaderView):
                 raise exceptions.ParseError(
                     "Unrecognized tag: {0}".format(tag))
 
-        request.user.entries.filter(pk__in=entry_ids).update(**query)
-        merged = to_add + to_remove
-        if 'read' in merged or 'kept-unread' in merged:
-            feeds = Feed.objects.filter(
-                pk__in=request.user.entries.filter(
-                    pk__in=entry_ids).values_list('feed_id', flat=True))
-            for feed in feeds:
-                feed.update_unread_count()
+        if request.user.es:
+            ops = []
+            for pk in entry_ids:
+                ops.append({
+                    '_op_type': 'update',
+                    '_type': 'entries',
+                    '_id': pk,
+                    'doc': query,
+                })
+            index = es.user_alias(request.user.pk)
+            with es.ignore_bulk_error(404, 409):
+                es.bulk(ops, index=index, raise_on_error=True,
+                        params={'refresh': True})
+        else:
+            request.user.entries.filter(pk__in=entry_ids).update(**query)
+            merged = to_add + to_remove
+            if 'read' in merged or 'kept-unread' in merged:
+                feeds = Feed.objects.filter(
+                    pk__in=request.user.entries.filter(
+                        pk__in=entry_ids).values_list('feed_id', flat=True))
+                for feed in feeds:
+                    feed.update_unread_count()
         return Response("OK")
 edit_tag = EditTag.as_view()
 
@@ -1038,6 +1341,8 @@ class MarkAllAsRead(ReaderView):
         if 's' not in request.DATA:
             raise exceptions.ParseError("Missing 's' parameter")
         entries = request.user.entries
+        query = {'read': False}
+        es_entries = es.manager.user(request.user).filter(read=False)
         limit = None
         if 'ts' in request.DATA:
             try:
@@ -1047,18 +1352,24 @@ class MarkAllAsRead(ReaderView):
                     "Invalid 'ts' parameter. Must be a number of microseconds "
                     "since epoch.")
             limit = epoch_to_utc(timestamp / 1000000)  # microseconds -> secs
-            entries = entries.filter(date__lte=limit)
+            query['date__lte'] = limit
+            es_entries = es_entries.filter(timestamp__lt=limit)
 
         stream = request.DATA['s']
 
         if stream.startswith('feed/'):
             url = feed_url(stream)
-            entries = entries.filter(feed__url=url)
+            query['feed__url'] = url
+            if request.user.es:
+                feed_pks = request.user.feeds.filter(url=url).values_list(
+                    'pk', flat=True)
+                # FIXME warn for duplicates
+                es_entries = es_entries.filter(feed__in=feed_pks)
         elif is_label(stream, request.user.pk):
             name = is_label(stream, request.user.pk)
-            entries = entries.filter(
-                feed__category=request.user.categories.get(name=name),
-            )
+            cat = request.user.categories.get(name=name)
+            query['feed__category'] = cat
+            es_entries = es_entries.filter(category=cat.pk)
         elif is_stream(stream, request.user.pk):
             state = is_stream(stream, request.user.pk)
             if state == 'read':  # mark read items as read yo
@@ -1066,7 +1377,8 @@ class MarkAllAsRead(ReaderView):
             elif state in ['kept-unread', 'reading-list']:
                 pass
             elif state in ['starred', 'broadcast']:
-                entries = entries.filter(**{state: True})
+                query[state] = True
+                es_entries = es_entries.filter(**{state: True})
             else:
                 logger.info(u"Unknown state: {0}".format(state))
                 return Response("OK")
@@ -1074,15 +1386,31 @@ class MarkAllAsRead(ReaderView):
             logger.info(u"Unknown stream: {0}".format(stream))
             return Response("OK")
 
-        entries.filter(read=False).update(read=True)
+        if request.user.es:
+            entries = es_entries.aggregate('id').fetch(per_page=0)
+            pks = [bucket['key'] for bucket in entries[
+                'aggregations']['entries']['query']['id']['buckets']]
 
-        cursor = connection.cursor()
-        cursor.execute("""
-            update feeds_feed f set unread_count = (
-                select count(*) from feeds_entry e
-                where e.feed_id = f.id and read = false
-            ) where f.user_id = %s
-        """, [request.user.pk])
+            if pks:
+                ops = [{
+                    '_op_type': 'update',
+                    '_type': 'entries',
+                    '_id': pk,
+                    'doc': {'read': True},
+                } for pk in pks]
+                index = es.user_alias(request.user.pk)
+                with es.ignore_bulk_error(404, 409):
+                    es.bulk(ops, index=index, raise_on_error=True,
+                            params={'refresh': True})
+        else:
+            entries.filter(**query).update(read=True)
+            cursor = connection.cursor()
+            cursor.execute("""
+                update feeds_feed f set unread_count = (
+                    select count(*) from feeds_entry e
+                    where e.feed_id = f.id and read = false
+                ) where f.user_id = %s
+            """, [request.user.pk])
         return Response("OK")
 mark_all_as_read = MarkAllAsRead.as_view()
 

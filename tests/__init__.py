@@ -2,10 +2,12 @@ import os
 
 from io import BytesIO as BaseBytesIO
 
-from django.test import TestCase
+from django.test import TestCase as BaseTestCase
+from django_webtest import WebTest as BaseWebTest
 from rache import job_key
 from requests import Response
 
+from feedhq import es
 from feedhq.utils import get_redis_connection
 
 
@@ -41,11 +43,24 @@ def responses(code, path=None, redirection=None, data=None,
     return response
 
 
-class ClearRedisTestCase(TestCase):
+class ESTests(object):
+    def counts(self, user, **kwargs):
+        es_entries = es.manager.user(user)
+        for name, filters in kwargs.items():
+            es_entries = es_entries.query_aggregate(name, **filters)
+        results = es_entries.fetch(per_page=0)['aggregations']['entries']
+        return {name: results[name]['doc_count'] for name in kwargs}
+
+
+class TestCase(ESTests, BaseTestCase):
     def tearDown(self):  # noqa
         """Clean up the rache:* redis keys"""
         get_redis_connection().flushdb()
     setUp = tearDown
+
+
+class WebTest(ESTests, BaseWebTest):
+    pass
 
 
 def patch_job(name, **kwargs):

@@ -3,6 +3,7 @@ python: "3.4"
 
 services:
   - redis-server
+  - elasticsearch
 
 env:
   - TOXENV=py27
@@ -10,9 +11,18 @@ env:
   - TOXENV=py34
   - TOXENV=lint
   - TOXENV=coverage
+  - TOXENV=py27-es
+  - TOXENV=py33-es
+  - TOXENV=py34-es
 
 install:
   - pip install tox
+
+before_script:
+  - wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.1.1.deb
+  - sudo service elasticsearch stop
+  - sudo dpkg -i elasticsearch-1.1.1.deb
+  - sudo service elasticsearch start
 
 script: "./.travis.sh"
 

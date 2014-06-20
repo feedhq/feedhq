@@ -1,6 +1,7 @@
 -r requirements.txt
 beautifulsoup4==4.3.2
-django-debug-toolbar==1.1
+django-debug-toolbar==1.2.1
+django-elasticsearch-debug-toolbar==0.1.15
 django-webtest==1.7.7
 factory-boy==2.3.1
 flake8==2.1.0

@@ -1,6 +1,9 @@
 import json
 import pytz
 
+from datetime import timedelta
+
+from django.conf import settings
 from django.contrib.auth.models import (AbstractBaseUser, UserManager,
                                         PermissionsMixin)
 from django.db import models
@@ -8,6 +11,7 @@ from django.db.models import Max
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from .. import es
 from ..utils import get_redis_connection
 
 TIMEZONES = [
@@ -122,7 +126,9 @@ class User(PermissionsMixin, AbstractBaseUser):
     ttl = models.PositiveIntegerField(
         _('Retention days'), default=30,
         help_text=_('Number of days after which entries are deleted. The more '
-                    'history you keep, the less snappy FeedHQ becomes.'))
+                    'history you keep, the less snappy FeedHQ becomes. '
+                    'Starred items are not deleted.'))
+    es = models.NullBooleanField(default=True)
 
     objects = UserManager()
 
@@ -139,6 +145,20 @@ class User(PermissionsMixin, AbstractBaseUser):
     @property
     def wallabag_url(self):
         return json.loads(self.read_later_credentials)['wallabag_url']
+
+    @property
+    def unread_count(self):
+        if hasattr(self, '_unread_count'):
+            return self._unread_count
+        if self.es:
+            return es.client.count(es.user_alias(self.pk),
+                                   doc_type='entries',
+                                   body={'query': {
+                                       'term': {
+                                           'read': False,
+                                       }}})['count']
+        else:
+            return self.entries.unread()
 
     def last_updates(self):
         redis = get_redis_connection()
@@ -160,3 +180,66 @@ class User(PermissionsMixin, AbstractBaseUser):
             value = float(value.strftime('%s')) if value else 0
             redis.zadd(self.last_update_key, url, value)
         return self.last_updates()
+
+    def ensure_alias(self):
+        name = es.user_alias(self.pk)
+        es.client.indices.put_alias(
+            index=settings.ES_INDEX,
+            name=name,
+            body={
+                'routing': self.pk,
+                'filter': {'term': {'user': self.pk}},
+            },
+        )
+        return name
+
+    def save(self, *args, **kwargs):
+        ret = super(User, self).save(*args, **kwargs)
+        if self.es:
+            self.ensure_alias()
+        return ret
+
+    def index_entries(self):
+        if self.es:
+            return
+        name = self.ensure_alias()
+        for feed in self.feeds.all():
+            entries = feed.entries.all()
+            docs = [doc.serialize() for doc in entries]
+            if not docs:
+                continue
+            es.bulk(docs, index=name, timeout=60, raise_on_error=True)
+        self.es = True
+        self.save(update_fields=['es'])
+
+    def delete_feed_entries(self, *pks):
+        return es.client.delete_by_query(
+            index=es.user_alias(self.pk),
+            doc_type='entries',
+            body={'query': {'filtered': {'filter': {'or': [
+                {'term': {'feed': pk}} for pk in pks
+            ]}}}},
+        )
+
+    def delete_category_entries(self, pk):
+        return es.client.delete_by_query(
+            index=es.user_alias(self.pk),
+            doc_type='entries',
+            body={'query': {'term': {'category': pk}}},
+        )
+
+    def delete_old(self):
+        limit = timezone.now() - timedelta(days=self.ttl)
+        if self.es:
+            es.client.delete_by_query(
+                index=es.user_alias(self.pk),
+                doc_type='entries',
+                body={'query': {'filtered': {
+                    'filter': {'and': [
+                        {'range': {'timestamp': {'lte': limit}}},
+                        {'term': {'starred': False}},
+                    ]},
+                }}},
+            )
+        else:
+            self.entries.filter(date__lte=limit).delete()

@@ -1,6 +1,6 @@
 import os
 
-from django.test import TestCase
+from . import TestCase
 
 from feedhq.settings import parse_redis_url, parse_email_url
 

@@ -1,9 +1,9 @@
 import warnings
 
-from django.test import TestCase
 from django.contrib.auth import authenticate
 
 from .factories import UserFactory
+from . import TestCase
 
 
 class BackendTest(TestCase):

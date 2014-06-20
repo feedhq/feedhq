@@ -21,6 +21,17 @@ DATABASES = {
     ),
 }
 
+ES_NODES = os.environ.get('ES_NODES', 'localhost:9200').split()
+ES_INDEX = os.environ.get('ES_INDEX', 'feedhq')
+# Aliases are created for each user for easy filtering / data isolation.
+# Alias template is .format()'ed with the user id as argument.
+ES_ALIAS_TEMPLATE = os.environ.get('ES_ALIAS_TEMPLATE', 'feedhq-{0}')
+# Shards can only be set at index creation time.
+# Over-allocate for future *node* growth.
+ES_SHARDS = int(os.environ.get('ES_SHARDS', 5))
+# Replicas can be changed at any time.
+ES_REPLICAS = int(os.environ.get('ES_REPLICAS', 1))
+
 TIME_ZONE = 'UTC'
 
 LANGUAGE_CODE = 'en-us'
@@ -307,6 +318,13 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'elasticsearch': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'elasticsearch.trace': {
+            'handlers': ['null'],
+        },
     },
 }
 
@@ -352,4 +370,20 @@ except ImportError:
 else:
     INSTALLED_APPS += (
         'debug_toolbar',
+        'elastic_panel',
     )
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'elastic_panel.panel.ElasticDebugPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.logging.LoggingPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+    ]

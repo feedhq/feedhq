@@ -2,6 +2,7 @@ import contextlib
 import json
 
 from django.core.cache import cache
+from django.db import transaction
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
@@ -14,6 +15,7 @@ import requests
 
 from .models import Category, Feed
 from .utils import USER_AGENT, is_feed
+from .. import es
 from ..utils import get_redis_connection
 
 
@@ -128,11 +130,31 @@ class FeedForm(UserFormMixin, forms.ModelForm):
             cache.set(u'feed_link:{0}'.format(url), parsed.feed.link, 600)
         return url
 
-    def save(self, commit=True):
+    @transaction.atomic
+    def save(self):
         feed = super(FeedForm, self).save(commit=False)
         feed.user = self.user
-        if commit:
-            feed.save()
+
+        if (
+            self.user.es and
+            feed.tracker.has_changed('category_id') and
+            feed.tracker.previous('id')
+        ):
+            new_cat = feed.category_id
+            entries = es.manager.user(self.user).filter(
+                feed=feed.pk).aggregate('id').fetch(per_page=0)
+            pks = [bucket['key'] for bucket in entries[
+                'aggregations']['entries']['query']['id']['buckets']]
+            if pks:
+                ops = [{
+                    '_op_type': 'update',
+                    '_type': 'entries',
+                    '_id': pk,
+                    'doc': {'category': new_cat},
+                } for pk in pks]
+                index = es.user_alias(self.user.pk)
+                es.bulk(ops, index=index, raise_on_error=True)
+        feed.save()
         return feed
 
 
@@ -184,11 +206,12 @@ class ReadForm(forms.Form):
         initial='read-all',
     )
 
-    def __init__(self, entries=None, feed=None, category=None, user=None,
-                 pages_only=False, *args, **kwargs):
+    def __init__(self, entries=None, es_entries=None, feed=None, category=None,
+                 user=None, pages_only=False, *args, **kwargs):
         if entries is not None:
             entries = entries.filter(read=False)
         self.entries = entries
+        self.es_entries = es_entries
         self.feed = feed
         self.category = category
         self.user = user
@@ -201,28 +224,51 @@ class ReadForm(forms.Form):
         return json.loads(self.cleaned_data['entries'])
 
     def save(self):
-        if self.pages_only:
-            # pages is a list of IDs to mark as read
-            entries = self.user.entries.filter(
-                pk__in=self.cleaned_data['entries'])
-        else:
-            entries = self.entries
-        pks = list(entries.values_list('pk', flat=True))
-        entries.update(read=True)
-        if self.feed is not None:
-            feeds = Feed.objects.filter(pk=self.feed.pk)
-        elif self.category is not None:
-            feeds = self.category.feeds.all()
-        else:
-            feeds = self.user.feeds.all()
+        if self.user.es:
+            index = es.user_alias(self.user.pk)
+            if self.pages_only:
+                pks = self.cleaned_data['entries']
+            else:
+                # Fetch all IDs for current query.
+                entries = self.es_entries.filter(
+                    read=False).aggregate('id').fetch(per_page=0)
+                pks = [bucket['key'] for bucket in entries[
+                    'aggregations']['entries']['query']['id']['buckets']]
 
-        if self.pages_only:
-            # TODO combine code with mark-all-as-read?
-            for feed in feeds:
-                Feed.objects.filter(pk=feed.pk).update(
-                    unread_count=feed.entries.filter(read=False).count())
+            ops = [{
+                '_op_type': 'update',
+                '_index': index,
+                '_type': 'entries',
+                '_id': pk,
+                'doc': {'read': True},
+            } for pk in pks]
+            if pks:
+                with es.ignore_bulk_error(404, 409):
+                    es.bulk(ops, raise_on_error=True, params={'refresh': True})
+
         else:
-            feeds.update(unread_count=0)
+            if self.pages_only:
+                # pages is a list of IDs to mark as read
+                entries = self.user.entries.filter(
+                    pk__in=self.cleaned_data['entries'])
+            else:
+                entries = self.entries
+            pks = list(entries.values_list('pk', flat=True))
+            entries.update(read=True)
+            if self.feed is not None:
+                feeds = Feed.objects.filter(pk=self.feed.pk)
+            elif self.category is not None:
+                feeds = self.category.feeds.all()
+            else:
+                feeds = self.user.feeds.all()
+
+            if self.pages_only:
+                # TODO combine code with mark-all-as-read?
+                for feed in feeds:
+                    Feed.objects.filter(pk=feed.pk).update(
+                        unread_count=feed.entries.filter(read=False).count())
+            else:
+                feeds.update(unread_count=0)
         return pks
 
 
@@ -244,9 +290,21 @@ class UndoReadForm(forms.Form):
         return json.loads(self.cleaned_data['pks'])
 
     def save(self):
-        self.user.entries.filter(pk__in=self.cleaned_data['pks']).update(
-            read=False)
-        return len(self.cleaned_data['pks'])
+        pks = self.cleaned_data['pks']
+        if self.user.es:
+            index = es.user_alias(self.user.pk)
+            ops = [{
+                '_op_type': 'update',
+                '_index': index,
+                '_type': 'entries',
+                '_id': pk,
+                'doc': {'read': False},
+            } for pk in pks]
+            with es.ignore_bulk_error(404, 409):
+                es.bulk(ops, raise_on_error=True, params={'refresh': True})
+        else:
+            self.user.entries.filter(pk__in=pks).update(read=False)
+        return len(pks)
 
 
 class SubscriptionForm(forms.Form):
