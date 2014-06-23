@@ -4,7 +4,6 @@ from datetime import timedelta
 from mock import patch
 
 import feedparser
-import times
 
 from django.conf import settings
 from django.core.cache import cache
@@ -12,6 +11,7 @@ from django.core.management import call_command
 from django.utils import timezone
 from django_push.subscriber.models import Subscription
 from rache import pending_jobs, delete_job
+from rq.utils import utcformat, utcnow
 
 from feedhq import es
 from feedhq.feeds.models import UniqueFeed, timedelta_to_seconds
@@ -361,10 +361,9 @@ class UpdateTests(TestCase):
         r = get_redis_connection()
         self.assertEqual(len(r.keys('rq:job:*')), 0)
         r.hmset('rq:job:abc', {'bar': 'baz'})
-        r.hmset('rq:job:def', {'created_at': times.format(times.now(), 'UTC')})
+        r.hmset('rq:job:def', {'created_at': utcformat(utcnow())})
         r.hmset('rq:job:123', {
-            'created_at': times.format(
-                times.now() - timedelta(days=10), 'UTC')})
+            'created_at': utcformat(utcnow() - timedelta(days=10))})
         self.assertEqual(len(r.keys('rq:job:*')), 3)
         call_command('clean_rq')
         self.assertEqual(len(r.keys('rq:job:*')), 2)

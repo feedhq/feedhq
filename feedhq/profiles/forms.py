@@ -10,7 +10,7 @@ from django.db import transaction
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 
-import floppyforms as forms
+import floppyforms.__future__ as forms
 
 from ratelimitbackend.forms import AuthenticationForm
 

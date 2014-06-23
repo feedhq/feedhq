@@ -9,7 +9,7 @@ from lxml.etree import XMLSyntaxError
 from six.moves.urllib import parse as urlparse
 
 import feedparser
-import floppyforms as forms
+import floppyforms.__future__ as forms
 import opml
 import requests
 
