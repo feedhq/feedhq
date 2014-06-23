@@ -299,7 +299,7 @@ class UniqueFeedManager(models.Manager):
             if not enqueued and not settings.DEBUG:
                 cache.set(subs_key, True, 3600 * 24)
                 enqueue(ensure_subscribed, args=[url, update['hub']],
-                        queue='store')
+                        queue='low')
 
         schedule_job(url,
                      schedule_in=UniqueFeed.delay(
