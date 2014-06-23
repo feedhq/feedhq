@@ -93,8 +93,13 @@ class WebBaseTests(WebTest):
         self.assertFormError(response, 'form', 'name',
                              ['This field is required.'])
 
-        form['name'] = 'New Name'
+        form['name'] = 'New Name' * 50
         form['color'] = 'red'
+        response = form.submit()
+        self.assertFormError(response, 'form', 'name',
+                             'This name is too long. Please shorten it to 50 '
+                             'characters or less.')
+        form['name'] = 'New Name'
         response = form.submit()
         self.assertRedirects(response, '/manage/')
 

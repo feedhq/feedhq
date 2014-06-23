@@ -63,6 +63,10 @@ class CategoryForm(UserFormMixin, forms.ModelForm):
         if existing.exists():
             raise forms.ValidationError(
                 _("A category with this name already exists."))
+        if len(name) > 50:
+            raise forms.ValidationError(
+                _("This name is too long. Please shorten it to 50 "
+                  "characters or less."))
         return name
 
     def save(self, commit=True):
