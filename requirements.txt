@@ -11,7 +11,7 @@ django-password-reset==0.7
 django-push==0.6.1
 django-ratelimit-backend==0.6.1
 django-redis-cache==0.13.0
-django-rq-dashboard==0.2.1
+django-rq-dashboard==0.2.2
 django-sekizai==0.7
 djangorestframework==2.3.14
 elasticsearch==1.0.0
