@@ -159,7 +159,7 @@ Note that additionally to the web server, you need to run one or more
 consumers for the task queue. This is done with the ``rqworker`` management
 command::
 
-    django-admin.py rqworker store high default favicons
+    django-admin.py rqworker store high default low favicons
 
 The arguments are queue names.
 
