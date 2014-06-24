@@ -50,6 +50,9 @@ STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
+# Shared secret if you want to protect the health endpoint
+HEALTH_SECRET = os.environ.get('HEALTH_SECRET', None)
+
 ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split()
 PUSH_DOMAIN = ALLOWED_HOSTS[0]
 

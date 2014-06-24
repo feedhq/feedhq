@@ -16,6 +16,7 @@ urlpatterns = patterns(
     (r'^admin/rq/', include('django_rq_dashboard.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^subscriber/', include('django_push.subscriber.urls')),
+    url(r'^health/$', views.health, name='health'),
     url(r'^robots.txt$', views.robots),
     url(r'^humans.txt$', views.humans),
     url(r'^favicon.ico$', views.favicon),

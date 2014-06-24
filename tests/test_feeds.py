@@ -1059,3 +1059,25 @@ class WebBaseTests(WebTest):
         unique.save()
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Error')
+
+    def test_health(self):
+        url = reverse('health')
+        with self.assertNumQueries(4):
+            response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        expected = {
+            'feeds': {'total': 0, 'unique': 0},
+            'queues': {},
+            'users': {'active': 0, 'total': 0},
+        }
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         expected)
+
+        with self.settings(HEALTH_SECRET='foo'):
+            response = self.client.get(url, HTTP_X_TOKEN='bar')
+            self.assertEqual(response.status_code, 403)
+
+            response = self.client.get(url, HTTP_X_TOKEN='foo')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(json.loads(response.content.decode('utf-8')),
+                             expected)

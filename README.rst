@@ -125,6 +125,10 @@ Optionally you can customize:
   the elasticsearch cluster. Defaults to 1. Set it to 0 if you only have one
   node. This is only used at index creation but the index setting can be
   altered dynamically.
+* ``HEALTH_SECRET``: a shared secret between your FeedHQ server(s) and your
+  monitoring. The ``/health/`` endpoint can be protected by requiring clients
+  to provide a shared secret in an ``X-Token`` header. If no secret is set,
+  the health endpoint is open to all.
 
 .. _Sentry: https://www.getsentry.com/
 
