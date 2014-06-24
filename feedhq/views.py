@@ -27,7 +27,7 @@ humans = lambda _: HttpResponse(u"""/* TEAM */
 
 /* SITE */
     Language: English
-    Backend: Django, PostgreSQL, Redis
+    Backend: Django, PostgreSQL, elasticsearch, Redis
     Frontend: SCSS, Compass, Iconic
 """, mimetype='text/plain; charset=UTF-8')
 
