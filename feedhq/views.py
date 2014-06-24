@@ -55,10 +55,11 @@ def health(request):
     conn = get_redis_connection()
     workers = Worker.all(connection=conn)
 
-    queues = defaultdict(int)
+    queues = defaultdict(lambda: defaultdict(int))
     for worker in workers:
         for queue in worker.queues:
-            queues[queue.name] += 1
+            queues[queue.name]['workers'] += 1
+            queues[queue.name]['tasks'] = queue.count
 
     data = {
         'queues': queues,
