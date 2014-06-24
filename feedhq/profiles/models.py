@@ -84,8 +84,6 @@ class User(PermissionsMixin, AbstractBaseUser):
     )
 
     username = models.CharField(max_length=75, unique=True)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
     email = models.CharField(max_length=75)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)

@@ -13,10 +13,15 @@ class ProfileUserChangeForm(UserChangeForm):
         fields = '__all__'
 
 
+def pop(tpl, index):
+    """removes element at `index` and returns a new tuple"""
+    return tpl[:index] + tpl[index+1:]
+
+
 class ProfileUserAdmin(UserAdmin):
     form = ProfileUserChangeForm
-    fieldsets = UserAdmin.fieldsets + (
-        (_('FeedHQ'), {'fields': ('is_suspended', 'timezone',
+    fieldsets = pop(UserAdmin.fieldsets, 1) + (
+        (_('FeedHQ'), {'fields': ('email', 'is_suspended', 'timezone',
                                   'entries_per_page',
                                   'read_later', 'read_later_credentials',
                                   'sharing_twitter', 'sharing_gplus',
