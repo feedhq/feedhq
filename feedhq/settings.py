@@ -193,6 +193,7 @@ def parse_redis_url():
     return config, True if 'eager' in querystring else False
 
 REDIS, RQ_EAGER = parse_redis_url()
+# django-rq-dashboard needs an RQ setting
 RQ = REDIS
 location = REDIS.get('unix_socket_path', '{host}:{port}'.format(**REDIS))
 
