@@ -80,7 +80,7 @@ class UniqueFeedAdmin(ModelAdmin):
 
 
 class FeedAdmin(ModelAdmin):
-    list_display = ('name', 'category', 'unread_count', 'favicon_img')
+    list_display = ('name', 'category', 'favicon_img')
     search_fields = ('name', 'url')
     raw_id_fields = ('category', 'user')
 

@@ -387,8 +387,6 @@ class WebBaseTests(WebTest):
 
         with self.assertNumQueries(1):
             update_feed(feed.url)
-        self.assertEqual(Feed.objects.get().unread_count,
-                         user.entries.filter(read=False).count())
 
         last_item = es.manager.user(user).order_by(
             'timestamp').fetch()['hits'][0]

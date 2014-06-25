@@ -440,8 +440,6 @@ class ReaderApiTest(ApiTest):
             EntryFactory.create(feed=feed, read=False, user=user)
         feed2 = FeedFactory.create(category=None, user=user)
         EntryFactory.create(feed=feed2, read=False, user=user)
-        feed.update_unread_count()
-        feed2.update_unread_count()
 
         # need to populate last updates, extra queries required without ES
         with self.assertNumQueries(1):

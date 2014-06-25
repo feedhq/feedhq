@@ -571,7 +571,6 @@ class Feed(JobDataMixin, models.Model):
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
                              related_name='feeds')
-    unread_count = models.PositiveIntegerField(_('Unread count'), default=0)
     favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True,
                                 blank=True, storage=OverwritingStorage())
     img_safe = models.BooleanField(_('Display images by default'),
@@ -618,10 +617,6 @@ class Feed(JobDataMixin, models.Model):
             return ''
         return format_html(
             '<img src="{0}" width="16" height="16" />', self.favicon.url)
-
-    def update_unread_count(self):
-        self.unread_count = self.entries.filter(read=False).count()
-        self.save(update_fields=['unread_count'])
 
     @property
     def color(self):
