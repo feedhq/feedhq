@@ -39,14 +39,10 @@ def update_feed(url, etag=None, modified=None, subscribers=1,
                      connection=get_redis_connection())
 
 
-def read_later(user_id, entry_pk, use_es):
-    from .models import Entry
-    if use_es:
-        user = User.objects.get(pk=user_id)
-        entry = es.entry(user, entry_pk, annotate_results=False)
-        entry.user = user
-    else:
-        entry = Entry.objects.get(pk=entry_pk)
+def read_later(user_id, entry_pk):
+    user = User.objects.get(pk=user_id)
+    entry = es.entry(user, entry_pk, annotate_results=False)
+    entry.user = user
     entry.read_later()
 
 
@@ -93,7 +89,7 @@ def store_entries(feed_url, entries):
     feeds = Feed.objects.select_related('user').filter(
         url=feed_url, user__is_suspended=False).values('pk', 'user_id',
                                                        'category_id',
-                                                       'user__es', 'user__ttl')
+                                                       'user__ttl')
 
     guids = set([entry['guid'] for entry in entries])
 
@@ -122,12 +118,7 @@ def store_entries(feed_url, entries):
 
     indices = []
     for feed in feeds:
-        if feed['user__es']:
-            indices.append(es.user_alias(feed['user_id']))
-        else:
-            if existing is None:
-                existing = Entry.objects.filter(query).values(
-                    'guid', 'title', 'feed_id')
+        indices.append(es.user_alias(feed['user_id']))
 
     if indices:
         es.wait_for_yellow()
@@ -185,67 +176,35 @@ def store_entries(feed_url, entries):
             for sub in bucket['titles']['buckets']:
                 existing_es_titles[bucket['key']].add(sub['key'])
 
-    create = []
     ops = []
-    update_unread_counts = set()
     refresh_updates = defaultdict(list)
     for feed in feeds:
-        if feed['user__es']:
-            for entry in entries:
-                if (
-                    not filter_by_title and
-                    entry['guid'] in existing_es_guids[feed['pk']]
-                ):
-                    continue
-                if (
-                    filter_by_title and
-                    entry['title'] in existing_es_titles[feed['pk']]
-                ):
-                    continue
-                if (
-                    feed['user__ttl'] and
-                    should_skip(entry['date'], feed['user__ttl'])
-                ):
-                    continue
-                data = Entry(**entry).serialize()
-                data['category'] = feed['category_id']
-                data['feed'] = feed['pk']
-                data['_id'] = es.next_id()
-                data['id'] = data['_id']
-                data['_type'] = 'entries'
-                data['user'] = feed['user_id']
-                data['_index'] = settings.ES_INDEX
-                ops.append(data)
-                refresh_updates[feed['user_id']].append(entry['date'])
-        else:
-            for entry in entries:
-                if (
-                    not filter_by_title and
-                    entry['guid'] in existing_guids[feed['pk']]
-                ):
-                    continue
-                if (
-                    filter_by_title and
-                    entry['title'] in existing_titles[feed['pk']]
-                ):
-                    continue
-                if (
-                    feed['user__ttl'] and
-                    should_skip(entry['date'], feed['user__ttl'])
-                ):
-                    continue
-                create.append(Entry(user_id=feed['user_id'],
-                                    feed_id=feed['pk'], **entry))
-                update_unread_counts.add(feed['pk'])
-                refresh_updates[feed['user_id']].append(entry['date'])
-
-    if create:
-        Entry.objects.bulk_create(create)
-
-        for pk in update_unread_counts:
-            Feed.objects.filter(pk=pk).update(
-                unread_count=Entry.objects.filter(feed_id=pk,
-                                                  read=False).count())
+        for entry in entries:
+            if (
+                not filter_by_title and
+                entry['guid'] in existing_es_guids[feed['pk']]
+            ):
+                continue
+            if (
+                filter_by_title and
+                entry['title'] in existing_es_titles[feed['pk']]
+            ):
+                continue
+            if (
+                feed['user__ttl'] and
+                should_skip(entry['date'], feed['user__ttl'])
+            ):
+                continue
+            data = Entry(**entry).serialize()
+            data['category'] = feed['category_id']
+            data['feed'] = feed['pk']
+            data['_id'] = es.next_id()
+            data['id'] = data['_id']
+            data['_type'] = 'entries'
+            data['user'] = feed['user_id']
+            data['_index'] = settings.ES_INDEX
+            ops.append(data)
+            refresh_updates[feed['user_id']].append(entry['date'])
 
     if ops:
         es.bulk(ops, raise_on_error=True)

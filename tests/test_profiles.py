@@ -1,6 +1,5 @@
 import json
 
-from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
 
@@ -15,7 +14,7 @@ from .factories import EntryFactory
 class ProfilesTest(WebTest):
     def setUp(self):  # noqa
         self.user = User.objects.create_user('test', 'test@example.com',
-                                             'pass', es=settings.USE_ES)
+                                             'pass')
 
     def test_profile(self):
         url = reverse('stats')
@@ -86,8 +85,7 @@ class ProfilesTest(WebTest):
         self.assertEqual(User.objects.get().entries_per_page, 50)
 
         # changing a username
-        new = User.objects.create_user('foobar', 'foo@bar.com', 'pass',
-                                       es=settings.USE_ES)
+        new = User.objects.create_user('foobar', 'foo@bar.com', 'pass')
 
         form['username'] = 'foobar'
         response = form.submit()
@@ -239,10 +237,7 @@ class ProfilesTest(WebTest):
         get.return_value = responses(304)
         user = User.objects.get()
         EntryFactory.create(user=user)
-        if user.es:
-            count = self.counts(user, all={})['all']
-        else:
-            count = user.entries.count()
+        count = self.counts(user, all={})['all']
         self.assertEqual(count, 1)
         url = reverse('destroy_account')
         response = self.app.get(url, user='test')
@@ -269,10 +264,7 @@ class ProfilesTest(WebTest):
         response = form.submit().follow()
         self.assertContains(response, "Good bye")
 
-        if user.es:
-            count = self.counts(user, all={})['all']
-        else:
-            count = user.entries.count()
+        count = self.counts(user, all={})['all']
         self.assertEqual(count, 0)
 
     def test_login_via_username_or_email(self):

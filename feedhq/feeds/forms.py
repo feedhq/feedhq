@@ -140,7 +140,6 @@ class FeedForm(UserFormMixin, forms.ModelForm):
         feed.user = self.user
 
         if (
-            self.user.es and
             feed.tracker.has_changed('category_id') and
             feed.tracker.previous('id')
         ):
@@ -228,51 +227,26 @@ class ReadForm(forms.Form):
         return json.loads(self.cleaned_data['entries'])
 
     def save(self):
-        if self.user.es:
-            index = es.user_alias(self.user.pk)
-            if self.pages_only:
-                pks = self.cleaned_data['entries']
-            else:
-                # Fetch all IDs for current query.
-                entries = self.es_entries.filter(
-                    read=False).aggregate('id').fetch(per_page=0)
-                pks = [bucket['key'] for bucket in entries[
-                    'aggregations']['entries']['query']['id']['buckets']]
-
-            ops = [{
-                '_op_type': 'update',
-                '_index': index,
-                '_type': 'entries',
-                '_id': pk,
-                'doc': {'read': True},
-            } for pk in pks]
-            if pks:
-                with es.ignore_bulk_error(404, 409):
-                    es.bulk(ops, raise_on_error=True, params={'refresh': True})
-
+        index = es.user_alias(self.user.pk)
+        if self.pages_only:
+            pks = self.cleaned_data['entries']
         else:
-            if self.pages_only:
-                # pages is a list of IDs to mark as read
-                entries = self.user.entries.filter(
-                    pk__in=self.cleaned_data['entries'])
-            else:
-                entries = self.entries
-            pks = list(entries.values_list('pk', flat=True))
-            entries.update(read=True)
-            if self.feed is not None:
-                feeds = Feed.objects.filter(pk=self.feed.pk)
-            elif self.category is not None:
-                feeds = self.category.feeds.all()
-            else:
-                feeds = self.user.feeds.all()
+            # Fetch all IDs for current query.
+            entries = self.es_entries.filter(
+                read=False).aggregate('id').fetch(per_page=0)
+            pks = [bucket['key'] for bucket in entries[
+                'aggregations']['entries']['query']['id']['buckets']]
 
-            if self.pages_only:
-                # TODO combine code with mark-all-as-read?
-                for feed in feeds:
-                    Feed.objects.filter(pk=feed.pk).update(
-                        unread_count=feed.entries.filter(read=False).count())
-            else:
-                feeds.update(unread_count=0)
+        ops = [{
+            '_op_type': 'update',
+            '_index': index,
+            '_type': 'entries',
+            '_id': pk,
+            'doc': {'read': True},
+        } for pk in pks]
+        if pks:
+            with es.ignore_bulk_error(404, 409):
+                es.bulk(ops, raise_on_error=True, params={'refresh': True})
         return pks
 
 
@@ -295,19 +269,16 @@ class UndoReadForm(forms.Form):
 
     def save(self):
         pks = self.cleaned_data['pks']
-        if self.user.es:
-            index = es.user_alias(self.user.pk)
-            ops = [{
-                '_op_type': 'update',
-                '_index': index,
-                '_type': 'entries',
-                '_id': pk,
-                'doc': {'read': False},
-            } for pk in pks]
-            with es.ignore_bulk_error(404, 409):
-                es.bulk(ops, raise_on_error=True, params={'refresh': True})
-        else:
-            self.user.entries.filter(pk__in=pks).update(read=False)
+        index = es.user_alias(self.user.pk)
+        ops = [{
+            '_op_type': 'update',
+            '_index': index,
+            '_type': 'entries',
+            '_id': pk,
+            'doc': {'read': False},
+        } for pk in pks]
+        with es.ignore_bulk_error(404, 409):
+            es.bulk(ops, raise_on_error=True, params={'refresh': True})
         return len(pks)
 
 

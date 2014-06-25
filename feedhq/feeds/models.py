@@ -731,11 +731,7 @@ class BaseEntry(object):
         url = getattr(self, 'add_to_%s' % self.user.read_later)()
         if url is None:
             return
-        if self.user.es:
-            self.update(read_later_url=url)
-        else:
-            self.read_later_url = url
-            self.save(update_fields=['read_later_url'])
+        self.update(read_later_url=url)
 
     def add_to_readitlater(self):
         url = 'https://readitlaterlist.com/v2/add'

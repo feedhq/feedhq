@@ -2,7 +2,6 @@
 import datetime
 import random
 
-from django.conf import settings
 from django.utils import timezone
 from django.utils.text import slugify, force_text
 from factory import (DjangoModelFactory as Factory, SubFactory, Sequence,
@@ -17,7 +16,6 @@ class UserFactory(Factory):
 
     username = Sequence(lambda n: u'ùser{0}'.format(n))
     password = 'test'
-    es = settings.USE_ES
 
     @lazy_attribute
     def email(self):
@@ -68,9 +66,8 @@ class EntryFactory(Factory):
     @classmethod
     def create(cls, **kwargs):
         entry = super(EntryFactory, cls).create(**kwargs)
-        if entry.user.es:
-            new_entry = entry.index()
-            new_entry.user = entry.user
-            entry.delete()
-            entry = new_entry
+        new_entry = entry.index()
+        new_entry.user = entry.user
+        entry.delete()
+        entry = new_entry
         return entry

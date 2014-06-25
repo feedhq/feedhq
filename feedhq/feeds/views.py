@@ -10,7 +10,6 @@ from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
-from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template import loader, RequestContext
 from django.template.defaultfilters import slugify
@@ -22,7 +21,7 @@ from elasticsearch.exceptions import RequestError, ConflictError
 from .. import es
 from ..decorators import login_required
 from ..tasks import enqueue
-from .models import Category, Entry, UniqueFeed
+from .models import Category, UniqueFeed
 from .forms import (CategoryForm, FeedForm, OPMLImportForm, ActionForm,
                     ReadForm, SubscriptionFormSet, UndoReadForm, user_lock)
 from .tasks import read_later
@@ -163,50 +162,36 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         else:
             return redirect(all_url)
 
-    if user.es:
-        try:
-            entries = es_entries.fetch(page=page,
-                                       per_page=user.entries_per_page,
-                                       annotate=user)
-        except RequestError as e:
-            if 'No mapping found' not in e.error:  # index is empty
-                raise
-            entries = []
-            user._unread_count = unread_count = total_count = 0
-        else:
-            aggs = entries['aggregations']
-            entries = entries['hits']
-            unread_count = aggs['entries']['unread']['doc_count']
-            total_count = aggs['entries']['all']['doc_count']
-            user._unread_count = aggs['entries']['all_unread']['doc_count']
-        card = unread_count if only_unread else total_count
-        num_pages = card // user.entries_per_page
-        if card % user.entries_per_page:
-            num_pages += 1
-        entries = {
-            'object_list': entries,
-            'paginator': {
-                'num_pages': num_pages,
-            },
-            'has_previous': page > 1,
-            'has_next': page < num_pages,
-            'previous_page_number': page - 1,
-            'next_page_number': page + 1,
-            'number': page,
-        }
-
+    try:
+        entries = es_entries.fetch(page=page,
+                                   per_page=user.entries_per_page,
+                                   annotate=user)
+    except RequestError as e:
+        if 'No mapping found' not in e.error:  # index is empty
+            raise
+        entries = []
+        user._unread_count = unread_count = total_count = 0
     else:
-        unread_count = entries.filter(read=False).count()
-        if only_unread:
-            total_count = entries.count()
-            entries = entries.filter(read=False)
-            entries, foo = paginate(entries, page=page,
-                                    force_count=unread_count,
-                                    nb_items=request.user.entries_per_page)
-        else:
-            entries, total_count = paginate(
-                entries, page=page, nb_items=request.user.entries_per_page)
-
+        aggs = entries['aggregations']
+        entries = entries['hits']
+        unread_count = aggs['entries']['unread']['doc_count']
+        total_count = aggs['entries']['all']['doc_count']
+        user._unread_count = aggs['entries']['all_unread']['doc_count']
+    card = unread_count if only_unread else total_count
+    num_pages = card // user.entries_per_page
+    if card % user.entries_per_page:
+        num_pages += 1
+    entries = {
+        'object_list': entries,
+        'paginator': {
+            'num_pages': num_pages,
+        },
+        'has_previous': page > 1,
+        'has_next': page < num_pages,
+        'previous_page_number': page - 1,
+        'next_page_number': page + 1,
+        'number': page,
+    }
     request.session['back_url'] = request.get_full_path()
 
     # base_url is a variable that helps the paginator a lot. The drawback is
@@ -224,8 +209,7 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         'unread_url': unread_url,
         'base_url': base_url,
         'stars': starred,
-        'all_unread': (aggs['entries']['unread']['doc_count'] if user.es
-                       else user.entries.unread()),
+        'all_unread': aggs['entries']['unread']['doc_count'],
         'entries_template': 'feeds/entries_include.html',
     }
     if unread_count:
@@ -235,15 +219,11 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
             'pages': json.dumps([int(page)]),
         })
         context['action'] = request.get_full_path()
-    if user.es:
-        if (
-            len(entries['object_list']) == 0 and
-            request.user.feeds.count() == 0
-        ):
-            context['noob'] = True
-    else:
-        if entries.paginator.count == 0 and request.user.feeds.count() == 0:
-            context['noob'] = True
+    if (
+        len(entries['object_list']) == 0 and
+        request.user.feeds.count() == 0
+    ):
+        context['noob'] = True
 
     if request.is_ajax():
         template_name = context['entries_template']
@@ -304,8 +284,7 @@ class DeleteCategory(CategoryMixin, generic.DeleteView):
         pk = self.object.pk
         name = self.object.name
         self.object.delete()
-        if self.request.user.es:
-            request.user.delete_category_entries(pk)
+        request.user.delete_category_entries(pk)
         messages.success(
             self.request,
             _('%(category)s has been successfully deleted') % {
@@ -314,22 +293,17 @@ class DeleteCategory(CategoryMixin, generic.DeleteView):
         return redirect(success_url)
 
     def get_context_data(self, **kwargs):
-        if self.request.user.es:
-            entry_count = es.client.count(
-                index=es.user_alias(self.request.user.pk),
-                doc_type='entries',
-                body={
-                    'query': {
-                        'filtered': {
-                            'filter': {'term': {'category': self.object.pk}},
-                        },
+        entry_count = es.client.count(
+            index=es.user_alias(self.request.user.pk),
+            doc_type='entries',
+            body={
+                'query': {
+                    'filtered': {
+                        'filter': {'term': {'category': self.object.pk}},
                     },
                 },
-            )['count']
-        else:
-            entry_count = Entry.objects.filter(
-                feed__category=self.object,
-            ).count()
+            },
+        )['count']
         kwargs.update({
             'entry_count': entry_count,
             'feed_count': self.object.feeds.count(),
@@ -380,20 +354,17 @@ edit_feed = login_required(EditFeed.as_view())
 
 class DeleteFeed(FeedMixin, generic.DeleteView):
     def get_context_data(self, **kwargs):
-        if self.request.user.es:
-            entry_count = es.client.count(
-                index=es.user_alias(self.request.user.pk),
-                doc_type='entries',
-                body={
-                    'query': {
-                        'filtered': {
-                            'filter': {'term': {'feed': self.object.pk}},
-                        },
+        entry_count = es.client.count(
+            index=es.user_alias(self.request.user.pk),
+            doc_type='entries',
+            body={
+                'query': {
+                    'filtered': {
+                        'filter': {'term': {'feed': self.object.pk}},
                     },
                 },
-            )['count']
-        else:
-            entry_count = self.object.entries.count()
+            },
+        )['count']
         kwargs['entry_count'] = entry_count
         return super(DeleteFeed, self).get_context_data(**kwargs)
 
@@ -403,8 +374,7 @@ class DeleteFeed(FeedMixin, generic.DeleteView):
         pk = self.object.pk
         name = self.object.name
         self.object.delete()
-        if request.user.es:
-            request.user.delete_feed_entries(pk)
+        request.user.delete_feed_entries(pk)
         messages.success(
             request,
             _('%(feed)s has been successfully deleted') % {
@@ -416,25 +386,14 @@ delete_feed = login_required(DeleteFeed.as_view())
 
 @login_required
 def item(request, entry_id):
-    if request.user.es:
-        entry = es.entry(request.user, entry_id)
-        if not entry.read:
-            try:
-                entry.update(read=True)
-            except ConflictError:
-                # Double click // two operations at a time. Entry has already
-                # been marked as read.
-                pass
-    else:
-        qs = Entry.objects.filter(user=request.user).select_related(
-            'feed', 'feed__category',
-        )
-        entry = get_object_or_404(qs, pk=entry_id)
-        if not entry.read:
-            entry.read = True
-            entry.save(update_fields=['read'])
-            entry.feed.update_unread_count()
-
+    entry = es.entry(request.user, entry_id)
+    if not entry.read:
+        try:
+            entry.update(read=True)
+        except ConflictError:
+            # Double click // two operations at a time. Entry has already
+            # been marked as read.
+            pass
     back_url = request.session.get('back_url',
                                    default=entry.feed.get_absolute_url())
 
@@ -475,49 +434,39 @@ def item(request, entry_id):
         only_unread = True
 
     # The previous is actually the next by date, and vice versa
-    if request.user.es:
-        es_entries = es.manager.user(request.user).exclude(id=entry.pk)
-        if 'feed' in kw:
-            es_entries = es_entries.filter(feed=kw['feed'].pk)
-        if 'read' in kw:
-            es_entries = es_entries.filter(read=kw['read'])
-        if 'feed__category' in kw:
-            es_entries = es_entries.filter(category=kw['feed__category'].pk)
-        if 'starred' in kw:
-            es_entries = es_entries.filter(starred=kw['starred'])
-        previous = es_entries.filter(timestamp__gte=entry.date).order_by(
-            'timestamp', 'id').fetch(per_page=1)
-        previous = previous['hits'][0] if previous['hits'] else None
+    es_entries = es.manager.user(request.user).exclude(id=entry.pk)
+    if 'feed' in kw:
+        es_entries = es_entries.filter(feed=kw['feed'].pk)
+    if 'read' in kw:
+        es_entries = es_entries.filter(read=kw['read'])
+    if 'feed__category' in kw:
+        es_entries = es_entries.filter(category=kw['feed__category'].pk)
+    if 'starred' in kw:
+        es_entries = es_entries.filter(starred=kw['starred'])
+    previous = es_entries.filter(timestamp__gte=entry.date).order_by(
+        'timestamp', 'id').fetch(per_page=1)
+    previous = previous['hits'][0] if previous['hits'] else None
+    if previous is not None:
+        if previous.date == entry.date:
+            previous = es_entries.filter(
+                timestamp__gte=entry.date).filter(
+                id__gt=entry.pk
+            ).order_by('timestamp', 'id').fetch(per_page=1)
+            previous = previous['hits'][0] if previous['hits'] else None
         if previous is not None:
-            if previous.date == entry.date:
-                previous = es_entries.filter(
-                    timestamp__gte=entry.date).filter(
-                    id__gt=entry.pk
-                ).order_by('timestamp', 'id').fetch(per_page=1)
-                previous = previous['hits'][0] if previous['hits'] else None
-            if previous is not None:
-                previous = previous.get_absolute_url()
-        next = es_entries.filter(timestamp__lte=entry.date).order_by(
-            '-timestamp', '-id').fetch(per_page=1)
-        next = next['hits'][0] if next['hits'] else None
+            previous = previous.get_absolute_url()
+    next = es_entries.filter(timestamp__lte=entry.date).order_by(
+        '-timestamp', '-id').fetch(per_page=1)
+    next = next['hits'][0] if next['hits'] else None
+    if next is not None:
+        if next.date == entry.date:
+            next = es_entries.filter(
+                timestamp__lte=entry.date).filter(
+                id__lt=entry.pk
+            ).order_by('-timestamp', '-id').fetch(per_page=1)
+            next = next['hits'][0] if next['hits'] else None
         if next is not None:
-            if next.date == entry.date:
-                next = es_entries.filter(
-                    timestamp__lte=entry.date).filter(
-                    id__lt=entry.pk
-                ).order_by('-timestamp', '-id').fetch(per_page=1)
-                next = next['hits'][0] if next['hits'] else None
-            if next is not None:
-                next = next.get_absolute_url()
-    else:
-        try:
-            previous = entry.get_next_by_date(**kw).get_absolute_url()
-        except Entry.DoesNotExist:
-            previous = None
-        try:
-            next = entry.get_previous_by_date(**kw).get_absolute_url()
-        except Entry.DoesNotExist:
-            next = None
+            next = next.get_absolute_url()
 
     if request.user.oldest_first:
         previous, next = next, previous
@@ -542,27 +491,17 @@ def item(request, entry_id):
                     entry.feed.img_safe = True
                     entry.feed.save(update_fields=['img_safe'])
             elif action == 'unread':
-                if request.user.es:
-                    entry.update(read=False, refresh=True)
-                else:
-                    entry.read = False
-                    entry.save(update_fields=['read'])
-                    entry.feed.update_unread_count()
+                entry.update(read=False, refresh=True)
                 return redirect(back_url)
             elif action == 'read_later':
-                enqueue(read_later, args=[request.user.pk,
-                                          entry.pk, request.user.es],
+                enqueue(read_later, args=[request.user.pk, entry.pk],
                         timeout=20, queue='high')
                 messages.success(
                     request,
                     _('Article successfully added to your reading list'),
                 )
             elif action in ['star', 'unstar']:
-                if request.user.es:
-                    entry.update(starred=action == 'star', refresh=True)
-                else:
-                    entry.starred = action == 'star'
-                    entry.save(update_fields=['starred'])
+                entry.update(starred=action == 'star', refresh=True)
 
     context = {
         'category': entry.feed.category,
@@ -667,63 +606,47 @@ def import_feeds(request):
 
 @login_required
 def dashboard(request, only_unread=False):
-    if request.user.es:
-        categories = request.user.categories.values()
-        feeds = request.user.feeds.all()
+    categories = request.user.categories.values()
+    feeds = request.user.feeds.all()
 
-        for cat in categories:
-            cat['unread_count'] = 0
+    for cat in categories:
+        cat['unread_count'] = 0
 
-        feed_to_cat = {feed.pk: feed.category_id for feed in feeds}
+    feed_to_cat = {feed.pk: feed.category_id for feed in feeds}
 
-        category_feeds = defaultdict(list)
-        category_counts = defaultdict(int)
+    category_feeds = defaultdict(list)
+    category_counts = defaultdict(int)
 
-        counts = es.counts(request.user, feed_to_cat.keys())
-        _all = 0
-        for feed in feeds:
-            feed.unread_count = counts.get(str(feed.pk),
-                                           {'doc_count': 0})['doc_count']
-            _all += feed.unread_count
-            if feed.category_id is None:
-                continue
-            category_feeds[feed.category_id].append(feed)
-            category_counts[feed.category_id] += feed.unread_count
+    counts = es.counts(request.user, feed_to_cat.keys())
+    _all = 0
+    for feed in feeds:
+        feed.unread_count = counts.get(str(feed.pk),
+                                       {'doc_count': 0})['doc_count']
+        _all += feed.unread_count
+        if feed.category_id is None:
+            continue
+        category_feeds[feed.category_id].append(feed)
+        category_counts[feed.category_id] += feed.unread_count
+
+    for c in categories:
+        c['unread_count'] = category_counts[c['id']]
+        c['feeds'] = {'all': category_feeds[c['id']]}
+
+    uncategorized = [feed for feed in feeds if feed.category_id is None]
+    for feed in uncategorized:
+        feed.unread_count = counts[str(feed.pk)]['doc_count']
+
+    if only_unread:
+        categories = [c for c in categories if c['unread_count']]
 
         for c in categories:
-            c['unread_count'] = category_counts[c['id']]
-            c['feeds'] = {'all': category_feeds[c['id']]}
-
-        uncategorized = [feed for feed in feeds if feed.category_id is None]
-        for feed in uncategorized:
-            feed.unread_count = counts[str(feed.pk)]['doc_count']
-
-        if only_unread:
-            categories = [c for c in categories if c['unread_count']]
-
-            for c in categories:
-                c['feeds'] = {'all': [feed for feed in c['feeds']['all']
-                                      if feed.unread_count]}
-            uncategorized = [feed for feed in uncategorized
-                             if feed.unread_count]
-        total = len(uncategorized) + sum(
-            (len(c['feeds']['all']) for c in categories)
-        )
-
-    else:
-        categories = request.user.categories.prefetch_related(
-            'feeds',
-        ).annotate(unread_count=Sum('feeds__unread_count'))
-        uncategorized = request.user.feeds.filter(category__isnull=True)
-
-        if only_unread:
-            categories = categories.filter(unread_count__gt=0)
-            uncategorized = request.user.feeds.filter(category__isnull=True,
-                                                      unread_count__gt=0)
-
-        total = len(uncategorized) + sum(
-            (len(c.feeds.all()) for c in categories)
-        )
+            c['feeds'] = {'all': [feed for feed in c['feeds']['all']
+                                  if feed.unread_count]}
+        uncategorized = [feed for feed in uncategorized
+                         if feed.unread_count]
+    total = len(uncategorized) + sum(
+        (len(c['feeds']['all']) for c in categories)
+    )
 
     has_orphans = bool(len(uncategorized))
 
@@ -741,10 +664,7 @@ def dashboard(request, only_unread=False):
             col_1 = index + 1
         if col_2 is None and done > 2 * col_size:
             col_2 = index + 1
-        if request.user.es:
-            done += len(cat['feeds']['all'])
-        else:
-            done += len(cat.feeds.all())
+        done += len(cat['feeds']['all'])
 
     context = {
         'categories': categories,

@@ -5,7 +5,6 @@ from mock import patch
 
 import feedparser
 
-from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
 from django.utils import timezone
@@ -124,8 +123,7 @@ class UpdateTests(TestCase):
 
     @patch("requests.get")
     def test_update_call(self, get):
-        u = User.objects.create_user('foo', 'foo@example.com', 'pass',
-                                     es=settings.USE_ES)
+        u = User.objects.create_user('foo', 'foo@example.com', 'pass')
         c = u.categories.create(name='foo', slug='foo')
         get.return_value = responses(304)
         c.feeds.create(url='http://example.com/test', user=c.user)
@@ -209,16 +207,12 @@ class UpdateTests(TestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         ))
-        with self.assertNumQueries(30 + 1 if feed.user.es else 5):  # insert
+        with self.assertNumQueries(30 + 1):  # insert
             store_entries(feed.url, data)
 
-        if feed.user.es:
-            count = es.counts(feed.user, [feed.pk])[str(feed.pk)]['doc_count']
-            count2 = es.counts(feed2.user,
-                               [feed2.pk])[str(feed2.pk)]['doc_count']
-        else:
-            count = feed.entries.count()
-            count2 = feed2.entries.count()
+        count = es.counts(feed.user, [feed.pk])[str(feed.pk)]['doc_count']
+        count2 = es.counts(feed2.user,
+                           [feed2.pk])[str(feed2.pk)]['doc_count']
         self.assertEqual(count, 0)
         self.assertEqual(count2, 30)
         last_updates = feed2.user.last_updates()
@@ -236,14 +230,11 @@ class UpdateTests(TestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
 
-        with self.assertNumQueries(1 + len(data) if feed.user.es else 5):
+        with self.assertNumQueries(1 + len(data)):
             store_entries(feed.url, data)
 
-        if feed.user.es:
-            count = es.counts(feed.user, [feed.pk],
-                              only_unread=False)[str(feed.pk)]['doc_count']
-        else:
-            count = feed.entries.count()
+        count = es.counts(feed.user, [feed.pk],
+                          only_unread=False)[str(feed.pk)]['doc_count']
         self.assertEqual(count, 4)
 
         data = list(filter(
@@ -251,13 +242,10 @@ class UpdateTests(TestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         ))
-        with self.assertNumQueries(1 if feed.user.es else 2):
+        with self.assertNumQueries(1):
             store_entries(feed.url, data)
-        if feed.user.es:
-            count = es.counts(feed.user, [feed.pk],
-                              only_unread=False)[str(feed.pk)]['doc_count']
-        else:
-            count = feed.entries.count()
+        count = es.counts(feed.user, [feed.pk],
+                          only_unread=False)[str(feed.pk)]['doc_count']
         self.assertEqual(count, 4)
 
         parsed = feedparser.parse(data_file('aldaily-06-30.xml'))
@@ -267,14 +255,11 @@ class UpdateTests(TestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
 
-        with self.assertNumQueries(7 if feed.user.es else 5):
+        with self.assertNumQueries(7):
             store_entries(feed.url, data)
 
-        if feed.user.es:
-            count = es.counts(feed.user, [feed.pk],
-                              only_unread=False)[str(feed.pk)]['doc_count']
-        else:
-            count = feed.entries.count()
+        count = es.counts(feed.user, [feed.pk],
+                          only_unread=False)[str(feed.pk)]['doc_count']
         self.assertEqual(count, 10)
 
     @patch("requests.get")
@@ -288,20 +273,13 @@ class UpdateTests(TestCase):
                 entry, parsed) for entry in parsed.entries]
         ))
         feed = FeedFactory.create(user__ttl=99999)
-        with self.assertNumQueries(2 if feed.user.es else 5):
+        with self.assertNumQueries(2):
             store_entries(feed.url, data)
 
-        if feed.user.es:
-            [entry] = es.manager.user(feed.user).fetch(
-                annotate=feed.user)['hits']
-        else:
-            entry = feed.entries.get()
+        [entry] = es.manager.user(feed.user).fetch(annotate=feed.user)['hits']
         self.assertTrue(entry.guid)
 
-        if feed.user.es:
-            entry.delete()
-        else:
-            feed.entries.all().delete()
+        entry.delete()
 
         parsed = feedparser.parse(data_file('no-link-guid.xml'))
         data = list(filter(
@@ -310,12 +288,9 @@ class UpdateTests(TestCase):
                 entry, parsed) for entry in parsed.entries]  # noqa
         ))
         feed = FeedFactory.create(user__ttl=99999)
-        with self.assertNumQueries(2 if feed.user.es else 5):
+        with self.assertNumQueries(2):
             store_entries(feed.url, data)
-        if feed.user.es:
-            [entry] = es.manager.user(feed.user).fetch()['hits']
-        else:
-            entry = feed.entries.get()
+        [entry] = es.manager.user(feed.user).fetch()['hits']
         self.assertTrue(entry.guid)
 
     @patch("requests.get")
@@ -330,7 +305,7 @@ class UpdateTests(TestCase):
             [UniqueFeed.objects.entry_data(
                 entry, parsed) for entry in parsed.entries]
         ))
-        with self.assertNumQueries(1 if user.es else 2):
+        with self.assertNumQueries(1):
             store_entries(feed.url, data)
         self.assertEqual(feed.entries.count(), 0)
 

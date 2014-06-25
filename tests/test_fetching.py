@@ -13,7 +13,7 @@ from rq.timeouts import JobTimeoutException
 from six.moves.http_client import IncompleteRead
 
 from feedhq import es
-from feedhq.feeds.models import Favicon, UniqueFeed, Feed, Entry
+from feedhq.feeds.models import Favicon, UniqueFeed, Feed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT, epoch_to_utc
 from feedhq.utils import get_redis_connection
@@ -111,10 +111,7 @@ class UpdateTests(TestCase):
         get.return_value = responses(200, 'atom10.xml')
         user = UserFactory.create(ttl=99999)
         FeedFactory.create(name='Content', url='atom10.xml', user=user)
-        if user.es:
-            [entry] = es.manager.user(user).fetch(annotate=user)['hits']
-        else:
-            entry = Entry.objects.get()
+        [entry] = es.manager.user(user).fetch(annotate=user)['hits']
         self.assertEqual(entry.sanitized_content(),
                          "<div>Watch out for <span> nasty tricks</span></div>")
 
@@ -285,10 +282,7 @@ class UpdateTests(TestCase):
         feed = FeedFactory.create(user=user, category__user=user)
         update_feed(feed.url)
 
-        if user.es:
-            count = self.counts(user, all={})['all']
-        else:
-            count = Entry.objects.count()
+        count = self.counts(user, all={})['all']
         self.assertEqual(count, 1)
 
         get.return_value = responses(200, 'no-link.xml')
@@ -296,10 +290,7 @@ class UpdateTests(TestCase):
         feed.save(update_fields=['url'])
         update_feed(feed.url)
 
-        if user.es:
-            count = self.counts(user, all={})['all']
-        else:
-            count = Entry.objects.count()
+        count = self.counts(user, all={})['all']
         self.assertEqual(count, 1)
 
     @patch('requests.get')

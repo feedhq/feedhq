@@ -52,10 +52,7 @@ class ModelTests(TestCase):
         self.assertEqual(data['link'], 'http://example.org/')
 
         feed = Feed.objects.get(pk=feed.id)
-        if feed.user.es:
-            [entry] = es.manager.user(feed.user).fetch()['hits']
-        else:
-            entry = feed.entries.get()
+        [entry] = es.manager.user(feed.user).fetch()['hits']
         self.assertEqual(entry.title, 'First item title')
 
         self.assertEqual(feed.favicon_img(), '')
@@ -69,10 +66,7 @@ class ModelTests(TestCase):
         feed = FeedFactory.create()
         update_feed(feed.url)
         title = 'RE2: a principled approach to regular expression matching'
-        if feed.user.es:
-            [entry] = es.manager.user(feed.user).fetch()['hits']
-        else:
-            entry = Entry.objects.get()
+        [entry] = es.manager.user(feed.user).fetch()['hits']
 
         # __unicode__
         self.assertEqual('%s' % entry, title)

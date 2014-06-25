@@ -48,11 +48,8 @@ class Stats(UserMixin, generic.DetailView):
             'categories': self.request.user.categories.count(),
             'feeds': self.request.user.feeds.count(),
         })
-        if self.request.user.es:
-            entries = es.client.count(es.user_alias(self.request.user.pk),
-                                      doc_type='entries')['count']
-        else:
-            entries = self.request.user.entries.count()
+        entries = es.client.count(es.user_alias(self.request.user.pk),
+                                  doc_type='entries')['count']
         ctx['entries'] = entries
         return ctx
 stats = login_required(Stats.as_view())

@@ -126,7 +126,6 @@ class User(PermissionsMixin, AbstractBaseUser):
         help_text=_('Number of days after which entries are deleted. The more '
                     'history you keep, the less snappy FeedHQ becomes. '
                     'Starred items are not deleted.'))
-    es = models.NullBooleanField(default=True)
 
     objects = UserManager()
 
@@ -148,15 +147,12 @@ class User(PermissionsMixin, AbstractBaseUser):
     def unread_count(self):
         if hasattr(self, '_unread_count'):
             return self._unread_count
-        if self.es:
-            return es.client.count(es.user_alias(self.pk),
-                                   doc_type='entries',
-                                   body={'query': {
-                                       'term': {
-                                           'read': False,
-                                       }}})['count']
-        else:
-            return self.entries.unread()
+        return es.client.count(es.user_alias(self.pk),
+                               doc_type='entries',
+                               body={'query': {
+                                   'term': {
+                                       'read': False,
+                                   }}})['count']
 
     def last_updates(self):
         redis = get_redis_connection()
@@ -193,22 +189,8 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     def save(self, *args, **kwargs):
         ret = super(User, self).save(*args, **kwargs)
-        if self.es:
-            self.ensure_alias()
+        self.ensure_alias()
         return ret
-
-    def index_entries(self):
-        if self.es:
-            return
-        name = self.ensure_alias()
-        for feed in self.feeds.all():
-            entries = feed.entries.all()
-            docs = [doc.serialize() for doc in entries]
-            if not docs:
-                continue
-            es.bulk(docs, index=name, timeout=60, raise_on_error=True)
-        self.es = True
-        self.save(update_fields=['es'])
 
     def delete_feed_entries(self, *pks):
         return es.client.delete_by_query(
@@ -228,16 +210,13 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     def delete_old(self):
         limit = timezone.now() - timedelta(days=self.ttl)
-        if self.es:
-            es.client.delete_by_query(
-                index=es.user_alias(self.pk),
-                doc_type='entries',
-                body={'query': {'filtered': {
-                    'filter': {'and': [
-                        {'range': {'timestamp': {'lte': limit}}},
-                        {'term': {'starred': False}},
-                    ]},
-                }}},
-            )
-        else:
-            self.entries.filter(date__lte=limit).delete()
+        es.client.delete_by_query(
+            index=es.user_alias(self.pk),
+            doc_type='entries',
+            body={'query': {'filtered': {
+                'filter': {'and': [
+                    {'range': {'timestamp': {'lte': limit}}},
+                    {'term': {'starred': False}},
+                ]},
+            }}},
+        )
