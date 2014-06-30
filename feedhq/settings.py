@@ -260,7 +260,7 @@ LOCALE_PATHS = (
 )
 
 LOGIN_URL = reverse_lazy('login')
-LOGIN_REDIRECT_URL = reverse_lazy('feeds:home')
+LOGIN_REDIRECT_URL = reverse_lazy('feeds:entries')
 
 DATE_FORMAT = 'M j, H:i'
 

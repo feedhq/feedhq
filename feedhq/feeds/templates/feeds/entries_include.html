@@ -4,7 +4,7 @@
 	{% for entry in entries.object_list %}
 		<li class="entry{% if not entry.read %} new{% endif%}" data-id="{{ entry.pk }}">
 			<div class="title ellipsis" style="background-image: url('{% if entry.feed.favicon %}{{ entry.feed.favicon.url }}{% else %}{% static "core/img/icon-globe.png" %}{% endif %}');">
-				<a href="{% if only_unread %}{% url "feeds:unread_feed" entry.feed.pk %}{% else %}{% url "feeds:feed" entry.feed.pk %}{% endif %}" class="cat {{ entry.feed.category.color|default:entry.feed.color }}">{{ entry.feed }}</a>
+				<a href="{% if mode %}{% url "feeds:feed" entry.feed.pk mode %}{% else %}{% url "feeds:feed" entry.feed.pk %}{% endif %}" class="cat {{ entry.feed.category.color|default:entry.feed.color }}">{{ entry.feed }}</a>
 				<a {% if forloop.first %}data-mousetrap="enter" {% endif %}href="{% url "feeds:item" entry.pk %}" title="{{ entry.sanitized_title }}">{{ entry.sanitized_title }}</a>
 			</div>
 			<div class="date" title="{{ entry.date|date:"c" }}">{{ entry.date|timezone:user.timezone|smart_date }}</div>

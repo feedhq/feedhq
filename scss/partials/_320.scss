@@ -23,11 +23,11 @@
 	}
 
 	h1 {
-		@include cols(6);
+		@include cols(8.1);
 	}
 
 	#navigation {
-		@include cols(6);
+		@include cols(3.9);
 	}
 }
 

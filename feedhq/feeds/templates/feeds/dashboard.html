@@ -5,11 +5,12 @@
 {% block content %}
 	<div class="figures full">
 		<div class="count">
-		<a href="{% if only_unread %}{% url 'feeds:unread_dashboard' %}{% else %}{% url 'feeds:dashboard' %}{% endif %}">{% trans "Dashboard" %}</a>
+		<a href="{% if mode %}{% url "feeds:dashboard" mode %}{% else %}{% url "feeds:dashboard" %}{% endif %}">{% trans "Dashboard" %}</a>
 
 		<div class="navlist inline">{% spaceless %}
-			<a href="{% url 'feeds:dashboard' %}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %}</a>
-			<a href="{% url 'feeds:unread_dashboard' %}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %}</a>
+			<a href="{% url "feeds:dashboard" %}"{% if not mode %} class="current"{% endif %}>{% trans "all" %}</a>
+			<a href="{% url "feeds:dashboard" "unread" %}"{% if mode == "unread" %} class="current"{% endif %}>{% trans "unread" %}</a>
+			<a href="{% url "feeds:dashboard" "stars" %}"{% if mode == "stars" %} class="current"{% endif %}>{% trans "stars" %}</a>
 		{% endspaceless %}</div>
 		</div>
 	</div>
@@ -19,13 +20,13 @@
 		{% for cat in categories %}
 			<div class="category">
 				{% if cat.slug %}
-					<h3><a href="{% url "feeds:category" cat.slug %}">{{ cat.name }}</a> <a class="cat {{ cat.color }}" href="{% url "feeds:unread_category" cat.slug %}">{{ cat.unread_count|default:"0" }}</a></h3>
+					<h3><a href="{% url "feeds:category" cat.slug %}">{{ cat.name }}</a> <a class="cat {{ cat.color }}" href="{% url "feeds:category" cat.slug mode|default:"unread" %}">{{ cat.unread_count|default:"0" }}</a></h3>
 				{% else %}
 					<br>
 				{% endif %}
 				<ul>{% for feed in cat.feeds.all %}
-						{% if feed.unread_count > 0 or not only_unread %}
-						<li{% if feed.favicon %} style="background-image: url('{{ feed.favicon.url }}');"{% endif %}{% if feed.unread_count %} class="new"{% endif %}><a href="{% url "feeds:feed" feed.pk %}">{{ feed }}</a>{% if feed.unread_count %} <a href="{% url "feeds:unread_feed" feed.pk %}" class="unread">{{ feed.unread_count }}{% endif %}</a></li>
+						{% if feed.unread_count > 0 or not mode %}
+						<li{% if feed.favicon %} style="background-image: url('{{ feed.favicon.url }}');"{% endif %}{% if feed.unread_count %} class="new"{% endif %}><a href="{% url "feeds:feed" feed.pk %}">{{ feed }}</a>{% if feed.unread_count %} <a href="{% url "feeds:feed" feed.pk mode|default:"unread" %}" class="unread">{{ feed.unread_count }}{% endif %}</a></li>
 						{% endif %}
 				{% endfor %}</ul>
 			</div>

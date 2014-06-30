@@ -32,11 +32,16 @@ def bulk(ops, **kwargs):
     return es_bulk(client, ops, **kwargs)
 
 
-def counts(user, feed_ids, only_unread=True):
+def counts(user, feed_ids, unread=True, stars=False):
     aggs = {}
     for pk in feed_ids:
         term = {'term': {'feed': pk}}
-        if only_unread:
+        if stars:
+            term = {'and': [
+                {'term': {'starred': True}},
+                term,
+            ]}
+        elif unread:
             term = {'and': [
                 {'term': {'read': False}},
                 term,

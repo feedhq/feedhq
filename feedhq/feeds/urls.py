@@ -4,22 +4,15 @@ from . import views
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.entries_list, name='home'),
-    url(r'^(?P<page>\d+)/$', views.entries_list, name='home'),
-    url(r'^unread/$', views.entries_list,
-        {'only_unread': True}, name='unread'),
-    url(r'^unread/(?P<page>\d+)/$', views.entries_list,
-        {'only_unread': True}, name='unread'),
+    url(r'^$', views.entries_list, name='entries'),
+    url(r'^(?P<page>\d+)/$', views.entries_list, name='entries'),
+    url(r'^(?P<mode>unread|stars)/$', views.entries_list, name='entries'),
+    url(r'^(?P<mode>unread|stars)/(?P<page>\d+)/$',
+        views.entries_list, name='entries'),
 
     url(r'^dashboard/$', views.dashboard, name='dashboard'),
-    url(r'^dashboard/unread/$', views.dashboard,
-        {'only_unread': True}, name='unread_dashboard'),
-
-    url(r'^stars/$', views.entries_list,
-        {'starred': True}, name='stars'),
-
-    url(r'^stars/(?P<page>\d+)/$', views.entries_list,
-        {'starred': True}, name='stars'),
+    url(r'^dashboard/(?P<mode>unread|stars)/$', views.dashboard,
+        name='dashboard'),
 
     url(r'^manage/$', views.manage, name='manage'),
 
@@ -34,16 +27,14 @@ urlpatterns = patterns(
     url(r'^category/(?P<slug>[\w_-]+)/delete/$', views.delete_category,
         name='delete_category'),
 
-    url(r'^category/(?P<category>[\w_-]+)/$', views.entries_list,
-        name='category'),
-
+    url(r'^category/(?P<category>[\w_-]+)/$',
+        views.entries_list, name='category'),
     url(r'^category/(?P<category>[\w_-]+)/(?P<page>\d+)/$',
         views.entries_list, name='category'),
-
-    url(r'^category/(?P<category>[\w_-]+)/unread/$', views.entries_list,
-        {'only_unread': True}, name='unread_category'),
-    url(r'^category/(?P<category>[\w_-]+)/unread/(?P<page>\d+)/$',
-        views.entries_list, {'only_unread': True}, name='unread_category'),
+    url(r'^category/(?P<category>[\w_-]+)/(?P<mode>unread|stars)/$',
+        views.entries_list, name='category'),
+    url(r'^category/(?P<category>[\w_-]+)/(?P<mode>unread|stars)/'
+        r'(?P<page>\d+)/$', views.entries_list, name='category'),
 
     # Feeds
     url(r'^feed/add/$', views.add_feed, name='add_feed'),
@@ -52,12 +43,12 @@ urlpatterns = patterns(
         name='delete_feed'),
 
     url(r'^feed/(?P<feed>\d+)/$', views.entries_list, name='feed'),
-    url(r'^feed/(?P<feed>\d+)/(?P<page>\d+)/$', views.entries_list,
-        name='feed'),
-    url(r'^feed/(?P<feed>\d+)/unread/$', views.entries_list,
-        {'only_unread': True}, name='unread_feed'),
-    url(r'^feed/(?P<feed>\d+)/unread/(?P<page>\d+)/$', views.entries_list,
-        {'only_unread': True}, name='unread_feed'),
+    url(r'^feed/(?P<feed>\d+)/(?P<page>\d+)/$',
+        views.entries_list, name='feed'),
+    url(r'^feed/(?P<feed>\d+)/(?P<mode>unread|stars)/$',
+        views.entries_list, name='feed'),
+    url(r'^feed/(?P<feed>\d+)/(?P<mode>unread|stars)/(?P<page>\d+)/$',
+        views.entries_list, name='feed'),
 
     # Entries
     url(r'^entries/(?P<entry_id>\d+)/$', views.item, name='item'),

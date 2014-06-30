@@ -19,7 +19,7 @@ $light-text: lighten($text, 30%);
 $border-color: lighten($text, 70%);
 $background-color: #fff;
 $light-background-color: lighten($text, 80%);
-$navbar-em-background: darken($light-background-color, 7%);
+$navbar-em-background: darken($light-background-color, 5%);
 
 @mixin content-clearfix {
 	&:after {
@@ -165,26 +165,38 @@ input, select {
 	@include border-bottom($border-color);
 	
 	.row {
-		padding: 0.5em 0 0.4em 0;
+		padding: 0;
 
 		h1 {
 			font-weight: bold;
+			line-height: 24px;
+			height: 38px;
 
 			a {
 				color: inherit;
 				text-decoration: none;
+				display: inline-block;
+				padding: 6px 0 0 0;
+				height: 100%;
 
-				&.unread {
-					padding: 0px 7px;
-					background: $navbar-em-background;
-					color: lighten($text, 25%);
-					display: inline-block;
-					height: 24px;
-					border-radius: 3px;
+				&.nav {
 					font-size: 16px;
+					color: lighten($text, 25%);
+					padding-left: 9px;
+					padding-right: 9px;
+					padding-top: 7px;
+
+					&.nav-sm {
+						font-size: 14px;
+						max-width: 42px;
+					}
+
+					&.active {
+						background: darken($navbar-em-background, 3%);
+					}
 
 					&:hover {
-						background: $text;
+						background: lighten($text, 20%);
 						color: white;
 					}
 				}
@@ -425,6 +437,9 @@ input, select {
 }
 
 .profile {
+	display: inline-block;
+	padding-top: 4px;
+
 	ul {
 		list-style: disc;
 		padding-left: 30px;

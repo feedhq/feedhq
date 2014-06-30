@@ -22,16 +22,17 @@
 		<div class="figures{% if not category %} full{% endif %}">
 			<div class="count">{% spaceless %}
 				{% if category %}
-					<a class="{{ category.color }}" href="{% if only_unread %}{% url "feeds:unread_category" category.slug %}{% else %}{% url "feeds:category" category.slug %}{% endif %}">{{ category }}</a>
+					<a class="{{ category.color }}" href="{% if mode %}{% url "feeds:category" category.slug mode %}{% else %}{% url "feeds:category" category.slug %}{% endif %}">{{ category }}</a>
 					{% if feed %} / {% endif %}
 				{% endif %}
 				{% if feed %}
-					<a class="{{ feed.category.color|default:feed.color }}" href="{% if only_unread %}{% url "feeds:unread_feed" feed.pk %}{% else %}{% url "feeds:feed" feed.pk %}{% endif %}">{{ feed }}</a>
+					<a class="{{ feed.category.color|default:feed.color }}" href="{% if mode %}{% url "feeds:feed" feed.pk mode %}{% else %}{% url "feeds:feed" feed.pk %}{% endif %}">{{ feed }}</a>
 				{% endif %}{% endspaceless %}
 				<div class="navlist inline">{% spaceless %}
 					{% if stars %}<i class="icon-star"></i>&nbsp;{% endif %}
-					<a href="{{ all_url }}"{% if not only_unread %} class="current"{% endif %}>{% trans "all" %} <span class="ct">{{ total_count }}</span></a>
-					{% if unread_url %}<a href="{{ unread_url }}"{% if only_unread %} class="current"{% endif %}>{% trans "unread" %} <span class="ct">{{ unread_count }}</span></a>{% endif %}
+					<a href="{{ all_url }}"{% if not mode %} class="current"{% endif %}>{% trans "all" %} <span class="ct">{{ total_count }}</span></a>
+					{% if unread_url %}<a href="{{ unread_url }}"{% if mode == "unread" %} class="current"{% endif %}>{% trans "unread" %} <span class="ct">{{ unread_count }}</span></a>{% endif %}
+					{% if stars_url %}<a href="{{ stars_url }}"{% if mode == "stars" %} class="current"{% endif %}>{% trans "starred" %}</a>{% endif %}
 					{% if feed %}
 					<a href="{% url "feeds:edit_feed" feed.pk %}" class="tultip" title="{% trans "Edit feed" %}">
 						<i class="icon-edit"></i>

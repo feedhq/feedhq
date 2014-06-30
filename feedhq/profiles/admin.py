@@ -27,6 +27,7 @@ class ProfileUserAdmin(UserAdmin):
                                   'sharing_twitter', 'sharing_gplus',
                                   'sharing_email', 'ttl')}),
     )
+    search_fields = ('username', 'email')
     list_display = ('username', 'email', 'is_staff', 'is_suspended')
     list_filter = UserAdmin.list_filter + ('is_suspended',)
 

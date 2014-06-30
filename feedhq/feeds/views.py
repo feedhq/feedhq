@@ -66,13 +66,13 @@ def paginate(object_list, page=1, nb_items=25, force_count=None):
 
 
 @login_required
-def entries_list(request, page=1, only_unread=False, category=None, feed=None,
+def entries_list(request, page=1, mode=None, category=None, feed=None,
                  starred=False):
     """
     Displays a paginated list of entries.
 
     ``page``: the page number
-    ``only_unread``: filters the list to display only the new entries
+    ``mode``: filters the list to display all / unread / starred items
     ``category``: (slug) if set, will filter the entries of this category
     ``feed``: (object_id) if set, will filter the entries of this feed
 
@@ -84,54 +84,55 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         'content', 'guid', 'tags', 'read_later_url',
         'author', 'broadcast', 'link', 'starred',
     ).query_aggregate('all_unread', read=False)
-    if only_unread:
+    if mode == 'unread':
         es_entries = es_entries.filter(read=False)
+    elif mode == 'stars':
+        es_entries = es_entries.filter(
+            starred=True).query_aggregate('all_starred', starred=True)
 
     if category is not None:
         category = get_object_or_404(user.categories, slug=category)
         all_url = reverse('feeds:category', args=[category.slug])
-        unread_url = reverse('feeds:unread_category', args=[category.slug])
+        unread_url = reverse('feeds:category', args=[category.slug, "unread"])
+        stars_url = reverse('feeds:category', args=[category.slug, "stars"])
         es_entries = es_entries.filter(category=category.pk).query_aggregate(
             'all', category=category.pk).query_aggregate(
                 'unread', category=category.pk, read=False)
-        entries = user.entries.filter(feed__category=category)
 
     if feed is not None:
         feed = get_object_or_404(user.feeds.select_related('category'),
                                  pk=feed)
         all_url = reverse('feeds:feed', args=[feed.pk])
-        unread_url = reverse('feeds:unread_feed', args=[feed.pk])
+        unread_url = reverse('feeds:feed', args=[feed.pk, "unread"])
+        stars_url = reverse('feeds:feed', args=[feed.pk, "stars"])
 
         category = feed.category
         es_entries = es_entries.filter(feed=feed.pk).query_aggregate(
             'all', feed=feed.pk).query_aggregate(
                 'unread', feed=feed.pk, read=False)
-        entries = feed.entries.all()
 
     if starred is True:
         es_entries = es_entries.filter(starred=True).query_aggregate(
             'all', starred=True).query_aggregate(
                 'unread', starred=True, read=False)
-        entries = user.entries.filter(starred=True)
-        all_url = reverse('feeds:stars')
+        all_url = reverse('feeds:entries', args=['stars'])
         unread_url = None
+        stars_url = None
 
     if feed is None and category is None and starred is not True:
-        entries = user.entries.all()
-        all_url = reverse('feeds:home')
-        unread_url = reverse('feeds:unread')
+        all_url = reverse('feeds:entries')
+        unread_url = reverse('feeds:entries', args=['unread'])
+        stars_url = reverse('feeds:entries', args=['stars'])
         es_entries = es_entries.query_aggregate('all').query_aggregate(
             'unread', read=False)
 
-    entries = entries.select_related('feed', 'feed__category')
     if user.oldest_first:
-        entries = entries.order_by('date', 'id')
         es_entries = es_entries.order_by('timestamp', 'id')
 
     if request.method == 'POST':
         if request.POST['action'] in (ReadForm.READ_ALL, ReadForm.READ_PAGE):
             pages_only = request.POST['action'] == ReadForm.READ_PAGE
-            form = ReadForm(entries, es_entries, feed, category, user,
+            form = ReadForm(es_entries, feed, category, user,
                             pages_only=pages_only, data=request.POST)
             if form.is_valid():
                 pks = form.save()
@@ -157,8 +158,10 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
                         '%(value)s entries have been marked as unread.',
                         'value') % {'value': count})
 
-        if only_unread:
+        if mode == 'unread':
             return redirect(unread_url)
+        elif mode == 'stars':
+            return redirect(stars_url)
         else:
             return redirect(all_url)
 
@@ -177,7 +180,12 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
         unread_count = aggs['entries']['unread']['doc_count']
         total_count = aggs['entries']['all']['doc_count']
         user._unread_count = aggs['entries']['all_unread']['doc_count']
-    card = unread_count if only_unread else total_count
+    if mode == 'unread':
+        card = unread_count
+    elif mode == 'stars':
+        card = aggs['entries']['all_starred']['doc_count']
+    else:
+        card = total_count
     num_pages = card // user.entries_per_page
     if card % user.entries_per_page:
         num_pages += 1
@@ -196,17 +204,23 @@ def entries_list(request, page=1, only_unread=False, category=None, feed=None,
 
     # base_url is a variable that helps the paginator a lot. The drawback is
     # that the paginator can't use reversed URLs.
-    base_url = unread_url if only_unread else all_url
+    if mode == 'unread':
+        base_url = unread_url
+    elif mode == 'stars':
+        base_url = stars_url
+    else:
+        base_url = all_url
 
     context = {
         'category': category,
         'feed': feed,
         'entries': entries,
-        'only_unread': only_unread,
+        'mode': mode,
         'unread_count': unread_count,
         'total_count': total_count,
         'all_url': all_url,
         'unread_url': unread_url,
+        'stars_url': stars_url,
         'base_url': base_url,
         'stars': starred,
         'all_unread': aggs['entries']['unread']['doc_count'],
@@ -402,19 +416,19 @@ def item(request, entry_id):
 
     # This way the user has nice 'previous' and 'next' buttons that are
     # dynamically changed
-    only_unread = False
+    mode = None
     bits = back_url.split('/')
     # FIXME: The kw thing currently doesn't work with paginated content.
     kw = {'user': request.user}
 
-    if bits[1] == '':
-        # this is the homepage
-        kw = {'user': request.user}
+    if bits[1] == 'unread':
+        # only unread
+        kw['read'] = False
+        mode = 'unread'
 
-    elif bits[1] == 'unread':
-        # Homepage too, but only unread
-        kw = {'user': request.user, 'read': False}
-        only_unread = True
+    elif bits[1] == 'stars':
+        mode = 'stars'
+        kw['starred'] = True
 
     elif bits[1] == 'feed':
         # Entries in self.feed
@@ -426,12 +440,12 @@ def item(request, entry_id):
         category = Category.objects.get(slug=category_slug, user=request.user)
         kw = {'feed__category': category}
 
-    elif bits[1] == 'stars':
-        kw = {'user': request.user, 'starred': True}
-
-    if len(bits) > 3 and bits[3] == 'unread':
-        kw['read'] = False
-        only_unread = True
+    if len(bits) > 3:
+        if bits[3] == 'unread':
+            kw['read'] = False
+            mode = 'unread'
+        elif bits[3] == 'stars':
+            kw['starred'] = True
 
     # The previous is actually the next by date, and vice versa
     es_entries = es.manager.user(request.user).exclude(id=entry.pk)
@@ -506,7 +520,7 @@ def item(request, entry_id):
     context = {
         'category': entry.feed.category,
         'back_url': back_url,
-        'only_unread': only_unread,
+        'mode': mode,
         'previous': previous,
         'next': next,
         'has_media': has_media,
@@ -593,7 +607,7 @@ def import_feeds(request):
                       'the page.')
                 ])
                 messages.success(request, message)
-                return redirect('feeds:home')
+                return redirect('feeds:entries')
 
     else:
         form = OPMLImportForm()
@@ -605,7 +619,7 @@ def import_feeds(request):
 
 
 @login_required
-def dashboard(request, only_unread=False):
+def dashboard(request, mode=None):
     categories = request.user.categories.values()
     feeds = request.user.feeds.all()
 
@@ -617,7 +631,7 @@ def dashboard(request, only_unread=False):
     category_feeds = defaultdict(list)
     category_counts = defaultdict(int)
 
-    counts = es.counts(request.user, feed_to_cat.keys())
+    counts = es.counts(request.user, feed_to_cat.keys(), stars=mode == 'stars')
     _all = 0
     for feed in feeds:
         feed.unread_count = counts.get(str(feed.pk),
@@ -636,7 +650,7 @@ def dashboard(request, only_unread=False):
     for feed in uncategorized:
         feed.unread_count = counts[str(feed.pk)]['doc_count']
 
-    if only_unread:
+    if mode == 'unread':
         categories = [c for c in categories if c['unread_count']]
 
         for c in categories:
@@ -669,7 +683,7 @@ def dashboard(request, only_unread=False):
     context = {
         'categories': categories,
         'breaks': [col_1, col_2],
-        'only_unread': only_unread,
+        'mode': mode,
     }
     return render(request, 'feeds/dashboard.html', context)
 
@@ -736,7 +750,7 @@ class Subscribe(generic.FormView):
         else:
             message = _('%s feeds have been added') % created
         messages.success(self.request, message)
-        return redirect(reverse('feeds:home'))
+        return redirect(reverse('feeds:entries'))
 subscribe = login_required(Subscribe.as_view())
 
 

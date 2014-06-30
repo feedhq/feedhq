@@ -234,7 +234,7 @@ class UpdateTests(TestCase):
             store_entries(feed.url, data)
 
         count = es.counts(feed.user, [feed.pk],
-                          only_unread=False)[str(feed.pk)]['doc_count']
+                          unread=False)[str(feed.pk)]['doc_count']
         self.assertEqual(count, 4)
 
         data = list(filter(
@@ -245,7 +245,7 @@ class UpdateTests(TestCase):
         with self.assertNumQueries(1):
             store_entries(feed.url, data)
         count = es.counts(feed.user, [feed.pk],
-                          only_unread=False)[str(feed.pk)]['doc_count']
+                          unread=False)[str(feed.pk)]['doc_count']
         self.assertEqual(count, 4)
 
         parsed = feedparser.parse(data_file('aldaily-06-30.xml'))
@@ -259,7 +259,7 @@ class UpdateTests(TestCase):
             store_entries(feed.url, data)
 
         count = es.counts(feed.user, [feed.pk],
-                          only_unread=False)[str(feed.pk)]['doc_count']
+                          unread=False)[str(feed.pk)]['doc_count']
         self.assertEqual(count, 10)
 
     @patch("requests.get")

@@ -289,7 +289,7 @@ class ProfilesTest(WebTest):
         self.assertRedirects(response, '/')
 
         self.renew_app()
-        response = self.app.get(reverse('feeds:unread'))
+        response = self.app.get(reverse('feeds:entries', args=['unread']))
         self.assertContains(response, 'Username or Email')
 
     def test_register_subtome(self):

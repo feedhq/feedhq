@@ -209,11 +209,8 @@ class ReadForm(forms.Form):
         initial='read-all',
     )
 
-    def __init__(self, entries=None, es_entries=None, feed=None, category=None,
+    def __init__(self, es_entries=None, feed=None, category=None,
                  user=None, pages_only=False, *args, **kwargs):
-        if entries is not None:
-            entries = entries.filter(read=False)
-        self.entries = entries
         self.es_entries = es_entries
         self.feed = feed
         self.category = category

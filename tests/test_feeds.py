@@ -32,7 +32,7 @@ class WebBaseTests(WebTest):
                                              'foo@example.com',
                                              'pass')
         user = UserFactory.create()
-        url = reverse('feeds:home')
+        url = reverse('feeds:entries')
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Getting started')
         FeedFactory.create(category__user=user, user=user)
@@ -40,26 +40,26 @@ class WebBaseTests(WebTest):
         self.assertNotContains(response, 'Getting started')
 
     def test_login_required(self):
-        url = reverse('feeds:home')
+        url = reverse('feeds:entries')
         response = self.app.get(url, headers={'Accept': 'text/*'})
         self.assertEqual(response.status_code, 200)
 
     def test_homepage(self):
         """The homepage from a logged in user"""
         user = UserFactory.create()
-        response = self.app.get(reverse('feeds:home'),
+        response = self.app.get(reverse('feeds:entries'),
                                 user=user)
         self.assertContains(response, 'Home')
         self.assertContains(response, user.username)
 
     def test_unauth_homepage(self):
         """The home page from a logged-out user"""
-        response = self.app.get(reverse('feeds:home'))
+        response = self.app.get(reverse('feeds:entries'))
         self.assertContains(response, 'Sign in')  # login required
 
     def test_paginator(self):
         user = UserFactory.create()
-        response = self.app.get(reverse('feeds:home', args=[5]),
+        response = self.app.get(reverse('feeds:entries', args=[5]),
                                 user=user)
         self.assertContains(response, 'Home')
 
@@ -76,7 +76,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         category = CategoryFactory.create(user=user)
         FeedFactory.create(category=category, user=user)
-        url = reverse('feeds:unread_category', args=[category.slug])
+        url = reverse('feeds:category', args=[category.slug, "unread"])
         response = self.app.get(url, user=user)
 
         self.assertContains(response, category.name)
@@ -311,7 +311,7 @@ class WebBaseTests(WebTest):
         # We need more than 25 entries
         user = UserFactory.create()
         FeedFactory.create(category__user=user, user=user)
-        url = reverse('feeds:home', args=[12000])  # that page doesn't exist
+        url = reverse('feeds:entries', args=[12000])  # that page doesn't exist
         response = self.app.get(url, user=user)
         self.assertContains(response, '<a href="/" class="current">')
 
@@ -333,25 +333,25 @@ class WebBaseTests(WebTest):
         get.return_value = responses(200, 'sw-all.xml')
         feed = FeedFactory.create(category__user=user, user=user)
 
-        url = reverse('feeds:home')
+        url = reverse('feeds:entries')
         self._test_entry(url, user)
 
-        url = reverse('feeds:unread')
+        url = reverse('feeds:entries', args=['unread'])
         self._test_entry(url, user)
 
-        url = reverse('feeds:stars')
+        url = reverse('feeds:entries', args=['stars'])
         self._test_entry(url, user)
 
         url = reverse('feeds:category', args=[feed.category.slug])
         self._test_entry(url, user)
 
-        url = reverse('feeds:unread_category', args=[feed.category.slug])
+        url = reverse('feeds:category', args=[feed.category.slug, "unread"])
         self._test_entry(url, user)
 
         url = reverse('feeds:feed', args=[feed.pk])
         self._test_entry(url, user)
 
-        url = reverse('feeds:unread_feed', args=[feed.pk])
+        url = reverse('feeds:feed', args=[feed.pk, "unread"])
         self._test_entry(url, user)
 
         feed.category = None
@@ -364,7 +364,7 @@ class WebBaseTests(WebTest):
         get.return_value = responses(200, 'sw-all.xml')
         FeedFactory.create(user=user, category__user=user)
 
-        url = reverse('feeds:unread')
+        url = reverse('feeds:entries', args=['unread'])
         response = self.app.get(url, user=user)
         object_list = response.context['entries']['object_list']
         first_title = object_list[0].title
@@ -581,7 +581,7 @@ class WebBaseTests(WebTest):
     def test_unread_dashboard(self, get):
         get.return_value = responses(304)
         user = UserFactory.create()
-        url = reverse('feeds:unread_dashboard')
+        url = reverse('feeds:dashboard', args=["unread"])
         FeedFactory.create(category=None, user=user)
         for i in range(5):
             FeedFactory.create(category__user=user, user=user)
@@ -596,7 +596,7 @@ class WebBaseTests(WebTest):
         response = self.app.get(url, user=user)
         self.assertContains(
             response,
-            '<a class="unread" title="Unread entries" href="/unread/">0</a>'
+            'title="Unread entries" href="/unread/">0</a>'
         )
 
         get.return_value = responses(200, 'sw-all.xml')
@@ -605,7 +605,7 @@ class WebBaseTests(WebTest):
         response = self.app.get(url, user=user)
         self.assertContains(
             response,
-            '<a class="unread" title="Unread entries" href="/unread/">30</a>'
+            'title="Unread entries" href="/unread/">30</a>'
         )
 
     @patch('requests.get')
@@ -613,7 +613,7 @@ class WebBaseTests(WebTest):
         get.return_value = responses(304)
         user = UserFactory.create(ttl=99999)
         feed = FeedFactory.create(category__user=user, user=user)
-        url = reverse('feeds:unread')
+        url = reverse('feeds:entries', args=['unread'])
         response = self.app.get(url, user=user)
         self.assertNotContains(response, '"Mark all as read"')
 
