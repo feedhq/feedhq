@@ -213,6 +213,21 @@ input, select {
 				}
 			}
 		}
+
+		.search {
+			float: left;
+			form {
+				margin: 3px 10px;
+
+				input {
+					border: 1px solid $border-color;
+					border-radius: 14px;
+					padding: 3px 10px;
+					max-width: 150px;
+					font-size: 14px;
+				}
+			}
+		}
 	}
 }
 

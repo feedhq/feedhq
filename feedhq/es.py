@@ -316,7 +316,7 @@ class EntryQuery(object):
             self.aggs.update(self.query_aggs)
 
         if self.query:
-            filters['query'] = query = {'query_string': {'query': self.query}}
+            filters['query'] = query = {'match': {'_all': self.query}}
 
         query = {}
 

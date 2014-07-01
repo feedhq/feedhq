@@ -10,6 +10,6 @@
 			<div class="date" title="{{ entry.date|date:"c" }}">{{ entry.date|timezone:user.timezone|smart_date }}</div>
 		</li>
 	{% empty %}
-		<li class="empty" >{% trans "Hooray, nothing to read!" %}</li>
+		<li class="empty" >{% if search %}{% trans "Your search query yielded no results." %}{% else %}{% trans "Hooray, nothing to read!" %}{% endif %}</li>
 	{% endfor %}
 </span>

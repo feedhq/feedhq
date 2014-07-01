@@ -6,6 +6,14 @@
 			{{ block.super }}
 {% endif %}{% endif %}{% endblock %}
 
+{% block extra_header %}
+	<div class="search">
+		<form method="get">
+			<input type="search" name="q" placeholder="{% trans "Search…" %}" value="{{ search }}">
+		</form>
+	</div>
+{% endblock %}
+
 {% block content %}
 	{% if noob %}
 		<div class="help"><div class="content">
@@ -68,16 +76,18 @@
 			{% include entries_template %}
 		</ul>
 
-		{% if user.endless_pages %}
-			{% if entries.paginator.num_pages > 1 and entries.has_next %}
-				<a href="{{ base_url }}{{ entries.next_page_number }}/" title="{% trans "Load more" %}" data-loading="{% trans "Loading…" %}" class="feedhq-more" data-mousetrap="l">
-					{% trans "Load more" %}
-				</a>
+		{% if not search %}
+			{% if user.endless_pages %}
+				{% if entries.paginator.num_pages > 1 and entries.has_next %}
+					<a href="{{ base_url }}{{ entries.next_page_number }}/" title="{% trans "Load more" %}" data-loading="{% trans "Loading…" %}" class="feedhq-more" data-mousetrap="l">
+						{% trans "Load more" %}
+					</a>
+				{% endif %}
+			{% else %}
+				<div class="figures bottom">
+					<div class="pagination">{% include "feeds/paginator.html" %}</div>
+				</div>
 			{% endif %}
-		{% else %}
-			<div class="figures bottom">
-				<div class="pagination">{% include "feeds/paginator.html" %}</div>
-			</div>
 		{% endif %}
 	{% endif %}
 {% endblock %}

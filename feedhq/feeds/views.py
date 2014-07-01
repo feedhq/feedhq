@@ -90,6 +90,10 @@ def entries_list(request, page=1, mode=None, category=None, feed=None,
         es_entries = es_entries.filter(
             starred=True).query_aggregate('all_starred', starred=True)
 
+    search = request.GET.get('q', '')
+    if search:
+        es_entries = es_entries.filter(query=search)
+
     if category is not None:
         category = get_object_or_404(user.categories, slug=category)
         all_url = reverse('feeds:category', args=[category.slug])
@@ -225,6 +229,7 @@ def entries_list(request, page=1, mode=None, category=None, feed=None,
         'stars': starred,
         'all_unread': aggs['entries']['unread']['doc_count'],
         'entries_template': 'feeds/entries_include.html',
+        'search': search,
     }
     if unread_count:
         context['read_all_form'] = ReadForm()

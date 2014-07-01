@@ -31,8 +31,8 @@
 							<a class="nav nav-sm tultip{% if mode == "unread" %} active{% endif %}" data-placement="right" title="{% trans "Unread entries" %}" href="{% url "feeds:entries" "unread" %}">{{ user.unread_count }}</a>
 							<a class="nav tultip{% if mode == "stars" %} active{% endif %}" data-placement="right" title="{% trans "Starred entries" %}" aria-label="{% trans "Starred entries" %}" role="img" href="{% url "feeds:entries" "stars" %}"><i class="icon icon-star-empty"></i></a>
 						{% endspaceless %}{% endif %}
+						{% block extra_header %}{% endblock %}
 					</h1>
-					{% block extra_header %}{% endblock %}
 					<div id="navigation">
 						<ul>{% spaceless %}
 							{% include "navigation.html" %}

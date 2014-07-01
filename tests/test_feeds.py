@@ -347,7 +347,7 @@ class WebBaseTests(WebTest):
             from_url, user=user).status_code, 200)
 
         e = es.manager.user(user).filter(
-            query='title:"jacobian\'s django-deployment-workshop"',
+            query='jacobian',
         ).fetch()['hits'][0]
         url = reverse('feeds:item', args=[e.pk])
         response = self.app.get(url, user=user)
@@ -1040,3 +1040,18 @@ class WebBaseTests(WebTest):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(json.loads(response.content.decode('utf-8')),
                              expected)
+
+    @patch('requests.get')
+    def test_search(self, get):
+        get.return_value = responses(200, path='brutasse.atom')
+
+        user = UserFactory.create(ttl=99999)
+        FeedFactory.create(category__user=user, user=user,
+                           url='https://github.com/brutasse.atom')
+        url = reverse('feeds:entries') + '?q=superfeedr'
+        response = self.app.get(url, user=user)
+        self.assertContains(response, "brutasse commented on issue superfeedr")
+
+        url = reverse('feeds:entries') + '?q=foobarbaz'
+        response = self.app.get(url, user=user)
+        self.assertContains(response, "Your search query yielded no results")

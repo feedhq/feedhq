@@ -26,6 +26,10 @@
 		@include cols(8.1);
 	}
 
+	.search {
+		display: none;
+	}
+
 	#navigation {
 		@include cols(3.9);
 	}
