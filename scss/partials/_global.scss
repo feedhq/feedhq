@@ -169,22 +169,21 @@ input, select {
 
 		h1 {
 			font-weight: bold;
-			line-height: 24px;
-			height: 38px;
 
 			a {
 				color: inherit;
 				text-decoration: none;
-				display: inline-block;
 				padding: 6px 0 0 0;
-				height: 100%;
+				float: left;
+				height: 38px;
+				font-size: 18px;
+				line-height: 20px;
+				padding: 10px 8px 12px 0;
 
 				&.nav {
-					font-size: 16px;
+					float: left;
 					color: lighten($text, 25%);
-					padding-left: 9px;
-					padding-right: 9px;
-					padding-top: 7px;
+					padding: 10px 8px;
 
 					&.nav-sm {
 						font-size: 14px;
@@ -438,7 +437,8 @@ input, select {
 
 .profile {
 	display: inline-block;
-	padding-top: 4px;
+	padding-top: 6px;
+	font-size: 18px;
 
 	ul {
 		list-style: disc;
