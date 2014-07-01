@@ -237,16 +237,7 @@ Here is a full list of management commands that you should schedule:
   aren't in the scheduler, plus one redis ``HMSET`` per URL that's not in the
   scheduler. As a routine task it's not resource-intensive.
 
-* ``backup_scheduler`` puts all the scheduler data back to the database. This
-  is useful as a maintenance job for your backups as the scheduler can be
-  up-to-date more quickly on a database restore.
-
-  Recommended frequency: 2 to 4 times a day.
-
-  Resource consumption: intensive. One database ``UPDATE`` per URL that's in
-  the scheduler.
-
-* ``sync_pubssubhubbub`` unsubscribes from unneeded PubSubHubbub
+* ``sync_pubsubhubbub`` unsubscribes from unneeded PubSubHubbub
   subscriptions.
 
   Recommended frequency: once a day.
@@ -263,7 +254,7 @@ Here is a full list of management commands that you should schedule:
 
   Recommended frequency: once a day.
 
-  Resource consumption: medium, makes ``DELETE`` queries to postgres (1 per
+  Resource consumption: medium, makes ``delete_by_query`` queries to ES (1 per
   user).
 
 * ``delete_expired_tokens`` removes expired API tokens. Tokens are valid for 7
