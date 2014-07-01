@@ -1,12 +1,14 @@
 import contextlib
 import json
+import six
 
 from django.core.cache import cache
+from django.core.validators import validate_ipv46_address, URLValidator
 from django.db import transaction
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
-from six.moves.urllib import parse as urlparse
+from urlobject import URLObject
 
 import feedparser
 import floppyforms.__future__ as forms
@@ -81,22 +83,34 @@ class FeedForm(UserFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(FeedForm, self).__init__(*args, **kwargs)
         self.fields['category'].queryset = self.user.categories.all()
+        self.fields['url'].validators = []
 
     class Meta:
         model = Feed
         fields = ('name', 'url', 'category')
 
     def clean_url(self):
-        url = self.cleaned_data['url']
-        parsed = urlparse.urlparse(url)
-        if parsed.scheme not in ['http', 'https']:
+        url = URLObject(self.cleaned_data['url'])
+
+        # URLObject doesn't handle ipv6 very well yet. In the meantime, ...
+        if url.netloc.count(':') > 3:
+            raise forms.ValidationError(_("Enter a valid URL."))
+
+        URLValidator()(url.without_auth())
+        if url.scheme not in ['http', 'https']:
             raise forms.ValidationError(
                 _("Invalid URL scheme: '%s'. Only HTTP and HTTPS are "
-                  "supported.") % parsed.scheme)
+                  "supported.") % url.scheme)
 
-        netloc = parsed.netloc.split(':')[0]
-        if netloc in ['localhost', '127.0.0.1', '::1']:
-            raise forms.ValidationError(_("Invalid URL."))
+        if url.netloc.hostname in ['localhost', '127.0.0.1', '::1']:
+            raise forms.ValidationError(_("Enter a valid URL."))
+
+        try:
+            validate_ipv46_address(url.netloc.hostname)
+        except forms.ValidationError:
+            pass
+        else:
+            raise forms.ValidationError(_("Enter a valid URL."))
 
         existing = self.user.feeds.filter(url=url)
         if self.instance is not None:
@@ -106,6 +120,10 @@ class FeedForm(UserFormMixin, forms.ModelForm):
             raise forms.ValidationError(
                 _("It seems you're already subscribed to this feed."))
 
+        auth = None
+        if url.auth != (None, None):
+            auth = url.auth
+
         # Check this is actually a feed
         with user_lock("feed_check", self.user.pk, timeout=30):
             headers = {
@@ -113,7 +131,9 @@ class FeedForm(UserFormMixin, forms.ModelForm):
                 'Accept': feedparser.ACCEPT_HEADER,
             }
             try:
-                response = requests.get(url, headers=headers, timeout=10)
+                response = requests.get(six.text_type(url.without_auth()),
+                                        headers=headers, timeout=10,
+                                        auth=auth)
             except Exception:
                 raise forms.ValidationError(_("Error fetching the feed."))
             if response.status_code != 200:

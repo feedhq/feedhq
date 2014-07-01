@@ -31,7 +31,7 @@ class ModelTests(TestCase):
     def test_feed_model(self, get):
         """Behaviour of the ``Feed`` model"""
         get.return_value = responses(200, 'rss20.xml')
-        feed = FeedFactory.create(name='RSS test', url='rss20.xml',
+        feed = FeedFactory.create(name='RSS test', url='http://rss20.xml',
                                   user__ttl=99999)
         feed.save()
 

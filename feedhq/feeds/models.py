@@ -37,6 +37,7 @@ from requests.packages.urllib3.exceptions import (LocationParseError,
 from requests_oauthlib import OAuth1
 from six.moves.http_client import IncompleteRead
 from six.moves.urllib import parse as urlparse
+from urlobject import URLObject
 
 import pytz
 
@@ -140,10 +141,10 @@ class UniqueFeedManager(models.Manager):
     def update_feed(self, url, etag=None, last_modified=None, subscribers=1,
                     backoff_factor=1, previous_error=None, link=None,
                     title=None, hub=None):
-
+        url = URLObject(url)
         # Check if this domain has rate-limiting rules
-        domain = urlparse.urlparse(url).netloc
-        ratelimit_key = 'ratelimit:{0}'.format(domain)
+        ratelimit_key = 'ratelimit:{0}'.format(
+            url.netloc.without_auth().without_port())
         retry_at = cache.get(ratelimit_key)
         if retry_at:
             retry_in = (epoch_to_utc(retry_at) - timezone.now()).seconds
@@ -171,11 +172,15 @@ class UniqueFeedManager(models.Manager):
             if str(type(requests.get)) != "<class 'mock.MagicMock'>":
                 raise ValueError("Not Mocked")
 
+        auth = None
+        if url.auth != (None, None):
+            auth = url.auth
+
         start = datetime.datetime.now()
         error = None
         try:
             response = requests.get(
-                url, headers=headers,
+                six.text_type(url.without_auth()), headers=headers, auth=auth,
                 timeout=UniqueFeed.request_timeout(backoff_factor))
         except (requests.RequestException, socket.timeout, socket.error,
                 IncompleteRead, DecodeError) as e:

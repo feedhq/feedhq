@@ -7,7 +7,7 @@ from datetime import timedelta
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django_push.subscriber.signals import updated
-from mock import patch
+from mock import patch, call
 from rache import schedule_job
 
 from feedhq import es
@@ -258,10 +258,36 @@ class WebBaseTests(WebTest):
         )
 
         for invalid_url in ['http://localhost:8000', 'http://localhost',
-                            'http://127.0.0.1']:
+                            'http://127.0.0.1', 'https://192.168.1.1',
+                            'http://2001:db8:85a3:0:0:8a2e:370:7334/bar',
+                            'http://2001:db8:85a3::8a2e:370:7334/foo',
+                            'foobar']:
             form['url'] = invalid_url
             response = form.submit()
-            self.assertFormError(response, 'form', 'url', "Invalid URL.")
+            self.assertFormError(response, 'form', 'url', "Enter a valid URL.")
+
+    @patch('requests.get')
+    def test_feed_auth(self, get):
+        get.return_value = responses(200, 'brutasse.atom')
+        user = UserFactory.create()
+        url = reverse('feeds:add_feed')
+        response = self.app.get(url, user=user)
+        form = response.forms['feed']
+        form['url'] = 'http://user:password@example.com/test'
+        form['name'] = 'auth'
+        response = form.submit().follow()
+        self.assertEqual(get.call_args_list, [
+            call(u'http://example.com/test',
+                 headers={'Accept': feedparser.ACCEPT_HEADER,
+                          'User-Agent': USER_AGENT % 'checking feed'},
+                 timeout=10,
+                 auth=(u'user', u'password')),
+            call(u'http://example.com/test',
+                 headers={'Accept': feedparser.ACCEPT_HEADER,
+                          'User-Agent': USER_AGENT % '1 subscriber'},
+                 timeout=10,
+                 auth=(u'user', u'password')),
+        ])
 
     @patch("requests.get")
     def test_edit_feed(self, get):
@@ -687,7 +713,8 @@ class WebBaseTests(WebTest):
         get.assert_called_once_with(
             feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
-                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
+                     'Accept': feedparser.ACCEPT_HEADER},
+            timeout=10, auth=None)
 
         get.reset_mock()
         get.return_value = responses(200, data=json.dumps(
@@ -742,7 +769,8 @@ class WebBaseTests(WebTest):
         get.assert_called_once_with(
             feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
-                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
+                     'Accept': feedparser.ACCEPT_HEADER},
+            timeout=10, auth=None)
 
         entry_pk = es.manager.user(user).fetch()['hits'][0].pk
         url = reverse('feeds:item', args=[entry_pk])
@@ -777,7 +805,8 @@ class WebBaseTests(WebTest):
         get.assert_called_with(
             feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
-                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
+                     'Accept': feedparser.ACCEPT_HEADER},
+            timeout=10, auth=None)
 
         entry_pk = es.manager.user(user).fetch()['hits'][0].pk
         url = reverse('feeds:item', args=[entry_pk])
@@ -807,7 +836,7 @@ class WebBaseTests(WebTest):
         get.assert_called_with(
             url, headers={'User-Agent': USER_AGENT % '1 subscriber',
                           'Accept': feedparser.ACCEPT_HEADER},
-            timeout=10)
+            timeout=10, auth=None)
 
         self.assertEqual(feed.entries.count(), 0)
         path = data_file('bruno.im.atom')
@@ -851,7 +880,7 @@ class WebBaseTests(WebTest):
     @patch('requests.get')
     def test_link_headers(self, get):
         user = UserFactory.create(ttl=99999)
-        url = 'foo'
+        url = 'http://foo'
         get.return_value = responses(304)
         FeedFactory.create(url=url, category__user=user, user=user)
 
@@ -859,7 +888,7 @@ class WebBaseTests(WebTest):
         with open(path, 'r') as f:
             data = f.read()
         updated.send(sender=None, notification=data, request=None,
-                     links=[{'url': 'foo', 'rel': 'self'}])
+                     links=[{'url': 'http://foo', 'rel': 'self'}])
         self.assertEqual(es.client.count(es.user_alias(user.pk),
                                          doc_type='entries')['count'], 1)
 

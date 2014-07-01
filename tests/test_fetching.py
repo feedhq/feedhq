@@ -70,7 +70,8 @@ class UpdateTests(TestCase):
         get.assert_called_with(
             feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
-                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
+                     'Accept': feedparser.ACCEPT_HEADER},
+            timeout=10, auth=None)
 
         get.return_value = responses(200, 'sw-all.xml',
                                      headers={'Content-Type': None})
@@ -78,7 +79,8 @@ class UpdateTests(TestCase):
         get.assert_called_with(
             feed.url,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
-                     'Accept': feedparser.ACCEPT_HEADER}, timeout=10)
+                     'Accept': feedparser.ACCEPT_HEADER},
+            timeout=10, auth=None)
 
     @patch('requests.get')
     def test_permanent_redirects(self, get):
@@ -98,7 +100,7 @@ class UpdateTests(TestCase):
             headers={'Content-Type': 'application/rss+xml'})
         feed = FeedFactory.create()
         get.assert_called_with(
-            feed.url, timeout=10,
+            feed.url, timeout=10, auth=None,
             headers={'User-Agent': USER_AGENT % '1 subscriber',
                      'Accept': feedparser.ACCEPT_HEADER},
         )
@@ -110,7 +112,7 @@ class UpdateTests(TestCase):
         """The content section overrides the subtitle section"""
         get.return_value = responses(200, 'atom10.xml')
         user = UserFactory.create(ttl=99999)
-        FeedFactory.create(name='Content', url='atom10.xml', user=user)
+        FeedFactory.create(name='Content', url='http://atom10.xml', user=user)
         [entry] = es.manager.user(user).fetch(annotate=user)['hits']
         self.assertEqual(entry.sanitized_content(),
                          "<div>Watch out for <span> nasty tricks</span></div>")
@@ -121,8 +123,8 @@ class UpdateTests(TestCase):
     def test_gone(self, get):
         """Muting the feed if the status code is 410"""
         get.return_value = responses(410)
-        FeedFactory.create(url='gone.xml')
-        feed = UniqueFeed.objects.get(url='gone.xml')
+        FeedFactory.create(url='http://gone.xml')
+        feed = UniqueFeed.objects.get(url='http://gone.xml')
         self.assertTrue(feed.muted)
 
     @patch('requests.get')
@@ -231,7 +233,7 @@ class UpdateTests(TestCase):
                 'Accept': feedparser.ACCEPT_HEADER,
                 'If-None-Match': b'etag',
                 'If-Modified-Since': b'1234',
-            }, timeout=10)
+            }, timeout=10, auth=None)
 
     @patch("requests.get")
     def test_restore_backoff(self, get):
@@ -269,7 +271,7 @@ class UpdateTests(TestCase):
     @patch("requests.get")
     def test_uniquefeed_deletion(self, get):
         get.return_value = responses(304)
-        f = UniqueFeed.objects.create(url='example.com')
+        f = UniqueFeed.objects.create(url='http://example.com')
         self.assertEqual(UniqueFeed.objects.count(), 1)
         call_command('delete_unsubscribed')
         UniqueFeed.objects.update_feed(f.url)
@@ -286,7 +288,7 @@ class UpdateTests(TestCase):
         self.assertEqual(count, 1)
 
         get.return_value = responses(200, 'no-link.xml')
-        feed.url = 'no-link.xml'
+        feed.url = 'http://no-link.xml'
         feed.save(update_fields=['url'])
         update_feed(feed.url)
 

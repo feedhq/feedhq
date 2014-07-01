@@ -133,7 +133,7 @@ class UpdateTests(TestCase):
             'http://example.com/test',
             headers={'Accept': feedparser.ACCEPT_HEADER,
                      'User-Agent': USER_AGENT % '1 subscriber'},
-            timeout=10)
+            timeout=10, auth=None)
 
         call_command('delete_unsubscribed')
         self.assertEqual(UniqueFeed.objects.count(), 1)

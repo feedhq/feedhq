@@ -1,6 +1,7 @@
 Django==1.6.5
 Pillow==2.4.0
 South==0.8.4
+URLObject==2.3.4
 bleach==1.4
 defusedxml==0.4.1
 dj-database-url==0.3.0
