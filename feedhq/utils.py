@@ -13,7 +13,7 @@ def get_redis_connection():
     connection_pool = pool.get_connection_pool(
         parser_class=redis.connection.HiredisParser,
         connection_pool_class=redis.ConnectionPool,
-        connection_pool_class_kwargs={'retry_on_timeout': True},
+        connection_pool_class_kwargs={},
         **settings.REDIS)
     return redis.Redis(connection_pool=connection_pool, **settings.REDIS)
 
