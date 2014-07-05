@@ -6,13 +6,13 @@
 			{{ block.super }}
 {% endif %}{% endif %}{% endblock %}
 
-{% block extra_nav %}
+{% block extra_nav %}{% if search_form %}
 	<div class="search">
 		<form method="get">
 			<input type="search" name="q" placeholder="{% trans "Search…" %}" value="{{ search }}">
 		</form>
 	</div>
-{% endblock %}
+{% endif %}{% endblock %}
 
 {% block content %}
 	{% if noob %}
