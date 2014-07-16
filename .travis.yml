@@ -11,6 +11,7 @@ env:
   - TOXENV=py34
   - TOXENV=lint
   - TOXENV=coverage
+  - TOXENV=docs
 
 install:
   - pip install tox
