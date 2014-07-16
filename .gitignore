@@ -10,3 +10,4 @@ artwork
 htmlcov
 .tox
 node_modules
+docs/_build
