@@ -2,7 +2,6 @@ from optparse import make_option
 import os
 
 from raven import Client
-from redis.exceptions import TimeoutError
 from rq import Queue, Connection, Worker
 
 from . import SentryCommand
@@ -34,7 +33,6 @@ class Command(SentryCommand):
                     default=False, help='Run the worker in burst mode'),
     )
     help = "Run a RQ worker on selected queues."
-    ignore_exceptions = TimeoutError
 
     def handle_sentry(self, *args, **options):
         conn = get_redis_connection()
