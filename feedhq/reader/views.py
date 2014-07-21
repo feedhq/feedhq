@@ -1218,7 +1218,6 @@ class MarkAllAsRead(ReaderView):
         if 's' not in request.DATA:
             raise exceptions.ParseError("Missing 's' parameter")
         entries = request.user.entries
-        query = {'read': False}
         es_entries = es.manager.user(request.user).filter(read=False)
         limit = None
         if 'ts' in request.DATA:
@@ -1229,14 +1228,12 @@ class MarkAllAsRead(ReaderView):
                     "Invalid 'ts' parameter. Must be a number of microseconds "
                     "since epoch.")
             limit = epoch_to_utc(timestamp / 1000000)  # microseconds -> secs
-            query['date__lte'] = limit
             es_entries = es_entries.filter(timestamp__lt=limit)
 
         stream = request.DATA['s']
 
         if stream.startswith('feed/'):
             url = feed_url(stream)
-            query['feed__url'] = url
             feed_pks = request.user.feeds.filter(url=url).values_list(
                 'pk', flat=True)
             # FIXME warn for duplicates
@@ -1244,7 +1241,6 @@ class MarkAllAsRead(ReaderView):
         elif is_label(stream, request.user.pk):
             name = is_label(stream, request.user.pk)
             cat = request.user.categories.get(name=name)
-            query['feed__category'] = cat
             es_entries = es_entries.filter(category=cat.pk)
         elif is_stream(stream, request.user.pk):
             state = is_stream(stream, request.user.pk)
@@ -1253,7 +1249,6 @@ class MarkAllAsRead(ReaderView):
             elif state in ['kept-unread', 'reading-list']:
                 pass
             elif state in ['starred', 'broadcast']:
-                query[state] = True
                 es_entries = es_entries.filter(**{state: True})
             else:
                 logger.info(u"Unknown state: {0}".format(state))

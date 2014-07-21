@@ -93,7 +93,6 @@ def store_entries(feed_url, entries):
 
     guids = set([entry['guid'] for entry in entries])
 
-    query = Q(feed__url=feed_url)
     es_query = [{'or': [{'term': {'feed': feed['pk']}} for feed in feeds]}]
 
     # When we have dates, filter the query to avoid returning the whole dataset
@@ -101,17 +100,14 @@ def store_entries(feed_url, entries):
     if not date_generated:
         earliest = min([entry['date'] for entry in entries])
         limit = earliest - timedelta(days=1)
-        query &= Q(date__gte=limit)
         es_query.append({'range': {'timestamp': {'gt': limit}}})
 
     filter_by_title = len(guids) == 1 and len(entries) > 1
     if filter_by_title:
         # All items have the same guid. Query by title instead.
         titles = set([entry['title'] for entry in entries])
-        query &= Q(title__in=titles)
         es_query.append({'or': [{'term': {'raw_title': t}} for t in titles]})
     else:
-        query &= Q(guid__in=guids)
         es_query.append({'or': [{'term': {'guid': g}} for g in guids]})
 
     existing = None
