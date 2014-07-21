@@ -110,6 +110,15 @@ def store_entries(feed_url, entries):
     else:
         es_query.append({'or': [{'term': {'guid': g}} for g in guids]})
 
+        deduplicated = []
+        seen = set()
+        for entry in entries:
+            if entry['guid'] in seen:
+                continue
+            seen.add(entry['guid'])
+            deduplicated.append(entry)
+        entries = deduplicated
+
     existing = None
 
     indices = []
