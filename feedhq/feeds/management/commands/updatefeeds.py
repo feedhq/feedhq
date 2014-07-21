@@ -22,7 +22,7 @@ class Command(SentryCommand):
             data = feed.job_details
             return update_feed(
                 feed.url, etag=data.get('etag'), modified=data.get('modified'),
-                subscribers=data['subscribers'],
+                subscribers=data.get('subscribers', 1),
                 backoff_factor=data['backoff_factor'], error=data.get('error'),
                 link=data.get('link'), title=data.get('title'),
                 hub=data.get('hub'),
