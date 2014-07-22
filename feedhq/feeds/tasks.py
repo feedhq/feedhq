@@ -5,7 +5,6 @@ from collections import defaultdict
 from datetime import timedelta
 
 from django.conf import settings
-from django.db.models import Q
 from django.utils import timezone
 from django_push.subscriber.models import Subscription
 from rache import schedule_job
