@@ -1,5 +1,6 @@
 import contextlib
 import json
+import os
 import six
 
 from django.core.cache import cache
@@ -8,6 +9,7 @@ from django.db import transaction
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
 from lxml.etree import XMLSyntaxError
+from raven import Client
 from urlobject import URLObject
 
 import feedparser
@@ -135,6 +137,9 @@ class FeedForm(UserFormMixin, forms.ModelForm):
                                         headers=headers, timeout=10,
                                         auth=auth)
             except Exception:
+                if 'SENTRY_DSN' in os.environ:
+                    client = Client()
+                    client.captureException()
                 raise forms.ValidationError(_("Error fetching the feed."))
             if response.status_code != 200:
                 raise forms.ValidationError(_(
