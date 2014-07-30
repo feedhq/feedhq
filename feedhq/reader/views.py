@@ -399,7 +399,8 @@ class DisableTag(ReaderView):
                 '_id': pk,
                 'doc': {'category': None},
             } for pk in ids]
-            es.bulk(ops, raise_on_error=True)
+            with es.ignore_bulk_error(404):
+                es.bulk(ops, raise_on_error=True, params={'refresh': True})
         return Response("OK")
 disable_tag = DisableTag.as_view()
 
