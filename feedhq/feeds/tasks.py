@@ -109,15 +109,6 @@ def store_entries(feed_url, entries):
     else:
         es_query.append({'or': [{'term': {'guid': g}} for g in guids]})
 
-        deduplicated = []
-        seen = set()
-        for entry in entries:
-            if entry['guid'] in seen:
-                continue
-            seen.add(entry['guid'])
-            deduplicated.append(entry)
-        entries = deduplicated
-
     existing = None
 
     indices = []
@@ -183,6 +174,8 @@ def store_entries(feed_url, entries):
     ops = []
     refresh_updates = defaultdict(list)
     for feed in feeds:
+        seen_guids = set()
+        seen_titles = set()
         for entry in entries:
             if (
                 not filter_by_title and
@@ -199,6 +192,15 @@ def store_entries(feed_url, entries):
                 should_skip(entry['date'], feed['user__ttl'])
             ):
                 continue
+
+            if filter_by_title and entry['title'] in seen_titles:
+                continue
+            seen_titles.add(entry['title'])
+
+            if not filter_by_title and entry['guid'] in seen_guids:
+                continue
+            seen_guids.add(entry['guid'])
+
             data = Entry(**entry).serialize()
             data['category'] = feed['category_id']
             data['feed'] = feed['pk']
