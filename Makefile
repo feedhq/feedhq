@@ -62,6 +62,7 @@ $(bundle): $(js_files)
 		vendor/bootstrap-modal.js \
 		vendor/mousetrap.min.js \
 		vendor/highlight.min.js \
+		vendor/hammer.min.js \
 		js/feedhq.js \
 		> $@
 
