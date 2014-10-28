@@ -66,7 +66,7 @@ Requirements:
 * Python 2.7 or 3.3+ (experimental)
 * Redis (2.6+ recommended)
 * PostgreSQL (9.2+ recommended but anything >= 8.4 should work)
-* Elasticsearch (1.1+ required)
+* Elasticsearch (see compatibility table below)
 
 Getting the code::
 
@@ -76,6 +76,15 @@ Getting the code::
     source env/bin/activate
     add2virtualenv .
     pip install -r requirements.txt
+
+Elasticsearch version requirements:
+
+============ ============ ==========
+Commit hash  Date         ES version
+============ ============ ==========
+Up to 3aea18 Sep 18, 2014 1.1
+From 6d5cbc  Oct 28, 2014 1.3
+============ ============ ==========
 
 Configuration
 -------------
