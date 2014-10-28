@@ -7,6 +7,33 @@ from south.v2 import DataMigration
 from ... import es
 
 
+def serialize(entry):
+    data = {
+        '_type': 'entries',
+        '_id': entry.pk,
+        'id': entry.pk,
+        'timestamp': entry.date,
+        'title': entry.title,
+        'raw_title': entry.title,
+        'author': entry.author,
+        'content': entry.subtitle,
+        'link': entry.link,
+        'guid': entry.guid or entry.link or entry.title,
+        'read': entry.read,
+        'read_later_url': entry.read_later_url,
+        'starred': entry.starred,
+        'broadcast': entry.broadcast,
+        'tags': [],
+    }
+    if entry.user_id:
+        data['user'] = entry.user_id
+    if entry.feed_id:
+        data['feed'] = entry.feed_id
+    if entry.feed and entry.feed.category_id:
+        data['category'] = entry.feed.category_id
+    return data
+
+
 class Migration(DataMigration):
     depends_on = (
         ('feeds', '0016_auto__add_index_feed_url'),
@@ -29,7 +56,7 @@ class Migration(DataMigration):
             )
             for feed in user.feeds.all():
                 entries = feed.entries.all()
-                docs = [doc.serialize() for doc in entries]
+                docs = [serialize(doc) for doc in entries]
                 if not docs:
                     continue
                 es.bulk(docs, index=name, timeout=60, raise_on_error=True)
