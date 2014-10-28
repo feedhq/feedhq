@@ -210,9 +210,10 @@ class UpdateTests(TestCase):
         with self.assertNumQueries(30 + 1):  # insert
             store_entries(feed.url, data)
 
-        count = es.counts(feed.user, [feed.pk])[str(feed.pk)]['doc_count']
-        count2 = es.counts(feed2.user,
-                           [feed2.pk])[str(feed2.pk)]['doc_count']
+        count = es.counts(
+            feed.user, [feed.pk])[str(feed.pk)][str(feed.pk)]['doc_count']
+        count2 = es.counts(
+            feed2.user, [feed2.pk])[str(feed2.pk)][str(feed2.pk)]['doc_count']
         self.assertEqual(count, 0)
         self.assertEqual(count2, 30)
         last_updates = feed2.user.last_updates()
@@ -233,8 +234,9 @@ class UpdateTests(TestCase):
         with self.assertNumQueries(1 + len(data)):
             store_entries(feed.url, data)
 
-        count = es.counts(feed.user, [feed.pk],
-                          unread=False)[str(feed.pk)]['doc_count']
+        count = es.counts(
+            feed.user, [feed.pk],
+            unread=False)[str(feed.pk)][str(feed.pk)]['doc_count']
         self.assertEqual(count, 4)
 
         data = list(filter(
@@ -244,8 +246,9 @@ class UpdateTests(TestCase):
         ))
         with self.assertNumQueries(1):
             store_entries(feed.url, data)
-        count = es.counts(feed.user, [feed.pk],
-                          unread=False)[str(feed.pk)]['doc_count']
+        count = es.counts(
+            feed.user, [feed.pk],
+            unread=False)[str(feed.pk)][str(feed.pk)]['doc_count']
         self.assertEqual(count, 4)
 
         parsed = feedparser.parse(data_file('aldaily-06-30.xml'))
@@ -258,8 +261,9 @@ class UpdateTests(TestCase):
         with self.assertNumQueries(7):
             store_entries(feed.url, data)
 
-        count = es.counts(feed.user, [feed.pk],
-                          unread=False)[str(feed.pk)]['doc_count']
+        count = es.counts(
+            feed.user, [feed.pk],
+            unread=False)[str(feed.pk)][str(feed.pk)]['doc_count']
         self.assertEqual(count, 10)
 
     @patch("requests.get")

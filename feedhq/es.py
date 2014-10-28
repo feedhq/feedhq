@@ -47,8 +47,10 @@ def counts(user, feed_ids, unread=True, stars=False):
                 term,
             ]}
         aggs[pk] = {
-            'global': True,
-            'filter': term,
+            'global': {},
+            'aggs': {
+                pk: {'filter': term},
+            },
         }
     query = {
         'aggs': aggs,
