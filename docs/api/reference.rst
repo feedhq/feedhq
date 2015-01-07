@@ -135,6 +135,7 @@ Creates, edits or deletes a subscription (feed).
 URL                 ``/reader/api/0/subscription/edit``
 Method              ``POST``
 Supported formats   Returns "OK" in plain text
+POST token required Yes
 =================== ==============================
 
 POST data for each action:
@@ -169,6 +170,7 @@ Adds a new subscription (feed), given only the feed's URL.
 URL                 ``/reader/api/0/subscription/quickadd``
 Method              ``POST``
 Supported formats   XML, JSON
+POST token required Yes
 =================== ==============================
 
 POST data:
@@ -407,9 +409,10 @@ Adds or remove tags from items. This API call is used to mark items as read or
 unread or star / unstar items.
 
 =================== ==============================
-URL                 ``/reader/api/0/tag/list``
+URL                 ``/reader/api/0/edit-tag``
 Method              ``POST``
 Supported formats   Returns "OK" in plain text
+POST token required Yes
 =================== ==============================
 
 POST parameters:
@@ -441,6 +444,7 @@ Marks all items in a stream as read.
 URL                 ``/reader/api/0/mark-all-as-read``
 Method              ``POST``
 Supported formats   Returns "OK" in plain text
+POST token required Yes
 =================== ==============================
 
 POST parameters:
