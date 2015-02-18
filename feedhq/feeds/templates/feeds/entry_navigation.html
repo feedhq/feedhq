@@ -1,6 +1,6 @@
 <div class="figures detail{% if place %} {{ place }}{% endif %}">
 	<div class="pagination">
-		{% if previous %}<a data-mousetrap="k,left" class="feedhq-previous" href="{{ previous }}">← {% if mode == "unread" %}{% trans "Previous unread" %}{% else %}{% trans "Previous" %}{% endif %}</a>{% endif %}
-		{% if next %}<a data-mousetrap="j,right" class="feedhq-next" href="{{ next }}">{% if mode == "unread" %}{% trans "Next unread" %}{% else %}{% trans "Next" %}{% endif %} →</a>{% endif %}
+		{% if previous %}<a rel="prev" data-mousetrap="k,left" class="feedhq-previous" href="{{ previous }}">← {% if mode == "unread" %}{% trans "Previous unread" %}{% else %}{% trans "Previous" %}{% endif %}</a>{% endif %}
+		{% if next %}<a rel="next" data-mousetrap="j,right" class="feedhq-next" href="{{ next }}">{% if mode == "unread" %}{% trans "Next unread" %}{% else %}{% trans "Next" %}{% endif %} →</a>{% endif %}
 	</div>
 </div>
