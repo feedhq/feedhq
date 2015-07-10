@@ -51,13 +51,17 @@ def generate_post_token(user):
     return token
 
 
+def default_token():
+    return get_random_string(AUTH_TOKEN_LENGTH)
+
+
 @python_2_unicode_compatible
 class AuthToken(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
                              related_name='auth_tokens')
     token = models.CharField(
         _('Token'), max_length=300, db_index=True, unique=True,
-        default=lambda: get_random_string(AUTH_TOKEN_LENGTH))
+        default=default_token)
     date_created = models.DateTimeField(_('Creation date'),
                                         default=timezone.now)
     client = models.CharField(_('Client'), max_length=1023, blank=True)
