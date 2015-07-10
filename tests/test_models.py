@@ -163,7 +163,7 @@ class ModelTests(TestCase):
     def test_invalid_content(self, get):
         """Behaviour of the ``Feed`` model"""
         get.return_value = responses(304)
-        feed = Feed(url='http://example.com/')
+        feed = FeedFactory.create(url='http://example.com/')
         entry = Entry(
             feed=feed,
             subtitle='<a href="http://mozillaopennews.org]/">OpenNews</a>')
