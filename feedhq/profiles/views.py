@@ -3,7 +3,7 @@ import requests
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.sites.models import RequestSite
+from django.contrib.sites.requests import RequestSite
 from django.core import signing
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -133,6 +133,8 @@ services = login_required(ServiceView.as_view())
 
 
 class PocketReturn(generic.RedirectView):
+    permanent = False
+
     def get_redirect_url(self):
         response = requests.post(
             'https://getpocket.com/v3/oauth/authorize',

@@ -719,7 +719,7 @@ class Subscribe(generic.FormView):
             'subscribe': True,
         } for url in new_urls]
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
         formset = super(Subscribe, self).get_form(form_class)
         cats = [['', '-----']] + [
             (str(c.pk), c.name) for c in self.request.user.categories.all()

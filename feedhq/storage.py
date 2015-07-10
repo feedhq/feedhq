@@ -14,7 +14,7 @@ class OverwritingStorage(FileSystemStorage):
     File storage that allows overwriting of stored files.
     """
 
-    def get_available_name(self, name):
+    def get_available_name(self, name, max_length=None):
         return name
 
     def _save(self, name, content):
