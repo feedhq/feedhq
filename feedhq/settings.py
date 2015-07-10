@@ -8,7 +8,6 @@ from django.core.urlresolvers import reverse_lazy
 BASE_DIR = os.path.dirname(__file__)
 
 DEBUG = os.environ.get('DEBUG', False)
-TEMPLATE_DEBUG = DEBUG
 
 # Are we running the tests or a real server?
 TESTS = False
@@ -127,24 +126,31 @@ AUTHENTICATION_BACKENDS = (
 
 AUTH_USER_MODEL = 'profiles.User'
 
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
-if DEBUG:
-    TEMPLATE_LOADERS = TEMPLATE_LOADERS[0][1]
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [os.path.join(BASE_DIR, 'templates')],
+    'OPTIONS': {
+        'loaders': (
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ),
+        'context_processors': (
+            'django.contrib.auth.context_processors.auth',
+            'django.template.context_processors.debug',
+            'django.template.context_processors.i18n',
+            'django.template.context_processors.media',
+            'django.template.context_processors.request',
+            'django.contrib.messages.context_processors.messages',
+            'sekizai.context_processors.sekizai',
+        ),
+    },
+}]
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-    'sekizai.context_processors.sekizai',
-)
+if not DEBUG:
+    TEMPLATES[0]['OPTIONS']['loaders'] = (
+        ('django.template.loaders.cached.Loader',
+         TEMPLATES[0]['OPTIONS']['loaders']),
+    )
 
 
 def parse_redis_url():
@@ -224,10 +230,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'feedhq.urls'
-
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
