@@ -129,10 +129,17 @@ class UpdateTests(TestCase):
 
     @patch('requests.get')
     def test_errors(self, get):
-        get.return_value = responses(304)
-        feed = FeedFactory.create()
+        codes = [400, 401, 403, 404, 500, 502, 503]
 
-        for code in [400, 401, 403, 404, 500, 502, 503]:
+        def get_side_effect():
+            yield responses(304)
+            for code in codes:
+                yield responses(code)
+        get.side_effect = get_side_effect()
+        feed = FeedFactory.create()
+        self.assertEqual(len(get.call_args_list), 1)
+
+        for code in codes:
             get.return_value = responses(code)
             feed = UniqueFeed.objects.get(url=feed.url)
             self.assertFalse(feed.muted)
@@ -151,6 +158,8 @@ class UpdateTests(TestCase):
 
             # Restore status for next iteration
             schedule_job(feed.url, backoff_factor=1, error=None, schedule_in=0)
+            feed = UniqueFeed.objects.get(url=feed.url)
+            self.assertEqual(feed.job_details.get('error'), None)
 
     @patch('requests.get')
     def test_too_many_requests(self, get):
