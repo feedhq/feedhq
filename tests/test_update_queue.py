@@ -167,7 +167,7 @@ class UpdateTests(TestCase):
         unique = UniqueFeed.objects.all()[0]
         with self.assertNumQueries(1):
             # Select
-            call_command('updatefeeds', unique.pk)
+            call_command('updatefeeds', str(unique.pk))
 
         with self.assertNumQueries(1):
             # single select, already scheduled

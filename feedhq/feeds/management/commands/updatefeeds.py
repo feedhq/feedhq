@@ -13,7 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 class Command(SentryCommand):
-    """Updates the users' feeds"""
+    help = "Updates the users' feeds"
+
+    def add_arguments(self, parser):
+        parser.add_argument('feed_id', nargs='*', type=int)
 
     def handle_sentry(self, *args, **kwargs):
         if args:
