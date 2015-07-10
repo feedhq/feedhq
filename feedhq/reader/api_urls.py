@@ -1,9 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from . import views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^token$', views.token, name='token'),
 
     url(r'^user-info$', views.user_info, name='user_info'),
@@ -58,7 +57,7 @@ urlpatterns = patterns(
         name='stream_preference'),
 
     url(r'^friend/list$', views.friend_list, name='friend_list'),
-)
+]
 
 """
 Missing URLS:

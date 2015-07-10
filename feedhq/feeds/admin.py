@@ -1,7 +1,7 @@
 import json
 import math
 
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib.admin import widgets
 from django.http import HttpResponse
 from rache import scheduled_jobs
@@ -55,11 +55,10 @@ class UniqueFeedAdmin(ModelAdmin):
         )
 
     def get_urls(self):
-        return patterns(
-            '',
+        return [
             url(r'^graph/$', self.admin_site.admin_view(self.graph_data),
                 name='graph-data'),
-        ) + super(UniqueFeedAdmin, self).get_urls()
+        ] + super(UniqueFeedAdmin, self).get_urls()
 
     def graph_data(self, request):
         jobs = list(scheduled_jobs(with_times=True,

@@ -1,9 +1,8 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 
 from . import views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', views.entries_list, name='entries'),
     url(r'^(?P<page>\d+)/$', views.entries_list, name='entries'),
     url(r'^(?P<mode>unread|stars)/$', views.entries_list, name='entries'),
@@ -52,4 +51,4 @@ urlpatterns = patterns(
 
     # Entries
     url(r'^entries/(?P<entry_id>\d+)/$', views.item, name='item'),
-)
+]

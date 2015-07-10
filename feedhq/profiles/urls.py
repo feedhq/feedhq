@@ -1,9 +1,8 @@
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url, include
 
 from . import views
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^stats/$', views.stats, name='stats'),
     url(r'^profile/$', views.profile, name='profile'),
     url(r'^sharing/$', views.sharing, name='sharing'),
@@ -22,4 +21,4 @@ urlpatterns = patterns(
     url(r'^destroy/done/$', views.destroy_done, name='destroy_done'),
     url(r'^recover/$', views.recover, name='password_reset_recover'),
     url(r'^', include('password_reset.urls')),
-)
+]
