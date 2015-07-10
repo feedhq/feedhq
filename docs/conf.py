@@ -20,7 +20,7 @@ exclude_patterns = ['_build']
 
 pygments_style = 'sphinx'
 
-html_theme = 'default'
+html_theme = 'alabaster'
 
 html_static_path = []
 
