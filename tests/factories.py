@@ -12,10 +12,11 @@ from feedhq.profiles.models import User
 
 
 class UserFactory(Factory):
-    FACTORY_FOR = User
-
     username = Sequence(lambda n: u'ùser{0}'.format(n))
     password = 'test'
+
+    class Meta:
+        model = User
 
     @lazy_attribute
     def email(self):
@@ -30,10 +31,11 @@ class UserFactory(Factory):
 
 
 class CategoryFactory(Factory):
-    FACTORY_FOR = Category
-
     name = Sequence(lambda n: u'Categorỳ {0}'.format(n))
     user = SubFactory(UserFactory)
+
+    class Meta:
+        model = Category
 
     @lazy_attribute
     def slug(self):
@@ -41,22 +43,24 @@ class CategoryFactory(Factory):
 
 
 class FeedFactory(Factory):
-    FACTORY_FOR = Feed
-
     name = Sequence(lambda n: u'Feèd {0}'.format(n))
     url = Sequence(lambda n: u'http://example.com/feèds/{0}'.format(n))
     category = SubFactory(CategoryFactory)
     user = SubFactory(UserFactory)
 
+    class Meta:
+        model = Feed
+
 
 class EntryFactory(Factory):
-    FACTORY_FOR = Entry
-
     feed = SubFactory(FeedFactory)
     title = Sequence(lambda n: u'Entrỳ {0}'.format(n))
     subtitle = 'dùmmy content'
     link = Sequence(lambda n: u'https://example.com/entrỳ/{0}'.format(n))
     user = SubFactory(UserFactory)
+
+    class Meta:
+        model = Entry
 
     @lazy_attribute
     def date(self):
