@@ -3,7 +3,6 @@ import socket
 
 from django.core.management import call_command
 from django.utils import timezone
-from django_push.subscriber.models import Subscription
 from mock import patch, PropertyMock
 from rache import job_details, schedule_job
 from requests import RequestException
@@ -314,30 +313,6 @@ class UpdateTests(TestCase):
         update_feed(feed.url)
         data = job_details(feed.url, connection=get_redis_connection())
         self.assertEqual(data['backoff_factor'], 2)
-
-    @patch('requests.post')
-    def test_sync_pubsub(self, post):
-        post.return_value = responses(202, 'sw-all.xml')
-        call_command('sync_pubsubhubbub')
-        post.assert_not_called()
-
-        u = UniqueFeed.objects.create(url='http://example.com')
-        Subscription.objects.create(topic=u.url,
-                                    hub='http://hub.example.com',
-                                    verified=True,
-                                    lease_expiration=timezone.now())
-
-        call_command('sync_pubsubhubbub')
-        post.assert_called()
-        post.reset()
-
-        u.delete()
-        call_command('sync_pubsubhubbub')
-        post.assert_called()
-        post.reset()
-
-        call_command('sync_pubsubhubbub')
-        post.assert_not_called()
 
 
 class FaviconTests(TestCase):
