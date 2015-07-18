@@ -53,7 +53,7 @@ def update_favicon(feed_url, force_update=False):
 def ensure_subscribed(topic_url, hub_url):
     """Makes sure the PubSubHubbub subscription is verified"""
     if settings.TESTS:
-        if str(type(requests.post)) != "<class 'mock.MagicMock'>":
+        if str(type(requests.post)) != "<class 'mock.mock.MagicMock'>":
             raise ValueError("Not Mocked")
 
     if hub_url is None:

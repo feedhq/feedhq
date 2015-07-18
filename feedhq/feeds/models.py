@@ -169,7 +169,7 @@ class UniqueFeedManager(models.Manager):
 
         if settings.TESTS:
             # Make sure requests.get is properly mocked during tests
-            if str(type(requests.get)) != "<class 'mock.MagicMock'>":
+            if str(type(requests.get)) != "<class 'mock.mock.MagicMock'>":
                 raise ValueError("Not Mocked")
 
         auth = None
