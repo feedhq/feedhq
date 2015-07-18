@@ -1168,7 +1168,7 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "Enter a valid URL",
                             status_code=400)
 
-        feed = FeedFactory.build()
+        feed = FeedFactory.create()
         data['quickadd'] = feed.url
         get.return_value = responses(200, 'brutasse.atom')
         response = self.client.post(url, data, **clientlogin(token))
@@ -1178,7 +1178,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "already subscribed", status_code=400)
 
-        feed = Feed.objects.get()
+        feed = Feed.objects.exclude(pk=feed.pk).get()
         self.assertEqual(feed.name, "brutasse's Activity")
 
     def test_disable_tag(self, get):

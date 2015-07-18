@@ -962,7 +962,8 @@ class WebBaseTests(WebTest):
         self.assertTrue(
             '<a href="https://github.com/brutasse"' in entry.content)
 
-        feed = Feed(url='http://standblog.org/blog/feed/rss2')
+        feed = Feed.objects.create(user=user,
+                                   url='http://standblog.org/blog/feed/rss2')
         e = Entry(feed=feed, subtitle=(
             ' <p><img alt=":-)" class="smiley"'
             'src="/dotclear2/themes/default/smilies/smile.png" /> . </p>'
