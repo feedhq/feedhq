@@ -391,7 +391,7 @@ class DisableTag(ReaderView):
             'aggregations']['entries']['query']['id']['buckets']]
 
         if ids:
-            index = es.user_alias(request.user.pk),
+            index = es.user_alias(request.user.pk)
             ops = [{
                 '_op_type': 'update',
                 '_index': index,
