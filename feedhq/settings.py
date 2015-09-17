@@ -330,6 +330,7 @@ LOGGING = {
         },
         'elasticsearch.trace': {
             'handlers': ['null'],
+            'propagate': False,
         },
     },
 }
