@@ -17,7 +17,7 @@ from .utils import get_redis_connection
 
 
 robots = lambda _: HttpResponse('User-agent: *\nDisallow:\n',
-                                mimetype='text/plain')
+                                content_type='text/plain')
 
 humans = lambda _: HttpResponse(u"""/* TEAM */
     Main developer: Bruno Renié
@@ -29,7 +29,7 @@ humans = lambda _: HttpResponse(u"""/* TEAM */
     Language: English
     Backend: Django, PostgreSQL, elasticsearch, Redis
     Frontend: SCSS, Compass, Iconic
-""", mimetype='text/plain; charset=UTF-8')
+""", content_type='text/plain; charset=UTF-8')
 
 favicon = lambda _: HttpResponsePermanentRedirect(
     '%score/img/icon-rss.png' % settings.STATIC_URL
