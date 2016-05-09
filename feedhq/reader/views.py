@@ -185,7 +185,7 @@ class ReaderView(APIView):
             token = request.DATA.get('T', request.GET.get('T', None))
             if token is None:
                 logger.info(
-                    u"Missing POST token, {0}".format(request.DATA.dict())
+                    u"Missing POST token, %s", request.DATA.dict()
                 )
                 raise exceptions.ParseError("Missing 'T' POST token")
             user_id = check_post_token(token)
@@ -555,9 +555,9 @@ class EditSubscription(ReaderView):
             if query:
                 qs.update(**query)
         else:
-            msg = u"Unrecognized action: {0}".format(action)
-            logger.info(msg)
-            raise exceptions.ParseError(msg)
+            msg = u"Unrecognized action: %s"
+            logger.info(msg, action)
+            raise exceptions.ParseError(msg % action)
         return Response("OK")
 edit_subscription = EditSubscription.as_view()
 
@@ -640,10 +640,10 @@ def get_es_term(stream, user, exception=False):
         [category] = categories
         term = {'category': category}
     else:
-        msg = u"Unrecognized stream: {0}".format(stream)
-        logger.info(msg)
+        msg = u"Unrecognized stream: %s"
+        logger.info(msg, stream)
         if exception:
-            raise exceptions.ParseError(msg)
+            raise exceptions.ParseError(msg % stream)
     return term
 
 
@@ -669,10 +669,10 @@ def get_q(stream, user, exception=False):
         name = is_label(stream, user.pk)
         stream_q = Q(feed__category__name=name)
     else:
-        msg = u"Unrecognized stream: {0}".format(stream)
-        logger.info(msg)
+        msg = u"Unrecognized stream: %s"
+        logger.info(msg, stream)
         if exception:
-            raise exceptions.ParseError(msg)
+            raise exceptions.ParseError(msg % stream)
     return stream_q
 
 
@@ -1175,7 +1175,7 @@ class EditTag(ReaderView):
                 continue
 
             else:
-                logger.info(u"Unhandled tag {0}".format(tag))
+                logger.info(u"Unhandled tag %s", tag)
                 raise exceptions.ParseError(
                     "Unrecognized tag: {0}".format(tag))
 
@@ -1191,7 +1191,7 @@ class EditTag(ReaderView):
                 continue
 
             else:
-                logger.info(u"Unhandled tag {0}".format(tag))
+                logger.info(u"Unhandled tag %s", tag)
                 raise exceptions.ParseError(
                     "Unrecognized tag: {0}".format(tag))
 
@@ -1252,10 +1252,10 @@ class MarkAllAsRead(ReaderView):
             elif state in ['starred', 'broadcast']:
                 es_entries = es_entries.filter(**{state: True})
             else:
-                logger.info(u"Unknown state: {0}".format(state))
+                logger.info(u"Unknown state: %s", state)
                 return Response("OK")
         else:
-            logger.info(u"Unknown stream: {0}".format(stream))
+            logger.info(u"Unknown stream: %s", stream)
             return Response("OK")
 
         entries = es_entries.aggregate('id').fetch(per_page=0)

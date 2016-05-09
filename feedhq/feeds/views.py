@@ -602,8 +602,8 @@ def import_feeds(request):
                     imported = save_outline(request.user, None, entries,
                                             existing_feeds)
             except ValidationError:
-                logger.info("Prevented duplicate import for user {0}".format(
-                    request.user.pk))
+                logger.info("Prevented duplicate import for user %s",
+                    request.user.pk)
             else:
                 message = " ".join([ungettext(
                     u'%s feed has been imported.',

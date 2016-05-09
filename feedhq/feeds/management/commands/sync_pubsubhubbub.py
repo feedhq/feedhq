@@ -22,7 +22,7 @@ class Command(SentryCommand):
             ) and s.lease_expiration >= current_timestamp
             """))
         if len(extra):
-            logger.info("Unsubscribing from {0} feeds".format(len(extra)))
+            logger.info("Unsubscribing from %s feeds", len(extra))
             for subscription in extra:
                 try:
                     subscription.unsubscribe()
