@@ -148,7 +148,7 @@ def entries_list(request, page=1, mode=None, category=None, feed=None,
                 message = ungettext(
                     '1 entry has been marked as read.',
                     '%(value)s entries have been marked as read.',
-                    'value') % {'value': len(pks)}
+                    len(pks)) % {'value': len(pks)}
                 messages.success(request,
                                  format_html(u"{0} {1}", message, undo_form))
 
@@ -160,7 +160,7 @@ def entries_list(request, page=1, mode=None, category=None, feed=None,
                     request, ungettext(
                         '1 entry has been marked as unread.',
                         '%(value)s entries have been marked as unread.',
-                        'value') % {'value': count})
+                        count) % {'value': count})
 
         if mode == 'unread':
             return redirect(unread_url)
