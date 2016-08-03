@@ -53,7 +53,9 @@ def paginate(object_list, page=1, nb_items=25, force_count=None):
     Simple generic paginator for all the ``Entry`` lists
     """
     if force_count is not None:
-        object_list.count = lambda x: force_count
+        def count(x):
+            return force_count
+        object_list.count = count
 
     paginator = Paginator(object_list, nb_items)
 

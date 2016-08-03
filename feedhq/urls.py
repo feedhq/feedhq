@@ -6,11 +6,10 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from ratelimitbackend import admin
 from ratelimitbackend.views import login
 
-admin.autodiscover()
-
 from . import views
 from .profiles.forms import AuthForm
 
+admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/rq/', include('django_rq_dashboard.urls')),
