@@ -2,7 +2,7 @@
 	{% if entries.paginator.num_pages > 1 %}
 		{% if entries.has_previous %}
 			{% if entries.previous_page_number == 1 %}
-				<a href="{{ base_url }}">{{ entries.previous_page_number }}</a>
+				<a rel="prev" href="{{ base_url }}">{{ entries.previous_page_number }}</a>
 			{% else %}
 				<a href="{{ base_url }}">1</a>
 				{% if entries.previous_page_number != 2 %}
@@ -12,7 +12,7 @@
 						<span>…</span>
 					{% endif %}
 				{% endif %}
-				<a href="{{ base_url }}{{ entries.previous_page_number }}/">{{ entries.previous_page_number }}</a>
+				<a rel="prev" href="{{ base_url }}{{ entries.previous_page_number }}/">{{ entries.previous_page_number }}</a>
 			{% endif %}
 		{% endif %}
 
@@ -20,7 +20,7 @@
 
 		{% if entries.has_next %}
 			{% if entries.next_page_number != entries.paginator.num_pages %}
-				<a href="{{ base_url }}{{ entries.next_page_number }}/">{{ entries.next_page_number }}</a>
+				<a rel="next" href="{{ base_url }}{{ entries.next_page_number }}/">{{ entries.next_page_number }}</a>
 				{% if entries.next_page_number|add:"1" != entries.paginator.num_pages %}
 					{% if entries.next_page_number == entries.paginator.num_pages|add:"-2" %}
 						<a href="{{ base_url }}{{ entries.paginator.num_pages|add:"-1" }}/">{{ entries.paginator.num_pages|add:"-1" }}</a>
@@ -28,8 +28,10 @@
 						<span>…</span>
 					{% endif %}
 				{% endif %}
+			        <a href="{{ base_url }}{{ entries.paginator.num_pages }}/">{{ entries.paginator.num_pages }}</a>
+			{% else %}
+			        <a rel="next" href="{{ base_url }}{{ entries.paginator.num_pages }}/">{{ entries.paginator.num_pages }}</a>
 			{% endif %}
-			<a href="{{ base_url }}{{ entries.paginator.num_pages }}/">{{ entries.paginator.num_pages }}</a>
 		{% endif %}
 	{% endif %}
 {% endspaceless %}
