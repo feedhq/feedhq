@@ -2,10 +2,8 @@ import json
 
 from django.core import mail
 from django.core.urlresolvers import reverse
-
-from mock import patch
-
 from feedhq.profiles.models import User
+from mock import patch
 
 from . import responses, WebTest
 from .factories import EntryFactory

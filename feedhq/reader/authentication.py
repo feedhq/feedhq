@@ -2,9 +2,9 @@ from django.core.cache import cache
 from rest_framework.authentication import (BaseAuthentication,
                                            get_authorization_header)
 
-from ..profiles.models import User
 from .exceptions import PermissionDenied
 from .models import check_auth_token
+from ..profiles.models import User
 
 
 class GoogleLoginAuthentication(BaseAuthentication):

@@ -1,7 +1,7 @@
 import logging
 
 from more_itertools import chunked
-from rache import scheduled_jobs, delete_job
+from rache import delete_job, scheduled_jobs
 
 from . import SentryCommand
 from ...models import UniqueFeed

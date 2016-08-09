@@ -1,51 +1,51 @@
 # -*- coding: utf-8 -*-
 import base64
-import bleach
 import datetime
-import feedparser
 import hashlib
 import json
 import logging
-import lxml.html
-import magic
 import random
-import requests
-import six
 import socket
 import struct
 import time
 
-from django.db import models
+import bleach
+import feedparser
+import lxml.html
+import magic
+import pytz
+import requests
+import six
 from django.conf import settings
 from django.core.cache import cache
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_bytes, python_2_unicode_compatible
 from django.utils.html import format_html
 from django.utils.text import unescape_entities
-from django.utils.translation import ugettext_lazy as _, string_concat
+from django.utils.translation import string_concat, ugettext_lazy as _
 from django_push.subscriber.signals import updated
 from lxml.etree import ParserError
 from model_utils import FieldTracker
-from rache import schedule_job, delete_job
+from rache import delete_job, schedule_job
 from requests.exceptions import ConnectionError
-from requests.packages.urllib3.exceptions import (LocationParseError,
-                                                  DecodeError)
+from requests.packages.urllib3.exceptions import (DecodeError,
+                                                  LocationParseError)
 from requests_oauthlib import OAuth1
 from six.moves.http_client import IncompleteRead
 from six.moves.urllib import parse as urlparse
 from urlobject import URLObject
 
-import pytz
 
 from .fields import URLField
-from .tasks import (update_feed, update_favicon, store_entries,
-                    ensure_subscribed)
-from .utils import (FAVICON_FETCHER, USER_AGENT, is_feed, epoch_to_utc,
-                    get_job, JobNotFound)
+from .tasks import (ensure_subscribed, store_entries, update_favicon,
+                    update_feed)
+from .utils import (epoch_to_utc, FAVICON_FETCHER, get_job, is_feed,
+                    JobNotFound, USER_AGENT)
 from .. import es
 from ..storage import OverwritingStorage
 from ..tasks import enqueue

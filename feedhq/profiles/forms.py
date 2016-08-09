@@ -1,21 +1,19 @@
 import json
-import requests
 
-from requests_oauthlib import OAuth1
-from six.moves.urllib import parse as urlparse
+import floppyforms.__future__ as forms
+import requests
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
-
-import floppyforms.__future__ as forms
-
 from ratelimitbackend.forms import AuthenticationForm
+from requests_oauthlib import OAuth1
+from six.moves.urllib import parse as urlparse
 
-from .. import es
 from .models import User
+from .. import es
 
 
 class AuthForm(AuthenticationForm):

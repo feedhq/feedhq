@@ -1,8 +1,8 @@
-from optparse import make_option
 import os
+from optparse import make_option
 
 from raven import Client
-from rq import Queue, Connection, Worker
+from rq import Connection, Queue, Worker
 
 from . import SentryCommand
 from ....utils import get_redis_connection

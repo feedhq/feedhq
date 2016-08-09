@@ -8,7 +8,7 @@ from rache import scheduled_jobs
 from ratelimitbackend import admin
 
 from .fields import URLField
-from .models import Category, UniqueFeed, Feed, Entry, Favicon
+from .models import Category, Entry, Favicon, Feed, UniqueFeed
 from ..utils import get_redis_connection
 
 

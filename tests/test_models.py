@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
-from django.utils import timezone
-from mock import patch
-from rache import job_details, schedule_job
 
+from django.utils import timezone
 from feedhq import es
-from feedhq.feeds.models import (Category, Feed, UniqueFeed, Entry, Favicon,
+from feedhq.feeds.models import (Category, Entry, Favicon, Feed, UniqueFeed,
                                  UniqueFeedManager)
 from feedhq.feeds.tasks import update_feed
 from feedhq.utils import get_redis_connection
+from mock import patch
+from rache import job_details, schedule_job
 
-from .factories import CategoryFactory, FeedFactory
 from . import responses, TestCase
+from .factories import CategoryFactory, FeedFactory
 
 
 class ModelTests(TestCase):

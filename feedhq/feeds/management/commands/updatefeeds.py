@@ -3,11 +3,11 @@ import logging
 from rache import pending_jobs
 from rq import Queue
 
-from ....tasks import enqueue
-from ....utils import get_redis_connection
+from . import SentryCommand
 from ...models import UniqueFeed
 from ...tasks import update_feed
-from . import SentryCommand
+from ....tasks import enqueue
+from ....utils import get_redis_connection
 
 logger = logging.getLogger(__name__)
 

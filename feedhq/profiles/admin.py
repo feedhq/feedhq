@@ -1,8 +1,7 @@
-from ratelimitbackend import admin
-
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 from django.utils.translation import ugettext_lazy as _
+from ratelimitbackend import admin
 
 from .models import User
 

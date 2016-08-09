@@ -1,14 +1,12 @@
 import os
-
 from io import BytesIO as BaseBytesIO
 
 from django.test import TestCase as BaseTestCase
 from django_webtest import WebTest as BaseWebTest
-from rache import job_key
-from requests import Response
-
 from feedhq import es
 from feedhq.utils import get_redis_connection
+from rache import job_key
+from requests import Response
 
 
 TEST_DATA = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')

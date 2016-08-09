@@ -6,8 +6,8 @@ from collections import defaultdict
 from django.conf import settings
 from django.contrib.auth.views import logout as do_logout
 from django.core.exceptions import PermissionDenied
-from django.http import (HttpResponse, HttpResponsePermanentRedirect,
-                         HttpResponseNotAllowed)
+from django.http import (HttpResponse, HttpResponseNotAllowed,
+                         HttpResponsePermanentRedirect)
 from django.utils.crypto import constant_time_compare
 from rq import Worker
 

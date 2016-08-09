@@ -1,9 +1,8 @@
 import logging
-import requests
-
 from collections import defaultdict
 from datetime import timedelta
 
+import requests
 from django.conf import settings
 from django.utils import timezone
 from django_push.subscriber.models import Subscription

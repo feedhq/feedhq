@@ -1,13 +1,12 @@
 import json
 import logging
-import opml
 import re
-
 from collections import defaultdict
 
+import opml
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
@@ -16,15 +15,15 @@ from django.template.defaultfilters import slugify
 from django.utils.html import format_html
 from django.utils.translation import ugettext as _, ungettext
 from django.views import generic
-from elasticsearch.exceptions import RequestError, ConflictError
+from elasticsearch.exceptions import ConflictError, RequestError
 
+from .forms import (ActionForm, CategoryForm, FeedForm, OPMLImportForm,
+                    ReadForm, SubscriptionFormSet, UndoReadForm, user_lock)
+from .models import Category, UniqueFeed
+from .tasks import read_later
 from .. import es
 from ..decorators import login_required
 from ..tasks import enqueue
-from .models import Category, UniqueFeed
-from .forms import (CategoryForm, FeedForm, OPMLImportForm, ActionForm,
-                    ReadForm, SubscriptionFormSet, UndoReadForm, user_lock)
-from .tasks import read_later
 
 """
 Each view displays a list of entries, with a level of filtering:

@@ -2,8 +2,8 @@ from collections import defaultdict
 from contextlib import contextmanager
 from copy import deepcopy
 
-from django.db import connection
 from django.conf import settings
+from django.db import connection
 from django.http import Http404
 from elasticsearch import Elasticsearch, NotFoundError
 from elasticsearch.helpers import bulk as es_bulk, BulkIndexError

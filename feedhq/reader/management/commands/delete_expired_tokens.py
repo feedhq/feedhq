@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from ...models import AuthToken, AUTH_TOKEN_DAYS
+from ...models import AUTH_TOKEN_DAYS, AuthToken
 from ....feeds.management.commands import SentryCommand
 
 

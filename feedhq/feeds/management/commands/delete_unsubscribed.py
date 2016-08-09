@@ -1,5 +1,5 @@
-from ...models import UniqueFeed
 from . import SentryCommand
+from ...models import UniqueFeed
 
 
 class Command(SentryCommand):

@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
-import feedparser
 import json
-
 from datetime import timedelta
 
+import feedparser
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django_push.subscriber.signals import updated
-from mock import patch, call
-from rache import schedule_job
-
 from feedhq import es
-from feedhq.feeds.models import Category, Feed, Entry, UniqueFeed
+from feedhq.feeds.models import Category, Entry, Feed, UniqueFeed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.templatetags.feeds_tags import smart_date
 from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
 from feedhq.utils import get_redis_connection
 from feedhq.wsgi import application  # noqa
+from mock import call, patch
+from rache import schedule_job
 
-from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
-from . import data_file, responses, patch_job, WebTest
+
+from . import data_file, patch_job, responses, WebTest
+from .factories import CategoryFactory, EntryFactory, FeedFactory, UserFactory
 
 
 class WebBaseTests(WebTest):
