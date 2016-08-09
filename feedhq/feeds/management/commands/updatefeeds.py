@@ -41,8 +41,8 @@ class Command(SentryCommand):
             queue = Queue(name=name, connection=conn)
             if queue.count > limit:
                 logger.info(
-                    "{0} queue longer than limit, skipping update "
-                    "({1} > {2})".format(name, queue.count, limit))
+                    "%s queue longer than limit, skipping update "
+                    "(%s > %s)", name, queue.count, limit)
                 return
 
         jobs = pending_jobs(limit=limit,

@@ -62,7 +62,7 @@ def ensure_subscribed(topic_url, hub_url):
     try:
         s = Subscription.objects.get(topic=topic_url, hub=hub_url)
     except Subscription.DoesNotExist:
-        logger.debug(u"Subscribing to {0} via {1}".format(topic_url, hub_url))
+        logger.debug(u"Subscribing to %s via %s", topic_url, hub_url)
         call = Subscription.objects.subscribe
         args = topic_url, hub_url
     else:
@@ -70,7 +70,7 @@ def ensure_subscribed(topic_url, hub_url):
             not s.verified or
             s.lease_expiration < timezone.now() + timedelta(days=1)
         ):
-            logger.debug(u"Renewing subscription {0}".format(s.pk))
+            logger.debug(u"Renewing subscription %s", s.pk)
             call = s.subscribe
     if call is not None:
         call(*args)

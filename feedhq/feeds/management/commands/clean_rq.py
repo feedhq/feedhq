@@ -33,4 +33,4 @@ class Command(SentryCommand):
                 if date < delay:
                     r.delete(key)
                     count += 1
-        logger.info("Cleaned {0} jobs".format(count))
+        logger.info("Cleaned %s jobs", count)

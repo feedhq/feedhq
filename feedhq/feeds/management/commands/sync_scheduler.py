@@ -26,13 +26,13 @@ class Command(SentryCommand):
         to_delete = existing_jobs - target
         if to_delete:
             logger.info(
-                "Deleting {0} jobs from the scheduler".format(len(to_delete)))
+                "Deleting %s jobs from the scheduler", len(to_delete))
             for job_id in to_delete:
                 delete_job(job_id, connection=connection)
 
         to_add = target - existing_jobs
         if to_add:
-            logger.info("Adding {0} jobs to the scheduler".format(len(to_add)))
+            logger.info("Adding %s jobs to the scheduler", len(to_add))
             for chunk in chunked(to_add, 10000):
                 uniques = UniqueFeed.objects.filter(url__in=chunk)
                 for unique in uniques:

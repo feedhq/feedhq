@@ -194,7 +194,7 @@ class UniqueFeedManager(models.Manager):
             self.backoff_feed(url, error, backoff_factor)
             return
         except LocationParseError:
-            logger.debug(u"Failed to parse URL for {0}".format(url))
+            logger.debug(u"Failed to parse URL for %s", url)
             self.mute_feed(url, UniqueFeed.PARSE_ERROR)
             return
 
@@ -222,7 +222,7 @@ class UniqueFeedManager(models.Manager):
         update = {'last_update': int(time.time())}
 
         if response.status_code == 410:
-            logger.debug(u"Feed gone, {0}".format(url))
+            logger.debug(u"Feed gone, %s", url)
             self.mute_feed(url, UniqueFeed.GONE)
             return
 
@@ -231,7 +231,7 @@ class UniqueFeedManager(models.Manager):
             return
 
         elif response.status_code not in [200, 204, 304]:
-            logger.debug(u"{0} returned {1}".format(url, response.status_code))
+            logger.debug(u"%s returned %s", url, response.status_code)
 
             if response.status_code == 429:
                 # Too Many Requests
@@ -275,7 +275,7 @@ class UniqueFeedManager(models.Manager):
             else:
                 content = response.content
         except socket.timeout:
-            logger.debug(u'{0} timed out'.format(url))
+            logger.debug(u'%s timed out', url)
             self.backoff_feed(url, UniqueFeed.TIMEOUT, backoff_factor)
             return
 
@@ -386,7 +386,7 @@ class UniqueFeedManager(models.Manager):
         return entry_date, date_generated
 
     def handle_redirection(self, old_url, new_url):
-        logger.debug(u"{0} moved to {1}".format(old_url, new_url))
+        logger.debug(u"%s moved to %s", old_url, new_url)
         Feed.objects.filter(url=old_url).update(url=new_url)
         unique, created = self.get_or_create(url=new_url)
         if created:
@@ -402,9 +402,7 @@ class UniqueFeedManager(models.Manager):
 
     def backoff_feed(self, url, error, backoff_factor):
         if backoff_factor == UniqueFeed.MAX_BACKOFF - 1:
-            logger.debug(u"{0} reached max backoff period ({1})".format(
-                url, error,
-            ))
+            logger.debug(u"%s reached max backoff period (%s)", url, error)
         backoff_factor = min(UniqueFeed.MAX_BACKOFF, backoff_factor + 1)
         schedule_job(url, schedule_in=UniqueFeed.delay(backoff_factor),
                      error=error, backoff_factor=backoff_factor,
