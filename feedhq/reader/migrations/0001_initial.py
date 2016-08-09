@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('date_created', models.DateTimeField(verbose_name='Creation date', default=django.utils.timezone.now)),
                 ('client', models.CharField(blank=True, verbose_name='Client', max_length=1023)),
                 ('user_agent', models.TextField(blank=True, verbose_name='User-Agent')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='auth_tokens', verbose_name='User')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='auth_tokens', verbose_name='User', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('-date_created',),

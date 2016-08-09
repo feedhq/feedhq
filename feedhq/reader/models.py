@@ -58,7 +58,8 @@ def default_token():
 @python_2_unicode_compatible
 class AuthToken(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
-                             related_name='auth_tokens')
+                             related_name='auth_tokens',
+                             on_delete=models.CASCADE)
     token = models.CharField(
         _('Token'), max_length=300, db_index=True, unique=True,
         default=default_token)

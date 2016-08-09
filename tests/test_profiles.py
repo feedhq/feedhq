@@ -12,7 +12,7 @@ from .factories import EntryFactory
 class ProfilesTest(WebTest):
     def setUp(self):  # noqa
         self.user = User.objects.create_user('test', 'test@example.com',
-                                             'pass')
+                                             'pass', is_active=True)
 
     def test_profile(self):
         url = reverse('stats')

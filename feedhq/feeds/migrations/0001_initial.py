@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                 ('url', feedhq.feeds.fields.URLField(verbose_name='URL', db_index=True)),
                 ('favicon', models.ImageField(verbose_name='Favicon', null=True, upload_to='favicons', storage=feedhq.storage.OverwritingStorage(), blank=True)),
                 ('img_safe', models.BooleanField(default=False, verbose_name='Display images by default')),
-                ('category', models.ForeignKey(help_text='<a href="/category/add/">Add a category</a>', related_name='feeds', blank=True, to='feeds.Category', null=True, verbose_name='Category')),
+                ('category', models.ForeignKey(help_text='<a href="/category/add/">Add a category</a>', related_name='feeds', blank=True, to='feeds.Category', null=True, verbose_name='Category', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('name',),

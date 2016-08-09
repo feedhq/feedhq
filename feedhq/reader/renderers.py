@@ -1,9 +1,10 @@
 import datetime
-import six
+from io import StringIO
 
+import six
 from django.utils.xmlutils import SimplerXMLGenerator
-from rest_framework.compat import StringIO
-from rest_framework.renderers import BaseRenderer, XMLRenderer
+from rest_framework.renderers import BaseRenderer
+from rest_framework_xml.renderers import XMLRenderer
 
 
 def timestamp_to_iso(value):

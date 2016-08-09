@@ -6,6 +6,7 @@ import feedparser
 
 from django.core.cache import cache
 from django.core.management import call_command
+from django.test import TransactionTestCase
 from django.utils import timezone
 from django_push.subscriber.models import Subscription
 from feedhq import es
@@ -346,6 +347,8 @@ class UpdateTests(TestCase):
         call_command('clean_rq')
         self.assertEqual(len(r.keys('rq:job:*')), 2)
 
+
+class UpdateTransactionTestCase(TransactionTestCase):
     @patch('requests.post')
     @patch('requests.get')
     def test_ensure_subscribed(self, get, post):

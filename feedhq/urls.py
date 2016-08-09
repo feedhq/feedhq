@@ -13,7 +13,7 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/rq/', include('django_rq_dashboard.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', include((admin.site.urls, 'admin'))),
     url(r'^subscriber/', include('django_push.subscriber.urls')),
     url(r'^health/$', views.health, name='health'),
     url(r'^robots.txt$', views.robots),
@@ -21,9 +21,9 @@ urlpatterns = [
     url(r'^favicon.ico$', views.favicon),
     url(r'^apple-touch-icon-precomposed.png$', views.touch_icon),
     url(r'^apple-touch-icon.png$', views.touch_icon),
-    url(r'^', include('feedhq.reader.urls', namespace='reader')),
+    url(r'^', include(('feedhq.reader.urls', 'reader'), namespace='reader')),
     url(r'^accounts/', include('feedhq.profiles.urls')),
-    url(r'^', include('feedhq.feeds.urls', namespace='feeds')),
+    url(r'^', include(('feedhq.feeds.urls', 'feeds'), namespace='feeds')),
     url(r'^login/$', login, {'authentication_form': AuthForm}, name='login'),
     url(r'^logout/$', views.logout, name='logout'),
 ]
