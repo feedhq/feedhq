@@ -6,8 +6,8 @@ from collections import defaultdict
 from django.conf import settings
 from django.contrib.auth.views import logout as do_logout
 from django.core.exceptions import PermissionDenied
-from django.http import (HttpResponse, HttpResponsePermanentRedirect,
-                         HttpResponseNotAllowed)
+from django.http import (HttpResponse, HttpResponseNotAllowed,
+                         HttpResponsePermanentRedirect)
 from django.utils.crypto import constant_time_compare
 from rq import Worker
 
@@ -16,10 +16,13 @@ from .profiles.models import User
 from .utils import get_redis_connection
 
 
-robots = lambda _: HttpResponse('User-agent: *\nDisallow:\n',
-                                content_type='text/plain')
+def robots(request):
+    return HttpResponse('User-agent: *\nDisallow:\n',
+                        content_type='text/plain')
 
-humans = lambda _: HttpResponse(u"""/* TEAM */
+
+def humans(request):
+    return HttpResponse(u"""/* TEAM */
     Main developer: Bruno Renié
     Contact: contact [at] feedhq.org
     Twitter: @brutasse, @FeedHQ
@@ -31,13 +34,15 @@ humans = lambda _: HttpResponse(u"""/* TEAM */
     Frontend: SCSS, Compass, Iconic
 """, content_type='text/plain; charset=UTF-8')
 
-favicon = lambda _: HttpResponsePermanentRedirect(
-    '%score/img/icon-rss.png' % settings.STATIC_URL
-)
 
-touch_icon = lambda _: HttpResponsePermanentRedirect(
-    '%sfeeds/img/touch-icon-114.png' % settings.STATIC_URL
-)
+def favicon(request):
+    return HttpResponsePermanentRedirect(
+        '{0}core/img/icon-rss.png'.format(settings.STATIC_URL))
+
+
+def touch_icon(request):
+    return HttpResponsePermanentRedirect(
+        '{0}feeds/img/touch-icon-114.png'.format(settings.STATIC_URL))
 
 
 def logout(request):

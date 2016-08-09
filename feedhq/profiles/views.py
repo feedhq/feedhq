@@ -1,12 +1,12 @@
 import json
-import requests
 
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.requests import RequestSite
 from django.core import signing
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.forms import Form
 from django.shortcuts import redirect
 from django.template import loader
@@ -15,11 +15,11 @@ from django.views import generic
 
 from password_reset import views
 
-from .forms import (ChangePasswordForm, ProfileForm, CredentialsForm,
-                    ServiceForm, WallabagForm, DeleteAccountForm, SharingForm,
-                    PocketForm)
-from ..decorators import login_required
+from .forms import (ChangePasswordForm, CredentialsForm, DeleteAccountForm,
+                    PocketForm, ProfileForm, ServiceForm, SharingForm,
+                    WallabagForm)
 from .. import es
+from ..decorators import login_required
 
 
 class UserMixin(object):

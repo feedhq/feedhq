@@ -1,10 +1,15 @@
 import contextlib
 import json
 import os
+
+import feedparser
+import floppyforms.__future__ as forms
+import opml
+import requests
 import six
 
 from django.core.cache import cache
-from django.core.validators import validate_ipv46_address, URLValidator
+from django.core.validators import URLValidator, validate_ipv46_address
 from django.db import transaction
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
@@ -12,13 +17,8 @@ from lxml.etree import XMLSyntaxError
 from raven import Client
 from urlobject import URLObject
 
-import feedparser
-import floppyforms.__future__ as forms
-import opml
-import requests
-
 from .models import Category, Feed
-from .utils import USER_AGENT, is_feed
+from .utils import is_feed, USER_AGENT
 from .. import es
 from ..utils import get_redis_connection
 

@@ -1,9 +1,8 @@
+from feedhq.feeds.models import Favicon, Feed
 from mock import patch
 
-from feedhq.feeds.models import Favicon, Feed
-
-from .factories import FeedFactory
 from . import responses, TestCase
+from .factories import FeedFactory
 
 
 class FaviconTests(TestCase):

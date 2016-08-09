@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
+import redis
 from django.conf import settings
 from django.core.validators import EmailValidator, ValidationError
-
-import redis
 
 
 def get_redis_connection():

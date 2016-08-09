@@ -1,25 +1,24 @@
-import feedparser
 import socket
 
+import feedparser
 from django.core.management import call_command
 from django.utils import timezone
+from feedhq import es
+from feedhq.feeds.models import Favicon, Feed, UniqueFeed
+from feedhq.feeds.tasks import update_feed
+from feedhq.feeds.utils import epoch_to_utc, FAVICON_FETCHER, USER_AGENT
+from feedhq.utils import get_redis_connection
 from mock import patch, PropertyMock
 from rache import job_details, schedule_job
 from requests import RequestException
-from requests.packages.urllib3.exceptions import (LocationParseError,
-                                                  DecodeError)
+from requests.packages.urllib3.exceptions import (DecodeError,
+                                                  LocationParseError)
 from rq.timeouts import JobTimeoutException
 from six.moves.http_client import IncompleteRead
 
-from feedhq import es
-from feedhq.feeds.models import Favicon, UniqueFeed, Feed
-from feedhq.feeds.tasks import update_feed
-from feedhq.feeds.utils import FAVICON_FETCHER, USER_AGENT, epoch_to_utc
-from feedhq.utils import get_redis_connection
-
+from . import patch_job, TestCase
 from .factories import FeedFactory, UserFactory
 from .test_feeds import data_file, responses
-from . import TestCase, patch_job
 
 
 class UpdateTests(TestCase):

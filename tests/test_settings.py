@@ -1,8 +1,8 @@
 import os
 
-from . import TestCase
+from feedhq.settings import parse_email_url, parse_redis_url
 
-from feedhq.settings import parse_redis_url, parse_email_url
+from . import TestCase
 
 
 class SettingsTests(TestCase):

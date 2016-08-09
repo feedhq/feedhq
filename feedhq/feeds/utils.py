@@ -3,7 +3,7 @@ import datetime
 
 from django.utils import timezone
 
-from rache import job_key, job_details
+from rache import job_details, job_key
 
 from .. import __version__
 from ..utils import get_redis_connection

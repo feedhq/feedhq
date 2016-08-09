@@ -3,11 +3,10 @@ import datetime
 import random
 
 from django.utils import timezone
-from django.utils.text import slugify, force_text
-from factory import (DjangoModelFactory as Factory, SubFactory, Sequence,
-                     lazy_attribute)
-
-from feedhq.feeds.models import Category, Feed, Entry
+from django.utils.text import force_text, slugify
+from factory import (DjangoModelFactory as Factory, lazy_attribute,
+                     Sequence, SubFactory)
+from feedhq.feeds.models import Category, Entry, Feed
 from feedhq.profiles.models import User
 
 

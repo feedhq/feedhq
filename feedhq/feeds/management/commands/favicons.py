@@ -1,7 +1,7 @@
 from optparse import make_option
 
-from ...models import UniqueFeed, enqueue_favicon
 from . import SentryCommand
+from ...models import enqueue_favicon, UniqueFeed
 
 
 class Command(SentryCommand):

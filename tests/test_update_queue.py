@@ -1,26 +1,25 @@
 import time
-
 from datetime import timedelta
-from mock import patch
 
 import feedparser
+
 
 from django.core.cache import cache
 from django.core.management import call_command
 from django.utils import timezone
 from django_push.subscriber.models import Subscription
-from rache import pending_jobs, delete_job
-from rq.utils import utcformat, utcnow
-
 from feedhq import es
-from feedhq.feeds.models import UniqueFeed, timedelta_to_seconds
+from feedhq.feeds.models import timedelta_to_seconds, UniqueFeed
 from feedhq.feeds.tasks import store_entries
 from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
 from feedhq.utils import get_redis_connection
+from mock import patch
+from rache import delete_job, pending_jobs
+from rq.utils import utcformat, utcnow
 
+from . import data_file, patch_job, responses, TestCase
 from .factories import FeedFactory, UserFactory
-from . import responses, TestCase, data_file, patch_job
 
 
 class UpdateTests(TestCase):

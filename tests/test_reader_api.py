@@ -8,17 +8,16 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import Client
 from django.utils import timezone
-from mock import patch
-from six.moves.urllib.parse import urlencode
-
 from feedhq import es
-from feedhq.feeds.models import Feed, Entry, UniqueFeed
+from feedhq.feeds.models import Entry, Feed, UniqueFeed
 from feedhq.reader.models import AuthToken
 from feedhq.reader.views import GoogleReaderXMLRenderer, item_id
 from feedhq.utils import get_redis_connection
+from mock import patch
+from six.moves.urllib.parse import urlencode
 
-from .factories import UserFactory, CategoryFactory, FeedFactory, EntryFactory
-from . import responses, data_file, TestCase
+from . import data_file, responses, TestCase
+from .factories import CategoryFactory, EntryFactory, FeedFactory, UserFactory
 
 
 def clientlogin(token):

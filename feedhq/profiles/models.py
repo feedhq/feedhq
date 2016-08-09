@@ -1,11 +1,11 @@
 import json
-import pytz
 
 from datetime import timedelta
 
+import pytz
 from django.conf import settings
-from django.contrib.auth.models import (AbstractBaseUser, UserManager,
-                                        PermissionsMixin)
+from django.contrib.auth.models import (AbstractBaseUser, PermissionsMixin,
+                                        UserManager)
 from django.db import models
 from django.db.models import Max
 from django.utils import timezone

@@ -1,9 +1,9 @@
 import datetime
 import logging
-import pytz
-
-from dateutil import parser
 from itertools import product
+
+import pytz
+from dateutil import parser
 
 from . import SentryCommand
 from ....utils import get_redis_connection

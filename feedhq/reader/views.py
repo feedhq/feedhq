@@ -24,18 +24,18 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from six.moves.urllib import parse as urlparse
 
+from .authentication import GoogleLoginAuthentication
+from .exceptions import BadToken, PermissionDenied
+from .models import check_post_token, generate_auth_token, generate_post_token
+from .renderers import (AtomHifiRenderer, AtomRenderer,
+                        GoogleReaderXMLRenderer, PlainRenderer)
 from .. import es
 from ..feeds.forms import FeedForm, user_lock
-from ..feeds.models import UniqueFeed, Category
+from ..feeds.models import Category, UniqueFeed
 from ..feeds.utils import epoch_to_utc
 from ..feeds.views import save_outline
 from ..profiles.models import User
 from ..utils import is_email
-from .authentication import GoogleLoginAuthentication
-from .exceptions import PermissionDenied, BadToken
-from .models import generate_auth_token, generate_post_token, check_post_token
-from .renderers import (PlainRenderer, GoogleReaderXMLRenderer, AtomRenderer,
-                        AtomHifiRenderer)
 
 
 logger = logging.getLogger(__name__)

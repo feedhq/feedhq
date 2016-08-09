@@ -1,9 +1,8 @@
-import dj_database_url
 import os
 
-from six.moves.urllib import parse as urlparse
-
+import dj_database_url
 from django.core.urlresolvers import reverse_lazy
+from six.moves.urllib import parse as urlparse
 
 BASE_DIR = os.path.dirname(__file__)
 

@@ -29,11 +29,11 @@ INSTAPAPER = READABILITY = {
 
 # Silencing log calls
 if '-v2' not in sys.argv:
-    LOGGING['loggers']['ratelimitbackend']['level'] = 'ERROR'
-    LOGGING['loggers']['feedhq']['level'] = 'ERROR'
-    LOGGING['loggers']['elasticsearch']['level'] = 'ERROR'
+    LOGGING['loggers']['ratelimitbackend']['level'] = 'ERROR'  # noqa
+    LOGGING['loggers']['feedhq']['level'] = 'ERROR'  # noqa
+    LOGGING['loggers']['elasticsearch']['level'] = 'ERROR'  # noqa
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media')  # noqa
 
 ES_INDEX = 'test-feedhq'
 ES_ALIAS_TEMPLATE = 'test-feedhq-{0}'

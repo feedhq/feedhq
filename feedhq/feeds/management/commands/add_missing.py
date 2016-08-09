@@ -1,7 +1,7 @@
 from django.conf import settings
 
-from ...models import Feed, UniqueFeed, enqueue_favicon
 from . import SentryCommand
+from ...models import enqueue_favicon, Feed, UniqueFeed
 
 
 class Command(SentryCommand):
