@@ -24,7 +24,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-from django.utils.encoding import force_bytes, python_2_unicode_compatible
+from django.utils.encoding import force_bytes
 from django.utils.html import format_html
 from django.utils.text import unescape_entities
 from django.utils.translation import string_concat, ugettext_lazy as _
@@ -85,7 +85,6 @@ def enqueue_favicon(url, force_update=False):
             queue='favicons')
 
 
-@python_2_unicode_compatible
 class Category(models.Model):
     """Used to sort our feeds"""
     name = models.CharField(_('Name'), max_length=1023, db_index=True)
@@ -464,7 +463,6 @@ class JobDataMixin(object):
             return self.url
 
 
-@python_2_unicode_compatible
 class UniqueFeed(JobDataMixin, models.Model):
     GONE = 'gone'
     TIMEOUT = 'timeout'
@@ -561,7 +559,6 @@ class UniqueFeed(JobDataMixin, models.Model):
                      connection=connection, **kwargs)
 
 
-@python_2_unicode_compatible
 class Feed(JobDataMixin, models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=1023)
@@ -787,7 +784,6 @@ class BaseEntry(object):
         return self.date.year == timezone.now().year
 
 
-@python_2_unicode_compatible
 class Entry(BaseEntry, models.Model):
     """An entry is a cached feed item"""
     feed = models.ForeignKey(Feed, verbose_name=_('Feed'), null=True,
@@ -863,7 +859,6 @@ class Entry(BaseEntry, models.Model):
         return EsEntry(data)
 
 
-@python_2_unicode_compatible
 class EsEntry(BaseEntry):
     __slots__ = (
         'feed', 'category', 'guid', 'tags', 'read', 'timestamp', 'author',
@@ -1049,7 +1044,6 @@ class FaviconManager(models.Manager):
         return favicon
 
 
-@python_2_unicode_compatible
 class Favicon(models.Model):
     url = URLField(_('URL'), db_index=True, unique=True)
     favicon = models.FileField(upload_to='favicons', blank=True,

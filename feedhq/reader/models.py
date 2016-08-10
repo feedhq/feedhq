@@ -4,7 +4,6 @@ from django.core.cache import cache
 from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -55,7 +54,6 @@ def default_token():
     return get_random_string(AUTH_TOKEN_LENGTH)
 
 
-@python_2_unicode_compatible
 class AuthToken(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
                              related_name='auth_tokens',
