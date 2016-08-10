@@ -1,9 +1,9 @@
 import json
+from unittest.mock import patch
 
 from django.core import mail
 from django.core.urlresolvers import reverse
 from feedhq.profiles.models import User
-from mock import patch
 
 from . import responses, WebTest
 from .factories import EntryFactory

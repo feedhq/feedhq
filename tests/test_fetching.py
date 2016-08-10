@@ -1,4 +1,5 @@
 import socket
+from unittest.mock import patch, PropertyMock
 
 import feedparser
 from django.core.management import call_command
@@ -8,7 +9,6 @@ from feedhq.feeds.models import Favicon, Feed, UniqueFeed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.utils import epoch_to_utc, FAVICON_FETCHER, USER_AGENT
 from feedhq.utils import get_redis_connection
-from mock import patch, PropertyMock
 from rache import job_details, schedule_job
 from requests import RequestException
 from requests.packages.urllib3.exceptions import (DecodeError,
