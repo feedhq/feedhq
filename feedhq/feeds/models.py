@@ -24,7 +24,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-from django.utils.encoding import force_bytes, python_2_unicode_compatible
+from django.utils.encoding import force_bytes
 from django.utils.html import format_html
 from django.utils.text import unescape_entities
 from django.utils.translation import string_concat, ugettext_lazy as _
@@ -85,13 +85,13 @@ def enqueue_favicon(url, force_update=False):
             queue='favicons')
 
 
-@python_2_unicode_compatible
 class Category(models.Model):
     """Used to sort our feeds"""
     name = models.CharField(_('Name'), max_length=1023, db_index=True)
     slug = models.SlugField(_('Slug'), db_index=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
-                             related_name='categories')
+                             related_name='categories',
+                             on_delete=models.CASCADE)
     # Some day there will be drag'n'drop ordering
     order = models.PositiveIntegerField(blank=True, null=True)
 
@@ -169,7 +169,7 @@ class UniqueFeedManager(models.Manager):
 
         if settings.TESTS:
             # Make sure requests.get is properly mocked during tests
-            if str(type(requests.get)) != "<class 'mock.mock.MagicMock'>":
+            if str(type(requests.get)) != "<class 'unittest.mock.MagicMock'>":
                 raise ValueError("Not Mocked")
 
         auth = None
@@ -463,7 +463,6 @@ class JobDataMixin(object):
             return self.url
 
 
-@python_2_unicode_compatible
 class UniqueFeed(JobDataMixin, models.Model):
     GONE = 'gone'
     TIMEOUT = 'timeout'
@@ -560,7 +559,6 @@ class UniqueFeed(JobDataMixin, models.Model):
                      connection=connection, **kwargs)
 
 
-@python_2_unicode_compatible
 class Feed(JobDataMixin, models.Model):
     """A URL and some extra stuff"""
     name = models.CharField(_('Name'), max_length=1023)
@@ -570,10 +568,10 @@ class Feed(JobDataMixin, models.Model):
         help_text=string_concat('<a href="',
                                 reverse_lazy('feeds:add_category'), '">',
                                 _('Add a category'), '</a>'),
-        null=True, blank=True,
+        null=True, blank=True, on_delete=models.CASCADE,
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('User'),
-                             related_name='feeds')
+                             related_name='feeds', on_delete=models.CASCADE)
     favicon = models.ImageField(_('Favicon'), upload_to='favicons', null=True,
                                 blank=True, storage=OverwritingStorage())
     img_safe = models.BooleanField(_('Display images by default'),
@@ -786,11 +784,11 @@ class BaseEntry(object):
         return self.date.year == timezone.now().year
 
 
-@python_2_unicode_compatible
 class Entry(BaseEntry, models.Model):
     """An entry is a cached feed item"""
     feed = models.ForeignKey(Feed, verbose_name=_('Feed'), null=True,
-                             blank=True, related_name='entries')
+                             blank=True, related_name='entries',
+                             on_delete=models.CASCADE)
     title = models.CharField(_('Title'), max_length=255)
     subtitle = models.TextField(_('Abstract'))
     link = URLField(_('URL'), db_index=True)
@@ -800,7 +798,8 @@ class Entry(BaseEntry, models.Model):
     # The User FK is redundant but this may be better for performance and if
     # want to allow user input.
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             verbose_name=(_('User')), related_name='entries')
+                             verbose_name=(_('User')), related_name='entries',
+                             on_delete=models.CASCADE)
     # Mark something as read or unread
     read = models.BooleanField(_('Read'), default=False, db_index=True)
     # Read later: store the URL
@@ -860,7 +859,6 @@ class Entry(BaseEntry, models.Model):
         return EsEntry(data)
 
 
-@python_2_unicode_compatible
 class EsEntry(BaseEntry):
     __slots__ = (
         'feed', 'category', 'guid', 'tags', 'read', 'timestamp', 'author',
@@ -998,7 +996,7 @@ class FaviconManager(models.Manager):
             return favicon
 
         icon_file = ContentFile(response.content)
-        icon_type = magic.from_buffer(response.content).decode('utf-8')
+        icon_type = magic.from_buffer(response.content)
         if 'PNG' in icon_type:
             ext = 'png'
         elif ('MS Windows icon' in icon_type or
@@ -1046,7 +1044,6 @@ class FaviconManager(models.Manager):
         return favicon
 
 
-@python_2_unicode_compatible
 class Favicon(models.Model):
     url = URLField(_('URL'), db_index=True, unique=True)
     favicon = models.FileField(upload_to='favicons', blank=True,

@@ -18,10 +18,10 @@ from lxml.etree import XMLSyntaxError
 from rest_framework import exceptions
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.negotiation import DefaultContentNegotiation
-from rest_framework.parsers import XMLParser
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_xml.parsers import XMLParser
 from six.moves.urllib import parse as urlparse
 
 from .authentication import GoogleLoginAuthentication
@@ -142,7 +142,7 @@ class Login(APIView):
 
     def initial(self, request, *args, **kwargs):
         if request.method == 'POST':
-            querydict = request.DATA
+            querydict = request.data
         elif request.method == 'GET':
             querydict = request.GET
         if 'Email' not in querydict or 'Passwd' not in querydict:
@@ -161,7 +161,7 @@ class Login(APIView):
             raise PermissionDenied()
         if not user.check_password(self.querydict['Passwd']):
             raise PermissionDenied()
-        client = request.GET.get('client', request.DATA.get('client', ''))
+        client = request.GET.get('client', request.data.get('client', ''))
         token = generate_auth_token(
             user,
             client=client,
@@ -182,10 +182,10 @@ class ReaderView(APIView):
     def initial(self, request, *args, **kwargs):
         super(ReaderView, self).initial(request, *args, **kwargs)
         if request.method == 'POST' and self.require_post_token:
-            token = request.DATA.get('T', request.GET.get('T', None))
+            token = request.data.get('T', request.GET.get('T', None))
             if token is None:
                 logger.info(
-                    u"Missing POST token, %s", request.DATA.dict()
+                    u"Missing POST token, %s", request.data.dict()
                 )
                 raise exceptions.ParseError("Missing 'T' POST token")
             user_id = check_post_token(token)
@@ -366,13 +366,13 @@ class DisableTag(ReaderView):
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
-        if 's' not in request.DATA and 't' not in request.DATA:
+        if 's' not in request.data and 't' not in request.data:
             raise exceptions.ParseError("Missing required 's' parameter")
 
-        if 's' in request.DATA:
-            name = is_label(request.DATA['s'], request.user.pk)
+        if 's' in request.data:
+            name = is_label(request.data['s'], request.user.pk)
         else:
-            name = request.DATA['t']
+            name = request.data['t']
 
         try:
             category = request.user.categories.get(name=name)
@@ -410,20 +410,20 @@ class RenameTag(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def post(self, request, *args, **kwargs):
-        if 's' not in request.DATA and 't' not in request.DATA:
+        if 's' not in request.data and 't' not in request.data:
             raise exceptions.ParseError("Missing required 's' parameter")
 
-        if 'dest' not in request.DATA:
+        if 'dest' not in request.data:
             raise exceptions.ParseError("Missing required 'dest' parameter")
 
-        new_name = is_label(request.DATA['dest'], request.user.pk)
+        new_name = is_label(request.data['dest'], request.user.pk)
         if not new_name:
             raise exceptions.ParseError("Invalid 'dest' parameter")
 
-        if 's' in request.DATA:
-            name = is_label(request.DATA['s'], request.user.pk)
+        if 's' in request.data:
+            name = is_label(request.data['s'], request.user.pk)
         else:
-            name = request.DATA['t']
+            name = request.data['t']
 
         try:
             category = request.user.categories.get(name=name)
@@ -501,17 +501,17 @@ class EditSubscription(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def post(self, request, *args, **kwargs):
-        action = request.DATA.get('ac')
+        action = request.data.get('ac')
         if action is None:
             raise exceptions.ParseError("Missing 'ac' parameter")
 
-        if 's' not in request.DATA:
+        if 's' not in request.data:
             raise exceptions.ParseError("Missing 's' parameter")
 
-        if not request.DATA['s'].startswith('feed/'):
+        if not request.data['s'].startswith('feed/'):
             raise exceptions.ParseError(
-                u"Unrecognized stream: {0}".format(request.DATA['s']))
-        url = feed_url(request.DATA['s'])
+                u"Unrecognized stream: {0}".format(request.data['s']))
+        url = feed_url(request.data['s'])
 
         if action == 'subscribe':
             form = FeedForm(data={'url': url}, user=request.user)
@@ -520,8 +520,8 @@ class EditSubscription(ReaderView):
                 if 'url' in errors:
                     raise exceptions.ParseError(errors['url'][0])
 
-            if 'a' in request.DATA:
-                name = self.label(request.DATA['a'])
+            if 'a' in request.data:
+                name = self.label(request.data['a'])
                 category, created = request.user.categories.get_or_create(
                     name=name)
             else:
@@ -529,7 +529,7 @@ class EditSubscription(ReaderView):
 
             request.user.feeds.create(
                 url=url,
-                name=request.DATA.get('t', form.cleaned_data['title']),
+                name=request.data.get('t', form.cleaned_data['title']),
                 category=category)
 
         elif action == 'unsubscribe':
@@ -541,17 +541,17 @@ class EditSubscription(ReaderView):
         elif action == 'edit':
             qs = request.user.feeds.filter(url=url)
             query = {}
-            if 'r' in request.DATA:
-                name = self.label(request.DATA['r'])
+            if 'r' in request.data:
+                name = self.label(request.data['r'])
                 qs = qs.filter(category__name=name)
                 query['category'] = None
-            if 'a' in request.DATA:
-                name = self.label(request.DATA['a'])
+            if 'a' in request.data:
+                name = self.label(request.data['a'])
                 category, created = request.user.categories.get_or_create(
                     name=name)
                 query['category'] = category
-            if 't' in request.DATA:
-                query['name'] = request.DATA['t']
+            if 't' in request.data:
+                query['name'] = request.data['t']
             if query:
                 qs.update(**query)
         else:
@@ -566,10 +566,10 @@ class QuickAddSubscription(ReaderView):
     http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
-        if 'quickadd' not in request.DATA:
+        if 'quickadd' not in request.data:
             raise exceptions.ParseError("Missing 'quickadd' parameter")
 
-        url = request.DATA['quickadd']
+        url = request.data['quickadd']
         if url.startswith('feed/'):
             url = feed_url(url)
 
@@ -1096,7 +1096,7 @@ class StreamItemsContents(ReaderView):
     require_post_token = False
 
     def get(self, request, *args, **kwargs):
-        items = request.GET.getlist('i', request.DATA.getlist('i'))
+        items = request.GET.getlist('i', request.data.getlist('i'))
         if len(items) == 0:
             raise exceptions.ParseError(
                 "Required 'i' parameter: items IDs to send back")
@@ -1140,13 +1140,13 @@ class EditTag(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def post(self, request, *args, **kwargs):
-        if 'i' not in request.DATA:
+        if 'i' not in request.data:
             raise exceptions.ParseError(
                 "Missing 'i' in request data. "
                 "'tag:gogle.com,2005:reader/item/<item_id>'")
-        entry_ids = list(map(item_id, request.DATA.getlist('i')))
-        add = 'a' in request.DATA
-        remove = 'r' in request.DATA
+        entry_ids = list(map(item_id, request.data.getlist('i')))
+        add = 'a' in request.data
+        remove = 'r' in request.data
         if not add and not remove:
             raise exceptions.ParseError(
                 "Specify a tag to add or remove. Add: 'a' parameter, "
@@ -1154,11 +1154,11 @@ class EditTag(ReaderView):
 
         to_add = []
         if add:
-            to_add = list(map(tag_value, request.DATA.getlist('a')))
+            to_add = list(map(tag_value, request.data.getlist('a')))
 
         to_remove = []
         if remove:
-            to_remove = list(map(tag_value, request.DATA.getlist('r')))
+            to_remove = list(map(tag_value, request.data.getlist('r')))
 
         query = {}
         for tag in to_add:
@@ -1216,14 +1216,14 @@ class MarkAllAsRead(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def post(self, request, *args, **kwargs):
-        if 's' not in request.DATA:
+        if 's' not in request.data:
             raise exceptions.ParseError("Missing 's' parameter")
         entries = request.user.entries
         es_entries = es.manager.user(request.user).filter(read=False)
         limit = None
-        if 'ts' in request.DATA:
+        if 'ts' in request.data:
             try:
-                timestamp = int(request.DATA['ts'])
+                timestamp = int(request.data['ts'])
             except ValueError:
                 raise exceptions.ParseError(
                     "Invalid 'ts' parameter. Must be a number of microseconds "
@@ -1231,7 +1231,7 @@ class MarkAllAsRead(ReaderView):
             limit = epoch_to_utc(timestamp / 1000000)  # microseconds -> secs
             es_entries = es_entries.filter(timestamp__lt=limit)
 
-        stream = request.DATA['s']
+        stream = request.data['s']
 
         if stream.startswith('feed/'):
             url = feed_url(stream)

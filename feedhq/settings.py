@@ -142,6 +142,10 @@ TEMPLATES = [{
             'django.contrib.messages.context_processors.messages',
             'sekizai.context_processors.sekizai',
         ),
+        'builtins': [
+            'django.templatetags.i18n',
+            'django.templatetags.tz',
+        ],
     },
 }]
 
@@ -286,7 +290,7 @@ LOGGING = {
         },
         'null': {
             'level': 'DEBUG',
-            'class': 'django.utils.log.NullHandler',
+            'class': 'logging.NullHandler',
         },
     },
     'loggers': {

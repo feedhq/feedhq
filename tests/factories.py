@@ -23,6 +23,7 @@ class UserFactory(Factory):
 
     @classmethod
     def _prepare(cls, create, **kwargs):
+        kwargs.setdefault('is_active', True)
         if create:
             return User.objects.create_user(**kwargs)
         else:

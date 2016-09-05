@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from datetime import timedelta
+from unittest.mock import call, patch
 
 import feedparser
 from django.core.urlresolvers import reverse
@@ -14,7 +15,6 @@ from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
 from feedhq.utils import get_redis_connection
 from feedhq.wsgi import application  # noqa
-from mock import call, patch
 from rache import schedule_job
 
 

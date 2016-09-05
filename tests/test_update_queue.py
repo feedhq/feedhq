@@ -1,11 +1,11 @@
 import time
 from datetime import timedelta
+from unittest.mock import patch
 
 import feedparser
-
-
 from django.core.cache import cache
 from django.core.management import call_command
+from django.test import TransactionTestCase
 from django.utils import timezone
 from django_push.subscriber.models import Subscription
 from feedhq import es
@@ -14,7 +14,6 @@ from feedhq.feeds.tasks import store_entries
 from feedhq.feeds.utils import USER_AGENT
 from feedhq.profiles.models import User
 from feedhq.utils import get_redis_connection
-from mock import patch
 from rache import delete_job, pending_jobs
 from rq.utils import utcformat, utcnow
 
@@ -346,6 +345,8 @@ class UpdateTests(TestCase):
         call_command('clean_rq')
         self.assertEqual(len(r.keys('rq:job:*')), 2)
 
+
+class UpdateTransactionTestCase(TransactionTestCase):
     @patch('requests.post')
     @patch('requests.get')
     def test_ensure_subscribed(self, get, post):

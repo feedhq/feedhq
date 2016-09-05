@@ -1,5 +1,5 @@
 language: python
-python: "3.4"
+python: "3.5"
 cache: pip
 
 services:
@@ -7,9 +7,8 @@ services:
   - elasticsearch
 
 env:
-  - TOXENV=py27
-  - TOXENV=py33
   - TOXENV=py34
+  - TOXENV=py35
   - TOXENV=lint
   - TOXENV=coverage
   - TOXENV=docs

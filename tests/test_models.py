@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.utils import timezone
 from feedhq import es
@@ -7,7 +8,6 @@ from feedhq.feeds.models import (Category, Entry, Favicon, Feed, UniqueFeed,
                                  UniqueFeedManager)
 from feedhq.feeds.tasks import update_feed
 from feedhq.utils import get_redis_connection
-from mock import patch
 from rache import job_details, schedule_job
 
 from . import responses, TestCase

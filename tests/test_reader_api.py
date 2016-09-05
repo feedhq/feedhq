@@ -1,7 +1,7 @@
 import json
 import time
-
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.core.cache import cache
 from django.core.management import call_command
@@ -13,7 +13,6 @@ from feedhq.feeds.models import Entry, Feed, UniqueFeed
 from feedhq.reader.models import AuthToken
 from feedhq.reader.views import GoogleReaderXMLRenderer, item_id
 from feedhq.utils import get_redis_connection
-from mock import patch
 from six.moves.urllib.parse import urlencode
 
 from . import data_file, responses, TestCase

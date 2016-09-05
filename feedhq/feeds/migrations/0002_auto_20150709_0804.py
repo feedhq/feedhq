@@ -16,22 +16,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='feed',
             name='user',
-            field=models.ForeignKey(related_name='feeds', to=settings.AUTH_USER_MODEL, verbose_name='User'),
+            field=models.ForeignKey(related_name='feeds', to=settings.AUTH_USER_MODEL, verbose_name='User', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='entry',
             name='feed',
-            field=models.ForeignKey(related_name='entries', to='feeds.Feed', blank=True, null=True, verbose_name='Feed'),
+            field=models.ForeignKey(related_name='entries', to='feeds.Feed', blank=True, null=True, verbose_name='Feed', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='entry',
             name='user',
-            field=models.ForeignKey(related_name='entries', to=settings.AUTH_USER_MODEL, verbose_name='User'),
+            field=models.ForeignKey(related_name='entries', to=settings.AUTH_USER_MODEL, verbose_name='User', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='category',
             name='user',
-            field=models.ForeignKey(related_name='categories', to=settings.AUTH_USER_MODEL, verbose_name='User'),
+            field=models.ForeignKey(related_name='categories', to=settings.AUTH_USER_MODEL, verbose_name='User', on_delete=models.CASCADE),
         ),
         migrations.AlterIndexTogether(
             name='entry',
