@@ -45,7 +45,7 @@ from .fields import URLField
 from .tasks import (ensure_subscribed, store_entries, update_favicon,
                     update_feed)
 from .utils import (epoch_to_utc, FAVICON_FETCHER, get_job, is_feed,
-                    JobNotFound, USER_AGENT)
+                    JobNotFound, remove_utm_tags, USER_AGENT)
 from .. import es
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
@@ -341,6 +341,7 @@ class UniqueFeedManager(models.Manager):
             data['guid'] = entry.title
         if not data['guid']:
             return
+        data['guid'] = remove_utm_tags(data['guid'])
         if 'description' in entry:
             data['subtitle'] = entry.description
         if 'summary' in entry:

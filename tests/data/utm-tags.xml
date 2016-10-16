@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:taxo="http://purl.org/rss/1.0/modules/taxonomy/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:syn="http://purl.org/rss/1.0/modules/syndication/" xmlns:admin="http://webns.net/mvcb/" xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0">
+
+<channel rdf:about="https://slashdot.org/">
+<title>Slashdot</title>
+<link>https://slashdot.org/</link>
+<description>News for nerds, stuff that matters</description>
+<dc:language>en-us</dc:language>
+<dc:rights>Copyright 1997-2016, SlashdotMedia. All Rights Reserved.</dc:rights>
+<dc:date>2016-10-06T07:47:12+00:00</dc:date>
+<dc:publisher>Dice</dc:publisher>
+<dc:creator>help@slashdot.org</dc:creator>
+<dc:subject>Technology</dc:subject>
+<syn:updateBase>1970-01-01T00:00+00:00</syn:updateBase>
+<syn:updateFrequency>1</syn:updateFrequency>
+<syn:updatePeriod>hourly</syn:updatePeriod>
+<items>
+ <rdf:Seq>
+  <rdf:li rdf:resource="https://science.slashdot.org/story/16/10/05/208204/blue-origin-lands-rocket-during-launch-escape-test?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://science.slashdot.org/story/16/10/06/0321206/theranos-to-shut-down-its-blood-testing-facilities-shrink-workforce-by-40?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://news.slashdot.org/story/16/10/05/228203/53-of-ddos-attacks-result-in-additional-compromise-says-neustar?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://tech.slashdot.org/story/16/10/06/0031217/netflix-partners-with-ipic-to-release-its-original-movies-in-theaters-nato-urges-to-tread-lightly?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://news.slashdot.org/story/16/10/06/0040237/google-releases-open-source-cartographer?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://apple.slashdot.org/story/16/10/05/2351237/apple-ceo-tim-cook-remembers-steve-jobs-on-fifth-anniversary-of-his-death?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://games.slashdot.org/story/16/10/05/2136200/new-ai-is-capable-of-beating-humans-at-doom?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://news.slashdot.org/story/16/10/05/2127235/android-71-nougats-changelog-reveals-pixel-exclusive-features-not-available-to-nexus-devices?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://linux.slashdot.org/story/16/10/05/210227/linus-torvalds-says-buggy-crap-made-it-into-linux-48?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://yro.slashdot.org/story/16/10/05/2058224/judge-allows-small-businesses-to-sue-credit-card-giants-for-forcing-them-to-adopt-chip-readers?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://hardware.slashdot.org/story/16/10/05/2019205/nokia-makes-a-play-for-5g-with-purchase-of-us-startup-eta-devices?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://science.slashdot.org/story/16/10/05/2029224/theres-even-more-evidence-that-fitness-trackers-dont-work?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://tech.slashdot.org/story/16/10/05/1948207/googles-autonomous-car-passes-2-million-miles?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://hardware.slashdot.org/story/16/10/05/1814219/replacement-samsung-galaxy-note-7-phone-catches-fire-on-southwest-plane?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+  <rdf:li rdf:resource="https://news.slashdot.org/story/16/10/05/1547224/amazon-piles-on-the-prime-benefits-with-new-prime-reading-perk?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed" />
+ </rdf:Seq>
+</items>
+<image rdf:resource="http://a.fsdn.com/sd/topics/topicslashdot.gif" />
+<textinput rdf:resource="https://slashdot.org/search.pl" />
+<atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/rdf+xml" href="http://rss.slashdot.org/Slashdot/slashdot" /><feedburner:info uri="slashdot/slashdot" /><atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="hub" href="http://pubsubhubbub.appspot.com/" /></channel>
+<image rdf:about="http://a.fsdn.com/sd/topics/topicslashdot.gif">
+<title>Slashdot</title>
+<url>http://a.fsdn.com/sd/topics/topicslashdot.gif</url>
+<link>https://slashdot.org/</link>
+</image>
+<item rdf:about="https://science.slashdot.org/story/16/10/05/208204/blue-origin-lands-rocket-during-launch-escape-test?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Blue Origin Lands Rocket During Launch Escape Test</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/uswN5MeEhXk/blue-origin-lands-rocket-during-launch-escape-test</link>
+<description>SpaceX isn't the only private company interested in reusable rockets. Blue Origin, an American privately-funded aerospace manufacturer established by Amazon.com founder Jeff Bezos, surprised everyone, including itself, by successfully landing its New Shepard rocket in today's in-flight launch escape test. Gizmodo reports: Moments ago, Blue Origin conducted an in flight test of its launch escape system, separating a crew capsule from its New Shepard booster at an altitude of 16,000 feet. This test was critical to ensure that the rocket will be safe for human passengers, whom Blue Origin hopes to start flying into sub-orbital space as early as next year. Not only did the crew capsule make a clean separation, deploy its parachutes, and land softly in a small cloud of dust back on Earth, but the booster -- which everybody expected to go splat -- continued on its merry way into suborbital space, after which it succeeded in landing smoothly back on Earth for a fifth time. Although Blue Origin has tested its launch escape system on the launchpad before, this is the first time such a system has been tested, by anyone, in flight since the 1960s. It was almost too perfect. You can watch the test here.&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Blue+Origin+Lands+Rocket+During+Launch+Escape+Test%3A+http%3A%2F%2Fbit.ly%2F2dU751u"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fscience.slashdot.org%2Fstory%2F16%2F10%2F05%2F208204%2Fblue-origin-lands-rocket-during-launch-escape-test%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://science.slashdot.org/story/16/10/05/208204/blue-origin-lands-rocket-during-launch-escape-test?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://science.slashdot.org/story/16/10/05/208204/blue-origin-lands-rocket-during-launch-escape-test?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739423&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/uswN5MeEhXk" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-06T07:00:00+00:00</dc:date>
+<dc:subject>earth</dc:subject>
+<slash:department>space-flight</slash:department>
+<slash:section>science</slash:section>
+<slash:comments>6</slash:comments>
+<slash:hit_parade>6,5,2,2,0,0,0</slash:hit_parade>
+<feedburner:origLink>https://science.slashdot.org/story/16/10/05/208204/blue-origin-lands-rocket-during-launch-escape-test?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://science.slashdot.org/story/16/10/06/0321206/theranos-to-shut-down-its-blood-testing-facilities-shrink-workforce-by-40?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Theranos To Shut Down Its Blood-Testing Facilities, Shrink Workforce By 40%</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/syNTqJItl4E/theranos-to-shut-down-its-blood-testing-facilities-shrink-workforce-by-40</link>
+<description>tripleevenfall quotes a report from The Wall Street Journal: Theranos Inc. said it will shut down its blood-testing facilities and shrink its workforce by more than 40% (Warning: may be paywalled; alternate source). The company said it had 790 full-time employees as of August 1. The moves mark a dramatic retreat by the Palo Alto, Calif., company and founder Elizabeth Holmes from their core strategy of offering a long menu of low-price blood tests directly to consumers. Those ambitions already were endangered by crippling regulatory sanctions that followed revelations by The Wall Street Journal of shortcomings in Theranos's technology and operations. Theranos later voided all results from its proprietary device for 2014 and 2015, though the company said it wasn't aware of any patient harm resulting form its tests. Ms. Holmes said in a statement: "We will return our undivided attention to our miniLab platform. Our ultimate goal is to commercialize miniaturized, automated laboratories capable of small-volume sample testing, with an emphasis on vulnerable patient populations, including oncology, pediatrics, and intensive care."&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Theranos+To+Shut+Down+Its+Blood-Testing+Facilities%2C+Shrink+Workforce+By+40%25%3A+http%3A%2F%2Fbit.ly%2F2dGjmce"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fscience.slashdot.org%2Fstory%2F16%2F10%2F06%2F0321206%2Ftheranos-to-shut-down-its-blood-testing-facilities-shrink-workforce-by-40%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://science.slashdot.org/story/16/10/06/0321206/theranos-to-shut-down-its-blood-testing-facilities-shrink-workforce-by-40?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://science.slashdot.org/story/16/10/06/0321206/theranos-to-shut-down-its-blood-testing-facilities-shrink-workforce-by-40?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739973&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/syNTqJItl4E" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-06T03:30:00+00:00</dc:date>
+<dc:subject>biotech</dc:subject>
+<slash:department>change-of-plans</slash:department>
+<slash:section>science</slash:section>
+<slash:comments>28</slash:comments>
+<slash:hit_parade>28,27,11,10,3,0,0</slash:hit_parade>
+<feedburner:origLink>https://science.slashdot.org/story/16/10/06/0321206/theranos-to-shut-down-its-blood-testing-facilities-shrink-workforce-by-40?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://news.slashdot.org/story/16/10/05/228203/53-of-ddos-attacks-result-in-additional-compromise-says-neustar?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>53% of DDoS Attacks Result In Additional Compromise, Says Neustar</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/Nj6KVCVQEOs/53-of-ddos-attacks-result-in-additional-compromise-says-neustar</link>
+<description>Orome1 quotes a report from Help Net Security: DDoS attack volume has remained consistently high and these attacks cause real damage to organizations, according to Neustar. The global response also affirms the prevalent use of DDoS attacks to distract as "smokescreens" in concert with other malicious activities that result in additional compromise, such as viruses and ransomware. The majority of organizations that suffered a DDoS attack (53 percent) also experienced some form of additional compromise. Forty-six percent of breached organizations discovered a virus, malware was activated at 37 percent of breached organizations, and ransomware was encountered at 15 percent of breached organizations. The report adds: "Neustar collected responses from more than 1,000 information security professionals, including CISOs, CSOs and CTOs to determine how DDoS attacks are impacting their organization and how they are mitigating the threat. The overwhelming majority of surveyed organizations (73 percent) suffered a DDoS attack. Eighty-five percent of attacked organizations were attacked more than once and 44 percent were attacked more than five times. Seventy-one percent of organizations took an hour or more to detect a DDoS attack and 72 percent took an additional hour or more to respond to the attack. Forty-nine percent of surveyed organizations would lose $100,000 or more per house of downtime during these attacks. The overwhelming majority of respondents (76 percent) are investing more in DDoS protection than they were a year ago. The majority of respondents (53 percent) are using traditional firewalls, 47 percent are using a cloud service provider and 36 percent are using an on-premise DDoS appliance combined with a DDoS mitigation service (hybrid solution).&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=53%25+of+DDoS+Attacks+Result+In+Additional+Compromise%2C+Says+Neustar%3A+http%3A%2F%2Fbit.ly%2F2dwvJWT"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fnews.slashdot.org%2Fstory%2F16%2F10%2F05%2F228203%2F53-of-ddos-attacks-result-in-additional-compromise-says-neustar%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://news.slashdot.org/story/16/10/05/228203/53-of-ddos-attacks-result-in-additional-compromise-says-neustar?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://news.slashdot.org/story/16/10/05/228203/53-of-ddos-attacks-result-in-additional-compromise-says-neustar?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739583&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/Nj6KVCVQEOs" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-06T02:10:00+00:00</dc:date>
+<dc:subject>network</dc:subject>
+<slash:department>there's-more-where-that-came-from</slash:department>
+<slash:section>news</slash:section>
+<slash:comments>16</slash:comments>
+<slash:hit_parade>16,16,8,5,2,0,0</slash:hit_parade>
+<feedburner:origLink>https://news.slashdot.org/story/16/10/05/228203/53-of-ddos-attacks-result-in-additional-compromise-says-neustar?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://tech.slashdot.org/story/16/10/06/0031217/netflix-partners-with-ipic-to-release-its-original-movies-in-theaters-nato-urges-to-tread-lightly?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Netflix Partners With iPic To Release Its Original Movies In Theaters, NATO Urges To 'Tread Lightly' </title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/aygRqNIlXmg/netflix-partners-with-ipic-to-release-its-original-movies-in-theaters-nato-urges-to-tread-lightly</link>
+<description>turkeydance quotes a report from Variety: The National Association of Theatre Owners (NATO) is sounding the alarm over a recent deal between Netflix and iPic, in which the luxury-theater chain will screen 10 movies simultaneously with their release on the streaming service. The lobbying organization represents the country's theater chains and has been a staunch defender of traditional release windows that keep films exclusively on screens for roughly 90 days before they debut on home entertainment platforms. In a statement, NATO chief John Fithian warned that while iPic was free to make its own decisions, "We all should tread lightly and be mindful that over the years, the film industry's success is a direct result of a highly successful collaboration between film makers, distributors and exhibitors." The deal with iPic should help Netflix' movies quality for awards. Variety reports: "iPic will release the war thriller 'The Siege of Jadotville,' starring Jamie Dornan ('Fifty Shades of Grey'), on Oct. 7. That will be followed by Christopher Guest's mockumentary 'Mascots' on Oct. 13. This summer, iPic first tested showings of Netflix's 'The Little Prince.'" "Simultaneous release, in practice, has reduced both theatrical and home revenues when it has been tried," Fithian said in a statement. "Just as Netflix and its customers put a value on exclusivity, theater owners and their customers do too."&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Netflix+Partners+With+iPic+To+Release+Its+Original+Movies+In+Theaters%2C+NATO+Urges+To+'Tread+Lightly'+%3A+http%3A%2F%2Fbit.ly%2F2cTzIig"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Ftech.slashdot.org%2Fstory%2F16%2F10%2F06%2F0031217%2Fnetflix-partners-with-ipic-to-release-its-original-movies-in-theaters-nato-urges-to-tread-lightly%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://tech.slashdot.org/story/16/10/06/0031217/netflix-partners-with-ipic-to-release-its-original-movies-in-theaters-nato-urges-to-tread-lightly?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://tech.slashdot.org/story/16/10/06/0031217/netflix-partners-with-ipic-to-release-its-original-movies-in-theaters-nato-urges-to-tread-lightly?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739749&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/aygRqNIlXmg" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-06T01:30:00+00:00</dc:date>
+<dc:subject>business</dc:subject>
+<slash:department>tread-lightly</slash:department>
+<slash:section>technology</slash:section>
+<slash:comments>51</slash:comments>
+<slash:hit_parade>51,50,38,34,13,8,5</slash:hit_parade>
+<feedburner:origLink>https://tech.slashdot.org/story/16/10/06/0031217/netflix-partners-with-ipic-to-release-its-original-movies-in-theaters-nato-urges-to-tread-lightly?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://news.slashdot.org/story/16/10/06/0040237/google-releases-open-source-cartographer?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Google Releases Open Source 'Cartographer'</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/QPPGwF7su5M/google-releases-open-source-cartographer</link>
+<description>BrianFagioli quotes a report from BetaNews: Machine learning and vision are essential technologies for the advancement of robotics. When sensors come together, they can enable a computer or robot to collect data and images in real-time. A good example of this technology in real-world use is the latest Roomba vacuums. As the robot cleans your dirty floor, it is using sensors combined with a camera to map your home. Today, Google releases Cartographer -- an open source project that developers can use for many things, such as robots and self-driving cars. "We are happy to announce the open source release of Cartographer, a real-time simultaneous localization and mapping (SLAM) library in 2D and 3D with ROS support. SLAM is an essential component of autonomous platforms such as self driving cars, automated forklifts in warehouses, robotic vacuum cleaners, and UAVs," says Google in a blog post. "Our focus is on advancing and democratizing SLAM as a technology. Currently, Cartographer is heavily focused on LIDAR SLAM. Through continued development and community contributions, we hope to add both support for more sensors and platforms as well as new features, such as lifelong mapping and localizing in a pre-existing map."&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Google+Releases+Open+Source+'Cartographer'%3A+http%3A%2F%2Fbit.ly%2F2dTyzVc"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fnews.slashdot.org%2Fstory%2F16%2F10%2F06%2F0040237%2Fgoogle-releases-open-source-cartographer%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://news.slashdot.org/story/16/10/06/0040237/google-releases-open-source-cartographer?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://news.slashdot.org/story/16/10/06/0040237/google-releases-open-source-cartographer?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739763&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/QPPGwF7su5M" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-06T01:00:00+00:00</dc:date>
+<dc:subject>google</dc:subject>
+<slash:department>advancement-of-robotics</slash:department>
+<slash:section>news</slash:section>
+<slash:comments>16</slash:comments>
+<slash:hit_parade>16,14,6,5,2,0,0</slash:hit_parade>
+<feedburner:origLink>https://news.slashdot.org/story/16/10/06/0040237/google-releases-open-source-cartographer?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://apple.slashdot.org/story/16/10/05/2351237/apple-ceo-tim-cook-remembers-steve-jobs-on-fifth-anniversary-of-his-death?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Apple CEO Tim Cook Remembers Steve Jobs On Fifth Anniversary of His Death</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/xgKqSoAmK34/apple-ceo-tim-cook-remembers-steve-jobs-on-fifth-anniversary-of-his-death</link>
+<description>An anonymous reader quotes a report from MacRumors: As he has done over the past four years, Apple CEO Tim Cook has shared a tribute to the late Steve Jobs, touching on the importance of remembering the Apple co-founder and former CEO today, which marks the fifth anniversary of his death on October 5, 2011. In previous years, Apple also updated its website to remember Jobs, creating a two-minute slideshow of his various keynote presentations and most famous audio clips on the one year anniversary of his death. In the days following his passing, Apple started posting "Remembering Steve" comments from fans on its website. The company noted that well over one million submissions came in for the project, all from well-wishing fans in the wake of Jobs' losing battle with pancreatic cancer. "'Most important, have the courage to follow your heart and intuition.' Remembering Steve and the many ways he changed our world," tweeted Apple CEO Tim Cook with a picture of Jobs. In remembrance of Jobs, Recode has compiled several of Steve Job's best interviews conducted at the D: All Things Digital conference. You can watch Recode's reflection video directly on YouTube here.&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Apple+CEO+Tim+Cook+Remembers+Steve+Jobs+On+Fifth+Anniversary+of+His+Death%3A+http%3A%2F%2Fbit.ly%2F2cTvHKA"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fapple.slashdot.org%2Fstory%2F16%2F10%2F05%2F2351237%2Fapple-ceo-tim-cook-remembers-steve-jobs-on-fifth-anniversary-of-his-death%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://apple.slashdot.org/story/16/10/05/2351237/apple-ceo-tim-cook-remembers-steve-jobs-on-fifth-anniversary-of-his-death?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://apple.slashdot.org/story/16/10/05/2351237/apple-ceo-tim-cook-remembers-steve-jobs-on-fifth-anniversary-of-his-death?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739725&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/xgKqSoAmK34" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-06T00:30:00+00:00</dc:date>
+<dc:subject>business</dc:subject>
+<slash:department>rest-in-peace</slash:department>
+<slash:section>apple</slash:section>
+<slash:comments>62</slash:comments>
+<slash:hit_parade>62,59,36,21,5,3,1</slash:hit_parade>
+<feedburner:origLink>https://apple.slashdot.org/story/16/10/05/2351237/apple-ceo-tim-cook-remembers-steve-jobs-on-fifth-anniversary-of-his-death?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://games.slashdot.org/story/16/10/05/2136200/new-ai-is-capable-of-beating-humans-at-doom?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>New AI Is Capable of Beating Humans At Doom</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/Gu73i9NCb9E/new-ai-is-capable-of-beating-humans-at-doom</link>
+<description>An anonymous reader quotes a report from Den of Geek UK: Two students at Carnegie Mellon University have designed an artificial intelligence program that is capable of beating human players in a deathmatch game of 1993's Doom. Guillaume Lample and Devendra Singh Chaplot spent four months developing a program capable of playing first-person shooter games. The program made its debut at VizDoom (an AI competition that centered around the classic shooter) where it took second place despite the fact that their creation managed to beat human participants. That's not the impressive part about this program, however. No, what's really impressive is how the AI learns to play. The creator's full write-up on the program (which is available here) notes that their AI "allows developing bots that play the game using the screen buffer." What that means is that the program learns by interpreting what is happening on the screen as opposed to following a pre-set series of command instructions alone. In other words, this AI learns to play in exactly the same way a human player learns to play. This theory has been explored practically before, but Doom is arguably the most complicated game a program fueled by that concept has been able to succeed at. The AI's creators have already confirmed that they will be moving on to Quake, which will be a much more interesting test of this technologies capabilities given that Quake presents a much more complex 3D environment.&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=New+AI+Is+Capable+of+Beating+Humans+At+Doom%3A+http%3A%2F%2Fbit.ly%2F2dwlFgF"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fgames.slashdot.org%2Fstory%2F16%2F10%2F05%2F2136200%2Fnew-ai-is-capable-of-beating-humans-at-doom%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://games.slashdot.org/story/16/10/05/2136200/new-ai-is-capable-of-beating-humans-at-doom?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://games.slashdot.org/story/16/10/05/2136200/new-ai-is-capable-of-beating-humans-at-doom?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739545&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/Gu73i9NCb9E" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-05T23:50:00+00:00</dc:date>
+<dc:subject>ai</dc:subject>
+<slash:department>Skynet-approved</slash:department>
+<slash:section>games</slash:section>
+<slash:comments>80</slash:comments>
+<slash:hit_parade>80,80,44,39,11,6,3</slash:hit_parade>
+<feedburner:origLink>https://games.slashdot.org/story/16/10/05/2136200/new-ai-is-capable-of-beating-humans-at-doom?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://news.slashdot.org/story/16/10/05/2127235/android-71-nougats-changelog-reveals-pixel-exclusive-features-not-available-to-nexus-devices?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Android 7.1 Nougat's Changelog Reveals Pixel-Exclusive Features Not Available To Nexus Devices</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/t3KqTuiBkso/android-71-nougats-changelog-reveals-pixel-exclusive-features-not-available-to-nexus-devices</link>
+<description>With the launch of the Google Pixel and Pixel XL yesterday, Google failed to mention the fact that vanilla Android is dead. The Pixel and Pixel XL run Android 7.1 Nougat, custom software made solely for the new Pixel devices and not for past Nexus smartphones. A changelog for Android 7.1 reveals that Nexus smartphones and tablets will not get Pixel-specific features. They won't get the Pixel Launcher or Google Assistant. BGR reports: Google is trying to set the Pixels apart by giving them special features, and it's not like that's an irrational business decision. But the Pixels might change the way Android fans buy devices. Before, you could go for Nexus to get the hottest Android features as soon as Google released Android updates, or you could buy anything else and hope for speedy software upgrade. Now, it seems that you'll have to buy Pixel to get a full Android experience as Google envisions it, or get anything else and never experience Android in its full glory. Some of the Pixel product-specific features, as mentioned in the changelog found by Android Police, include: Pixel Launcher, Google Assistant, unlimited original quality photo/video backup to Google Photos, phone/chat support, and various cosmetic changes.&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Android+7.1+Nougat's+Changelog+Reveals+Pixel-Exclusive+Features+Not+Available+To+Nexus+Devices%3A+http%3A%2F%2Fbit.ly%2F2cTpz50"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fnews.slashdot.org%2Fstory%2F16%2F10%2F05%2F2127235%2Fandroid-71-nougats-changelog-reveals-pixel-exclusive-features-not-available-to-nexus-devices%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://news.slashdot.org/story/16/10/05/2127235/android-71-nougats-changelog-reveals-pixel-exclusive-features-not-available-to-nexus-devices?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://news.slashdot.org/story/16/10/05/2127235/android-71-nougats-changelog-reveals-pixel-exclusive-features-not-available-to-nexus-devices?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739521&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/t3KqTuiBkso" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-05T23:10:00+00:00</dc:date>
+<dc:subject>android</dc:subject>
+<slash:department>stock-Android</slash:department>
+<slash:section>news</slash:section>
+<slash:comments>58</slash:comments>
+<slash:hit_parade>58,53,40,32,11,5,1</slash:hit_parade>
+<feedburner:origLink>https://news.slashdot.org/story/16/10/05/2127235/android-71-nougats-changelog-reveals-pixel-exclusive-features-not-available-to-nexus-devices?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://linux.slashdot.org/story/16/10/05/210227/linus-torvalds-says-buggy-crap-made-it-into-linux-48?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Linus Torvalds Says 'Buggy Crap' Made It Into Linux 4.8</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/pSsg4_ZRyZY/linus-torvalds-says-buggy-crap-made-it-into-linux-48</link>
+<description>Two days after Linus Torvalds announced the release of Linux 4.8, he began apologizing for a bug fix gone bad. The Register reports: "I'm really sorry I applied that last series from Andrew just before doing the 4.8 release, because they cause problems, and now it is in 4.8 (and that buggy crap is marked for stable too)." The "crap" in question is an attempt to fix a bug that's been present in Linux since version 3.15. Torvalds rates the fix for that bug "clearly worse than the bug it tried to fix, since that original bug has never killed my machine!" Torvalds isn't happy with kernel contributor Andrew Morton, who he says is debugging with a known bad use of BUG_ON(). "I've ranted against people using BUG_ON() for debugging in the past. Why the f*ck does this still happen?" Torvalds writes, pointing to a 2002 post to the kernel mailing list outlining how to do BUG_ON() right. He later adds "so excuse me for being upset that people still do this shit almost 15 years later."&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Linus+Torvalds+Says+'Buggy+Crap'+Made+It+Into+Linux+4.8%3A+http%3A%2F%2Fbit.ly%2F2cTmmlZ"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Flinux.slashdot.org%2Fstory%2F16%2F10%2F05%2F210227%2Flinus-torvalds-says-buggy-crap-made-it-into-linux-48%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://linux.slashdot.org/story/16/10/05/210227/linus-torvalds-says-buggy-crap-made-it-into-linux-48?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://linux.slashdot.org/story/16/10/05/210227/linus-torvalds-says-buggy-crap-made-it-into-linux-48?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739503&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/pSsg4_ZRyZY" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>msmash</dc:creator>
+<dc:date>2016-10-05T22:30:00+00:00</dc:date>
+<dc:subject>bug</dc:subject>
+<slash:department>never-change,-linus</slash:department>
+<slash:section>linux</slash:section>
+<slash:comments>172</slash:comments>
+<slash:hit_parade>172,166,102,86,39,20,13</slash:hit_parade>
+<feedburner:origLink>https://linux.slashdot.org/story/16/10/05/210227/linus-torvalds-says-buggy-crap-made-it-into-linux-48?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://yro.slashdot.org/story/16/10/05/2058224/judge-allows-small-businesses-to-sue-credit-card-giants-for-forcing-them-to-adopt-chip-readers?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Judge Allows Small Businesses To Sue Credit Card Giants For Forcing Them To Adopt Chip Readers</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/efUNlrBeDlc/judge-allows-small-businesses-to-sue-credit-card-giants-for-forcing-them-to-adopt-chip-readers</link>
+<description>An anonymous reader quotes a report from Computerworld: A federal judge has ruled it is plausible that four national credit-card companies improperly conspired "in lockstep" to set a deadline of Oct. 1, 2015 for requiring retailers to upgrade their technology to accept embedded chip cards for credit and debit card purchases. In an order issued Friday (Case number C 16-01150 WHA), U.S. District Court Judge William Alsup agreed with two small Florida businesses -- B and R Supermarket and Grove Liquors -- which brought the lawsuit in March. Alsup's ruling also allows the antitrust case against Visa, Mastercard, American Express and Discover Financial Services to move forward in federal court for the Northern District of California. The two retailers are seeking to create a class-action case involving millions of small retailers who have been required under the Oct. 1, 2015 deadline to assume liability for fraudulent card charges if they haven't upgraded to the more-secure chip card technology instead of magnetic-stripe cards. The retailers believe there was industry conspiracy over creation of the deadline that violates fair trade practices. In the same ruling, the judge allowed two other retailers -- Los Angeles-based gourmet food chain Monsieur Marcel and New York-based grocery story chain Fine Fare -- to intervene in the case. Lawyers for the retailers have said a class-action lawsuit could include 8 million U.S. small businesses. They would seek repayment of the cost of upgrading to chip card readers and related software, estimated at $6 billion. However, the National Retail Federation has recently estimated the total cost of the conversion in the U.S. at up to $35 billion.&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Judge+Allows+Small+Businesses+To+Sue+Credit+Card+Giants+For+Forcing+Them+To+Adopt+Chip+Readers%3A+http%3A%2F%2Fbit.ly%2F2dTaI7T"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fyro.slashdot.org%2Fstory%2F16%2F10%2F05%2F2058224%2Fjudge-allows-small-businesses-to-sue-credit-card-giants-for-forcing-them-to-adopt-chip-readers%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://yro.slashdot.org/story/16/10/05/2058224/judge-allows-small-businesses-to-sue-credit-card-giants-for-forcing-them-to-adopt-chip-readers?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://yro.slashdot.org/story/16/10/05/2058224/judge-allows-small-businesses-to-sue-credit-card-giants-for-forcing-them-to-adopt-chip-readers?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739501&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/efUNlrBeDlc" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-05T21:50:00+00:00</dc:date>
+<dc:subject>security</dc:subject>
+<slash:department>class-action-lawsuit</slash:department>
+<slash:section>yro</slash:section>
+<slash:comments>177</slash:comments>
+<slash:hit_parade>177,177,121,100,30,15,11</slash:hit_parade>
+<feedburner:origLink>https://yro.slashdot.org/story/16/10/05/2058224/judge-allows-small-businesses-to-sue-credit-card-giants-for-forcing-them-to-adopt-chip-readers?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://hardware.slashdot.org/story/16/10/05/2019205/nokia-makes-a-play-for-5g-with-purchase-of-us-startup-eta-devices?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Nokia Makes a Play For 5G With Purchase of US Startup Eta Devices</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/sZse6x3ruqg/nokia-makes-a-play-for-5g-with-purchase-of-us-startup-eta-devices</link>
+<description>An anonymous reader quotes a report from Ars Technica: Nokia has signaled fresh commitment towards 5G infrastructure with the acquisition of Eta Devices -- a small U.S.-based startup that specializes in improving power efficiency at base stations. The Cambridge, Massachusetts-based outfit has around 20 staff, some of whom work at its research and development site in Stockholm, Sweden. Nokia said it hoped the buyout, financial details of which weren't disclosed, allow it "to enhance base station energy efficiency, an increasingly important area for operators on the path to 4.9G and 5G." Eta claims its tech can "drastically" reduce "heat waste" via an "amplifier that works like an automated gearbox" by adjusting energy usage by need. It has tech which claims to improve smartphone battery life, too -- with supposed boosts of up to 50 percent. However, Nokia seems to have acquired it for the "significant" power savings it says it can make at base stations, both in readiness for the Internet of Things, and to improve its carbon footprint and help its "zero emission base station solution." The acquisition includes fixed assets, employees, intellectual property rights, and lease and supplier deals, Nokia said. Nokia said in a statement: "This translates to savings for operators that can be invested as 4.9G and 5G approach. Eta Devices' technology reduces the need for backup power, translating into smaller base station cabinets and reduced equipment breakdown rates, and supporting Nokia's target to continuously strengthen the base station power efficiency of its products."&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Nokia+Makes+a+Play+For+5G+With+Purchase+of+US+Startup+Eta+Devices%3A+http%3A%2F%2Fbit.ly%2F2dT6qNQ"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fhardware.slashdot.org%2Fstory%2F16%2F10%2F05%2F2019205%2Fnokia-makes-a-play-for-5g-with-purchase-of-us-startup-eta-devices%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://hardware.slashdot.org/story/16/10/05/2019205/nokia-makes-a-play-for-5g-with-purchase-of-us-startup-eta-devices?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://hardware.slashdot.org/story/16/10/05/2019205/nokia-makes-a-play-for-5g-with-purchase-of-us-startup-eta-devices?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739447&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/sZse6x3ruqg" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>BeauHD</dc:creator>
+<dc:date>2016-10-05T21:10:00+00:00</dc:date>
+<dc:subject>business</dc:subject>
+<slash:department>next-gen</slash:department>
+<slash:section>hardware</slash:section>
+<slash:comments>7</slash:comments>
+<slash:hit_parade>7,7,5,5,0,0,0</slash:hit_parade>
+<feedburner:origLink>https://hardware.slashdot.org/story/16/10/05/2019205/nokia-makes-a-play-for-5g-with-purchase-of-us-startup-eta-devices?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://science.slashdot.org/story/16/10/05/2029224/theres-even-more-evidence-that-fitness-trackers-dont-work?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>There's Even More Evidence That Fitness Trackers Don't Work</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/bYEYdMhRXCo/theres-even-more-evidence-that-fitness-trackers-dont-work</link>
+<description>Turns out it's really hard to persuade people to exercise -- even when they have access to how many steps they've taken, and even when they get paid for it. A staggering 90 percent of people stop wearing fitness trackers when given the choice. Fortune reports: In the new yearlong study, published in The Lancet Diabetes &amp;amp; Endocrinology, researchers randomized 800 people in Singapore who had a full-time job into four groups. Some wore a Fitbit Zip and were paid a small amount of money to get moving -- which they were instructed either to keep or to donate to charity -- while others didn't wear Fitbits. Researchers measured their physical activity, weight, blood pressure, the body's ability to use oxygen (called cardiorespiratory fitness) and their self-reported quality of life. For the last six months of the study, all incentives were dropped, and people could choose whether or not to continue wearing their fitness trackers. (About 40% of people had stopped wearing it in the first six months anyway.) The cash seemed to work at first. Those who were rewarded with cash did an extra 13 minutes of moderate-to-vigorous physical activity each week and added 570 steps to their daily counts. Raising money for charity had no effect. But once the monetary rewards stopped, so did the improvements. By the end of the study, just 10% of people were still wearing the trackers.&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=There's+Even+More+Evidence+That+Fitness+Trackers+Don't+Work%3A+http%3A%2F%2Fbit.ly%2F2cTfCVl"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fscience.slashdot.org%2Fstory%2F16%2F10%2F05%2F2029224%2Ftheres-even-more-evidence-that-fitness-trackers-dont-work%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://science.slashdot.org/story/16/10/05/2029224/theres-even-more-evidence-that-fitness-trackers-dont-work?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://science.slashdot.org/story/16/10/05/2029224/theres-even-more-evidence-that-fitness-trackers-dont-work?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739455&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/bYEYdMhRXCo" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>msmash</dc:creator>
+<dc:date>2016-10-05T20:30:00+00:00</dc:date>
+<dc:subject>science</dc:subject>
+<slash:department>get-that-thing-out-of-my-face</slash:department>
+<slash:section>science</slash:section>
+<slash:comments>120</slash:comments>
+<slash:hit_parade>120,119,72,59,22,9,6</slash:hit_parade>
+<feedburner:origLink>https://science.slashdot.org/story/16/10/05/2029224/theres-even-more-evidence-that-fitness-trackers-dont-work?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://tech.slashdot.org/story/16/10/05/1948207/googles-autonomous-car-passes-2-million-miles?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Google's Autonomous Car Passes 2 Million Miles</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/bEN_-FMaUgs/googles-autonomous-car-passes-2-million-miles</link>
+<description>Google said today it recently reached a huge milestone with its autonomous cars. Its cars have logged its two-millionth mile. To put into perspective, Google's self-driving cars have travelled roughly 300 years of human driving. The first million miles took Google six years, the second million came in at 16 months. Recode evaluates how far Google's self-driving cars have come. It notes that Google has been involved in 14 of such incidents, 13 of which were caused by other drivers.&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Google's+Autonomous+Car+Passes+2+Million+Miles%3A+http%3A%2F%2Fbit.ly%2F2cT9yfD"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Ftech.slashdot.org%2Fstory%2F16%2F10%2F05%2F1948207%2Fgoogles-autonomous-car-passes-2-million-miles%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://tech.slashdot.org/story/16/10/05/1948207/googles-autonomous-car-passes-2-million-miles?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://tech.slashdot.org/story/16/10/05/1948207/googles-autonomous-car-passes-2-million-miles?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739391&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/bEN_-FMaUgs" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>msmash</dc:creator>
+<dc:date>2016-10-05T19:50:00+00:00</dc:date>
+<dc:subject>transportation</dc:subject>
+<slash:department>future-is-here</slash:department>
+<slash:section>technology</slash:section>
+<slash:comments>83</slash:comments>
+<slash:hit_parade>83,81,43,35,9,4,3</slash:hit_parade>
+<feedburner:origLink>https://tech.slashdot.org/story/16/10/05/1948207/googles-autonomous-car-passes-2-million-miles?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://hardware.slashdot.org/story/16/10/05/1814219/replacement-samsung-galaxy-note-7-phone-catches-fire-on-southwest-plane?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Replacement Samsung Galaxy Note 7 Phone Catches Fire on Southwest Plane</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/rgtk3F7rwsw/replacement-samsung-galaxy-note-7-phone-catches-fire-on-southwest-plane</link>
+<description>After learning about faulty battery issues in its Galaxy Note 7 smartphone, Samsung said it will offer its existing customers a safe, replacement unit. It appears the replacement unit also suffers from the same issue. Jordan Golson, reporting for The Verge: Southwest Airlines flight 944 from Louisville to Baltimore was evacuated this morning while still at the gate because of a smoking Samsung Galaxy Note 7 smartphone. All passengers and crew exited the plane via the main cabin door and no injuries were reported, a Southwest Airlines spokesperson told The Verge. More worryingly, the phone in question was a replacement Galaxy Note 7, one that was deemed to be safe by Samsung. The Verge spoke to Brian Green, owner of the Note 7, on the phone earlier today and he confirmed that he had picked up the new phone at an AT&amp;amp;T store on September 21st. A photograph of the box shows the black square symbol that indicates a replacement Note 7 and Green said it had a green battery icon.A spokesperson for Southwest Airlines said, "prior to the Southwest Airlines Flight 994 departing from Louisville for Baltimore, a customer reported smoke emitting from an electronic device. All customers and crew deplaned safely via the main cabin door. Customers will be accommodated on other Southwest flights to their final destinations. Safety is always our top priority at Southwest and we encourage our customers to comply with the FAA Pack Safe Guidelines."&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Replacement+Samsung+Galaxy+Note+7+Phone+Catches+Fire+on+Southwest+Plane%3A+http%3A%2F%2Fbit.ly%2F2dSPl71"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fhardware.slashdot.org%2Fstory%2F16%2F10%2F05%2F1814219%2Freplacement-samsung-galaxy-note-7-phone-catches-fire-on-southwest-plane%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://hardware.slashdot.org/story/16/10/05/1814219/replacement-samsung-galaxy-note-7-phone-catches-fire-on-southwest-plane?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://hardware.slashdot.org/story/16/10/05/1814219/replacement-samsung-galaxy-note-7-phone-catches-fire-on-southwest-plane?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9739255&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/rgtk3F7rwsw" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>msmash</dc:creator>
+<dc:date>2016-10-05T19:10:00+00:00</dc:date>
+<dc:subject>transportation</dc:subject>
+<slash:department>phone-on-fire</slash:department>
+<slash:section>hardware</slash:section>
+<slash:comments>217</slash:comments>
+<slash:hit_parade>217,216,171,127,28,12,6</slash:hit_parade>
+<feedburner:origLink>https://hardware.slashdot.org/story/16/10/05/1814219/replacement-samsung-galaxy-note-7-phone-catches-fire-on-southwest-plane?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<item rdf:about="https://news.slashdot.org/story/16/10/05/1547224/amazon-piles-on-the-prime-benefits-with-new-prime-reading-perk?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed">
+<title>Amazon Piles On the Prime Benefits With New 'Prime Reading' Perk</title>
+<link>http://rss.slashdot.org/~r/Slashdot/slashdot/~3/x_3q7HKxtp4/amazon-piles-on-the-prime-benefits-with-new-prime-reading-perk</link>
+<description>Amazon today unveiled the latest perk for Prime members in the United States: Prime Reading. With this, the company is offering access to "over a thousand" Kindle books, comics, magazines and more. The selection will rotate, the company says, suggesting that you should be able to read titles that aren't available today. GeekWire adds: The new perk, Prime Reading, lets Amazon Prime members access more than 1,000 e-books from best-selling authors at no extra charge, read a rotating selection of popular magazines, and read content from the company's Kindle Singles library, including classic short stories and essays. Prime reading is available on the Kindle app for iOS and Android, and on the company's Kindle e-readers and Fire tablets. The new perk comes in addition to the Kindle Owners' Lending Library, which lets Prime members who own Amazon devices borrow one e-book a month from a larger selection of titles. Separate from a Prime membership, Amazon offers the $10/month Kindle Unlimited e-book subscription service.Amazon Prime program costs $99 per year.&lt;p&gt;&lt;div class="share_submission" style="position:relative;"&gt;
+&lt;a class="slashpop" href="http://twitter.com/home?status=Amazon+Piles+On+the+Prime+Benefits+With+New+'Prime+Reading'+Perk%3A+http%3A%2F%2Fbit.ly%2F2dETNID"&gt;&lt;img src="https://a.fsdn.com/sd/twitter_icon_large.png"&gt;&lt;/a&gt;
+&lt;a class="slashpop" href="http://www.facebook.com/sharer.php?u=https%3A%2F%2Fnews.slashdot.org%2Fstory%2F16%2F10%2F05%2F1547224%2Famazon-piles-on-the-prime-benefits-with-new-prime-reading-perk%3Futm_source%3Dslashdot%26utm_medium%3Dfacebook"&gt;&lt;img src="https://a.fsdn.com/sd/facebook_icon_large.png"&gt;&lt;/a&gt;
+
+&lt;a class="nobg" href="http://plus.google.com/share?url=https://news.slashdot.org/story/16/10/05/1547224/amazon-piles-on-the-prime-benefits-with-new-prime-reading-perk?utm_source=slashdot&amp;amp;utm_medium=googleplus" onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"&gt;&lt;img src="http://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/&gt;&lt;/a&gt;                                                                                                                                                                              
+
+
+
+&lt;/div&gt;&lt;/p&gt;&lt;p&gt;&lt;a href="https://news.slashdot.org/story/16/10/05/1547224/amazon-piles-on-the-prime-benefits-with-new-prime-reading-perk?utm_source=rss1.0moreanon&amp;amp;utm_medium=feed"&gt;Read more of this story&lt;/a&gt; at Slashdot.&lt;/p&gt;&lt;iframe src="https://slashdot.org/slashdot-it.pl?op=discuss&amp;amp;id=9738893&amp;amp;smallembed=1" style="height: 300px; width: 100%; border: none;"&gt;&lt;/iframe&gt;&lt;img src="http://feeds.feedburner.com/~r/Slashdot/slashdot/~4/x_3q7HKxtp4" height="1" width="1" alt=""/&gt;</description>
+<dc:creator>msmash</dc:creator>
+<dc:date>2016-10-05T18:30:00+00:00</dc:date>
+<dc:subject>books</dc:subject>
+<slash:department>more-books-for-you</slash:department>
+<slash:section>news</slash:section>
+<slash:comments>45</slash:comments>
+<slash:hit_parade>45,42,31,24,8,2,1</slash:hit_parade>
+<feedburner:origLink>https://news.slashdot.org/story/16/10/05/1547224/amazon-piles-on-the-prime-benefits-with-new-prime-reading-perk?utm_source=rss1.0mainlinkanon&amp;utm_medium=feed</feedburner:origLink></item>
+<textinput rdf:about="https://slashdot.org/search.pl">
+<title>Search Slashdot</title>
+<description>Search Slashdot stories</description>
+<name>query</name>
+<link>https://slashdot.org/search.pl</link>
+</textinput>
+</rdf:RDF>

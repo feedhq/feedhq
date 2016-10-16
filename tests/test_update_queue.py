@@ -175,6 +175,13 @@ class UpdateTests(TestCase):
             # count()
             call_command('updatefeeds')
 
+    def test_utm_tags_guid(self):
+        parsed = feedparser.parse(data_file('utm-tags.xml'))
+        entry = parsed.entries[0]
+        self.assertTrue('utm_source=' in entry.get('id', entry.link))
+        data = UniqueFeed.objects.entry_data(entry, parsed)
+        self.assertFalse('utm_source=' in data['guid'])
+
     @patch('requests.get')
     def test_suspending_user(self, get):
         get.return_value = responses(304)
