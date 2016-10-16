@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 from django.utils import timezone
 
@@ -36,3 +37,12 @@ def get_job(name):
     if not redis.exists(key):
         raise JobNotFound
     return job_details(name, connection=redis)
+
+
+def remove_utm_tags(guid):
+    parts = list(urlsplit(guid))
+    qs = parse_qs(parts[3])  # [3] is query component
+    filtered = sorted([(k, v) for k, v in qs.items()
+                       if not k.startswith('utm_')])
+    parts[3] = urlencode(filtered, doseq=True)
+    return urlunsplit(parts)
