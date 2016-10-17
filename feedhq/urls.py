@@ -13,7 +13,7 @@ admin.autodiscover()
 
 urlpatterns = [
     url(r'^admin/rq/', include('django_rq_dashboard.urls')),
-    url(r'^admin/', include((admin.site.urls, 'admin'))),
+    url(r'^admin/', admin.site.urls),
     url(r'^subscriber/', include('django_push.subscriber.urls')),
     url(r'^health/$', views.health, name='health'),
     url(r'^robots.txt$', views.robots),
