@@ -4,6 +4,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 import requests
 from django.conf import settings
+from django.core.cache import cache
 from django.utils import timezone
 
 from rache import job_details, job_key
@@ -55,7 +56,12 @@ def resolve_url(url):
     if settings.TESTS:
         if str(type(requests.head)) != "<class 'unittest.mock.MagicMock'>":
             raise ValueError("Not mocked")
-    response = requests.head(url, headers={'User-Agent': LINK_CHECKER})
-    if response.is_redirect:
-        return response.headers['location']
-    return url
+    cache_key = 'resolve_url:{0}'.format(url)
+    resolved = cache.get(cache_key)
+    if resolved is None:
+        resolved = url
+        response = requests.head(url, headers={'User-Agent': LINK_CHECKER})
+        if response.is_redirect:
+            resolved = response.headers['location']
+        cache.set(cache_key, resolved, 3600 * 24 * 5)
+    return resolved
