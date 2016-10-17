@@ -175,15 +175,19 @@ class UpdateTests(TestCase):
             # count()
             call_command('updatefeeds')
 
-    def test_utm_tags_guid(self):
+    @patch('requests.head')
+    def test_utm_tags_guid(self, head):
+        head.return_value = responses(200)
         parsed = feedparser.parse(data_file('utm-tags.xml'))
         entry = parsed.entries[0]
         self.assertTrue('utm_source=' in entry.get('id', entry.link))
         data = UniqueFeed.objects.entry_data(entry, parsed)
         self.assertFalse('utm_source=' in data['guid'])
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_suspending_user(self, get):
+    def test_suspending_user(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         feed = FeedFactory.create(user__is_suspended=True)
         call_command('delete_unsubscribed')
@@ -224,8 +228,10 @@ class UpdateTests(TestCase):
         last_updates = feed2.user.last_updates()
         self.assertEqual(list(last_updates.keys()), [feed2.url])
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_same_guids(self, get):
+    def test_same_guids(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         feed = FeedFactory.create(user__ttl=99999)
 
@@ -271,8 +277,10 @@ class UpdateTests(TestCase):
             unread=False)[str(feed.pk)][str(feed.pk)]['doc_count']
         self.assertEqual(count, 10)
 
+    @patch("requests.head")
     @patch("requests.get")
-    def test_empty_guid(self, get):
+    def test_empty_guid(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
 
         parsed = feedparser.parse(data_file('no-guid.xml'))
@@ -302,8 +310,10 @@ class UpdateTests(TestCase):
         [entry] = es.manager.user(feed.user).fetch()['hits']
         self.assertTrue(entry.guid)
 
+    @patch("requests.head")
     @patch("requests.get")
-    def test_ttl(self, get):
+    def test_ttl(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create(ttl=3)
         feed = FeedFactory.create(user=user, category__user=user)
@@ -318,8 +328,10 @@ class UpdateTests(TestCase):
             store_entries(feed.url, data)
         self.assertEqual(feed.entries.count(), 0)
 
+    @patch("requests.head")
     @patch("requests.get")
-    def test_no_content(self, get):
+    def test_no_content(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         parsed = feedparser.parse(data_file('no-content.xml'))
         data = filter(

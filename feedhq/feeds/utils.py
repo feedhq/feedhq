@@ -2,6 +2,8 @@
 import datetime
 from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
+import requests
+from django.conf import settings
 from django.utils import timezone
 
 from rache import job_details, job_key
@@ -15,6 +17,7 @@ USER_AGENT = (
     'feedhq/feedhq/wiki/fetcher; like FeedFetcher-Google)'
 ) % __version__
 FAVICON_FETCHER = USER_AGENT % 'favicon fetcher'
+LINK_CHECKER = USER_AGENT % 'ping'
 
 
 def is_feed(parsed):
@@ -46,3 +49,13 @@ def remove_utm_tags(guid):
                        if not k.startswith('utm_')])
     parts[3] = urlencode(filtered, doseq=True)
     return urlunsplit(parts)
+
+
+def resolve_url(url):
+    if settings.TESTS:
+        if str(type(requests.head)) != "<class 'unittest.mock.MagicMock'>":
+            raise ValueError("Not mocked")
+    response = requests.head(url, headers={'User-Agent': LINK_CHECKER})
+    if response.is_redirect:
+        return response.headers['location']
+    return url

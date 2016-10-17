@@ -27,9 +27,11 @@ class ModelTests(TestCase):
         # get_absolute_url()
         self.assertEqual('/category/new-cat/', cat_from_db.get_absolute_url())
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_feed_model(self, get):
+    def test_feed_model(self, get, head):
         """Behaviour of the ``Feed`` model"""
+        head.return_value = responses(200)
         get.return_value = responses(200, 'rss20.xml')
         feed = FeedFactory.create(name='RSS test', url='http://rss20.xml',
                                   user__ttl=99999)
@@ -60,8 +62,10 @@ class ModelTests(TestCase):
         self.assertEqual(feed.favicon_img(),
                          '<img src="/media/fav.png" width="16" height="16" />')
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_entry_model(self, get):
+    def test_entry_model(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(200, 'sw-all.xml')
         feed = FeedFactory.create()
         update_feed(feed.url)
@@ -148,8 +152,10 @@ class ModelTests(TestCase):
         # get_absolute_url()
         self.assertEqual('/entries/%s/' % entry.id, entry.get_absolute_url())
 
+    @patch("requests.head")
     @patch("requests.get")
-    def test_handle_etag(self, get):
+    def test_handle_etag(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(200, 'sw-all.xml',
                                      headers={'etag': 'foo',
                                               'last-modified': 'bar'})

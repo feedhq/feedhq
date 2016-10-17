@@ -26,7 +26,7 @@ def responses(code, path=None, redirection=None, data=None,
               headers={'Content-Type': 'text/xml'}):
     response = Response()
     response.status_code = code
-    if path is not None:
+    if path is not None and redirection is None:
         with open(data_file(path), 'rb') as f:
             response.raw = BytesIO(f.read())
     elif data is not None:
@@ -37,6 +37,7 @@ def responses(code, path=None, redirection=None, data=None,
         temp.url = path
         response.history.append(temp)
         response.url = redirection
+        headers['location'] = path
     response.headers = headers
     return response
 

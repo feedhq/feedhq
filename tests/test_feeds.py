@@ -173,8 +173,10 @@ class WebBaseTests(WebTest):
         self.assertContains(response,
                             'New Name has been successfully updated')
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_add_feed(self, get):
+    def test_add_feed(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         category = CategoryFactory.create(user=user)
@@ -265,8 +267,10 @@ class WebBaseTests(WebTest):
             response = form.submit()
             self.assertFormError(response, 'form', 'url', "Enter a valid URL.")
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_feed_auth(self, get):
+    def test_feed_auth(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(200, 'brutasse.atom')
         user = UserFactory.create()
         url = reverse('feeds:add_feed')
@@ -288,8 +292,10 @@ class WebBaseTests(WebTest):
                  auth=(u'user', u'password')),
         ])
 
+    @patch("requests.head")
     @patch("requests.get")
-    def test_edit_feed(self, get):
+    def test_edit_feed(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         feed = FeedFactory.create(user=user)
@@ -352,8 +358,10 @@ class WebBaseTests(WebTest):
         response = self.app.get(url, user=user)
         self.assertContains(response, "jacobian's django-deployment-workshop")
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_entry(self, get):
+    def test_entry(self, get, head):
+        head.return_value = responses(200)
         user = UserFactory.create(ttl=99999)
         get.return_value = responses(200, 'sw-all.xml')
         feed = FeedFactory.create(category__user=user, user=user)
@@ -383,8 +391,10 @@ class WebBaseTests(WebTest):
         feed.save()
         self._test_entry(url, user)
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_custom_ordering(self, get):
+    def test_custom_ordering(self, get, head):
+        head.return_value = responses(200)
         user = UserFactory.create()
         get.return_value = responses(200, 'sw-all.xml')
         FeedFactory.create(user=user, category__user=user)
@@ -404,8 +414,10 @@ class WebBaseTests(WebTest):
         self.assertEqual(object_list[0].title, last_title)
         self.assertEqual(object_list[-1].title, first_title)
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_last_entry(self, get):
+    def test_last_entry(self, get, head):
+        head.return_value = responses(200)
         user = UserFactory.create()
         get.return_value = responses(200, 'sw-all.xml')
         feed = FeedFactory.create(category__user=user, user=user)
@@ -613,9 +625,11 @@ class WebBaseTests(WebTest):
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Dashboard')
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_unread_count(self, get):
+    def test_unread_count(self, get, head):
         """Unread feed count everywhere"""
+        head.return_value = responses(200)
         user = UserFactory.create(ttl=99999)
         url = reverse('profile')
         response = self.app.get(url, user=user)
@@ -633,8 +647,10 @@ class WebBaseTests(WebTest):
             'title="Unread entries" href="/unread/">30</a>'
         )
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_mark_as_read(self, get):
+    def test_mark_as_read(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create(ttl=99999)
         feed = FeedFactory.create(category__user=user, user=user)
@@ -683,8 +699,10 @@ class WebBaseTests(WebTest):
         response = response.follow()
         self.assertContains(response, "5 entries have been marked as read")
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_promote_html_content_type(self, get):
+    def test_promote_html_content_type(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(200, 'content-description.xml')
         user = UserFactory.create(ttl=99999)
         FeedFactory.create(user=user)
@@ -692,9 +710,11 @@ class WebBaseTests(WebTest):
             per_page=1, annotate=user)['hits'][0].content
         self.assertEqual(len(content.split('F&#233;vrier 1953')), 2)
 
+    @patch('requests.head')
     @patch('requests.get')
     @patch('requests.post')
-    def test_add_to_readability(self, post, get):  # noqa
+    def test_add_to_readability(self, post, get, head):  # noqa
+        head.return_value = responses(200)
         post.return_value = responses(202, headers={
             'location': 'https://www.readability.com/api/rest/v1/bookmarks/19',
         })
@@ -742,9 +762,11 @@ class WebBaseTests(WebTest):
         response = self.app.get(url, user=user)
         self.assertNotContains(response, "Add to Instapaper")
 
+    @patch("requests.head")
     @patch("requests.get")
     @patch('requests.post')
-    def test_add_to_instapaper(self, post, get):  # noqa
+    def test_add_to_instapaper(self, post, get, head):  # noqa
+        head.return_value = responses(200)
         post.return_value = responses(200, data=json.dumps([{
             'type': 'bookmark', 'bookmark_id': 12345,
             'title': 'Some bookmark',
@@ -790,9 +812,11 @@ class WebBaseTests(WebTest):
         response = self.app.get(url, user=user)
         self.assertNotContains(response, "Add to Instapaper")
 
+    @patch('requests.head')
     @patch('requests.get')
     @patch('requests.post')
-    def test_add_to_readitlaterlist(self, post, get):
+    def test_add_to_readitlaterlist(self, post, get, head):
+        head.return_value = responses(200)
         user = UserFactory.create(
             read_later='readitlater',
             read_later_credentials=json.dumps({'username': 'foo',
@@ -826,8 +850,10 @@ class WebBaseTests(WebTest):
                             u'expression matching')},
         )
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_pubsubhubbub_handling(self, get):
+    def test_pubsubhubbub_handling(self, get, head):
+        head.return_value = responses(200)
         user = UserFactory.create(ttl=99999)
         url = 'http://bruno.im/atom/tag/django-community/'
         get.return_value = responses(304)
@@ -876,8 +902,10 @@ class WebBaseTests(WebTest):
             data = f.read()
         updated.send(sender=None, notification=data, request=None, links=None)
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_link_headers(self, get):
+    def test_link_headers(self, get, head):
+        head.return_value = responses(200)
         user = UserFactory.create(ttl=99999)
         url = 'http://foo'
         get.return_value = responses(304)
@@ -947,8 +975,10 @@ class WebBaseTests(WebTest):
             response, ('it looks like there are no feeds available on '
                        '<a href="http://isitbeeroclock.com/">'))
 
+    @patch("requests.head")
     @patch("requests.get")
-    def test_relative_links(self, get):
+    def test_relative_links(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(200, path='brutasse.atom')
 
         user = UserFactory.create(ttl=99999)
@@ -1041,8 +1071,10 @@ class WebBaseTests(WebTest):
             self.assertEqual(json.loads(response.content.decode('utf-8')),
                              expected)
 
+    @patch('requests.head')
     @patch('requests.get')
-    def test_search(self, get):
+    def test_search(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(200, path='brutasse.atom')
 
         user = UserFactory.create(ttl=99999)

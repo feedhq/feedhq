@@ -45,7 +45,7 @@ from .fields import URLField
 from .tasks import (ensure_subscribed, store_entries, update_favicon,
                     update_feed)
 from .utils import (epoch_to_utc, FAVICON_FETCHER, get_job, is_feed,
-                    JobNotFound, remove_utm_tags, USER_AGENT)
+                    JobNotFound, remove_utm_tags, resolve_url, USER_AGENT)
 from .. import es
 from ..storage import OverwritingStorage
 from ..tasks import enqueue
@@ -324,19 +324,18 @@ class UniqueFeedManager(models.Manager):
         if 'link' not in entry:
             return
         title = entry.title if 'title' in entry else u''
-        if len(title) > 255:  # FIXME this is gross
-            title = title[:254] + u'…'
         entry_date, date_generated = cls.entry_date(entry)
+        link = remove_utm_tags(resolve_url(entry.link))
         data = {
             'title': title,
-            'link': entry.link,
+            'link': link,
             'date': entry_date,
             'author': entry.get('author', parsed.get('author', ''))[:1023],
-            'guid': entry.get('id', entry.link),
+            'guid': entry.get('id', link),
             'date_generated': date_generated,
         }
         if not data['guid']:
-            data['guid'] = entry.link
+            data['guid'] = link
         if not data['guid']:
             data['guid'] = entry.title
         if not data['guid']:

@@ -173,9 +173,10 @@ class SerializerTest(ApiTest):
             serializer.render(12.5)
 
 
+@patch('requests.head')
 @patch('requests.get')
 class ReaderApiTest(ApiTest):
-    def test_user_info(self, get):
+    def test_user_info(self, get, head):
         url = reverse('reader:user_info')
 
         # Test bad authentication once and for all GET requests
@@ -196,7 +197,7 @@ class ReaderApiTest(ApiTest):
             u"isMultiLoginEnabled": False,
         })
 
-    def test_content_negociation(self, get):
+    def test_content_negociation(self, get, head):
         url = reverse('reader:user_info')
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -210,7 +211,8 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(response['Content-Type'],
                          'application/xml; charset=utf-8')
 
-    def test_subscriptions_list(self, get):
+    def test_subscriptions_list(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -237,7 +239,8 @@ class ReaderApiTest(ApiTest):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(len(response.json['subscriptions']), 4)
 
-    def test_subscribed(self, get):
+    def test_subscribed(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -266,7 +269,8 @@ class ReaderApiTest(ApiTest):
                                    **clientlogin(token))
         self.assertContains(response, 'true')
 
-    def test_edit_tag(self, get):
+    def test_edit_tag(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -395,7 +399,7 @@ class ReaderApiTest(ApiTest):
         count = self.counts(user, br={'broadcast': True})['br']
         self.assertEqual(count, 2)
 
-    def test_hex_item_ids(self, get):
+    def test_hex_item_ids(self, get, head):
         entry = Entry(pk=162170919393841362)
         self.assertEqual(entry.hex_pk, "024025978b5e50d2")
         entry.pk = -355401917359550817
@@ -410,7 +414,8 @@ class ReaderApiTest(ApiTest):
             162170919393841362
         )
 
-    def test_tag_list(self, get):
+    def test_tag_list(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -424,7 +429,8 @@ class ReaderApiTest(ApiTest):
             response = self.client.get(url, **clientlogin(token))
         self.assertEqual(len(response.json['tags']), 3)
 
-    def test_unread_count(self, get):
+    def test_unread_count(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -459,7 +465,8 @@ class ReaderApiTest(ApiTest):
             else:
                 self.assertEqual(count['count'], 5)
 
-    def test_stream_content(self, get):
+    def test_stream_content(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -698,7 +705,8 @@ class ReaderApiTest(ApiTest):
                                        **clientlogin(token))
             self.assertEqual(response.status_code, 200)
 
-    def test_stream_atom(self, get):
+    def test_stream_atom(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -714,7 +722,8 @@ class ReaderApiTest(ApiTest):
                                    **clientlogin(token))
         self.assertTrue(response['Content-Type'].startswith("text/xml"))
 
-    def test_stream_items_ids(self, get):
+    def test_stream_items_ids(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         url = reverse("reader:stream_items_ids")
         user = UserFactory.create()
@@ -787,7 +796,8 @@ class ReaderApiTest(ApiTest):
                 **clientlogin(token))
         self.assertEqual(len(response.json['itemRefs']), 10)
 
-    def test_stream_items_count(self, get):
+    def test_stream_items_count(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         url = reverse("reader:stream_items_count")
         user = UserFactory.create()
@@ -833,7 +843,8 @@ class ReaderApiTest(ApiTest):
             **clientlogin(token))
         self.assertTrue(response.content.startswith(b'4#'))
 
-    def test_stream_items_contents(self, get):
+    def test_stream_items_contents(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         url = reverse('reader:stream_items_contents')
         user = UserFactory.create()
@@ -900,7 +911,8 @@ class ReaderApiTest(ApiTest):
                       'output': 'atom-hifi'}, **clientlogin(token))
             self.assertEqual(response.status_code, 200)
 
-    def test_mark_all_as_read(self, get):
+    def test_mark_all_as_read(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -1004,21 +1016,22 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "Invalid 'ts' parameter",
                             status_code=400)
 
-    def test_stream_prefs(self, get):
+    def test_stream_prefs(self, get, head):
         user = UserFactory.create()
         token = self.auth_token(user)
         url = reverse('reader:stream_preference')
         response = self.client.get(url, **clientlogin(token))
         self.assertContains(response, "streamprefs")
 
-    def test_preference_list(self, get):
+    def test_preference_list(self, get, head):
         user = UserFactory.create()
         token = self.auth_token(user)
         url = reverse('reader:preference_list')
         response = self.client.get(url, **clientlogin(token))
         self.assertContains(response, "prefs")
 
-    def test_edit_subscription(self, get):
+    def test_edit_subscription(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
 
         user = UserFactory.create()
@@ -1147,7 +1160,8 @@ class ReaderApiTest(ApiTest):
         response = self.client.post(url, data, **clientlogin(token))
         self.assertContains(response, "Unrecognized action", status_code=400)
 
-    def test_quickadd_subscription(self, get):
+    def test_quickadd_subscription(self, get, head):
+        head.return_value = responses(200)
         get.return_value = responses(304)
 
         user = UserFactory.create()
@@ -1179,7 +1193,7 @@ class ReaderApiTest(ApiTest):
         feed = Feed.objects.exclude(pk=feed.pk).get()
         self.assertEqual(feed.name, "brutasse's Activity")
 
-    def test_disable_tag(self, get):
+    def test_disable_tag(self, get, head):
         get.return_value = responses(304)
 
         user = UserFactory.create()
@@ -1219,7 +1233,7 @@ class ReaderApiTest(ApiTest):
             annotate=user)['hits']
         self.assertIs(entry.category, None)
 
-    def test_rename_tag(self, get):
+    def test_rename_tag(self, get, head):
         user = UserFactory.create()
         token = self.auth_token(user)
         post_token = self.post_token(token)
@@ -1258,7 +1272,7 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, "OK")
         self.assertEqual(user.categories.get().name, 'Yo lo dawg')
 
-    def test_friends_list(self, get):
+    def test_friends_list(self, get, head):
         user = UserFactory.create()
         token = self.auth_token(user)
 
@@ -1266,7 +1280,7 @@ class ReaderApiTest(ApiTest):
         response = self.client.get(url, **clientlogin(token))
         self.assertEqual(response.status_code, 200)
 
-    def test_api_export(self, get):
+    def test_api_export(self, get, head):
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
@@ -1286,7 +1300,7 @@ class ReaderApiTest(ApiTest):
         for category in user.categories.all():
             self.assertContains(response, u'title="{0}"'.format(category.name))
 
-    def test_api_import(self, get):
+    def test_api_import(self, get, head):
         get.return_value = responses(304)
         user = UserFactory.create()
         token = self.auth_token(user)
