@@ -259,6 +259,7 @@ class UpdateTests(TestCase):
                 'Accept': feedparser.ACCEPT_HEADER,
                 'If-None-Match': b'etag',
                 'If-Modified-Since': b'1234',
+                'A-IM': b'feed',
             }, timeout=10, auth=None)
 
     @patch("requests.get")

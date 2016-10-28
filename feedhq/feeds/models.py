@@ -166,6 +166,8 @@ class UniqueFeedManager(models.Manager):
             headers['If-Modified-Since'] = force_bytes(last_modified)
         if etag:
             headers['If-None-Match'] = force_bytes(etag)
+        if last_modified or etag:
+            headers['A-IM'] = force_bytes('feed')
 
         if settings.TESTS:
             # Make sure requests.get is properly mocked during tests
@@ -230,7 +232,7 @@ class UniqueFeedManager(models.Manager):
             self.backoff_feed(url, str(response.status_code), backoff_factor)
             return
 
-        elif response.status_code not in [200, 204, 304]:
+        elif response.status_code not in [200, 204, 226, 304]:
             logger.debug(u"%s returned %s", url, response.status_code)
 
             if response.status_code == 429:
