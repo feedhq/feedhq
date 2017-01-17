@@ -1,5 +1,6 @@
 import os
 from io import BytesIO as BaseBytesIO
+from uuid import uuid4
 
 from django.test import TestCase as BaseTestCase
 from django_webtest import WebTest as BaseWebTest
@@ -23,6 +24,7 @@ def data_file(name):
 
 
 def responses(code, path=None, redirection=None, data=None,
+              url=None,
               headers={'Content-Type': 'text/xml'}):
     response = Response()
     response.status_code = code
@@ -38,7 +40,20 @@ def responses(code, path=None, redirection=None, data=None,
         response.history.append(temp)
         response.url = redirection
         headers['location'] = path
+    if url is None:
+        if redirection is not None:
+            url = redirection
+        else:
+            url = 'https://example.com/{}'.format(str(uuid4()))
+    response.url = url
     response.headers = headers
+    return response
+
+
+def resolve_url(url, *args, **kwargs):
+    response = Response()
+    response.status_code = 200
+    response.url = url
     return response
 
 

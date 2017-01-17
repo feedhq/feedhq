@@ -18,7 +18,7 @@ from feedhq.wsgi import application  # noqa
 from rache import schedule_job
 
 
-from . import data_file, patch_job, responses, WebTest
+from . import data_file, patch_job, resolve_url, responses, WebTest
 from .factories import CategoryFactory, EntryFactory, FeedFactory, UserFactory
 
 
@@ -176,7 +176,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_add_feed(self, get, head):
-        head.return_value = responses(200)
+        head.return_value = responses(200, url='http://foo.com/bar')
         get.return_value = responses(304)
         user = UserFactory.create()
         category = CategoryFactory.create(user=user)
@@ -270,7 +270,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_feed_auth(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(200, 'brutasse.atom')
         user = UserFactory.create()
         url = reverse('feeds:add_feed')
@@ -295,7 +295,7 @@ class WebBaseTests(WebTest):
     @patch("requests.head")
     @patch("requests.get")
     def test_edit_feed(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(304)
         user = UserFactory.create()
         feed = FeedFactory.create(user=user)
@@ -361,7 +361,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_entry(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         user = UserFactory.create(ttl=99999)
         get.return_value = responses(200, 'sw-all.xml')
         feed = FeedFactory.create(category__user=user, user=user)
@@ -394,7 +394,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_custom_ordering(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         user = UserFactory.create()
         get.return_value = responses(200, 'sw-all.xml')
         FeedFactory.create(user=user, category__user=user)
@@ -417,7 +417,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_last_entry(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         user = UserFactory.create()
         get.return_value = responses(200, 'sw-all.xml')
         feed = FeedFactory.create(category__user=user, user=user)
@@ -629,7 +629,7 @@ class WebBaseTests(WebTest):
     @patch('requests.get')
     def test_unread_count(self, get, head):
         """Unread feed count everywhere"""
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         user = UserFactory.create(ttl=99999)
         url = reverse('profile')
         response = self.app.get(url, user=user)
@@ -650,7 +650,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_mark_as_read(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(304)
         user = UserFactory.create(ttl=99999)
         feed = FeedFactory.create(category__user=user, user=user)
@@ -702,7 +702,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_promote_html_content_type(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(200, 'content-description.xml')
         user = UserFactory.create(ttl=99999)
         FeedFactory.create(user=user)
@@ -714,7 +714,7 @@ class WebBaseTests(WebTest):
     @patch('requests.get')
     @patch('requests.post')
     def test_add_to_readability(self, post, get, head):  # noqa
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         post.return_value = responses(202, headers={
             'location': 'https://www.readability.com/api/rest/v1/bookmarks/19',
         })
@@ -766,7 +766,7 @@ class WebBaseTests(WebTest):
     @patch("requests.get")
     @patch('requests.post')
     def test_add_to_instapaper(self, post, get, head):  # noqa
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         post.return_value = responses(200, data=json.dumps([{
             'type': 'bookmark', 'bookmark_id': 12345,
             'title': 'Some bookmark',
@@ -816,7 +816,7 @@ class WebBaseTests(WebTest):
     @patch('requests.get')
     @patch('requests.post')
     def test_add_to_readitlaterlist(self, post, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         user = UserFactory.create(
             read_later='readitlater',
             read_later_credentials=json.dumps({'username': 'foo',
@@ -853,7 +853,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_pubsubhubbub_handling(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         user = UserFactory.create(ttl=99999)
         url = 'http://bruno.im/atom/tag/django-community/'
         get.return_value = responses(304)
@@ -905,7 +905,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_link_headers(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         user = UserFactory.create(ttl=99999)
         url = 'http://foo'
         get.return_value = responses(304)
@@ -978,7 +978,7 @@ class WebBaseTests(WebTest):
     @patch("requests.head")
     @patch("requests.get")
     def test_relative_links(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(200, path='brutasse.atom')
 
         user = UserFactory.create(ttl=99999)
@@ -1074,7 +1074,7 @@ class WebBaseTests(WebTest):
     @patch('requests.head')
     @patch('requests.get')
     def test_search(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(200, path='brutasse.atom')
 
         user = UserFactory.create(ttl=99999)

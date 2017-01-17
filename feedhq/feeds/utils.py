@@ -60,8 +60,9 @@ def resolve_url(url):
     resolved = cache.get(cache_key)
     if resolved is None:
         resolved = url
-        response = requests.head(url, headers={'User-Agent': LINK_CHECKER})
-        if response.is_redirect:
-            resolved = response.headers['location']
+        response = requests.head(url, headers={'User-Agent': LINK_CHECKER},
+                                 allow_redirects=True)
+        if response.status_code == 200:
+            resolved = response.url
         cache.set(cache_key, resolved, 3600 * 24 * 5)
     return resolved

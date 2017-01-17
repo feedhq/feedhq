@@ -17,7 +17,7 @@ from feedhq.utils import get_redis_connection
 from rache import delete_job, pending_jobs
 from rq.utils import utcformat, utcnow
 
-from . import data_file, patch_job, responses, TestCase
+from . import data_file, patch_job, resolve_url, responses, TestCase
 from .factories import FeedFactory, UserFactory
 
 
@@ -177,7 +177,7 @@ class UpdateTests(TestCase):
 
     @patch('requests.head')
     def test_utm_tags_guid(self, head):
-        head.return_value = responses(200)
+        head.side_efect = resolve_url
         parsed = feedparser.parse(data_file('utm-tags.xml'))
         entry = parsed.entries[0]
         self.assertTrue('utm_source=' in entry.get('id', entry.link))
@@ -187,7 +187,7 @@ class UpdateTests(TestCase):
     @patch('requests.head')
     @patch('requests.get')
     def test_suspending_user(self, get, head):
-        head.return_value = responses(200)
+        head.side_efect = resolve_url
         get.return_value = responses(304)
         feed = FeedFactory.create(user__is_suspended=True)
         call_command('delete_unsubscribed')
@@ -231,7 +231,7 @@ class UpdateTests(TestCase):
     @patch('requests.head')
     @patch('requests.get')
     def test_same_guids(self, get, head):
-        head.return_value = responses(200)
+        head.side_efect = resolve_url
         get.return_value = responses(304)
         feed = FeedFactory.create(user__ttl=99999)
 
@@ -280,7 +280,7 @@ class UpdateTests(TestCase):
     @patch("requests.head")
     @patch("requests.get")
     def test_empty_guid(self, get, head):
-        head.return_value = responses(200)
+        head.side_efect = resolve_url
         get.return_value = responses(304)
 
         parsed = feedparser.parse(data_file('no-guid.xml'))
@@ -313,7 +313,7 @@ class UpdateTests(TestCase):
     @patch("requests.head")
     @patch("requests.get")
     def test_ttl(self, get, head):
-        head.return_value = responses(200)
+        head.side_efect = resolve_url
         get.return_value = responses(304)
         user = UserFactory.create(ttl=3)
         feed = FeedFactory.create(user=user, category__user=user)
@@ -331,7 +331,7 @@ class UpdateTests(TestCase):
     @patch("requests.head")
     @patch("requests.get")
     def test_no_content(self, get, head):
-        head.return_value = responses(200)
+        head.side_efect = resolve_url
         get.return_value = responses(304)
         parsed = feedparser.parse(data_file('no-content.xml'))
         data = filter(

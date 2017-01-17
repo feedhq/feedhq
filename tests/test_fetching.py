@@ -16,7 +16,7 @@ from requests.packages.urllib3.exceptions import (DecodeError,
 from rq.timeouts import JobTimeoutException
 from six.moves.http_client import IncompleteRead
 
-from . import patch_job, TestCase
+from . import patch_job, resolve_url, TestCase
 from .factories import FeedFactory, UserFactory
 from .test_feeds import data_file, responses
 
@@ -63,7 +63,7 @@ class UpdateTests(TestCase):
     @patch('requests.get')
     def test_ctype(self, get, head):
         # Updatefeed doesn't fail if content-type is missing
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(200, 'sw-all.xml', headers={})
         feed = FeedFactory.create()
         update_feed(feed.url)
@@ -86,7 +86,7 @@ class UpdateTests(TestCase):
     @patch('requests.get')
     def test_permanent_redirects(self, get, head):
         """Updating the feed if there's a permanent redirect"""
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(
             301, redirection='permanent-atom10.xml',
             headers={'Content-Type': 'application/rss+xml'})
@@ -112,8 +112,8 @@ class UpdateTests(TestCase):
     @patch('requests.head')
     @patch('requests.get')
     def test_entry_redirect(self, get, head):
-        head.return_value = responses(301, path='https://example.com',
-                                      redirection='')
+        # This simulates a 301 but resolve_url uses `response.url`
+        head.return_value = responses(200, url='https://example.com')
         get.return_value = responses(200, 'atom10.xml')
         # This test will fail in 2105. If so, increase the delay.
         feed = FeedFactory.create(user__ttl=365*100)
@@ -126,7 +126,7 @@ class UpdateTests(TestCase):
     @patch('requests.get')
     def test_content_handling(self, get, head):
         """The content section overrides the subtitle section"""
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(200, 'atom10.xml')
         user = UserFactory.create(ttl=99999)
         FeedFactory.create(name='Content', url='http://atom10.xml', user=user)
@@ -282,7 +282,7 @@ class UpdateTests(TestCase):
     def test_no_date_and_304(self, get, head):
         """If the feed does not have a date, we'll have to find one.
         Also, since we update it twice, the 2nd time it's a 304 response."""
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(200, 'no-date.xml')
         feed = FeedFactory.create()
 
@@ -309,7 +309,7 @@ class UpdateTests(TestCase):
     @patch('requests.head')
     @patch('requests.get')
     def test_no_link(self, get, head):
-        head.return_value = responses(200)
+        head.side_effect = resolve_url
         get.return_value = responses(200, 'rss20.xml')
         user = UserFactory.create(ttl=99999)
         feed = FeedFactory.create(user=user, category__user=user)
