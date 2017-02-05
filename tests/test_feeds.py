@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django_push.subscriber.signals import updated
 from feedhq import es
-from feedhq.feeds.models import Category, Entry, Feed, UniqueFeed
+from feedhq.feeds.models import Category, Entry, EsEntry, Feed, UniqueFeed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.templatetags.feeds_tags import smart_date
 from feedhq.feeds.utils import USER_AGENT
@@ -1087,3 +1087,14 @@ class WebBaseTests(WebTest):
         url = reverse('feeds:entries') + '?q=foobarbaz'
         response = self.app.get(url, user=user)
         self.assertContains(response, "Your search query yielded no results")
+
+    @patch('requests.get')
+    def test_bleach_crash(self, get):
+        get.return_value = responses(304)
+        for file_name in ['break-bleach.html', 'break-bleach2.html']:
+            with open(data_file(file_name), 'r') as f:
+                content = f.read()
+
+            entry = EsEntry({'_id': 1, '_source': {'content': content}})
+            entry.feed = FeedFactory.create()
+            self.assertTrue(entry.sanitized_content())

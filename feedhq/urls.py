@@ -6,8 +6,11 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from ratelimitbackend import admin
 from ratelimitbackend.views import login
 
-from . import views
-from .profiles.forms import AuthForm
+from . import monkey
+monkey.patch_html5lib()
+
+from . import views  # noqa
+from .profiles.forms import AuthForm  # noqa
 
 admin.autodiscover()
 

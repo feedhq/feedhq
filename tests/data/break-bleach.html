@@ -1,0 +1,127 @@
+<div><p><a href="https://serviceworke.rs" target="_blank">serviceworke.rs</a> is a compendium of common and <a href="https://hacks.mozilla.org/2015/12/beyond-offline/" target="_blank">uncommon</a> Service Worker use cases including push examples, usage patterns, performance tips and caching strategies.</p>
+<p>Service Worker Cookbook recipes are presented as playgrounds or labs, with fully functional client-server setups, where you can learn and experiment with results using in-browser developer tools.</p>
+<p>Still, the cookbook is far from comprehensive, and we realised it lacked some basic materials and user feedback mechanisms. Today, I’m proud to announce some changes to the Service Worker Cookbook starting with a new section about <a href="https://serviceworke.rs/caching-strategies.html" target="_blank"><strong>caching strategies</strong></a>.</p>
+<h2>Caching Strategies</h2>
+<p><a href="https://serviceworke.rs/caching-strategies.html" target="_blank">Caching strategies</a> includes recipes that demo several ways of serving content from a service worker. The recipes follow an identical layout in which two iframes are displayed side by side. Both show an image element pointing to the same online picture.</p>
+<p>The first iframe is not under service worker interception, so the picture always displays fresh content from the server. In contrast, the second iframe is controlled by the service worker and the content is served according to the implemented cache strategy.</p>
+<p><a href="https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.19.png"><img src="https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.19-500x417.png" alt="Layout for offline recipes: two iframes, the first controlled and the second not." width="500" height="417" class="aligncenter size-large wp-image-30247" srcset="https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.19-500x417.png 500w, https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.19-250x209.png 250w, https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.19-768x641.png 768w, https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.19.png 1222w" sizes="(max-width: 500px) 100vw, 500px" /></a></p>
+<p>Picture content changes on the server every 10 seconds and you have a button to refresh both iframes at the same time and compare what happens to the images.</p>
+<p><a href="https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.31.png"><img src="https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.31-500x419.png" alt="cache-update-refresh-out-of-sync" width="500" height="419" class="aligncenter size-large wp-image-30248" srcset="https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.31-500x419.png 500w, https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.31-250x209.png 250w, https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.31-768x643.png 768w, https://hacks.mozilla.org/files/2016/10/Captura-de-pantalla-2016-10-17-a-las-10.04.31.png 1230w" sizes="(max-width: 500px) 100vw, 500px" /></a></p>
+<p>Some of the caching strategies are taken from an inspiring article from <a href="https://jakearchibald.com/2014/offline-cookbook/#on-network-response" target="_blank">Jake Archibald&#8217;s <em>“The offline cookbook”</em></a> and others are homegrown.</p>
+<h3>Cache only</h3>
+<p>The most basic example: With <em>cache only</em>, requests will never reach the network. Instead, they will be served by the service worker from a local cache.</p>
+<pre><code>self.addEventListener('fetch', function(evt) {
+  evt.respondWith(fromCache(evt.request));
+});
+
+function fromCache(request) {
+  return caches.open(CACHE).then(function (cache) {
+    return cache.match(request).then(function (matching) {
+      return matching || Promise.reject('no-match');
+    });
+  });
+}</code></pre>
+<p>In this implementation, cache-only assets are stored while installing the service worker and they will remain there until a new version of the worker is installed.</p>
+<pre><code>self.addEventListener('install', function(evt) {
+  evt.waitUntil(precache());
+});
+
+function precache() {
+  return caches.open(CACHE).then(function (cache) {
+    return cache.addAll([
+      './controlled.html',
+      './asset'
+    ]);
+  });
+}</code></pre>
+<p>You can use the <a href="https://serviceworke.rs/strategy-cache-only.html" target="_blank"><strong>cache-only strategy</strong></a> for your site’s UI related assets such as images, HTML, sprite sheets or CSS files.</p>
+<h3>Cache and update</h3>
+<p>This slight variation on the cache-only strategy also serves assets from a local cache but it also sends network requests for updated versions of the assets. The new content then replaces the older asset in the local cache.</p>
+<pre><code>self.addEventListener('fetch', function(evt) {
+  evt.respondWith(fromCache(evt.request));
+  evt.waitUntil(update(evt.request));
+});
+
+function update(request) {
+  return caches.open(CACHE).then(function (cache) {
+    return fetch(request).then(function (response) {
+      return cache.put(request, response);
+    });
+  });
+}</code></pre>
+<p>With this <a href="https://serviceworke.rs/strategy-cache-only.html" target="_blank"><strong>cache and update strategy</strong></a>, there comes a point when your assets are no longer synched with those online, but they will be synched upon a second request, which roughly translates to a second visit.</p>
+<p>It is totally fine to use this strategy when delivering independent, non-critical content such as avatars or icons. Avoid relying on this strategy for dependent assets (such a complete UI theme) since there is nothing ensuring that the assets will update as needed at the same time.</p>
+<h3>Cache, update and refresh</h3>
+<p>Another twist on the previous strategy, now with a <a href="https://serviceworke.rs/strategy-cache-update-and-refresh.html" target="_blank"><strong>refreshing ingredient</strong></a>.</p>
+<p>With <strong>cache, update and refresh</strong> the client will be notified by the service worker once new content is available. This way your site can show content without waiting for the network responses, while providing the UI with the means to display up-to-date content in a controlled way.</p>
+<pre><code>self.addEventListener('fetch', function(evt) {
+  evt.respondWith(fromCache(evt.request));
+  evt.waitUntil(
+    update(evt.request)
+    .then(refresh)
+  );
+});
+
+function refresh(response) {
+  return self.clients.matchAll().then(function (clients) {
+    clients.forEach(function (client) {
+      var message = {
+        type: 'refresh',
+        url: response.url,
+        eTag: response.headers.get('ETag')
+      };
+      client.postMessage(JSON.stringify(message));
+    });
+  });
+}</code></pre>
+<p>This is especially useful when fetching any kind of content. This is different than the previous strategy in that there is no need for a user to refresh or visit the site a second time. Because the client is aware of new content, the UI could update in smart, non-intrusive ways.</p>
+<h3>Embedded fallback</h3>
+<p>There are situations in which you always want to always display something to replace content that&#8217;s missing for whatever reason (network error, 404, no connection). It&#8217;s possible to ensure always available offline content by <a href="https://serviceworke.rs/strategy-offline-fallback.html" target="_blank"><strong>embedding that content into the service worker</strong></a>.</p>
+<pre><code>self.addEventListener('fetch', function(evt) {
+  evt.respondWith(networkOrCache(evt.request).catch(function () {
+    return useFallback();
+  }));
+});
+
+// Dunno why this is shown as the actual SVG in WordPress but it looks awesome!
+// You can see the source code in the recipe.
+var FALLBACK =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="180" stroke-linejoin="round">' +
+    '  <path stroke="#DDD" stroke-width="25" d="M99,18 15,162H183z"/>' +
+    '  <path stroke-width="17" fill="#FFF" d="M99,18 15,162H183z" stroke="#eee"/>' +
+    '  <path d="M91,70a9,9 0 0,1 18,0l-5,50a4,4 0 0,1-8,0z" fill="#aaa"/>' +
+    '  <circle cy="138" r="9" cx="100" fill="#aaa"/>' +
+    '</svg>';
+
+function useFallback() {
+  return Promise.resolve(new Response(FALLBACK, { headers: {
+    'Content-Type': 'image/svg+xml'
+  }}));
+}</pre>
+<p></code></p>
+<p>In this recipe, the SVG which acts as a replacement for missing content is included in the worker. As soon as it is installed, fallbacks will be available without performing new network requests.</p>
+<h3>Network or cache</h3>
+<p>Service Workers place themselves between the client and the Internet. To some extent, they allow the developer to model their ideal network behaviour. This strategy exploits/enhances that idea by imposing time limits on network responses.</p>
+<pre><code>self.addEventListener('fetch', function(evt) {
+  evt.respondWith(fromNetwork(evt.request, 400).catch(function () {
+    return fromCache(evt.request);
+  }));
+});
+
+function fromNetwork(request, timeout) {
+  return new Promise(function (fulfill, reject) {
+    var timeoutId = setTimeout(reject, timeout);
+    fetch(request).then(function (response) {
+      clearTimeout(timeoutId);
+      fulfill(response);
+    }, reject);
+  });
+}</pre>
+<p></code></p>
+<p>With this recipe, requests are intercepted by the service worker and passed to the network. If the response takes too long, the process is interrupted and the content is served from a local cache instead.</p>
+<p><a href="https://serviceworke.rs/strategy-offline-fallback.html"><strong>Time limited network or cache</strong></a> can actually be combined with any other technique. The strategy simply gives the network a chance to answer quickly with fresh content.</p>
+<h2>User feedback</h2>
+<p>We want to know if recipes are useful, and if you find them clear or confusing. Do they provide unique value or are they redundant? We've added Disqus comments to recipes so you can share your feedback. Log in with Facebook, Twitter, Google or Disqus, and tell us how this recipe has served you or participate in the discussion  about recommended use cases.</p>
+<h2>And more to come</h2>
+<p>We won’t stop here. More recipes are coming and new enhancements are on their way: a improved way to ask for recipes, an easier contribution pipeline, a visual refresh and a renewed recipe layout are things on our radar. If you like <a href="https://serviceworke.rs/" target="_blank"><strong>serviceworke.rs</strong></a> please share them with your friends and colleagues. Feel free to use these recipes in your talks or presentations, and, most importantly, help us by providing feedback in the form of on site comments, filing GitHub issues or by <a href="https://twitter.com/salvadelapuente" target="_blank">tweeting me directly</a> ;)</p>
+<p>Your opinion is really appreciated!</p></div>
