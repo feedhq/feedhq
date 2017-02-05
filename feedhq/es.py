@@ -357,6 +357,8 @@ class EntryManager(object):
         if not isinstance(user_or_id, int):
             user_or_id = user_or_id.pk
         return EntryQuery(user=user_or_id)
+
+
 manager = EntryManager()
 
 

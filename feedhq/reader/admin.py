@@ -9,4 +9,5 @@ class AuthTokenAdmin(admin.ModelAdmin):
     raw_id_fields = ('user',)
     list_filter = ['client']
 
+
 admin.site.register(AuthToken, AuthTokenAdmin)

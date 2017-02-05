@@ -930,6 +930,8 @@ def pubsubhubbub_update(notification, request, links, **kwargs):
     ))
     if len(entries):
         enqueue(store_entries, args=[url, entries], queue='store')
+
+
 updated.connect(pubsubhubbub_update)
 
 

@@ -176,7 +176,8 @@ class Login(APIView):
             raise PermissionDenied()
         if not user.check_password(self.querydict['Passwd']):
             raise PermissionDenied()
-        client = request.query_params.get('client', request.data.get('client', ''))
+        client = request.query_params.get('client',
+                                          request.data.get('client', ''))
         token = generate_auth_token(
             user,
             client=client,
@@ -184,6 +185,8 @@ class Login(APIView):
         )
         return Response("SID={t}\nLSID={t}\nAuth={t}".format(t=token))
     get = post
+
+
 login = Login.as_view()
 
 
@@ -233,6 +236,8 @@ class TokenView(ReaderView):
         token = generate_post_token(request.user)
         return Response(token)
     post = get
+
+
 token = TokenView.as_view()
 
 
@@ -249,6 +254,8 @@ class UserInfo(ReaderView):
             "signupTimeSec": int(request.user.date_joined.strftime("%s")),
             "isMultiLoginEnabled": False,
         })
+
+
 user_info = UserInfo.as_view()
 
 
@@ -257,6 +264,8 @@ class StreamPreference(ReaderView):
 
     def get(self, request, *args, **kwargs):
         return Response({"streamprefs": {}})
+
+
 stream_preference = StreamPreference.as_view()
 
 
@@ -269,6 +278,8 @@ class PreferenceList(ReaderView):
             "value": json.dumps({"subscriptions": {"ssa": "true"}},
                                 separators=(',', ':')),
         }]})
+
+
 preference_list = PreferenceList.as_view()
 
 
@@ -372,6 +383,8 @@ class UnreadCount(ReaderView):
             "max": 1000,
             "unreadcounts": unread_counts,
         })
+
+
 unread_count = UnreadCount.as_view()
 
 
@@ -417,6 +430,8 @@ class DisableTag(ReaderView):
             with es.ignore_bulk_error(404):
                 es.bulk(ops, raise_on_error=True, params={'refresh': True})
         return Response("OK")
+
+
 disable_tag = DisableTag.as_view()
 
 
@@ -450,6 +465,8 @@ class RenameTag(ReaderView):
         category.save()
 
         return Response("OK")
+
+
 rename_tag = RenameTag.as_view()
 
 
@@ -473,6 +490,8 @@ class TagList(ReaderView):
             })
             index += 1
         return Response({'tags': tags})
+
+
 tag_list = TagList.as_view()
 
 
@@ -508,6 +527,8 @@ class SubscriptionList(ReaderView):
         return Response({
             "subscriptions": subscriptions
         })
+
+
 subscription_list = SubscriptionList.as_view()
 
 
@@ -574,6 +595,8 @@ class EditSubscription(ReaderView):
             logger.info(msg, action)
             raise exceptions.ParseError(msg % action)
         return Response("OK")
+
+
 edit_subscription = EditSubscription.as_view()
 
 
@@ -603,6 +626,8 @@ class QuickAddSubscription(ReaderView):
             "query": url,
             "streamId": u"feed/{0}".format(url),
         })
+
+
 quickadd_subscription = QuickAddSubscription.as_view()
 
 
@@ -621,6 +646,8 @@ class Subscribed(ReaderView):
         return Response(str(
             request.user.feeds.filter(url=url).exists()
         ).lower())
+
+
 subscribed = Subscribed.as_view()
 
 
@@ -982,7 +1009,8 @@ class StreamContents(ReaderView):
 
         # Ordering
         # ?r=d|n last entry first (default), ?r=o oldest entry first
-        ordering = 'date' if request.query_params.get('r', 'd') == 'o' else '-date'
+        ordering = ('date' if request.query_params.get('r', 'd') == 'o'
+                    else '-date')
 
         per_page, page = bounds(n=request.query_params.get('n'),
                                 c=request.query_params.get('c'))
@@ -1026,6 +1054,8 @@ class StreamContents(ReaderView):
             item = serialize_entry(request, entry, uniques)
             base['items'].append(item)
         return Response(base)
+
+
 stream_contents = StreamContents.as_view()
 
 
@@ -1082,6 +1112,8 @@ class StreamItemsIds(ReaderView):
         data['itemRefs'] = item_refs
         return Response(data)
     post = get
+
+
 stream_items_ids = StreamItemsIds.as_view()
 
 
@@ -1101,6 +1133,8 @@ class StreamItemsCount(ReaderView):
             max_date = entries[0].date
             data = '{0}#{1}'.format(data, max_date.strftime("%B %d, %Y"))
         return Response(data)
+
+
 stream_items_count = StreamItemsCount.as_view()
 
 
@@ -1147,6 +1181,8 @@ class StreamItemsContents(ReaderView):
         }
         return Response(base)
     post = get
+
+
 stream_items_contents = StreamItemsContents.as_view()
 
 
@@ -1223,6 +1259,8 @@ class EditTag(ReaderView):
             es.bulk(ops, index=index, raise_on_error=True,
                     params={'refresh': True})
         return Response("OK")
+
+
 edit_tag = EditTag.as_view()
 
 
@@ -1289,6 +1327,8 @@ class MarkAllAsRead(ReaderView):
                 es.bulk(ops, index=index, raise_on_error=True,
                         params={'refresh': True})
         return Response("OK")
+
+
 mark_all_as_read = MarkAllAsRead.as_view()
 
 
@@ -1309,6 +1349,8 @@ class FriendList(ReaderView):
                 'hasSharedItemsOnProfile': False,  # TODO handle broadcast
             }]
         })
+
+
 friend_list = FriendList.as_view()
 
 
@@ -1323,6 +1365,8 @@ class OPMLExport(ReaderView):
         )
         response['Content-Type'] = 'text/xml; charset=utf-8'
         return response
+
+
 export_subscriptions = OPMLExport.as_view()
 
 
@@ -1349,4 +1393,6 @@ class OPMLImport(ReaderView):
                 "Another concurrent OPML import is happening "
                 "for this user.")
         return Response("OK: {0}".format(imported))
+
+
 import_subscriptions = OPMLImport.as_view()
