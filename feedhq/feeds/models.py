@@ -756,15 +756,6 @@ class BaseEntry(object):
         )
         return url
 
-    def add_to_readability(self):
-        url = 'https://www.readability.com/api/rest/v1/bookmarks'
-        auth = self.oauth_client('readability')
-        response = requests.post(url, auth=auth, data={'url': self.link})
-        response = requests.get(response.headers['location'], auth=auth)
-        url = 'https://www.readability.com/articles/%s'
-        url = url % response.json()['article']['id']
-        return url
-
     def add_to_instapaper(self):
         url = 'https://www.instapaper.com/api/1/bookmarks/add'
         auth = self.oauth_client('instapaper')

@@ -101,7 +101,6 @@ export = login_required(Export.as_view())
 
 class ServiceView(generic.FormView):
     FORMS = {
-        'readability': CredentialsForm,
         'readitlater': CredentialsForm,
         'instapaper': CredentialsForm,
         'pocket': PocketForm,

@@ -355,12 +355,6 @@ if 'INSTAPAPER_CONSUMER_KEY' in os.environ:
         'CONSUMER_SECRET': os.environ['INSTAPAPER_CONSUMER_SECRET'],
     }
 
-if 'READABILITY_CONSUMER_KEY' in os.environ:
-    READABILITY = {
-        'CONSUMER_KEY': os.environ['READABILITY_CONSUMER_KEY'],
-        'CONSUMER_SECRET': os.environ['READABILITY_CONSUMER_SECRET'],
-    }
-
 if 'POCKET_CONSUMER_KEY' in os.environ:
     POCKET_CONSUMER_KEY = os.environ['POCKET_CONSUMER_KEY']
 
