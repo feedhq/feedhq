@@ -10,7 +10,7 @@ from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template import loader, RequestContext
+from django.template import loader
 from django.template.defaultfilters import slugify
 from django.utils.html import format_html
 from django.utils.translation import ugettext as _, ungettext
@@ -145,7 +145,7 @@ def entries_list(request, page=1, mode=None, category=None, feed=None,
                     'form': UndoReadForm(initial={
                         'pks': json.dumps(pks, separators=(',', ':'))}),
                     'action': request.get_full_path(),
-                }, context_instance=RequestContext(request))
+                }, request=request)
                 message = ungettext(
                     '1 entry has been marked as read.',
                     '%(value)s entries have been marked as read.',

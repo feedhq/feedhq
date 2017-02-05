@@ -9,7 +9,7 @@ from .profiles.forms import AuthForm
 
 def login_required(view_callable):
     def check_login(request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return view_callable(request, *args, **kwargs)
 
         assert hasattr(request, 'session'), "Session middleware needed."

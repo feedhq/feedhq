@@ -167,7 +167,7 @@ class UniqueFeedManager(models.Manager):
         if etag:
             headers['If-None-Match'] = force_bytes(etag)
         if last_modified or etag:
-            headers['A-IM'] = force_bytes('feed')
+            headers['A-IM'] = b'feed'
 
         if settings.TESTS:
             # Make sure requests.get is properly mocked during tests

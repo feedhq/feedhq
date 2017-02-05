@@ -43,6 +43,21 @@ logger = logging.getLogger(__name__)
 MISSING_SLASH_RE = re.compile("^(https?:\/)[^\/]")
 
 
+def list_attr(data, key):
+    """
+    Fetches a list from a querydict or dict.
+    """
+    try:
+        return data.getlist(key)
+    except AttributeError:
+        if key not in data:
+            return []
+        value = data[key]
+    if not isinstance(value, list):
+        value = [value]
+    return value
+
+
 def item_id(value):
     """
     Converts an input to a proper (integer) item ID.
@@ -144,7 +159,7 @@ class Login(APIView):
         if request.method == 'POST':
             querydict = request.data
         elif request.method == 'GET':
-            querydict = request.GET
+            querydict = request.query_params
         if 'Email' not in querydict or 'Passwd' not in querydict:
             raise PermissionDenied()
         self.querydict = querydict
@@ -161,7 +176,7 @@ class Login(APIView):
             raise PermissionDenied()
         if not user.check_password(self.querydict['Passwd']):
             raise PermissionDenied()
-        client = request.GET.get('client', request.data.get('client', ''))
+        client = request.query_params.get('client', request.data.get('client', ''))
         token = generate_auth_token(
             user,
             client=client,
@@ -182,7 +197,7 @@ class ReaderView(APIView):
     def initial(self, request, *args, **kwargs):
         super(ReaderView, self).initial(request, *args, **kwargs)
         if request.method == 'POST' and self.require_post_token:
-            token = request.data.get('T', request.GET.get('T', None))
+            token = request.data.get('T', request.query_params.get('T', None))
             if token is None:
                 logger.info(
                     u"Missing POST token, %s", request.data.dict()
@@ -596,9 +611,9 @@ class Subscribed(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def get(self, request, *args, **kwargs):
-        if 's' not in request.GET:
+        if 's' not in request.query_params:
             raise exceptions.ParseError("Missing 's' parameter")
-        feed = request.GET['s']
+        feed = request.query_params['s']
         if not feed.startswith('feed/'):
             raise exceptions.ParseError(
                 "Unrecognized feed format. Use 'feed/<url>'")
@@ -967,16 +982,16 @@ class StreamContents(ReaderView):
 
         # Ordering
         # ?r=d|n last entry first (default), ?r=o oldest entry first
-        ordering = 'date' if request.GET.get('r', 'd') == 'o' else '-date'
+        ordering = 'date' if request.query_params.get('r', 'd') == 'o' else '-date'
 
-        per_page, page = bounds(n=request.GET.get('n'),
-                                c=request.GET.get('c'))
+        per_page, page = bounds(n=request.query_params.get('n'),
+                                c=request.query_params.get('c'))
         entries = get_es_entries(
             content_id, request.user,
-            exclude=request.GET.getlist('xt'),
-            include=request.GET.getlist('it'),
-            limit=request.GET.get('ot'),
-            offset=request.GET.get('nt'),
+            exclude=request.query_params.getlist('xt'),
+            include=request.query_params.getlist('it'),
+            limit=request.query_params.get('ot'),
+            offset=request.query_params.get('nt'),
         ).aggregate(
             '__query__'
         ).order_by(ordering.replace('date', 'timestamp')).fetch(
@@ -992,10 +1007,10 @@ class StreamContents(ReaderView):
 
         qs = {}
         if start > 0:
-            qs['c'] = request.GET['c']
+            qs['c'] = request.query_params['c']
 
-        if 'output' in request.GET:
-            qs['output'] = request.GET['output']
+        if 'output' in request.query_params:
+            qs['output'] = request.query_params['output']
 
         if qs:
             base['self'][0]['href'] += '?{0}'.format(urlparse.urlencode(qs))
@@ -1019,26 +1034,26 @@ class StreamItemsIds(ReaderView):
     require_post_token = False
 
     def get(self, request, *args, **kwargs):
-        if 'n' not in request.GET:
+        if 'n' not in request.query_params:
             raise exceptions.ParseError("Required 'n' parameter")
-        if 's' not in request.GET:
+        if 's' not in request.query_params:
             raise exceptions.ParseError("Required 's' parameter")
 
-        include_stream_ids = request.GET.get(
+        include_stream_ids = request.query_params.get(
             "includeAllDirectStreamIds") == 'true'
 
         data = {}
-        per_page, page = bounds(n=request.GET.get('n'),
-                                c=request.GET.get('c'))
+        per_page, page = bounds(n=request.query_params.get('n'),
+                                c=request.query_params.get('c'))
         annotate = None
         if include_stream_ids:
             annotate = request.user
         entries = get_es_entries(
-            request.GET['s'], request.user,
-            exclude=request.GET.getlist('xt'),
-            include=request.GET.getlist('it'),
-            limit=request.GET.get('ot'),
-            offset=request.GET.get('nt'),
+            request.query_params['s'], request.user,
+            exclude=request.query_params.getlist('xt'),
+            include=request.query_params.getlist('it'),
+            limit=request.query_params.get('ot'),
+            offset=request.query_params.get('nt'),
         ).aggregate('__query__').only(
             'timestamp', 'feed').fetch(page=page, per_page=per_page,
                                        annotate=annotate)
@@ -1074,15 +1089,15 @@ class StreamItemsCount(ReaderView):
     renderer_classes = [PlainRenderer]
 
     def get(self, request, *args, **kwargs):
-        if 's' not in request.GET:
+        if 's' not in request.query_params:
             raise exceptions.ParseError("Missing 's' parameter")
         entries = get_es_entries(
-            request.GET['s'], request.user,
+            request.query_params['s'], request.user,
         ).aggregate('__query__').fetch(per_page=1)
         count = entries['aggregations']['entries']['query']['doc_count']
         entries = entries['hits']
         data = str(count)
-        if request.GET.get('a') == 'true':
+        if request.query_params.get('a') == 'true':
             max_date = entries[0].date
             data = '{0}#{1}'.format(data, max_date.strftime("%B %d, %Y"))
         return Response(data)
@@ -1096,7 +1111,7 @@ class StreamItemsContents(ReaderView):
     require_post_token = False
 
     def get(self, request, *args, **kwargs):
-        items = request.GET.getlist('i', request.data.getlist('i'))
+        items = request.query_params.getlist('i', list_attr(request.data, 'i'))
         if len(items) == 0:
             raise exceptions.ParseError(
                 "Required 'i' parameter: items IDs to send back")
@@ -1144,7 +1159,7 @@ class EditTag(ReaderView):
             raise exceptions.ParseError(
                 "Missing 'i' in request data. "
                 "'tag:gogle.com,2005:reader/item/<item_id>'")
-        entry_ids = list(map(item_id, request.data.getlist('i')))
+        entry_ids = list(map(item_id, list_attr(request.data, 'i')))
         add = 'a' in request.data
         remove = 'r' in request.data
         if not add and not remove:
@@ -1154,11 +1169,11 @@ class EditTag(ReaderView):
 
         to_add = []
         if add:
-            to_add = list(map(tag_value, request.data.getlist('a')))
+            to_add = list(map(tag_value, list_attr(request.data, 'a')))
 
         to_remove = []
         if remove:
-            to_remove = list(map(tag_value, request.data.getlist('r')))
+            to_remove = list(map(tag_value, list_attr(request.data, 'r')))
 
         query = {}
         for tag in to_add:
