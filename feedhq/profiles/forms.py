@@ -170,14 +170,6 @@ class CredentialsForm(ServiceForm):
             'https://www.instapaper.com/api/1/oauth/access_token',
         )
 
-    def check_readability(self):
-        """Get an OAuth token using the Readability API"""
-        self.check_xauth(
-            settings.READABILITY['CONSUMER_KEY'],
-            settings.READABILITY['CONSUMER_SECRET'],
-            'https://www.readability.com/api/rest/v1/oauth/access_token/',
-        )
-
     def check_xauth(self, key, secret, token_url):
         """Check a generic xAuth provider"""
         auth = OAuth1(key, secret)

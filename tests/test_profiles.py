@@ -162,15 +162,15 @@ class ProfilesTest(WebTest):
         post.return_value = responses(
             200, data="oauth_token=aabbccdd&oauth_token_secret=efgh1234")
 
-        url = reverse("services", args=['readability'])
+        url = reverse("services", args=['instapaper'])
         response = self.app.get(url, user='test')
-        form = response.forms['readability']
+        form = response.forms['instapaper']
         form['username'] = 'example'
         form['password'] = 'correct password'
         response = form.submit().follow()
         self.assertContains(
             response,
-            "You have successfully added Readability",
+            "You have successfully added Instapaper",
         )
 
         self.assertEqual(len(post.call_args_list), 1)
@@ -181,7 +181,7 @@ class ProfilesTest(WebTest):
             'x_auth_mode': 'client_auth'})
 
         user = User.objects.get(pk=self.user.pk)
-        self.assertEqual(user.read_later, 'readability')
+        self.assertEqual(user.read_later, 'instapaper')
         self.assertEqual(json.loads(user.read_later_credentials), {
             "oauth_token": "aabbccdd",
             "oauth_token_secret": "efgh1234",

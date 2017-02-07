@@ -30,14 +30,12 @@ class User(PermissionsMixin, AbstractBaseUser):
     REQUIRED_FIELDS = ['email']
 
     NONE = ''
-    READABILITY = 'readability'
     READITLATER = 'readitlater'
     INSTAPAPER = 'instapaper'
     WALLABAG = 'wallabag'
     POCKET = 'pocket'
     READ_LATER_SERVICES = (
         (NONE, _('None')),
-        (READABILITY, u'Readability'),
         (READITLATER, u'Read it later'),
         (INSTAPAPER, u'Instapaper'),
         (WALLABAG, u'Wallabag'),

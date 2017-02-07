@@ -52,17 +52,23 @@ class Stats(UserMixin, generic.DetailView):
                                   doc_type='entries')['count']
         ctx['entries'] = entries
         return ctx
+
+
 stats = login_required(Stats.as_view())
 
 
 class ReadLater(UserMixin, generic.TemplateView):
     template_name = 'profiles/read_later.html'
+
+
 read_later = login_required(ReadLater.as_view())
 
 
 class PasswordView(UserMixin, generic.FormView):
     template_name = 'profiles/change_password.html'
     form_class = ChangePasswordForm
+
+
 password = login_required(PasswordView.as_view())
 
 
@@ -72,6 +78,8 @@ class ProfileView(UserMixin, generic.FormView):
 
     def get_initial(self):
         return {'ttl': self.request.user.ttl or 365}
+
+
 profile = login_required(ProfileView.as_view())
 
 
@@ -79,17 +87,20 @@ class Sharing(UserMixin, generic.FormView):
     form_class = SharingForm
     template_name = 'profiles/sharing.html'
     success_url = reverse_lazy('sharing')
+
+
 sharing = login_required(Sharing.as_view())
 
 
 class Export(UserMixin, generic.TemplateView):
     template_name = 'profiles/export.html'
+
+
 export = login_required(Export.as_view())
 
 
 class ServiceView(generic.FormView):
     FORMS = {
-        'readability': CredentialsForm,
         'readitlater': CredentialsForm,
         'instapaper': CredentialsForm,
         'pocket': PocketForm,
@@ -129,6 +140,8 @@ class ServiceView(generic.FormView):
                 _('You have successfully disabled reading list integration.'),
             )
         return super(ServiceView, self).form_valid(form)
+
+
 services = login_required(ServiceView.as_view())
 
 
@@ -152,11 +165,15 @@ class PocketReturn(generic.RedirectView):
             _('You have successfully added Pocket as your reading list '
               'service.'))
         return reverse('read_later')
+
+
 pocket = PocketReturn.as_view()
 
 
 class Recover(views.Recover):
     search_fields = ['email']
+
+
 recover = Recover.as_view()
 
 
@@ -178,6 +195,8 @@ class DestructionRequest(generic.FormView):
         send_mail(subject, body, settings.DEFAULT_FROM_EMAIL,
                   [self.request.user.email])
         return redirect('destroy_sent')
+
+
 destroy = login_required(DestructionRequest.as_view())
 
 
@@ -202,16 +221,22 @@ class DestroyConfirm(generic.FormView):
     def form_valid(self, form):
         form.save()
         return redirect(self.get_success_url())
+
+
 destroy_confirm = login_required(DestroyConfirm.as_view())
 
 
 class DestroySent(generic.TemplateView):
     template_name = 'profiles/account_delete_sent.html'
+
+
 destroy_sent = login_required(DestroySent.as_view())
 
 
 class DestroyDone(generic.TemplateView):
     template_name = 'profiles/account_delete_done.html'
+
+
 destroy_done = DestroyDone.as_view()
 
 
@@ -223,4 +248,6 @@ class Bookmarklet(generic.TemplateView):
         ctx['site'] = RequestSite(self.request)
         ctx['scheme'] = 'https' if self.request.is_secure() else 'http'
         return ctx
+
+
 bookmarklet = login_required(Bookmarklet.as_view())

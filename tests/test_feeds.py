@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django_push.subscriber.signals import updated
 from feedhq import es
-from feedhq.feeds.models import Category, Entry, Feed, UniqueFeed
+from feedhq.feeds.models import Category, Entry, EsEntry, Feed, UniqueFeed
 from feedhq.feeds.tasks import update_feed
 from feedhq.feeds.templatetags.feeds_tags import smart_date
 from feedhq.feeds.utils import USER_AGENT
@@ -710,58 +710,6 @@ class WebBaseTests(WebTest):
             per_page=1, annotate=user)['hits'][0].content
         self.assertEqual(len(content.split('F&#233;vrier 1953')), 2)
 
-    @patch('requests.head')
-    @patch('requests.get')
-    @patch('requests.post')
-    def test_add_to_readability(self, post, get, head):  # noqa
-        head.side_effect = resolve_url
-        post.return_value = responses(202, headers={
-            'location': 'https://www.readability.com/api/rest/v1/bookmarks/19',
-        })
-
-        user = UserFactory.create(
-            read_later='readability',
-            read_later_credentials=json.dumps({
-                'oauth_token': 'token',
-                'oauth_token_secret': 'token secret',
-            }),
-        )
-
-        get.return_value = responses(200, 'sw-all.xml')
-        feed = FeedFactory.create(category__user=user, user=user)
-        get.assert_called_once_with(
-            feed.url,
-            headers={'User-Agent': USER_AGENT % '1 subscriber',
-                     'Accept': feedparser.ACCEPT_HEADER},
-            timeout=10, auth=None)
-
-        get.reset_mock()
-        get.return_value = responses(200, data=json.dumps(
-            {'article': {'id': 'foo'}}))
-
-        entry_pk = es.manager.user(user).fetch()['hits'][0].pk
-        url = reverse('feeds:item', args=[entry_pk])
-        response = self.app.get(url, user=user)
-        self.assertContains(response, "Add to Readability")
-
-        form = response.forms['read-later']
-        response = form.submit()
-        self.assertEqual(len(post.call_args_list), 1)
-        self.assertEqual(len(get.call_args_list), 1)
-        args, kwargs = post.call_args
-        self.assertEqual(
-            args, ('https://www.readability.com/api/rest/v1/bookmarks',))
-        self.assertEqual(kwargs['data'], {
-            'url': 'http://simonwillison.net/2010/Mar/12/re2/'})
-        args, kwargs = get.call_args
-        self.assertEqual(
-            args, ('https://www.readability.com/api/rest/v1/bookmarks/19',))
-        entry = es.entry(user, entry_pk)
-        self.assertEqual(entry.read_later_url,
-                         'https://www.readability.com/articles/foo')
-        response = self.app.get(url, user=user)
-        self.assertNotContains(response, "Add to Instapaper")
-
     @patch("requests.head")
     @patch("requests.get")
     @patch('requests.post')
@@ -1087,3 +1035,14 @@ class WebBaseTests(WebTest):
         url = reverse('feeds:entries') + '?q=foobarbaz'
         response = self.app.get(url, user=user)
         self.assertContains(response, "Your search query yielded no results")
+
+    @patch('requests.get')
+    def test_bleach_crash(self, get):
+        get.return_value = responses(304)
+        for file_name in ['break-bleach.html', 'break-bleach2.html']:
+            with open(data_file(file_name), 'r') as f:
+                content = f.read()
+
+            entry = EsEntry({'_id': 1, '_source': {'content': content}})
+            entry.feed = FeedFactory.create()
+            self.assertTrue(entry.sanitized_content())

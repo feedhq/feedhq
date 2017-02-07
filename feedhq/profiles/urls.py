@@ -9,7 +9,7 @@ urlpatterns = [
     url(r'^bookmarklet/$', views.bookmarklet, name='bookmarklet'),
     url(r'^password/$', views.password, name='password'),
     url(r'^export/$', views.export, name='export'),
-    url(r'^readlater/(?P<service>readability|readitlater|instapaper|'
+    url(r'^readlater/(?P<service>readitlater|instapaper|'
         r'pocket|wallabag|none)/$',
         views.services, name='services'),
     url(r'^readlater/pocket/return/$', views.pocket, name='pocket_return'),

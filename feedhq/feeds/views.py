@@ -10,7 +10,7 @@ from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template import loader, RequestContext
+from django.template import loader
 from django.template.defaultfilters import slugify
 from django.utils.html import format_html
 from django.utils.translation import ugettext as _, ungettext
@@ -44,6 +44,8 @@ MEDIA_RE = re.compile(
 
 class Keyboard(generic.TemplateView):
     template_name = 'feeds/keyboard.html'
+
+
 keyboard = Keyboard.as_view()
 
 
@@ -145,7 +147,7 @@ def entries_list(request, page=1, mode=None, category=None, feed=None,
                     'form': UndoReadForm(initial={
                         'pks': json.dumps(pks, separators=(',', ':'))}),
                     'action': request.get_full_path(),
-                }, context_instance=RequestContext(request))
+                }, request=request)
                 message = ungettext(
                     '1 entry has been marked as read.',
                     '%(value)s entries have been marked as read.',
@@ -284,6 +286,8 @@ class CategoryMixin(SuccessMixin):
 
 class AddCategory(CategoryMixin, generic.CreateView):
     template_name = 'feeds/category_form.html'
+
+
 add_category = login_required(AddCategory.as_view())
 
 
@@ -293,6 +297,8 @@ class EditCategory(CategoryMixin, generic.UpdateView):
     def get_success_message(self):
         return _('%(category)s has been successfully '
                  'updated') % {'category': self.object}
+
+
 edit_category = login_required(EditCategory.as_view())
 
 
@@ -330,6 +336,8 @@ class DeleteCategory(CategoryMixin, generic.DeleteView):
             'feed_count': self.object.feeds.count(),
         })
         return super(DeleteCategory, self).get_context_data(**kwargs)
+
+
 delete_category = login_required(DeleteCategory.as_view())
 
 
@@ -361,6 +369,8 @@ class AddFeed(FeedMixin, generic.CreateView):
         if 'name' in self.request.GET:
             initial['name'] = self.request.GET['name']
         return initial
+
+
 add_feed = login_required(AddFeed.as_view())
 
 
@@ -370,6 +380,8 @@ class EditFeed(FeedMixin, generic.UpdateView):
     def get_success_message(self):
         return _('%(feed)s has been successfully '
                  'updated') % {'feed': self.object.name}
+
+
 edit_feed = login_required(EditFeed.as_view())
 
 
@@ -402,6 +414,8 @@ class DeleteFeed(FeedMixin, generic.DeleteView):
                 'feed': name})
         success_url = self.get_success_url()
         return redirect(success_url)
+
+
 delete_feed = login_required(DeleteFeed.as_view())
 
 
@@ -757,6 +771,8 @@ class Subscribe(generic.FormView):
             message = _('%s feeds have been added') % created
         messages.success(self.request, message)
         return redirect(reverse('feeds:entries'))
+
+
 subscribe = login_required(Subscribe.as_view())
 
 
@@ -780,4 +796,6 @@ class ManageFeeds(generic.TemplateView):
 
         ctx['feeds'] = feeds
         return ctx
+
+
 manage = login_required(ManageFeeds.as_view())

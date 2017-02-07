@@ -17,8 +17,7 @@ Main features
 
 * Compatibility with the Google Reader API
 
-* Integration with reading list services such as Wallabag, Instapaper,
-  Readability or Pocket
+* Integration with reading list services such as Wallabag, Instapaper or Pocket
 
 * OPML export / import, Subtome integration
 

@@ -1,0 +1,119 @@
+<div><p>When we tell people that Sentry is completely open source, they usually follow up: <em>Then why would I pay for your hosted service? Why not just host it myself?</em> For our customers, the reasons vary—supporting open source, no setup, high availability, automatic upgrades, support, security—but they sum up to one idea: <em>It’s easier.</em></p>
+
+<p>Today, we add one more idea: <em>It costs less.</em></p>
+
+<p>We’re discarding our old, arbitrarily-capped plans and moving to a single, usage-based plan. The base price is $12/month and includes every feature, unlimited projects, unlimited users, and email support. You start at 50,000 events/month and for more events, you can either pay per event or prepay for discounts of up to 70%. Finally, you can stay on budget by setting your own spending caps or per-minute rate limits. This new pricing is available now to all new customers and will be rolled out to existing customers over the next few months.</p>
+
+<p>We want our hosted service to be such good value, you’d be irresponsible to host it yourself. Achieving this required us to discard made-up caps and pare our pricing model down to its fundamentals: the underlying infrastructure cost of processing events. Price scales with event volume and gently curves down as we share our economies of scale by giving you better discounts. Even for bootstrapped startups, getting started with our hosted service is now cheaper (and by far easier) than hosting Sentry yourself on DigitalOcean, Google Compute Engine, or Amazon Web Services<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>.</p>
+
+<h3 id="sentry-pricing-versus-competitors">Sentry pricing versus competitors</h3>
+
+<div class="frame">
+  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 1091 449" overflow="hidden" style="display: block;">
+    <path fill="#fff" d="M0 0h1091v449H0z"></path>
+    <g>
+      <path fill="#16111c" d="M162 363h767v1H162z"></path>
+      <g fill="none">
+        <path stroke-linecap="round" stroke="#fff" stroke-width="2" d="M162.5 360.18l2.6-.64 2.6-.64 2.6-.64 2.6-.63 2.58-.64 2.6-1 2.6-.5 2.6-.5 2.6-.9h2.6l2.58-1 2.6-.5 2.6-.5 2.6-.9h2.6l2.6-1 2.58-.4 2.6-.5 2.6-.9h2.6l2.6-.98 2.6-.96 2.58-.6h5.2l2.6-.96 2.6-.9 2.6-.6h5.18l2.6-.96 2.6-.96 2.6-.6h5.18l2.6-.98 2.6-.94 2.6-.6h5.18l2.6-.95 2.6-.95 2.6-.6h5.2l2.58-.9 2.6-.96 2.6-.95 2.6-.93 2.6-.66h12.96l2.6-.97 2.6-.9 2.58-.94 2.6-.94 2.6-.62h12.98l2.6-.95 2.6-.9 2.6-.95 2.6-.95 2.58-.7h13l2.58-.94 2.6-.93 2.6-.95 2.6-1 2.6-.65h12.98l2.6-1 2.6-.97 2.58-.9 2.6-.97 2.6-.64h12.98l2.6-.9 2.6-.96 2.6-.94 2.58-.9 2.6-1 2.6-.93 2.6-.92 2.6-.93 2.6-.95 2.58-.94 2.6-.25h36.38l2.6-.9 2.6-.9 2.58-.9 2.6-1 2.6-.9 2.6-1 2.6-.97 2.6-.95 2.58-.94 2.6-.93 2.6-.28h36.36l2.6-.98 2.58-.9 2.6-.96 2.6-.9 2.6-.93 2.6-.93 2.58-.9 2.6-.97 2.6-.93 2.6-.96 2.6-.23h36.34l2.6-.93 2.6-.9 2.6-.9 2.6-.95 2.6-.93 2.58-.95 2.6-.95 2.6-.9 2.6-1 2.6-.95 2.6-.3h36.34l2.6-.96 2.6-.95 2.6-.92 2.6-.94 2.58-.95 2.6-.95 2.6-.98 2.6-.9 2.6-.96 2.6-.9 2.58-.3h36.36l2.6-.94 2.6-.94 2.58-.95 2.6-.94 2.6-.9 2.6-.9 2.6-.97 2.6-1 2.58-.94 2.6-.95 2.6-.3h36.36l2.6-.96 2.58-.97 2.6-.96 2.6-.9 2.6-.97 2.6-.92 2.6-.96 2.58-.97 2.6-.93 2.6-.96 2.6-.92 2.6-.95 2.6-.94 2.58-.93 2.6-1 2.6-.97 2.6-.94 2.6-.9 2.6-1 2.58-.1h77.9"></path>
+        <path stroke-linecap="round" stroke="#a4c2f4" d="M162.5 348.54h25.98V313.1h77.87v-76.2h272.67V109.78H928.5"></path>
+        <path stroke-linecap="round" stroke="#93c47d" d="M162.5 322.23h51.94v-96.95H928.5"></path>
+        <path stroke-linecap="round" stroke="#f90" d="M162.5 352.2h12.98v-23.1h103.88v-34.6H539v-70.3h389.5"></path>
+        <path stroke-linecap="round" stroke="#6c5fc7" stroke-width="4" d="M162.5 359.32l2.6-.56 2.6-.56 2.6-.55 2.6-.56 2.58-.6 2.6-.6 2.6-.6 2.6-.6 2.6-.6 2.6-.6 2.58-.57 2.6-.56 2.6-.56 2.6-.55 2.6-.57 2.6-.5 2.58-.58 2.6-.5 2.6-.55 2.6-.55 2.6-.6 2.6-.5 2.58-.54 2.6-.5 2.6-.5 2.6-.5 2.6-.5 2.6-.5 2.58-.5 2.6-.5 2.6-.5 2.6-.5 2.6-.5 2.58-.5 2.6-.5 2.6-.5 2.6-.5 2.6-.5 2.6-.5 2.58-.5 2.6-.5 2.6-.5 2.6-.5 2.6-.5 2.6-.5 2.58-.5 2.6-.5 2.6-.5 2.6-.5 2.6-.5 2.6-.5 2.58-.5 2.6-.5 2.6-.45 2.6-.45 2.6-.48 2.6-.5 2.58-.5 2.6-.45 2.6-.48 2.6-.47 2.6-.5 2.6-.44 2.58-.47 2.6-.5 2.6-.48 2.6-.46 2.6-.45 2.6-.5 2.58-.43 2.6-.44 2.6-.5 2.6-.46 2.6-.48 2.6-.47 2.58-.4 2.6-.46 2.6-.42 2.6-.4 2.6-.45 2.6-.42 2.58-.5 2.6-.45 2.6-.43 2.6-.44 2.6-.46 2.6-.5 2.58-.44 2.6-.4 2.6-.43 2.6-.46 2.6-.4 2.58-.48 2.6-.4 2.6-.44 2.6-.4 2.6-.46 2.6-.48 2.58-.44 2.6-.4 2.6-.44 2.6-.4 2.6-.48 2.6-.44 2.58-.44 2.6-.4 2.6-.42 2.6-.43 2.6-.4 2.6-.46 2.58-.4 2.6-.48 2.6-.4 2.6-.4 2.6-.43 2.6-.43 2.58-.4 2.6-.4 2.6-.4 2.6-.42 2.6-.45 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.44 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.47 2.6-.4 2.6-.4 2.58-.4 2.6-.44 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.47 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.37 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.38 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.38 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.38 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.36 2.6-.4 2.6-.38 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.37 2.6-.4 2.6-.4 2.58-.4 2.6-.37 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.37 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.33 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.38 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.5 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.46 2.6-.4 2.58-.4 2.6-.4 2.6-.4 2.6-.4 2.6-.47 2.6-.4 2.58-.43 2.6-.4 2.6-.42 2.6-.4 2.6-.4 2.6-.4 2.58-.4 2.6-.45 2.6-.44 2.6-.45 2.6-.4 2.6-.4 2.58-.43 2.6-.4 2.6-.44 2.6-.4 2.6-.4 2.6-.44 2.58-.4 2.6-.4"></path>
+      </g>
+    </g>
+    <text x="201.45" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">200</text>
+    <text x="253.38" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">400</text>
+    <text x="305.31" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">600</text>
+    <text x="357.25" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">800</text>
+    <text x="409.18" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">1000</text>
+    <text x="461.11" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">1200</text>
+    <text x="513.04" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">1400</text>
+    <text x="564.97" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">1600</text>
+    <text x="616.91" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">1800</text>
+    <text x="668.84" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">2000</text>
+    <text x="720.77" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">2200</text>
+    <text x="772.7" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">2400</text>
+    <text x="824.64" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">2600</text>
+    <text x="876.57" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">2800</text>
+    <text x="928.5" y="381.2" fill="#777088" stroke-width="0" text-anchor="middle" font-family="Maison Mono" font-size="14">3000</text>
+    <text x="150" y="367.7" fill="#777088" stroke-width="0" text-anchor="end" font-family="Maison Mono" font-size="14">$0.00</text>
+    <text x="150" y="298.45" fill="#777088" stroke-width="0" text-anchor="end" font-family="Maison Mono" font-size="14">$250.00</text>
+    <text x="150" y="229.2" fill="#777088" stroke-width="0" text-anchor="end" font-family="Maison Mono" font-size="14">$500.00</text>
+    <text x="150" y="159.95" fill="#777088" stroke-width="0" text-anchor="end" font-family="Maison Mono" font-size="14">$750.00</text>
+    <text x="150" y="90.7" fill="#777088" stroke-width="0" text-anchor="end" font-family="Maison Mono" font-size="14">$1,000.00</text>
+    <text x="545.5" y="412" fill="#16111c" stroke-width="0" text-anchor="middle" font-family="Maison" font-size="16">Event volume (in thousands of events/month)</text>
+  </svg>
+</div>
+
+<p>When we set out to turn Sentry into a business, we stayed open source because we believe developers deserve flexibility and transparency in their infrastructure tools. With this new pricing model, we hope to provide that same flexibility and transparency in your billing. Check out our pricing page for details, including a <a href="https://sentry.io/pricing/#calculator">pricing calculator</a> for estimating your bill. If you have questions, you can look over <a href="https://docs.sentry.io/pricing/">our pricing FAQ</a> or email us at <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#104;&#101;&#108;&#108;&#111;&#064;&#115;&#101;&#110;&#116;&#114;&#121;&#046;&#105;&#111;">&#104;&#101;&#108;&#108;&#111;&#064;&#115;&#101;&#110;&#116;&#114;&#121;&#046;&#105;&#111;</a>.</p>
+
+<p>P.S. If you’re still hellbent on forking and running an error reporting server yourself, maybe it’s time you considered <a href="https://sentry.io/jobs/">a full-time job at Sentry</a>.</p>
+
+<hr class="shortie m-y-2" />
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>Minimum recommended specifications for Sentry server: 2GB RAM for web process, worker process, RabbitMQ, Redis, Postgres, email server. Comparison pricing uses Sentry annual plan, GCE 30% sustained used discounts, and AWS 1-year all upfront reserved instance discounts.</p>
+
+      <p class="text-center"><strong>Monthly cost of self-hosting versus hosted Sentry</strong></p>
+
+      <div class="frame">
+  <div class="white-background p-x-1 p-b-1 p-t-2 text-center outline border-radius">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-3">
+          <div style="background-color: #6c5fc7; height: 300px;"><p class="color-white family-mono m-t-0 p-t-1">$20.00</p></div>
+        </div>
+        <div class="col-xs-3">
+          <div style="height: 70px;"></div>
+          <div style="background-color: #6c5fc7;  height: 230px;"><p class="color-white family-mono m-t-0 p-t-1">$15.50</p></div>
+        </div>
+        <div class="col-xs-3">
+          <div style="height: 120px;"></div>
+          <div style="background-color: #6c5fc7;  height: 180px;"><p class="color-white family-mono m-t-0 p-t-1">$12.42</p></div>
+        </div>
+        <div class="col-xs-3">
+          <div style="height: 125px;"></div>
+          <div style="background-color: #6c5fc7;  height: 175px;"><p class="color-white family-mono m-t-0 p-t-1">$12.00</p></div>
+        </div>
+      </div>
+    </div>
+    <hr class="m-t-0 border-radius" style="height: 2px;" />
+    <div class="container-fluid">
+      <div class="row clearfix">
+        <div class="col-xs-3">
+          <p class="m-y-0"><strong>Digital Ocean</strong></p>
+        </div>
+        <div class="col-xs-3">
+          <p class="m-y-0"><strong>GCE</strong></p>
+        </div>
+        <div class="col-xs-3">
+          <p class="m-y-0"><strong>AWS</strong></p>
+        </div>
+        <div class="col-xs-3">
+          <p class="m-y-0"><strong>Sentry paid plan</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <ul>
+        <li>
+          <p>DigitalOcean (2GB RAM droplet): $20.00</p>
+        </li>
+        <li>
+          <p>GCE g1-small (shared vCPU, 1.7GB RAM, 10GB persistent SSD) $15.50</p>
+        </li>
+        <li>
+          <p>AWS t2.small (1 vCPU, 2GB RAM, 10GB EBS gp2 SSD) $12.42</p>
+        </li>
+        <li>
+          <p>Sentry paid plan: $12.00</p>
+        </li>
+      </ul>
+      <p><a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>We’re discarding our old, arbitrarily-capped plans and are moving to a single, usage-based plan.</div>

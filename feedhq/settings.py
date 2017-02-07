@@ -105,6 +105,7 @@ def parse_email_url():
         config['USE_TLS'] = True
     return config
 
+
 DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ['FROM_EMAIL']
 
 if 'EMAIL_URL' in os.environ:
@@ -201,6 +202,7 @@ def parse_redis_url():
 
     return config, True if 'eager' in querystring else False
 
+
 REDIS, RQ_EAGER = parse_redis_url()
 # django-rq-dashboard needs an RQ setting
 RQ = REDIS
@@ -222,15 +224,14 @@ CACHES = {
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 )
 
 ROOT_URLCONF = 'feedhq.urls'
@@ -354,12 +355,6 @@ if 'INSTAPAPER_CONSUMER_KEY' in os.environ:
         'CONSUMER_SECRET': os.environ['INSTAPAPER_CONSUMER_SECRET'],
     }
 
-if 'READABILITY_CONSUMER_KEY' in os.environ:
-    READABILITY = {
-        'CONSUMER_KEY': os.environ['READABILITY_CONSUMER_KEY'],
-        'CONSUMER_SECRET': os.environ['READABILITY_CONSUMER_SECRET'],
-    }
-
 if 'POCKET_CONSUMER_KEY' in os.environ:
     POCKET_CONSUMER_KEY = os.environ['POCKET_CONSUMER_KEY']
 
@@ -382,6 +377,9 @@ else:
     INSTALLED_APPS += (
         'debug_toolbar',
         'elastic_panel',
+    )
+    MIDDLEWARE += (
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
     )
     DEBUG_TOOLBAR_PANELS = [
         'debug_toolbar.panels.versions.VersionsPanel',

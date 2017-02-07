@@ -328,4 +328,5 @@ class SubscriptionForm(forms.Form):
             raise forms.ValidationError(_('This field is required.'))
         return self.cleaned_data['name']
 
+
 SubscriptionFormSet = formset_factory(SubscriptionForm, extra=0)
