@@ -1,5 +1,4 @@
 import os
-from optparse import make_option
 
 from raven import Client
 from rq import Connection, Queue, Worker
@@ -27,16 +26,17 @@ def sentry_handler(job, *exc_info):
 
 
 class Command(SentryCommand):
-    args = '<queue1 queue2 ...>'
-    option_list = SentryCommand.option_list + (
-        make_option('--burst', action='store_true', dest='burst',
-                    default=False, help='Run the worker in burst mode'),
-    )
     help = "Run a RQ worker on selected queues."
+
+    def add_arguments(self, parser):
+        parser.add_argument('queues', nargs='+')
+        parser.add_argument('--burst', dest='burst', action='store_true',
+                            default=False,
+                            help='Run the worker in burst mode')
 
     def handle_sentry(self, *args, **options):
         conn = get_redis_connection()
         with Connection(conn):
-            queues = map(Queue, args)
+            queues = map(Queue, options['queues'])
             worker = Worker(queues, exc_handler=sentry_handler)
             worker.work(burst=options['burst'])
