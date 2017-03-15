@@ -269,8 +269,6 @@ LOCALE_PATHS = (
 LOGIN_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('feeds:entries')
 
-DATE_FORMAT = 'M j, H:i'
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

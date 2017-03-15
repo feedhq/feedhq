@@ -12,3 +12,11 @@ def smart_date(value):
             return value.strftime('%H:%M')
         return value.strftime('%b %d')
     return value.strftime('%b %d, %Y')
+
+
+@register.filter
+def smart_datetime(value):
+    now = timezone.localtime(timezone.now(), value.tzinfo)
+    if value.year == now.year:
+        return value.strftime('%b %d, %H:%M')
+    return value.strftime('%b %d, %Y')

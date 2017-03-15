@@ -773,9 +773,6 @@ class BaseEntry(object):
                       creds['oauth_token_secret'])
         return auth
 
-    def current_year(self):
-        return self.date.year == timezone.now().year
-
 
 class Entry(BaseEntry, models.Model):
     """An entry is a cached feed item"""
