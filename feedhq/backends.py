@@ -7,7 +7,7 @@ from .utils import is_email
 
 
 class CaseInsensitiveModelBackend(ModelBackend):
-    def authenticate(self, username, password):
+    def authenticate(self, username, password, request):
         try:
             user = User.objects.get(username__iexact=username)
         except User.DoesNotExist:
