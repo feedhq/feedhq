@@ -216,7 +216,7 @@ CACHES = {
             'DB': REDIS['db'],
             'PASSWORD': REDIS['password'],
             'PARSER_CLASS': 'redis.connection.HiredisParser',
-            'PICKLE_VERSION': int(os.environ.get('CACHE_PICKLE_PROTOCOL', 2)),
+            'PICKLE_VERSION': int(os.environ.get('CACHE_PICKLE_PROTOCOL', 4)),
         },
     },
 }
