@@ -1,9 +1,9 @@
 import json
-import logging
 import re
 from collections import defaultdict
 
 import opml
+import structlog
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
@@ -35,7 +35,7 @@ Each view displays a list of entries, with a level of filtering:
 Entries are paginated.
 """
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 MEDIA_RE = re.compile(
     r'.*<(img|audio|video|iframe|object|embed|script|source)\s+.*',
@@ -617,8 +617,7 @@ def import_feeds(request):
                     imported = save_outline(request.user, None, entries,
                                             existing_feeds)
             except ValidationError:
-                logger.info("Prevented duplicate import for user %s",
-                            request.user.pk)
+                logger.info("prevented duplicate import", request=request)
             else:
                 message = " ".join([ungettext(
                     u'%s feed has been imported.',

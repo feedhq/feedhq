@@ -3,7 +3,6 @@ import base64
 import datetime
 import hashlib
 import json
-import logging
 import random
 import socket
 import struct
@@ -16,6 +15,7 @@ import magic
 import pytz
 import requests
 import six
+import structlog
 from django.conf import settings
 from django.core.cache import cache
 from django.core.files.base import ContentFile
@@ -51,7 +51,7 @@ from ..storage import OverwritingStorage
 from ..tasks import enqueue
 from ..utils import get_redis_connection
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 feedparser.PARSE_MICROFORMATS = False
 feedparser.SANITIZE_HTML = False
@@ -186,7 +186,7 @@ class UniqueFeedManager(models.Manager):
                 timeout=UniqueFeed.request_timeout(backoff_factor))
         except (requests.RequestException, socket.timeout, socket.error,
                 IncompleteRead, DecodeError) as e:
-            logger.debug("Error fetching %s, %s" % (url, str(e)))
+            logger.debug("error fetching", url=url, exc_info=e)
             if isinstance(e, IncompleteRead):
                 error = UniqueFeed.CONNECTION_ERROR
             elif isinstance(e, DecodeError):
@@ -195,8 +195,8 @@ class UniqueFeedManager(models.Manager):
                 error = UniqueFeed.TIMEOUT
             self.backoff_feed(url, error, backoff_factor)
             return
-        except LocationParseError:
-            logger.debug(u"Failed to parse URL for %s", url)
+        except LocationParseError as e:
+            logger.debug("failed to parse URL", url=url, exc_info=e)
             self.mute_feed(url, UniqueFeed.PARSE_ERROR)
             return
 
@@ -224,7 +224,7 @@ class UniqueFeedManager(models.Manager):
         update = {'last_update': int(time.time())}
 
         if response.status_code == 410:
-            logger.debug(u"Feed gone, %s", url)
+            logger.debug("feed gone", url=url)
             self.mute_feed(url, UniqueFeed.GONE)
             return
 
@@ -233,7 +233,8 @@ class UniqueFeedManager(models.Manager):
             return
 
         elif response.status_code not in [200, 204, 226, 304]:
-            logger.debug(u"%s returned %s", url, response.status_code)
+            logger.debug("non-standard status code", url=url,
+                         status_code=response.status_code)
 
             if response.status_code == 429:
                 # Too Many Requests
@@ -277,7 +278,7 @@ class UniqueFeedManager(models.Manager):
             else:
                 content = response.content
         except socket.timeout:
-            logger.debug(u'%s timed out', url)
+            logger.debug('timed out', url=url)
             self.backoff_feed(url, UniqueFeed.TIMEOUT, backoff_factor)
             return
 
@@ -388,7 +389,7 @@ class UniqueFeedManager(models.Manager):
         return entry_date, date_generated
 
     def handle_redirection(self, old_url, new_url):
-        logger.debug(u"%s moved to %s", old_url, new_url)
+        logger.debug("feed moved", old_url=old_url, new_url=new_url)
         Feed.objects.filter(url=old_url).update(url=new_url)
         unique, created = self.get_or_create(url=new_url)
         if created:
@@ -404,7 +405,7 @@ class UniqueFeedManager(models.Manager):
 
     def backoff_feed(self, url, error, backoff_factor):
         if backoff_factor == UniqueFeed.MAX_BACKOFF - 1:
-            logger.debug(u"%s reached max backoff period (%s)", url, error)
+            logger.debug("reached max backoff factor", url=url, error=error)
         backoff_factor = min(UniqueFeed.MAX_BACKOFF, backoff_factor + 1)
         schedule_job(url, schedule_in=UniqueFeed.delay(backoff_factor),
                      error=error, backoff_factor=backoff_factor,
@@ -1021,10 +1022,12 @@ class FaviconManager(models.Manager):
               'GLS_BINARY_LSB_FIRST' in icon_type or
               'PDF' in icon_type or
               'PCX' in icon_type):
-            logger.debug("Ignored content type for %s: %s" % (link, icon_type))
+            logger.debug("ignored content type", link=link,
+                         icon_type=icon_type)
             return favicon
         else:
-            logger.info("Unknown content type for %s: %s" % (link, icon_type))
+            logger.info("unknown content type", link=link,
+                        icon_type=icon_type)
             favicon.delete()
             return
 

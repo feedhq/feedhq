@@ -7,6 +7,7 @@
 appdirs==1.4.3            # via setuptools
 bleach==1.5.0
 click==6.7                # via rq
+colorama==0.3.7           # via structlog
 contextlib2==0.5.4        # via raven
 defusedxml==0.5.0
 dj-database-url==0.4.2
@@ -27,6 +28,7 @@ envdir==0.7
 feedparser==5.2.1
 hiredis==0.2.0
 html5lib==0.9999999       # via bleach
+logging_tree==1.7
 lxml==3.7.2
 more-itertools==2.5.0
 oauthlib==2.0.2           # via requests-oauthlib
@@ -46,6 +48,7 @@ requests-oauthlib==0.5.0
 requests==2.7.0
 rq==0.7.1
 six==1.10.0
+structlog[dev]==16.1.0
 urllib3==1.20             # via elasticsearch
 URLObject==2.4.2
 
