@@ -12,4 +12,4 @@ class URLField(models.TextField):
             'widget': forms.TextInput,
         }
         defaults.update(kwargs)
-        return super(URLField, self).formfield(**defaults)
+        return super().formfield(**defaults)

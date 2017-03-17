@@ -129,13 +129,12 @@ class ForceNegotiation(DefaultContentNegotiation):
     """
     def __init__(self, force_format=None):
         self.force_format = force_format
-        super(ForceNegotiation, self).__init__()
+        super().__init__()
 
     def select_renderer(self, request, renderers, format_suffix=None):
         if self.force_format is not None:
             format_suffix = self.force_format
-        return super(ForceNegotiation, self).select_renderer(
-            request, renderers, format_suffix)
+        return super().select_renderer(request, renderers, format_suffix)
 
     def filter_renderers(self, renderers, format):
         if len(renderers) == 1:
@@ -153,7 +152,7 @@ class Login(APIView):
     def handle_exception(self, exc):
         if isinstance(exc, PermissionDenied):
             return Response(exc.detail, status=exc.status_code)
-        return super(Login, self).handle_exception(exc)
+        return super().handle_exception(exc)
 
     def initial(self, request, *args, **kwargs):
         if request.method == 'POST':
@@ -198,7 +197,7 @@ class ReaderView(APIView):
     require_post_token = True
 
     def initial(self, request, *args, **kwargs):
-        super(ReaderView, self).initial(request, *args, **kwargs)
+        super().initial(request, *args, **kwargs)
         if request.method == 'POST' and self.require_post_token:
             token = request.data.get('T', request.query_params.get('T', None))
             if token is None:
@@ -213,7 +212,7 @@ class ReaderView(APIView):
     def handle_exception(self, exc):
         if isinstance(exc, BadToken):
             self.headers['X-Reader-Google-Bad-Token'] = "true"
-        return super(ReaderView, self).handle_exception(exc)
+        return super().handle_exception(exc)
 
     def label(self, value):
         if not is_label(value, self.request.user.pk):

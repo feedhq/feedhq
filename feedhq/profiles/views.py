@@ -29,7 +29,7 @@ class UserMixin(object):
         return self.request.user
 
     def get_form_kwargs(self):
-        kwargs = super(UserMixin, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs.update({
             'instance': self.request.user,
         })
@@ -38,12 +38,12 @@ class UserMixin(object):
     def form_valid(self, form):
         form.save()
         messages.success(self.request, form.success_message)
-        return super(UserMixin, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class Stats(UserMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
-        ctx = super(Stats, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx.update({
             'categories': self.request.user.categories.count(),
             'feeds': self.request.user.feeds.count(),
@@ -113,7 +113,7 @@ class ServiceView(generic.FormView):
         return ['profiles/services/%s.html' % self.kwargs['service']]
 
     def get_form_kwargs(self):
-        kwargs = super(ServiceView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs.update({
             'request': self.request,
             'user': self.request.user,
@@ -139,7 +139,7 @@ class ServiceView(generic.FormView):
                 self.request,
                 _('You have successfully disabled reading list integration.'),
             )
-        return super(ServiceView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 services = login_required(ServiceView.as_view())
@@ -211,10 +211,10 @@ class DestroyConfirm(generic.FormView):
             self.token = token
         except signing.BadSignature:
             return redirect(reverse('destroy_account'))
-        return super(DestroyConfirm, self).dispatch(request, token)
+        return super().dispatch(request, token)
 
     def get_form_kwargs(self):
-        kwargs = super(DestroyConfirm, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -244,7 +244,7 @@ class Bookmarklet(generic.TemplateView):
     template_name = 'profiles/bookmarklet.html'
 
     def get_context_data(self, **kwargs):
-        ctx = super(Bookmarklet, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx['site'] = RequestSite(self.request)
         ctx['scheme'] = 'https' if self.request.is_secure() else 'http'
         return ctx

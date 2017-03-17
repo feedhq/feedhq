@@ -73,7 +73,7 @@ class AuthToken(models.Model):
         ordering = ('-date_created',)
 
     def delete(self):
-        super(AuthToken, self).delete()
+        super().delete()
         cache.delete(self.cache_key)
 
     @property

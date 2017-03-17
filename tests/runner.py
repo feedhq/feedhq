@@ -8,7 +8,7 @@ from feedhq import es
 
 class ESTestSuiteRunner(DiscoverRunner):
     def setup_test_environment(self):
-        super(ESTestSuiteRunner, self).setup_test_environment()
+        super().setup_test_environment()
         try:
             es.client.indices.delete(settings.ES_INDEX)
         except NotFoundError:
@@ -17,5 +17,5 @@ class ESTestSuiteRunner(DiscoverRunner):
         es.wait_for_yellow()
 
     def teardown_test_environment(self):
-        super(ESTestSuiteRunner, self).teardown_test_environment()
+        super().teardown_test_environment()
         es.client.indices.delete(settings.ES_INDEX)

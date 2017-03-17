@@ -18,7 +18,7 @@ from .. import es
 
 class AuthForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
-        super(AuthForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['username'].label = _('Username or Email')
 
 
@@ -68,7 +68,7 @@ class ChangePasswordForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
-        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_current_password(self):
         password = self.cleaned_data['current_password']
@@ -92,7 +92,7 @@ class ServiceForm(forms.Form):
         self.user = kwargs.pop('user')
         self.service = kwargs.pop('service')
         self.request = kwargs.pop('request')
-        super(ServiceForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean(self):
         getattr(self, 'check_%s' % self.service)()
@@ -144,7 +144,7 @@ class CredentialsForm(ServiceForm):
     password = forms.CharField(label=_('Password'), widget=forms.PasswordInput)
 
     def __init__(self, *args, **kwargs):
-        super(CredentialsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.service == 'instapaper':
             self.fields['username'].help_text = _('Your Instapaper username '
                                                   'is an email address.')
@@ -198,7 +198,7 @@ class DeleteAccountForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        super(DeleteAccountForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_password(self):
         password = self.cleaned_data['password']
