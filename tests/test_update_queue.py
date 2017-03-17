@@ -156,7 +156,7 @@ class UpdateTests(TestCase):
     def test_updatefeeds_queuing(self, get):
         get.return_value = responses(304)
 
-        for i in range(24):
+        for _ in range(24):
             f = FeedFactory.create()
             patch_job(f.url, last_update=(
                 timezone.now() - timedelta(hours=10)).strftime('%s'))
