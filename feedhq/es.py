@@ -135,18 +135,17 @@ def _and_or_term(values):
     return {'and': values}
 
 
-def _lookup(name, values):
+def _lookup(name, lk):
     _range = {}
     _or = None
-    for lk in values.values():
-        for key, value in lk.items():
-            if key in ['lte', 'gte', 'lt', 'gt']:
-                _range[key] = value
-            elif key == 'in':
-                if len(value) == 1:
-                    _or = {'term': {name: value[0]}}
-                else:
-                    _or = {'or': [{'term': {name: val}} for val in value]}
+    for key, value in lk.items():
+        if key in ['lte', 'gte', 'lt', 'gt']:
+            _range[key] = value
+        elif key == 'in':
+            if len(value) == 1:
+                _or = {'term': {name: value[0]}}
+            else:
+                _or = {'or': [{'term': {name: val}} for val in value]}
     if _range and _or:
         raise ValueError("Will not combine range and __in lookups.")
     if _range:
@@ -220,7 +219,7 @@ class EntryQuery(object):
             filters[key] = term
 
         for key, lookup in lookups.items():
-            filter_ = _lookup(key, lookups)
+            filter_ = _lookup(key, lookup)
             if negate:
                 filter_ = {'not': filter_}
             filters[key] = filter_

@@ -122,7 +122,7 @@ def store_entries(feed_url, entries):
         mappings = es.client.indices.get_field_mapping(index=",".join(indices),
                                                        doc_type='entries',
                                                        field='guid,raw_title')
-        for idx, mapping in mappings.items():
+        for mapping in mappings.values():
             mapping = mapping['mappings']['entries']
             for f in ['raw_title', 'guid']:
                 assert mapping[f]['mapping'][f]['index'] == 'not_analyzed'

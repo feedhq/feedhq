@@ -609,7 +609,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         url = reverse('feeds:dashboard')
         FeedFactory.create(category=None, user=user)
-        for i in range(5):
+        for _ in range(5):
             FeedFactory.create(category__user=user, user=user)
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Dashboard')
@@ -620,7 +620,7 @@ class WebBaseTests(WebTest):
         user = UserFactory.create()
         url = reverse('feeds:dashboard', args=["unread"])
         FeedFactory.create(category=None, user=user)
-        for i in range(5):
+        for _ in range(5):
             FeedFactory.create(category__user=user, user=user)
         response = self.app.get(url, user=user)
         self.assertContains(response, 'Dashboard')

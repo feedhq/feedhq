@@ -38,7 +38,9 @@ def data_file(name):
 
 def responses(code, path=None, redirection=None, data=None,
               url=None,
-              headers={'Content-Type': 'text/xml'}):
+              headers=None):
+    if headers is None:
+        headers = {'Content-Type': 'text/xml'}
     response = Response()
     response.status_code = code
     if path is not None and redirection is None:

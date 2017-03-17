@@ -440,7 +440,7 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(response.json, {'max': 1000, 'unreadcounts': []})
 
         feed = FeedFactory.create(category__user=user, user=user)
-        for i in range(5):
+        for _ in range(5):
             EntryFactory.create(feed=feed, read=False, user=user)
         feed2 = FeedFactory.create(category=None, user=user)
         EntryFactory.create(feed=feed2, read=False, user=user)
@@ -507,13 +507,13 @@ class ReaderApiTest(ApiTest):
 
         Entry.objects.bulk_create([
             EntryFactory.build(user=user, feed=feed, read=False)
-            for i in range(15)
+            for _ in range(15)
         ] + [
             EntryFactory.build(user=user, feed=feed, read=True)
-            for i in range(4)
+            for _ in range(4)
         ] + [
             EntryFactory.build(user=user, feed=feed, read=False, starred=True)
-            for i in range(10)
+            for _ in range(10)
         ] + [
             EntryFactory.build(user=user, feed=feed, read=True, broadcast=True)
         ])
@@ -729,9 +729,9 @@ class ReaderApiTest(ApiTest):
         user = UserFactory.create()
         token = self.auth_token(user)
         feed = FeedFactory.create(category__user=user, user=user)
-        for i in range(5):
+        for _ in range(5):
             EntryFactory.create(feed=feed, user=user, broadcast=True)
-        for i in range(5):
+        for _ in range(5):
             EntryFactory.create(feed=feed, user=user, starred=True, read=True)
 
         response = self.client.get(url, **clientlogin(token))
@@ -818,9 +818,9 @@ class ReaderApiTest(ApiTest):
         self.assertEqual(response.content, b'0')
 
         feed = FeedFactory.create(category__user=user, user=user)
-        for i in range(6):
+        for _ in range(6):
             EntryFactory.create(feed=feed, user=user, read=True)
-        for i in range(4):
+        for _ in range(4):
             EntryFactory.create(feed=feed, user=user)
 
         response = self.client.get(
@@ -923,7 +923,7 @@ class ReaderApiTest(ApiTest):
             token_url, **clientlogin(token)).content.decode('utf-8')
 
         feed = FeedFactory.create(category__user=user, user=user)
-        for i in range(4):
+        for _ in range(4):
             EntryFactory.create(feed=feed, user=user)
         EntryFactory.create(feed=feed, user=user, starred=True)
         EntryFactory.create(feed=feed, user=user, broadcast=True)
@@ -1289,9 +1289,9 @@ class ReaderApiTest(ApiTest):
         self.assertContains(response, 'FeedHQ Feed List Export')
         self.assertTrue('attachment' in response['Content-Disposition'])
 
-        for i in range(7):
+        for _ in range(7):
             FeedFactory.create(user=user, category__user=user)
-        for i in range(3):
+        for _ in range(3):
             FeedFactory.create(user=user, category=None)
         response = self.client.get(url, **clientlogin(token))
         for feed in user.feeds.all():

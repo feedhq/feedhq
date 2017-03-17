@@ -357,7 +357,7 @@ class UnreadCount(ReaderView):
                     categories[category]['ts'] = max(
                         categories[category]['ts'], ts)
 
-                for pk, data in categories.items():
+                for data in categories.values():
                     info = {
                         "id": label_key(request, data['name']),
                         "count": data['count'],
