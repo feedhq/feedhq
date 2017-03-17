@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from django.test import TestCase as BaseTestCase
 from django_webtest import WebTest as BaseWebTest
+from elastic_panel import panel
 from feedhq import es
 from feedhq.utils import get_redis_connection
 from rache import job_key
@@ -11,6 +12,18 @@ from requests import Response
 
 
 TEST_DATA = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
+
+_old_pretty_json = panel._pretty_json
+
+
+def _pretty_json(data):
+    pretty = _old_pretty_json(data)
+    if isinstance(pretty, str):
+        pretty = pretty.encode()
+    return pretty
+
+
+panel._pretty_json = _pretty_json
 
 
 class BytesIO(BaseBytesIO):
