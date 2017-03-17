@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-appdirs==1.4.0            # via setuptools
+appdirs==1.4.3            # via setuptools
 bleach==1.5.0
 click==6.7                # via rq
 contextlib2==0.5.4        # via raven
@@ -35,7 +35,7 @@ opml==0.5
 packaging==16.8           # via setuptools
 Pillow==4.0.0
 psycopg2==2.6.2
-pyparsing==2.1.10         # via packaging
+pyparsing==2.2.0          # via packaging
 python-dateutil==2.6.0
 python-magic==0.4.12
 pytz==2016.10
