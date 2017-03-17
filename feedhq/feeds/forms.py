@@ -48,7 +48,7 @@ class ColorWidget(forms.Select):
 class UserFormMixin(object):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        super(UserFormMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class CategoryForm(UserFormMixin, forms.ModelForm):
@@ -74,7 +74,7 @@ class CategoryForm(UserFormMixin, forms.ModelForm):
         return name
 
     def save(self, commit=True):
-        category = super(CategoryForm, self).save(commit=False)
+        category = super().save(commit=False)
         category.user = self.user
         if commit:
             category.save(update_slug=True)
@@ -83,7 +83,7 @@ class CategoryForm(UserFormMixin, forms.ModelForm):
 
 class FeedForm(UserFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(FeedForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['category'].queryset = self.user.categories.all()
         self.fields['url'].validators = []
 
@@ -161,7 +161,7 @@ class FeedForm(UserFormMixin, forms.ModelForm):
 
     @transaction.atomic
     def save(self):
-        feed = super(FeedForm, self).save(commit=False)
+        feed = super().save(commit=False)
         feed.user = self.user
 
         if (
@@ -188,7 +188,7 @@ class FeedForm(UserFormMixin, forms.ModelForm):
 
 class OPMLField(forms.FileField):
     def to_python(self, data):
-        f = super(OPMLField, self).to_python(data)
+        f = super().to_python(data)
         if f is None:
             return
 
@@ -241,7 +241,7 @@ class ReadForm(forms.Form):
         self.category = category
         self.user = user
         self.pages_only = pages_only
-        super(ReadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.pages_only:
             self.fields['entries'] = forms.CharField(widget=forms.HiddenInput)
 
@@ -284,7 +284,7 @@ class UndoReadForm(forms.Form):
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
-        super(UndoReadForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_pks(self):
         return json.loads(self.cleaned_data['pks'])

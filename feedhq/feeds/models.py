@@ -134,7 +134,7 @@ class Category(models.Model):
                 else:
                     valid = True
             self.slug = candidate
-        return super(Category, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class UniqueFeedManager(models.Manager):
@@ -592,7 +592,7 @@ class Feed(JobDataMixin, models.Model):
 
     def save(self, *args, **kwargs):
         feed_created = self.pk is None
-        super(Feed, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         unique, created = UniqueFeed.objects.get_or_create(url=self.url)
         if feed_created or created:
             try:

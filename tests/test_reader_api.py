@@ -30,7 +30,7 @@ def clientlogin(token):
 
 class ApiClient(Client):
     def request(self, **request):
-        response = super(ApiClient, self).request(**request)
+        response = super().request(**request)
         if response['Content-Type'] == 'application/json':
             response.json = json.loads(response.content.decode('utf-8'))
         return response
@@ -40,7 +40,7 @@ class ApiTest(TestCase):
     client_class = ApiClient
 
     def setUp(self):  # noqa
-        super(ApiTest, self).setUp()
+        super().setUp()
         cache.clear()
 
     def auth_token(self, user):

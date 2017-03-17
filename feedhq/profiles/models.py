@@ -186,7 +186,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         return name
 
     def save(self, *args, **kwargs):
-        ret = super(User, self).save(*args, **kwargs)
+        ret = super().save(*args, **kwargs)
         self.ensure_alias()
         return ret
 

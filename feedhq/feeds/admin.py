@@ -58,7 +58,7 @@ class UniqueFeedAdmin(ModelAdmin):
         return [
             url(r'^graph/$', self.admin_site.admin_view(self.graph_data),
                 name='graph-data'),
-        ] + super(UniqueFeedAdmin, self).get_urls()
+        ] + super().get_urls()
 
     def graph_data(self, request):
         jobs = list(scheduled_jobs(with_times=True,

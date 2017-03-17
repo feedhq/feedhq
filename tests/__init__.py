@@ -16,7 +16,7 @@ TEST_DATA = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 class BytesIO(BaseBytesIO):
     def read(self, *args, **kwargs):
         kwargs.pop('decode_content', None)
-        return super(BytesIO, self).read(*args, **kwargs)
+        return super().read(*args, **kwargs)
 
 
 def data_file(name):

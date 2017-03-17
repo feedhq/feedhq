@@ -27,7 +27,7 @@ class UserFactory(Factory):
         if create:
             return User.objects.create_user(**kwargs)
         else:
-            return super(UserFactory, cls)._prepare(create, **kwargs)
+            return super()._prepare(create, **kwargs)
 
 
 class CategoryFactory(Factory):
@@ -69,7 +69,7 @@ class EntryFactory(Factory):
 
     @classmethod
     def create(cls, **kwargs):
-        entry = super(EntryFactory, cls).create(**kwargs)
+        entry = super().create(**kwargs)
         new_entry = entry.index()
         new_entry.user = entry.user
         entry.delete()

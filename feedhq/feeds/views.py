@@ -263,7 +263,7 @@ class SuccessMixin(object):
         return self.success_message
 
     def form_valid(self, form):
-        response = super(SuccessMixin, self).form_valid(form)
+        response = super().form_valid(form)
         msg = self.get_success_message()
         if msg is not None:
             messages.success(self.request, msg)
@@ -275,7 +275,7 @@ class CategoryMixin(SuccessMixin):
     success_url = reverse_lazy('feeds:manage')
 
     def get_form_kwargs(self):
-        kwargs = super(CategoryMixin, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -335,7 +335,7 @@ class DeleteCategory(CategoryMixin, generic.DeleteView):
             'entry_count': entry_count,
             'feed_count': self.object.feeds.count(),
         })
-        return super(DeleteCategory, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 delete_category = login_required(DeleteCategory.as_view())
@@ -346,7 +346,7 @@ class FeedMixin(SuccessMixin):
     success_url = reverse_lazy('feeds:manage')
 
     def get_form_kwargs(self):
-        kwargs = super(FeedMixin, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -363,7 +363,7 @@ class AddFeed(FeedMixin, generic.CreateView):
                  'added') % {'feed': self.object.name}
 
     def get_initial(self):
-        initial = super(AddFeed, self).get_initial()
+        initial = super().get_initial()
         if 'feed' in self.request.GET:
             initial['url'] = self.request.GET['feed']
         if 'name' in self.request.GET:
@@ -399,7 +399,7 @@ class DeleteFeed(FeedMixin, generic.DeleteView):
             },
         )['count']
         kwargs['entry_count'] = entry_count
-        return super(DeleteFeed, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     @transaction.atomic
     def delete(self, request, *args, **kwargs):
@@ -735,7 +735,7 @@ class Subscribe(generic.FormView):
         } for url in new_urls]
 
     def get_form(self, form_class=None):
-        formset = super(Subscribe, self).get_form(form_class)
+        formset = super().get_form(form_class)
         cats = [['', '-----']] + [
             (str(c.pk), c.name) for c in self.request.user.categories.all()
         ]
@@ -745,7 +745,7 @@ class Subscribe(generic.FormView):
         return formset
 
     def get_context_data(self, **kwargs):
-        ctx = super(Subscribe, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         ctx['site_url'] = self.request.GET.get('url')
         return ctx
 
@@ -780,7 +780,7 @@ class ManageFeeds(generic.TemplateView):
     template_name = 'feeds/manage_feeds.html'
 
     def get_context_data(self, **kwargs):
-        ctx = super(ManageFeeds, self).get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         feeds = self.request.user.feeds.select_related('category').order_by(
             'category__name', 'category__id', 'name',
         ).extra(select={
