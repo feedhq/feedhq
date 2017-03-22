@@ -9,8 +9,8 @@ from ....utils import get_redis_connection
 
 def sentry_handler(job, *exc_info):
     if 'SENTRY_DSN' not in os.environ:
-        # Use the next exception handler (send to failed queue)
-        return True
+        # Don't escalate to other handlers
+        return False
     client = Client()
     client.captureException(
         exc_info=exc_info,
@@ -38,5 +38,5 @@ class Command(SentryCommand):
         conn = get_redis_connection()
         with Connection(conn):
             queues = map(Queue, options['queues'])
-            worker = Worker(queues, exc_handler=sentry_handler)
+            worker = Worker(queues, exception_handlers=[sentry_handler])
             worker.work(burst=options['burst'])
