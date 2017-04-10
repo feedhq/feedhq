@@ -1,4 +1,5 @@
 import logging.config
+import os
 
 import logging_tree
 
@@ -110,6 +111,16 @@ def logstash_processor(_, __, event_dict):
     return event_dict
 
 
+def add_syslog_program(syslog):
+    pid = os.getpid()
+
+    def renderer(_, __, message):
+        if syslog:
+            return 'feedhq[{}]: {}'.format(pid, message)
+        return message
+    return renderer
+
+
 def configure_logging(debug=False, syslog=False, silenced_loggers=None):
     if silenced_loggers is None:
         silenced_loggers = []
@@ -119,6 +130,7 @@ def configure_logging(debug=False, syslog=False, silenced_loggers=None):
     ] if debug else [
         logstash_processor,
         processors.JSONRenderer(separators=(',', ':')),
+        add_syslog_program(syslog),
     ]
     structlog_processors = [
         stdlib.filter_by_level,
