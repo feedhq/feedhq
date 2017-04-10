@@ -17,6 +17,7 @@ envdir==0.7
 feedparser==5.2.1
 hiredis==0.2.0
 lxml==3.7.2
+logging_tree==1.7
 more-itertools==2.5.0
 opml==0.5
 Pillow==4.0.0
@@ -31,4 +32,5 @@ requests==2.7.0
 requests-oauthlib==0.5.0
 rq==0.7.1
 six==1.10.0
+structlog[dev]==16.1.0
 URLObject==2.4.2

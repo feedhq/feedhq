@@ -1,5 +1,4 @@
-import logging
-
+import structlog
 from rache import pending_jobs
 from rq import Queue
 
@@ -9,7 +8,7 @@ from ...tasks import update_feed
 from ....tasks import enqueue
 from ....utils import get_redis_connection
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class Command(SentryCommand):
@@ -41,8 +40,8 @@ class Command(SentryCommand):
             queue = Queue(name=name, connection=conn)
             if queue.count > limit:
                 logger.info(
-                    "%s queue longer than limit, skipping update "
-                    "(%s > %s)", name, queue.count, limit)
+                    "queue longer than limit, skipping update",
+                    queue=name, count=queue.count, limit=limit)
                 return
 
         jobs = pending_jobs(limit=limit,

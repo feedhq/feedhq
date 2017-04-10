@@ -1,5 +1,4 @@
-import logging
-
+import structlog
 from more_itertools import chunked
 from rache import delete_job, scheduled_jobs
 
@@ -7,7 +6,7 @@ from . import SentryCommand
 from ...models import UniqueFeed
 from ....utils import get_redis_connection
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class Command(SentryCommand):
@@ -25,14 +24,14 @@ class Command(SentryCommand):
 
         to_delete = existing_jobs - target
         if to_delete:
-            logger.info(
-                "Deleting %s jobs from the scheduler", len(to_delete))
+            logger.info("deleting jobs from the scheduler",
+                        count=len(to_delete))
             for job_id in to_delete:
                 delete_job(job_id, connection=connection)
 
         to_add = target - existing_jobs
         if to_add:
-            logger.info("Adding %s jobs to the scheduler", len(to_add))
+            logger.info("adding jobs to the scheduler", count=len(to_add))
             for chunk in chunked(to_add, 10000):
                 uniques = UniqueFeed.objects.filter(url__in=chunk)
                 for unique in uniques:

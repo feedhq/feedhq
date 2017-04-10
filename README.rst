@@ -116,7 +116,7 @@ Optionally you can customize:
   the ``/static/`` URL.
 * ``STATIC_URL``: the URL that serves static files (CSS/JS files) located in
   ``STATIC_ROOT``. By default, it is set to ``/static/``.
-* ``SENTRY_DSN``: a DSN to enable `Sentry`_ debugging.
+* ``SENTRY_DSN``: a DSN to enable `Sentry`_ error reporting.
 * ``SESSION_COOKIE_PATH``: the path set on the session cookie. E.g., ``/``.
 * ``HTTPS``: set-it to a non-empty value to configure FeedHQ for SSL access.
 * ``EMAIL_URL``: a URL for configuring email. E.g.
@@ -138,6 +138,8 @@ Optionally you can customize:
   monitoring. The ``/health/`` endpoint can be protected by requiring clients
   to provide a shared secret in an ``X-Token`` header. If no secret is set,
   the health endpoint is open to all.
+* ``LOG_SYSLOG``: set it to ``1`` to send logs to ``/dev/log`` instead of
+  stdout (the default). Logs are formatted in JSON.
 
 .. _Sentry: https://www.getsentry.com/
 

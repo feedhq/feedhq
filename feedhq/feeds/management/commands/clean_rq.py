@@ -1,14 +1,14 @@
 import datetime
-import logging
 from itertools import product
 
 import pytz
+import structlog
 from dateutil import parser
 
 from . import SentryCommand
 from ....utils import get_redis_connection
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class Command(SentryCommand):
@@ -33,4 +33,4 @@ class Command(SentryCommand):
                 if date < delay:
                     r.delete(key)
                     count += 1
-        logger.info("Cleaned %s jobs", count)
+        logger.info("cleaned jobs", count=count)

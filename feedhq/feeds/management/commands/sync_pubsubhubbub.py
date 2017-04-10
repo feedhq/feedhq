@@ -1,13 +1,13 @@
-import logging
 import os
 
+import structlog
 from django.conf import settings
 from django_push.subscriber.models import Subscription
 from raven import Client
 
 from . import SentryCommand
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class Command(SentryCommand):
@@ -22,7 +22,7 @@ class Command(SentryCommand):
             ) and s.lease_expiration >= current_timestamp
             """))
         if len(extra):
-            logger.info("Unsubscribing from %s feeds", len(extra))
+            logger.info("unsubscribing from feeds", count=len(extra))
             for subscription in extra:
                 try:
                     subscription.unsubscribe()

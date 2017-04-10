@@ -1,11 +1,11 @@
 import json
-import logging
 import re
 import struct
 
 from datetime import timedelta
 
 import opml
+import structlog
 
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
@@ -38,7 +38,7 @@ from ..profiles.models import User
 from ..utils import is_email
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 MISSING_SLASH_RE = re.compile("^(https?:\/)[^\/]")
 
@@ -201,9 +201,8 @@ class ReaderView(APIView):
         if request.method == 'POST' and self.require_post_token:
             token = request.data.get('T', request.query_params.get('T', None))
             if token is None:
-                logger.info(
-                    u"Missing POST token, %s", request.data.dict()
-                )
+                logger.info("Missing POST token, %s",
+                            data=request.data.dict(), request=request)
                 raise exceptions.ParseError("Missing 'T' POST token")
             user_id = check_post_token(token)
             if not user_id == request.user.pk:
@@ -590,9 +589,8 @@ class EditSubscription(ReaderView):
             if query:
                 qs.update(**query)
         else:
-            msg = u"Unrecognized action: %s"
-            logger.info(msg, action)
-            raise exceptions.ParseError(msg % action)
+            logger.info("unrecognized action", action=action, request=request)
+            raise exceptions.ParseError("Unrecognized action: %s" % action)
         return Response("OK")
 
 
@@ -681,10 +679,9 @@ def get_es_term(stream, user, exception=False):
         [category] = categories
         term = {'category': category}
     else:
-        msg = u"Unrecognized stream: %s"
-        logger.info(msg, stream)
+        logger.info("unrecognized stream", stream=stream, exception=exception)
         if exception:
-            raise exceptions.ParseError(msg % stream)
+            raise exceptions.ParseError("Unrecognized stream: %s" % stream)
     return term
 
 
@@ -710,10 +707,10 @@ def get_q(stream, user, exception=False):
         name = is_label(stream, user.pk)
         stream_q = Q(feed__category__name=name)
     else:
-        msg = u"Unrecognized stream: %s"
-        logger.info(msg, stream)
+        logger.info("unrecognized stream", stream=stream,
+                    exception=exception, user_id=user.pk)
         if exception:
-            raise exceptions.ParseError(msg % stream)
+            raise exceptions.ParseError("Unrecognized stream: %s" % stream)
     return stream_q
 
 
@@ -1002,9 +999,10 @@ class StreamContents(ReaderView):
             base['id'] = u'user/{0}/label/{1}'.format(request.user.pk, name)
             uniques = get_unique_map(request.user)
         else:
-            msg = u"Unknown stream id: {0}".format(content_id)
-            logger.info(msg)
-            raise exceptions.ParseError(msg)
+            logger.info("unknown stream id", stream_id=content_id,
+                        request=request)
+            raise exceptions.ParseError(
+                "Unknown stream id: {0}".format(content_id))
 
         # Ordering
         # ?r=d|n last entry first (default), ?r=o oldest entry first
@@ -1225,7 +1223,7 @@ class EditTag(ReaderView):
                 continue
 
             else:
-                logger.info(u"Unhandled tag %s", tag)
+                logger.info("unhandled tag", tag=tag, request=request)
                 raise exceptions.ParseError(
                     "Unrecognized tag: {0}".format(tag))
 
@@ -1241,7 +1239,7 @@ class EditTag(ReaderView):
                 continue
 
             else:
-                logger.info(u"Unhandled tag %s", tag)
+                logger.info("unhandled tag", tag=tag, request=request)
                 raise exceptions.ParseError(
                     "Unrecognized tag: {0}".format(tag))
 
@@ -1304,10 +1302,10 @@ class MarkAllAsRead(ReaderView):
             elif state in ['starred', 'broadcast']:
                 es_entries = es_entries.filter(**{state: True})
             else:
-                logger.info(u"Unknown state: %s", state)
+                logger.info("unknown state", state=state, request=request)
                 return Response("OK")
         else:
-            logger.info(u"Unknown stream: %s", stream)
+            logger.info("unknown stream", stream=stream, request=request)
             return Response("OK")
 
         entries = es_entries.aggregate('id').fetch(per_page=0)

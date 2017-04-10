@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging.config
+
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
@@ -10,6 +12,7 @@ from . import monkey
 monkey.patch_html5lib()
 
 from . import views  # noqa
+from .logging import configure_logging  # noqa
 from .profiles.forms import AuthForm  # noqa
 
 admin.autodiscover()
@@ -33,3 +36,10 @@ urlpatterns = [
 
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# We need logging to be configured late -- in the settings it's too soon for
+# logging_tree to properly detect loggers.
+logging.config.dictConfig(configure_logging(
+    debug=settings.DEBUG,
+    syslog=settings.LOG_SYSLOG,
+    silenced_loggers=settings.SILENCED_LOGGERS))

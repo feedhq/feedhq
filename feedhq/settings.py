@@ -6,7 +6,7 @@ from six.moves.urllib import parse as urlparse
 
 BASE_DIR = os.path.dirname(__file__)
 
-DEBUG = os.environ.get('DEBUG', False)
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
 # Are we running the tests or a real server?
 TESTS = False
@@ -269,74 +269,17 @@ LOCALE_PATHS = (
 LOGIN_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('feeds:entries')
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '%(asctime)s %(levelname)s: %(message)s'
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'sentry': {
-            'level': 'INFO',
-            'class': 'raven.contrib.django.handlers.SentryHandler',
-        },
-        'null': {
-            'level': 'DEBUG',
-            'class': 'logging.NullHandler',
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'feedhq': {
-            'handlers': ['console', 'sentry'],
-            'level': 'DEBUG',
-        },
-        'ratelimitbackend': {
-            'handlers': ['console', 'sentry'],
-            'level': 'WARNING',
-        },
-        'rq.worker': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-        },
-        'bleach': {
-            'handlers': ['null'],
-        },
-        'django_push': {
-            'handlers': ['console', 'sentry'],
-            'level': 'DEBUG',
-        },
-        'raven': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'sentry.errors': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'elasticsearch': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'elasticsearch.trace': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-    },
-}
+LOGGING_CONFIG = None
+# Log to syslog, otherwise stdout
+LOG_SYSLOG = bool(int(os.environ.get('LOG_SYSLOG', 0)))
+SILENCED_LOGGERS = [
+    'django.template',  # failed variable lookup, safe (expected)
+    'django.server',  # access logs, available upstream (nginx/apache)
+    'django.request',
+    'django.db.backends',  # SQL requests
+    'elasticsearch',  # too verbose
+    'bleach',
+]
 
 REST_FRAMEWORK = {
     "URL_FORMAT_OVERRIDE": "output",
