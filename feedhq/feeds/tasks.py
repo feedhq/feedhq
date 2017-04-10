@@ -29,8 +29,8 @@ def update_feed(url, etag=None, modified=None, subscribers=1,
     except JobTimeoutException:
         backoff_factor = min(UniqueFeed.MAX_BACKOFF,
                              backoff_factor + 1)
-        logger.debug("job timed out, backing off",
-                     url=url, backoff_factor=backoff_factor)
+        logger.info("job timed out, backing off",
+                    url=url, backoff_factor=backoff_factor)
         schedule_job(url, schedule_in=UniqueFeed.delay(backoff_factor),
                      backoff_factor=backoff_factor,
                      connection=get_redis_connection())
@@ -61,7 +61,7 @@ def ensure_subscribed(topic_url, hub_url):
     try:
         s = Subscription.objects.get(topic=topic_url, hub=hub_url)
     except Subscription.DoesNotExist:
-        logger.debug("subscribing", topic_url=topic_url, hub_url=hub_url)
+        logger.info("subscribing", topic_url=topic_url, hub_url=hub_url)
         call = Subscription.objects.subscribe
         args = topic_url, hub_url
     else:
@@ -69,7 +69,7 @@ def ensure_subscribed(topic_url, hub_url):
             not s.verified or
             s.lease_expiration < timezone.now() + timedelta(days=1)
         ):
-            logger.debug("renewing subscription", subscription=s.pk)
+            logger.info("renewing subscription", subscription=s.pk)
             call = s.subscribe
     if call is not None:
         call(*args)
