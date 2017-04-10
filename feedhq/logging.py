@@ -13,7 +13,10 @@ class StructlogHandler(logging.Handler):
     def emit(self, record):
         kw = {k: getattr(record, k) for k in {'exc_info', 'exc_text', 'args'}
               if getattr(record, k)}
-        message = record.msg % record.args
+        try:
+            message = record.msg % record.args
+        except TypeError:
+            message = record.msg
         if len(message) > 100:
             message = message[:100] + ' [TRUNCATED]'
         kw['full_message'] = message
