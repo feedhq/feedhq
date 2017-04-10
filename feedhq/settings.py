@@ -278,6 +278,7 @@ SILENCED_LOGGERS = [
     'django.request',
     'django.db.backends',  # SQL requests
     'elasticsearch',  # too verbose
+    'requests.packages.urllib3.connectionpool',  # too verbose
     'bleach',
 ]
 
