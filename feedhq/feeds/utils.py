@@ -6,9 +6,8 @@ import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
-from requests.exceptions import ConnectTimeout
-
 from rache import job_details, job_key
+from requests.exceptions import ConnectTimeout
 
 from .. import __version__
 from ..utils import get_redis_connection
