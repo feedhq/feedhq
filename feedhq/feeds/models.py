@@ -228,25 +228,25 @@ class UniqueFeedManager(models.Manager):
             self.mute_feed(url, UniqueFeed.GONE)
             return
 
-        elif response.status_code in [400, 401, 403, 404, 500, 502, 503]:
+        elif response.status_code in {400, 401, 403, 404, 500, 502, 503}:
             self.backoff_feed(url, str(response.status_code), backoff_factor)
             return
 
-        elif response.status_code not in [200, 204, 226, 304]:
+        elif response.status_code == 429:
+            # Too Many Requests
+            # Prevent next jobs from fetching the URL before retry-after
+            retry_in = int(response.headers.get('Retry-After', 60))
+            retry_at = timezone.now() + datetime.timedelta(
+                seconds=retry_in)
+            cache.set(ratelimit_key,
+                      int(retry_at.strftime('%s')),
+                      retry_in)
+            schedule_job(url, schedule_in=retry_in)
+            return
+
+        elif response.status_code not in {200, 204, 226, 304}:
             logger.info("non-standard status code", url=url,
                         status_code=response.status_code)
-
-            if response.status_code == 429:
-                # Too Many Requests
-                # Prevent next jobs from fetching the URL before retry-after
-                retry_in = int(response.headers.get('Retry-After', 60))
-                retry_at = timezone.now() + datetime.timedelta(
-                    seconds=retry_in)
-                cache.set(ratelimit_key,
-                          int(retry_at.strftime('%s')),
-                          retry_in)
-                schedule_job(url, schedule_in=retry_in)
-                return
 
         else:
             # Avoid going back to 1 directly if it isn't safe given the
