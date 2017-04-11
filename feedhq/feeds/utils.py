@@ -6,6 +6,7 @@ import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
+from requests.exceptions import ConnectTimeout
 
 from rache import job_details, job_key
 
@@ -60,9 +61,13 @@ def resolve_url(url):
     resolved = cache.get(cache_key)
     if resolved is None:
         resolved = url
-        response = requests.head(url, headers={'User-Agent': LINK_CHECKER},
-                                 allow_redirects=True)
-        if response.status_code == 200:
-            resolved = response.url
+        try:
+            response = requests.head(url, headers={'User-Agent': LINK_CHECKER},
+                                     allow_redirects=True, timeout=3)
+        except ConnectTimeout:
+            pass
+        else:
+            if response.status_code == 200:
+                resolved = response.url
         cache.set(cache_key, resolved, 3600 * 24 * 5)
     return resolved
