@@ -145,7 +145,7 @@ def entries_list(request, page=1, mode=None, category=None, feed=None,
                 pks = form.save()
                 undo_form = loader.render_to_string('feeds/undo_read.html', {
                     'form': UndoReadForm(initial={
-                        'pks': json.dumps(pks, separators=(',', ':'))}),
+                    'pks': json.dumps(pks, separators=(',', ':'))}),
                     'action': request.get_full_path(),
                 }, request=request)
                 message = ungettext(
