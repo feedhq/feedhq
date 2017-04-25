@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
 from rache import job_details, job_key
-from requests.exceptions import ConnectTimeout
+from requests.exceptions import ConnectTimeout, ReadTimeout, TooManyRedirects
 
 from .. import __version__
 from ..utils import get_redis_connection
@@ -63,7 +63,7 @@ def resolve_url(url):
         try:
             response = requests.head(url, headers={'User-Agent': LINK_CHECKER},
                                      allow_redirects=True, timeout=3)
-        except ConnectTimeout:
+        except (ConnectTimeout, ReadTimeout, TooManyRedirects):
             pass
         else:
             if response.status_code == 200:
