@@ -2,25 +2,30 @@ import os
 
 from raven import Client
 from rq import Connection, Queue, Worker
+from structlog import get_logger
 
 from . import SentryCommand
 from ....utils import get_redis_connection
 
+logger = get_logger(__name__)
+
 
 def sentry_handler(job, *exc_info):
+    extra = {
+        'job_id': job.id,
+        'func': job.func,
+        'args': job.args,
+        'kwargs': job.kwargs,
+        'description': job.description,
+    }
+    logger.info("job exception", exc_info=exc_info, **extra)
     if 'SENTRY_DSN' not in os.environ:
         # Don't escalate to other handlers
         return False
     client = Client()
     client.captureException(
         exc_info=exc_info,
-        extra={
-            'job_id': job.id,
-            'func': job.func,
-            'args': job.args,
-            'kwargs': job.kwargs,
-            'description': job.description,
-        },
+        extra=extra,
     )
     return False
 

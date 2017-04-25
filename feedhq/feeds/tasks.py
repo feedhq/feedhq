@@ -34,6 +34,9 @@ def update_feed(url, etag=None, modified=None, subscribers=1,
         schedule_job(url, schedule_in=UniqueFeed.delay(backoff_factor),
                      backoff_factor=backoff_factor,
                      connection=get_redis_connection())
+    except BaseException as e:
+        logger.info("fatal job exception", url=url, exc_info=e)
+        raise
 
 
 def read_later(user_id, entry_pk):
