@@ -142,9 +142,14 @@ class UniqueFeedManager(models.Manager):
                     backoff_factor=1, previous_error=None, link=None,
                     title=None, hub=None):
         url = URLObject(url)
+        try:
+            domain = url.netloc.without_auth().without_port()
+        except TypeError as e:
+            logger.info("invalid URL", url=url, exc_info=e)
+            self.mute_feed(url, UniqueFeed.PARSE_ERROR)
+            return
         # Check if this domain has rate-limiting rules
-        ratelimit_key = 'ratelimit:{0}'.format(
-            url.netloc.without_auth().without_port())
+        ratelimit_key = 'ratelimit:{0}'.format(domain)
         retry_at = cache.get(ratelimit_key)
         if retry_at:
             retry_in = (epoch_to_utc(retry_at) - timezone.now()).seconds

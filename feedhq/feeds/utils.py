@@ -8,7 +8,8 @@ from django.core.cache import cache
 from django.utils import timezone
 from rache import job_details, job_key
 from requests.exceptions import (ConnectionError, ConnectTimeout,
-                                 MissingSchema, ReadTimeout, TooManyRedirects)
+                                 InvalidSchema, MissingSchema, ReadTimeout,
+                                 TooManyRedirects)
 
 from .. import __version__
 from ..utils import get_redis_connection
@@ -64,7 +65,7 @@ def resolve_url(url):
         try:
             response = requests.head(url, headers={'User-Agent': LINK_CHECKER},
                                      allow_redirects=True, timeout=3)
-        except (ConnectionError, ConnectTimeout, MissingSchema,
+        except (ConnectionError, ConnectTimeout, InvalidSchema, MissingSchema,
                 ReadTimeout, TooManyRedirects):
             pass
         else:

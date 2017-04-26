@@ -59,6 +59,13 @@ class UpdateTests(TestCase):
         data = job_details(f.url, connection=get_redis_connection())
         self.assertEqual(data['error'], f.TIMEOUT)
 
+    @patch("requests.get")
+    def test_invalid_url(self, get):
+        FeedFactory.create(url='feed/')
+        f = UniqueFeed.objects.get()
+        self.assertTrue(f.muted)
+        self.assertEqual(f.error, f.PARSE_ERROR)
+
     @patch('requests.head')
     @patch('requests.get')
     def test_ctype(self, get, head):
