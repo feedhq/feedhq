@@ -2,7 +2,7 @@ import os
 
 import structlog
 from django.conf import settings
-from django_push.subscriber.models import Subscription
+from django_push.subscriber.models import Subscription, SubscriptionError
 from raven import Client
 
 from . import SentryCommand
@@ -26,6 +26,9 @@ class Command(SentryCommand):
             for subscription in extra:
                 try:
                     subscription.unsubscribe()
+                except SubscriptionError as e:
+                    logger.info("unsubscribe error",
+                                subscription=subscription.pk, exc_info=e)
                 except Exception:
                     if settings.DEBUG or 'SENTRY_DSN' not in os.environ:
                         raise
