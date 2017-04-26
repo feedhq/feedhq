@@ -233,7 +233,7 @@ class UniqueFeedManager(models.Manager):
             self.mute_feed(url, UniqueFeed.GONE)
             return
 
-        elif response.status_code in {400, 401, 403, 404, 500, 502, 503}:
+        elif response.status_code in {400, 401, 403, 404, 500, 502, 503, 521}:
             self.backoff_feed(url, str(response.status_code), backoff_factor)
             return
 
