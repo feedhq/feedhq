@@ -80,7 +80,7 @@ def ensure_subscribed(topic_url, hub_url):
         try:
             call(*args)
         except SubscriptionError as e:
-            log.info("subscription error", exc_info=e, subscription=s.pk)
+            log.info("subscription error", exc_info=e)
 
 
 def should_skip(date, ttl):
