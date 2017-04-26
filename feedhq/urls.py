@@ -10,6 +10,7 @@ from ratelimitbackend.views import login
 
 from . import monkey
 monkey.patch_html5lib()
+monkey.patch_feedparser()
 
 from . import views  # noqa
 from .logging import configure_logging  # noqa

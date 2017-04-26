@@ -1046,3 +1046,9 @@ class WebBaseTests(WebTest):
             entry = EsEntry({'_id': 1, '_source': {'content': content}})
             entry.feed = FeedFactory.create()
             self.assertTrue(entry.sanitized_content())
+
+    def test_feedparser_crash(self):
+        with open(data_file('nikolay.rocks_atom.xml'), 'r') as f:
+            content = f.read()
+
+        feedparser.parse(content)

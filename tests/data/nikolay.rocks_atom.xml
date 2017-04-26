@@ -1,0 +1,1835 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Nikolay.Rocks</title>
+  <subtitle>Life of Wonder</subtitle>
+  <link href="http://nikolay.rocks" />
+  <id>tag:nikolay.rocks</id>
+  <author><name>Nikolay Nemshilov</name></author>
+  <updated>2017-03-26T13:00:00.000Z</updated>
+
+  <entry>
+    <title>Surfing: Three Months</title>
+    <link href="http://nikolay.rocks/2017-03-27-three-months" />
+    <published>2017-03-26T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[It appears to me that I fell off the radar with my surfing journal for three
+entire months. This doesn't mean nothing happened. On the contrary, I've been
+surfing 2-3-4 times a week through the entire summer. It's just I needed time
+off.]]></summary>
+    <file>/pages/Surfing Journal/2017-03-27-three-months.md</file>
+  </entry>
+  <entry>
+    <title>Halmak The Prezo</title>
+    <link href="http://nikolay.rocks/2016-12-30-halmak-preso" />
+    <published>2016-12-29T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, ladies and gentlemen, this is it. As the finale of this year long journey,
+I've recorded a small presentation of the #Halmak keyboard layout, which features
+a more in depth analysis of the final result. Why Halmak the way it is and what
+it all means.]]></summary>
+    <tags>halmak</tags>
+    <file>/pages/Optimal Keyboard/2016-12-30-halmak-preso.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: The New Board</title>
+    <link href="http://nikolay.rocks/2016-12-26-the-new-board" />
+    <published>2016-12-25T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, I had been plateauing for a few months with my surfing progress. And I was
+kind of torn between figuring which one is the problem, my lack of skills or the
+board I had. It turned out, that in a way, it's both.]]></summary>
+    <file>/pages/Surfing Journal/2016-12-26-the-new-board.md</file>
+  </entry>
+  <entry>
+    <title>The Halmak Reborn</title>
+    <link href="http://nikolay.rocks/2016-12-20-the-halmak-reborn" />
+    <published>2016-12-19T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I've been holding back on finally releasing the new #Halmak layout. The
+reason being that I wanted to learn it myself first. I wanted to make sure that
+what I'm releasing is not just theoretically sound, but also doesn't fold when
+it faces the reality. And now it is ready to be presented to the world!]]></summary>
+    <tags>halmak</tags>
+    <file>/pages/Optimal Keyboard/2016-12-20-the-halmak-reborn.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Hitting The Plateau</title>
+    <link href="http://nikolay.rocks/2016-12-10-the-plateau" />
+    <published>2016-12-09T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I haven't been writing here much lately. I was going back and fourth about it,
+but I think I've hit a plateau in my surfing progress.]]></summary>
+    <file>/pages/Surfing Journal/2016-12-10-the-plateau.md</file>
+  </entry>
+  <entry>
+    <title>Keyboard: The Reality Check</title>
+    <link href="http://nikolay.rocks/2016-10-22-keyboard-analytics" />
+    <published>2016-10-21T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, the last few weeks were actually fun and I've made some good progress on the
+project:
+
+![](/images/2016/10/hanger.jpg)]]></summary>
+    <file>/pages/Optimal Keyboard/2016-10-22-keyboard-analytics.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Hold Down</title>
+    <link href="http://nikolay.rocks/2016-10-20-hold-down" />
+    <published>2016-10-19T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[We've been having those last large swells after the winter. Sometimes waves
+would come in those pretty gnarly 5-6ft tall chunks. They look literally like
+huge mountains of water up close.]]></summary>
+    <file>/pages/Surfing Journal/2016-10-20-hold-down.md</file>
+  </entry>
+  <entry>
+    <title>Book: Sophie's World</title>
+    <link href="http://nikolay.rocks/2016-10-12-sophies-world" />
+    <published>2016-10-11T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, I haven't been reporting my book readings lately, but here is a good one.
+Ever wanted someone to explain things to you like you were a 15 years old girl?
+Well, here is your chance. Someone wrote a pretty cool book about the history
+of philosophy that does precisely that.]]></summary>
+    <file>/pages/Book Worm/2016-10-12-sophies-world.md</file>
+  </entry>
+  <entry>
+    <title>Keyboard: Hands Are Weird</title>
+    <link href="http://nikolay.rocks/2016-09-28-hands-are-weird" />
+    <published>2016-09-27T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, I didn't have any updates in this project for three months. I guess life
+was pretty busy lately. But, no update doesn't mean there wasn't anything
+happening. I actually have some new exciting developments to write about.]]></summary>
+    <tags>keyboard,halmak</tags>
+    <file>/pages/Optimal Keyboard/2016-09-28-hands-are-weird.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Going Head First</title>
+    <link href="http://nikolay.rocks/2016-09-22-head-first" />
+    <published>2016-09-21T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[The thing I love about learning surfing is that it's quite often seemingly illogical.
+Sometimes you need to do things that go against your expectations and gut feelings.]]></summary>
+    <file>/pages/Surfing Journal/2016-09-22-head-first.md</file>
+  </entry>
+  <entry>
+    <title>Dockerizing NodeJS App Like It Is 2016</title>
+    <link href="http://nikolay.rocks/2016-09-20-dockerizing-nodejs" />
+    <published>2016-09-19T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, obviously #docker is not a big news anymore. But, in the last couple of years
+it was through quite few iterations; and the way it's cool to do it in 2016 is
+not quite the same as it was. So, here is how I dockerize #nodejs apps those days
+so that they'd scale and not cause too much pain in dev.]]></summary>
+    <tags>docker,nodejs,mongodb</tags>
+    <file>/pages/Mighty Hacks/2016-09-20-dockerizing-nodejs.md</file>
+  </entry>
+  <entry>
+    <title>Responsive Charts With d3 and ReactJS</title>
+    <link href="http://nikolay.rocks/2016-09-09-responsive-charts" />
+    <published>2016-09-08T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Okay, so, today a bit of a lengthly post about the dark voodoo of #d3 and #ReactJS
+that I wish someone told me about 6 months ago. It's been a thorny road to figure
+this out, so I hope it will save you some time.]]></summary>
+    <tags>d3,reactjs</tags>
+    <file>/pages/Mighty Hacks/2016-09-09-responsive-charts.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Try Harder</title>
+    <link href="http://nikolay.rocks/2016-09-04-try-harder" />
+    <published>2016-09-03T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Last month was well, busy. I was sick with a flu, then recovering, so no surfing.
+It's been raining quite a lot, so no surfing. There was a lot of work at work,
+so no surfing. And.. I spiraled back into a depression and started to see a shrink.]]></summary>
+    <file>/pages/Surfing Journal/2016-09-04-try-harder.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Difficult Times</title>
+    <link href="http://nikolay.rocks/2016-07-31-difficult-times" />
+    <published>2016-07-30T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Last few weeks were, well,.. difficult. I generally felt mentally stretched,
+exhausted even. I'd go in the water and I'd flinch at waves every single time.
+I felt like I was just dealing punches left and right; aimlessly. No wonder that
+my surfing sessions were less than stellar.]]></summary>
+    <file>/pages/Surfing Journal/2016-07-31-difficult-times.md</file>
+  </entry>
+  <entry>
+    <title>Keyboard: We've Been Doing It Wrong</title>
+    <link href="http://nikolay.rocks/2016-06-26-we-were-wrong" />
+    <published>2016-06-25T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Remember that time when I've built [Halmak](/2016-04-02-meet-halmak) - the most
+efficient English keyboard layout on this planet? Also, remember I said I'm done
+with the thing? Well. Turned out being done and staying done are two different
+things. The story has a continuation.]]></summary>
+    <file>/pages/Optimal Keyboard/2016-06-26-we-were-wrong.md</file>
+  </entry>
+  <entry>
+    <title>Being Wrong Is Awesome</title>
+    <link href="http://nikolay.rocks/2016-06-17-wrong-is-awesome" />
+    <published>2016-06-16T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Being wrong can be a hard work. I know this because part of my day job involves
+basically telling people that they're wrong. Hence, I get to see this inner
+struggle on their faces a lot. So, I thought I'd write about it.]]></summary>
+    <file>/pages/Mind Fucks/2016-06-17-wrong-is-awesome.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: The Back Foot</title>
+    <link href="http://nikolay.rocks/2016-06-11-back-foot" />
+    <published>2016-06-10T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[It is officially winter now. We were spared this year and is still quite warm;
+13-15 degrees in the morning. Not that many sunny days though. So, now I need
+to plan my days carefully, take what I can and get the most out of them.]]></summary>
+    <file>/pages/Surfing Journal/2016-06-11-back-foot.md</file>
+  </entry>
+  <entry>
+    <title>Book: Mythical Man-Month</title>
+    <link href="http://nikolay.rocks/2016-06-10-mythical-manmonth" />
+    <published>2016-06-09T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I keep forgetting to write about this book. So, I'll just put down some notes
+here, because the book is kind of good and worth mentioning.]]></summary>
+    <file>/pages/Book Worm/2016-06-10-mythical-manmonth.md</file>
+  </entry>
+  <entry>
+    <title>How To Add RethinkDB Support On CircleCI</title>
+    <link href="http://nikolay.rocks/2016-06-05-rethinkdb-circleci" />
+    <published>2016-06-04T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I've been shopping around for a CI pipeline recently. I was mostly a TravisCI
+guy all this time. But, when it came to running my own private repos in a CI,
+$130/month vs. $0/month makes a lot of sense. So, I've decided to give
+[CircleCI](https://circleci.com) a shot.]]></summary>
+    <tags>rethinkdb,circleci,nodejs</tags>
+    <file>/pages/Mighty Hacks/2016-06-05-rethinkdb-circleci.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Existential Crisis</title>
+    <link href="http://nikolay.rocks/2016-05-27-existential-crisis" />
+    <published>2016-05-26T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[One of the weird perks of surfing is that you don't have to be in the water to
+enjoy waves. I can just grab a large cup of coffee, sit on the shore and stare
+at the waves for an hour, easy. I'd just look at their shapes, how they break,
+shoulders, pockets, count peaks in a set. And, the more I look at them the more
+I realize that waves are an almost perfect manifestation of an existential crisis.]]></summary>
+    <file>/pages/Surfing Journal/2016-05-27-existential-crisis.md</file>
+  </entry>
+  <entry>
+    <title>How To Stop Worrying And Start Loving Exceptions</title>
+    <link href="http://nikolay.rocks/2016-05-23-how-to-love-exceptions" />
+    <published>2016-05-22T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Here is the blunt truth. Whatever you are building right now will fail. It doesn't
+matter how good you are at programming, it doesn't matter how many tests you
+write. Somehow, somewhere, things won't go as you imagined them and your code will
+fall on its face. That is the nature of software development.]]></summary>
+    <tags>javascript</tags>
+    <file>/pages/Mighty Hacks/2016-05-23-how-to-love-exceptions.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: The Addiction</title>
+    <link href="http://nikolay.rocks/2016-05-21-the-addiction" />
+    <published>2016-05-20T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[My wife was away for a few weeks, and so for the last two weeks I've been going
+to the beach practically every morning. Sadly there wasn't much of a swell in the
+last week or so, so it wasn't that exciting. But, I still managed to work on a
+few things. The weird part is how I started to feel towards surfing because of
+those frequent sessions.]]></summary>
+    <file>/pages/Surfing Journal/2016-05-21-the-addiction.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Small Waves And Commitment</title>
+    <link href="http://nikolay.rocks/2016-05-15-commitment" />
+    <published>2016-05-14T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[My wife went away for a view weeks to visit her parents. So, I decided to take
+the opportunity and was surfing almost every day for the last week and a half.
+At the same time we've been going through a low tide phase and waves were almost
+non existing; barely waist high. On the other hand, it was a great opportunity
+to work on my technique and small things. And I'm actually having a good progress.]]></summary>
+    <file>/pages/Surfing Journal/2016-05-15-commitment.md</file>
+  </entry>
+  <entry>
+    <title>Technical Debt vs. Technical Disappointment</title>
+    <link href="http://nikolay.rocks/2016-05-14-debt-vs-disappointment" />
+    <published>2016-05-13T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[For the last 6 month, a friend of mine and I were working on a project that
+focuses on measuring efficiency of software development teams. We've spent
+endless number of days contemplating about the principles that make a great dev
+team. We also talked to a good number of people about those ideas.]]></summary>
+    <file>/pages/Rocket Shed/2016-05-14-debt-vs-disappointment.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: The City Is On Fire</title>
+    <link href="http://nikolay.rocks/2016-05-07-city-on-fire" />
+    <published>2016-05-06T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I woke up early today because the air smelled like bacon. I literally had a bacon
+egg roll in my dream. Turned out bushes are on fire again and the whole city
+was filled with smoke. Time to pack my stuff quickly and make a run for the beach.
+Like there is no tomorrow.]]></summary>
+    <file>/pages/Surfing Journal/2016-05-07-city-on-fire.md</file>
+  </entry>
+  <entry>
+    <title>A Case For ES6 Generators</title>
+    <link href="http://nikolay.rocks/2016-05-03-case-for-generators" />
+    <published>2016-05-02T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[For the last couple of months I was slowly converting all my #nodejs projects
+from babeljs to pure #javascript. I also [was advocating](/2016-04-04-how-to-stop-babel)
+other humans to do the same thing. What's interesting is that
+[ES6 generators](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Statements/function*)
+kept coming back into discussions. So, I thought I'd write about it and present a
+case in defense of generators.]]></summary>
+    <tags>nodejs,javascript</tags>
+    <file>/pages/Mighty Hacks/2016-05-03-case-for-generators.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: It's All About Timing</title>
+    <link href="http://nikolay.rocks/2016-04-27-timing" />
+    <published>2016-04-26T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Surfing is a bit weird in this sense. It's all about timing. And it is not just
+about timing the waves. You need to time your schedule tightly, wake up at 6:45,
+15 minutes get your shit together and pack a bag. Run to the car and hit the
+road before the morning traffic kicks in. Get to the shore before all the good
+parking lots are taken. Quickly go into the water before crowds come in. Time
+your paddle out to fit between sets. And all that before you even see a wave.]]></summary>
+    <file>/pages/Surfing Journal/2016-04-27-timing.md</file>
+  </entry>
+  <entry>
+    <title>Switching From Ruby To 100% JavaScript, 6 Months Later</title>
+    <link href="http://nikolay.rocks/2016-04-26-six-months-on-javascript" />
+    <published>2016-04-25T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, interestingly enough, it was roughly 6 months since I wrote the last line of
+code in #ruby. As my job changed, I decided to go 100% #javascript for a change,
+and see what happens. And, as I reached this milestone, I thought this might be
+a good opportunity to reflect on the decision.]]></summary>
+    <tags>ruby,javascript</tags>
+    <file>/pages/Silly Thoughts/2016-04-26-six-months-on-javascript.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Back In The Line Up</title>
+    <link href="http://nikolay.rocks/2016-04-20-back-on-the-beach" />
+    <published>2016-04-19T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[The summer is over and the seasonal cold and flue wave is in the town. So, I've
+been lucky and caught some cold myself as well. Was sick the last week. Missed
+it a lot. Now I'm back to the morning line up. And it feels good.]]></summary>
+    <file>/pages/Surfing Journal/2016-04-20-back-on-the-beach.md</file>
+  </entry>
+  <entry>
+    <title>You're Not Paid To Write Code</title>
+    <link href="http://nikolay.rocks/2016-04-12-coffee-code-machine" />
+    <published>2016-04-11T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[There is this anecdotal story about Ray Kroc, the founder of the McDonald. Once
+he gave a speech to a bunch of students about business strategies and then he
+asked them: "which business do you think i'm in?". At some point someone answered:
+"flipping burgers, obviously". To which he said: "wrong! i'm in the real-estate
+business".]]></summary>
+    <file>/pages/Silly Thoughts/2016-04-12-coffee-code-machine.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Embracing The Kook</title>
+    <link href="http://nikolay.rocks/2016-04-06-embracing-the-kook" />
+    <published>2016-04-05T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[In surfing, kook is a term for a beginner. It is not a neutral term though and
+usually comes with "fucking" in front of it. Surfing can be exhilarating and a
+dangerous at the same time. An explosive mix. Add some idiot that gets in your
+way and you get a kook.]]></summary>
+    <file>/pages/Surfing Journal/2016-04-06-embracing-the-kook.md</file>
+  </entry>
+  <entry>
+    <title>How To Stop Babeling And Start Enjoying NodeJS</title>
+    <link href="http://nikolay.rocks/2016-04-04-how-to-stop-babel" />
+    <published>2016-04-03T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Like many of you, I had also been bitten by the [babeljs](https://babeljs.io)
+bug. The promise is actually pretty neat: have all the futuristic twinky dinkies
+right now and deploy them anywhere. Just jack in a `postinstall` hook and it
+will be all magic and unicorns from there. Destructurning, async/await, default
+parameters all the really nice things will be just waiting to be used for good
+and awesome.]]></summary>
+    <tags>nodejs,javascript,es6</tags>
+    <file>/pages/Silly Thoughts/2016-04-04-how-to-stop-babel.md</file>
+  </entry>
+  <entry>
+    <title>Keyboard: Meet the Halmak</title>
+    <link href="http://nikolay.rocks/2016-04-02-meet-halmak" />
+    <published>2016-04-01T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Ladies and gentlemen, we officially have a winner! Please meet
+[Halmak](https://github.com/MadRabbit/halmak) — the most efficient keyboard
+layout on this planet:]]></summary>
+    <file>/pages/Optimal Keyboard/2016-04-02-meet-halmak.md</file>
+  </entry>
+  <entry>
+    <title>Book: Rich Dad, Poor Dad</title>
+    <link href="http://nikolay.rocks/2016-03-31-rich-dad-poor-dad" />
+    <published>2016-03-30T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Once I knew this guy in his late fifties, who once said: "I have two sons. Well,
+I used to have three, but one of them went into real estate." This book is about
+that third son I guess.]]></summary>
+    <file>/pages/Book Worm/2016-03-31-rich-dad-poor-dad.md</file>
+  </entry>
+  <entry>
+    <title>Keyboard: Two Pillars Of A Good Layout</title>
+    <link href="http://nikolay.rocks/2016-03-27-two-pillars" />
+    <published>2016-03-26T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[For the last week, I've been busy fine tuning my
+[keyboard layouts searching AI](https://github.com/MadRabbit/keyboard-genetics)
+project and watching hundreds of layouts being designed in real time. I guess
+the whole point of this experiment was to get me to this point where I can see
+how it's made, over and over again. And I think I now see the pattern.]]></summary>
+    <file>/pages/Optimal Keyboard/2016-03-27-two-pillars.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: The First Board</title>
+    <link href="http://nikolay.rocks/2016-03-26-first-board" />
+    <published>2016-03-25T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, I guess this is official now. I have bought my first real board. I've spent
+~two months on mini-mals. I decided not to buy a minimal when I just started.
+Mainly because I don't have a space or a large enough cart to fit a ~8ft chunk.
+But I also knew it was a temporary phase and I would have to sell it soon. So, I
+rented instead.]]></summary>
+    <file>/pages/Surfing Journal/2016-03-26-first-board.md</file>
+  </entry>
+  <entry>
+    <title>Keyboard: The QWERTY Theorem</title>
+    <link href="http://nikolay.rocks/2016-03-20-qwerty-theorem" />
+    <published>2016-03-19T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I've got some updates on my progress about my search for an optimal keyboard
+layout by using genetic algorithms. Last time I thought I had to rewrite a
+significant part of the system in Rust for some performance gains. I wasn't
+particularly successful in that. But, I optimized my JavaScript based implementation
+by adding some look-up maps and magic and ended up with similar results.]]></summary>
+    <file>/pages/Optimal Keyboard/2016-03-20-qwerty-theorem.md</file>
+  </entry>
+  <entry>
+    <title>The Fear and Greed in Software Development</title>
+    <link href="http://nikolay.rocks/2016-03-14-fear-and-greed" />
+    <published>2016-03-13T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Just a fair warning. Some of this text might make you uncomfortable. Just take
+a deep breath, count to 10 and remember that this is not about you.]]></summary>
+    <file>/pages/Silly Thoughts/2016-03-14-fear-and-greed.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Get In Line</title>
+    <link href="http://nikolay.rocks/2016-03-12-get-in-line" />
+    <published>2016-03-11T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[The last weekend Manly was packed with people. And, as I am still just learning,
+I thought I need some space. So, I drove to another beach this weekend. Maruobra
+beach that is. The northern end of Maruobra seems to have a very gorgeous break.
+Too bad that I'm too young and stupid to get there yet. Well, will see in couple
+of years.]]></summary>
+    <file>/pages/Surfing Journal/2016-03-12-get-in-line.md</file>
+  </entry>
+  <entry>
+    <title>Keyboard: Genetic Mutations and The Serg</title>
+    <link href="http://nikolay.rocks/2016-03-06-serg-vs-workman" />
+    <published>2016-03-05T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[After getting the keyboard model and hands movement analytics somewhat working,
+I started to work on the genetic algorithm part of the project. And interestingly
+enough it started to yield some results straight away.]]></summary>
+    <tags>tbm=isch</tags>
+    <file>/pages/Optimal Keyboard/2016-03-06-serg-vs-workman.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Over The Break</title>
+    <link href="http://nikolay.rocks/2016-03-05-over-the-break" />
+    <published>2016-03-04T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Today I managed to get over the break. Which is awesome! I tried to get there the
+last time and got just smacked around. After that I went home and watched a whole
+bunch of videos on YouTube. It's almost scary how much stuff you can learn from
+YouTube those days. And it pays off!]]></summary>
+    <file>/pages/Surfing Journal/2016-03-05-over-the-break.md</file>
+  </entry>
+  <entry>
+    <title>Keyboard: Hand Movement Analysis</title>
+    <link href="http://nikolay.rocks/2016-03-01-measuring-hand-movements" />
+    <published>2016-02-29T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[The last few days I've been busy trying to build an accurate model of hand movements
+for my keyboard analysis program. The reason why I didn't use the existing ones
+is that the results I see on Workman/Colemak/CorpalX project websites are a bit
+conflicting. Not just between each other, but with my personal experience as
+well. Hence, I decided to build my own model.]]></summary>
+    <file>/pages/Optimal Keyboard/2016-03-01-measuring-hand-movements.md</file>
+  </entry>
+  <entry>
+    <title>Keyboard: Beyond the Rockstar Layout</title>
+    <link href="http://nikolay.rocks/2016-02-26-beyond-rockstar" />
+    <published>2016-02-25T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, I've spent a few weeks training with my new rockstar keyboard layout. I'm
+still not good enough in it to go cold turkey. But, out of the three ones I
+tried so far, I find it the best one. The question is though: is there life beyond
+that?]]></summary>
+    <file>/pages/Optimal Keyboard/2016-02-26-beyond-rockstar.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Going For The Green</title>
+    <link href="http://nikolay.rocks/2016-02-24-green-chop" />
+    <published>2016-02-23T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[After a good session the last time, I felt cocky. I decided it is time to go
+for the green waves. Unfortunately, the ocean had different plans today. He was
+actually kind of a dick today: a high tide, all choppy, lots of current. I got
+smashed into a drain water pipe on Manly. Got my fingers shredded quite a bit.]]></summary>
+    <file>/pages/Surfing Journal/2016-02-24-green-chop.md</file>
+  </entry>
+  <entry>
+    <title>Book: The Ender's Game</title>
+    <link href="http://nikolay.rocks/2016-02-23-enders-game" />
+    <published>2016-02-22T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I promised myself that every fifth book I read should be fiction. Just to keep
+my soul from getting too rusty. Which, if you think of it, is a ridiculous idea
+in its mechanical approach to soul maintenance. Well, I'm just trying to learn
+how to cope with myself. I guess.]]></summary>
+    <file>/pages/Book Worm/2016-02-23-enders-game.md</file>
+  </entry>
+  <entry>
+    <title>How To Micro-Service In NodeJS With Axios</title>
+    <link href="http://nikolay.rocks/2016-02-21-microservices-with-axios" />
+    <published>2016-02-20T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[People often ask me: "Nikolay, how do you micro-service in #NodeJS?". Well,
+no one really asks me, but I still think it is a serious question, how one
+connects small services in #javascript those days over #HTTP?]]></summary>
+    <tags>nodejs,javascript,http</tags>
+    <file>/pages/Mighty Hacks/2016-02-21-microservices-with-axios.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Getting Better</title>
+    <link href="http://nikolay.rocks/2016-02-17-getting-better" />
+    <published>2016-02-16T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[A good session today. For the last couple of weeks we went through the low point
+and now the morning swells are finally starting to pick up. It was a bit windy
+today, so the norther part of Manly was a mess, but the southern one is sheltered
+from the winds so it was quite good actually.]]></summary>
+    <file>/pages/Surfing Journal/2016-02-17-getting-better.md</file>
+  </entry>
+  <entry>
+    <title>How To Split a Git Repo In Two</title>
+    <link href="http://nikolay.rocks/2016-02-13-split-git-repo" />
+    <published>2016-02-12T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[This is the thing I keep doing over and over again when my projects start to
+grow too large. And then, I have to google it again, and the results can be
+rather conflicting. So, I'll just write it down here, the easy way that works for
+me best.]]></summary>
+    <file>/pages/Mighty Hacks/2016-02-13-split-git-repo.md</file>
+  </entry>
+  <entry>
+    <title>Surfing: Trying a Minimal</title>
+    <link href="http://nikolay.rocks/2016-02-12-trying-minimal" />
+    <published>2016-02-11T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[There is a certain level of blessing in trying to learn something you have
+pretty much no idea about. It is easier to go and ask questions and understand
+what people are trying to say to you.]]></summary>
+    <file>/pages/Surfing Journal/2016-02-12-trying-minimal.md</file>
+  </entry>
+  <entry>
+    <title>Too Fast And Shallow</title>
+    <link href="http://nikolay.rocks/2016-02-09-too-fast-and-shallow" />
+    <published>2016-02-08T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Today is the second day. I had way too much fun the last time and was a bit
+nervous about doing it again. But, it is funny the way the ocean affects me.
+The moment I step into that cold water and being smacked in the guts by a
+wave, I just forget everything. My brain really goes blank.]]></summary>
+    <file>/pages/Surfing Journal/2016-02-09-too-fast-and-shallow.md</file>
+  </entry>
+  <entry>
+    <title>The Rockstar Keyboard Layout, First Impressions</title>
+    <link href="http://nikolay.rocks/2016-02-06-rockstar-first-impressions" />
+    <published>2016-02-05T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, it's been couple of weeks since I thrown together the
+[rockstar keyboard layout](https://github.com/MadRabbit/rockstar-layout). I can't
+honestly say that I spent all this time on learning the thing. My work kept me
+busy. Besides, learning a third keyboard layout in a couple of months span takes
+its tall as well. Never the less, I learned practically all the keys in the new
+layout and want to write down my first impressions.]]></summary>
+    <file>/pages/Optimal Keyboard/2016-02-06-rockstar-first-impressions.md</file>
+  </entry>
+  <entry>
+    <title>Here We Go</title>
+    <link href="http://nikolay.rocks/2016-02-05-surfing-journal" />
+    <published>2016-02-04T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I'm starting a new section here to write about my attempts to learn surfing.
+I'm kind of setting up a trap for myself. I know if I try something new and
+never write about it, I'll just either quietly quit, or just hate myself for
+not writing about it when I was in the process. Writing things down helps
+me to stay on course.]]></summary>
+    <file>/pages/Surfing Journal/2016-02-05-surfing-journal.md</file>
+  </entry>
+  <entry>
+    <title>Mindset: The New Psychology of Success</title>
+    <link href="http://nikolay.rocks/2016-02-04-mindset-psychology-of-success" />
+    <published>2016-02-03T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Another book that I picked from that famous "best books of 2015" list by Bill Gates.
+I don't want to sound like a spitz barking at an elephant, but boy... For such
+a major guy, he reads a ton of crap.]]></summary>
+    <file>/pages/Book Worm/2016-02-04-mindset-psychology-of-success.md</file>
+  </entry>
+  <entry>
+    <title>Stop Telling Yourself Who You Are</title>
+    <link href="http://nikolay.rocks/2016-01-31-stop-telling" />
+    <published>2016-01-30T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I run. Not because I particularly love it, and I'm not a fitness monster either.
+I just happened to have a neck injury that makes my life somewhat unpleasant if
+I don't exercise. And running helps quite a bit. I guess I'm lucky this way.]]></summary>
+    <file>/pages/Mind Fucks/2016-01-31-stop-telling.md</file>
+  </entry>
+  <entry>
+    <title>A Fire Upon The Deep, by Vinge Vernor</title>
+    <link href="http://nikolay.rocks/2016-01-29-fire-upon-the-deep" />
+    <published>2016-01-28T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[This is the second book by Vernor that I've read. And I can see a pattern now.
+The guy is really smart, and imaginative, and he's really good at explaining
+rather complicated things; but, boy the books are torturous!]]></summary>
+    <file>/pages/Book Worm/2016-01-29-fire-upon-the-deep.md</file>
+  </entry>
+  <entry>
+    <title>Meet The Rockstar Keyboard Layout</title>
+    <link href="http://nikolay.rocks/2016-01-23-rockstar-layout" />
+    <published>2016-01-22T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Last time I wrote about the CarpalX project and their fully optimized
+[keyboard layouts](http://mkweb.bcgsc.ca/carpalx/?full_optimization).
+Their reasoning and calculations seem pretty solid to me and I wanted to
+give it a go. But, those are rather esoteric and new layouts. They don't exist
+anywhere but in some python scripts and linux configs. So, I thought I will
+build it myself for OS X, and while I'm on it, I'll throw in some of programming
+specific optimizations that I always wanted.]]></summary>
+    <file>/pages/Optimal Keyboard/2016-01-23-rockstar-layout.md</file>
+  </entry>
+  <entry>
+    <title>Testing ExpressJS Apps Like It's 2016</title>
+    <link href="http://nikolay.rocks/2016-01-22-testing-express-async" />
+    <published>2016-01-21T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I guess in 2016 no one needs an introduction into why testing is cool and
+awesome. Many of you wrote plenty of [expressjs](http://expressjs.com) apps
+(or similar). And some of you I'm sure wrote some testing for your JSON API's
+with something like [supertest](https://github.com/visionmedia/supertest). Today
+though I'd like to show how to make it so much betterer in the modern ES7
+async/await environment.]]></summary>
+    <tags>expressjs,supertest</tags>
+    <file>/pages/Mighty Hacks/2016-01-22-testing-express-async.md</file>
+  </entry>
+  <entry>
+    <title>The CarpalX Project</title>
+    <link href="http://nikolay.rocks/2016-01-20-carpalx-project" />
+    <published>2016-01-19T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[While I was digging around on the Internets about the new developments in the
+keyboard layouts optimization area, I inevitably run into the
+[carpalx project](http://mkweb.bcgsc.ca/carpalx/?home), which is one of the
+most solid projects in the field at the moment. They invented a set of metics to,
+well, measure performance of different layouts and stuff. So, I thought I should
+write it down.]]></summary>
+    <file>/pages/Optimal Keyboard/2016-01-20-carpalx-project.md</file>
+  </entry>
+  <entry>
+    <title>Founders At Work, by Jessica Livingston</title>
+    <link href="http://nikolay.rocks/2016-01-17-founders-at-work" />
+    <published>2016-01-16T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[This one is a bit old book that was buried in my stack for a while now. Finally
+I got to read it and turned out it is a pretty decent book. Well, at least I
+can see why it is so popular.]]></summary>
+    <file>/pages/Book Worm/2016-01-17-founders-at-work.md</file>
+  </entry>
+  <entry>
+    <title>Connect Webpack Dev Server to Backend API</title>
+    <link href="http://nikolay.rocks/2016-01-13-connect-webpack-to-backend" />
+    <published>2016-01-12T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Webpack is alright. Maybe not exactly my cup of tea, as it has a strong
+configuration flavor, but it does what it supposed to and it does it well. Besides
+if you want all the #react hotness you need #webpack. The problem that I run
+into though, is how on earth do you connect the webpack dev server to the
+backend API server and make them run together? It took a bit of time to figure,
+so maybe this will help someone.]]></summary>
+    <tags>react,webpack</tags>
+    <file>/pages/Mighty Hacks/2016-01-13-connect-webpack-to-backend.md</file>
+  </entry>
+  <entry>
+    <title>Rebuilding Nikolay.Rocks with Redux</title>
+    <link href="http://nikolay.rocks/2016-01-08-nikolay-rocks-redux" />
+    <published>2016-01-07T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[As [you might now](/2015-07-24-how-i-blog-now), this project, `nikolay.rocks`
+is built as a fully static #react app. It doesn't really have any backend. It
+is just a bunch of static files in markdown and a #javascript app that renders
+everything on the front-end. And today I've shipped a major update of the app.]]></summary>
+    <tags>react,javascript,flux,redux</tags>
+    <file>/pages/Rocket Shed/2016-01-08-nikolay-rocks-redux.md</file>
+  </entry>
+  <entry>
+    <title>Workman, The First Impressions</title>
+    <link href="http://nikolay.rocks/2016-01-03-workman-first-impressions" />
+    <published>2016-01-02T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, it's been roughly two weeks after I had started with my
+[Workman layout](http://www.workmanlayout.com) training. Time to put some of
+my initial impressions into words.]]></summary>
+    <file>/pages/Optimal Keyboard/2016-01-03-workman-first-impressions.md</file>
+  </entry>
+  <entry>
+    <title>End Of The Year</title>
+    <link href="http://nikolay.rocks/2015-12-30-end-of-the-year" />
+    <published>2015-12-29T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Well, it is the time to continue my not so unique tradition to reflect a bit on
+the year passed. Write it down and give my future self a bit of a reference.]]></summary>
+    <file>/pages/Silly Thoughts/2015-12-30-end-of-the-year.md</file>
+  </entry>
+  <entry>
+    <title>Programmer's Layout</title>
+    <link href="http://nikolay.rocks/2015-12-28-programmers-layout" />
+    <published>2015-12-27T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, while I am still going through the learning curve of the
+[workman keyboard layout](http://www.workmanlayout.com), I thought I should
+write a bit about a thing I found while was researching #keyboard layouts.
+This thing is called "programmer's layout".]]></summary>
+    <tags>keyboard</tags>
+    <file>/pages/Optimal Keyboard/2015-12-28-programmers-layout.md</file>
+  </entry>
+  <entry>
+    <title>Game Programming Patterns by Robert Nystrom</title>
+    <link href="http://nikolay.rocks/2015-12-25-game-programming-patterns" />
+    <published>2015-12-24T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I keep forgetting to write about this book. Not because it was so unmemorable,
+but because life was a bit busy in the last couple of months. But, the book is
+awesome and totally worth to be mentioned.]]></summary>
+    <file>/pages/Book Worm/2015-12-25-game-programming-patterns.md</file>
+  </entry>
+  <entry>
+    <title>"The" Colemak Problem and Workman</title>
+    <link href="http://nikolay.rocks/2015-12-24-the-colemak-problem" />
+    <published>2015-12-23T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, as I was continuing with my Colemak #keyboard layout journey, I discovered
+a problem with the layout, that you might call "The" problem. Which consequently
+made me to research #Colemak improved variations and led to the
+[Workman keyboard layout](http://www.workmanlayout.com). But lets get to it
+in order.]]></summary>
+    <tags>keyboard,colemak</tags>
+    <file>/pages/Optimal Keyboard/2015-12-24-the-colemak-problem.md</file>
+  </entry>
+  <entry>
+    <title>Colemak, First Impressions</title>
+    <link href="http://nikolay.rocks/2015-12-22-colemak-first-impressions" />
+    <published>2015-12-21T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, I've spend a few days learning the #colemak #keyboard layout. And I think,
+I should write down some thoughts and impressions. Which are strange, good and
+bad at the same time.]]></summary>
+    <tags>colemak,keyboard</tags>
+    <file>/pages/Optimal Keyboard/2015-12-22-colemak-first-impressions.md</file>
+  </entry>
+  <entry>
+    <title>When I Say No, I Feel Guilty, by Manuel Smith</title>
+    <link href="http://nikolay.rocks/2015-12-21-i-feel-guilty" />
+    <published>2015-12-20T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I'm continuing to go through my long overdue stack of books about brains and
+stuff. This one I picked up when I was researching the topic of different
+behavior styles and it was referred as one of the best books about assertive
+approach in communication. This thing actually blew my mind a bit.]]></summary>
+    <file>/pages/Book Worm/2015-12-21-i-feel-guilty.md</file>
+  </entry>
+  <entry>
+    <title>Colemak The Beginning</title>
+    <link href="http://nikolay.rocks/2015-12-20-colemak-the-beginning" />
+    <published>2015-12-19T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Long story short, I've decided to learn the [colemak](http://colemak.com)
+keyboard layout. And being so, I'm starting a new section in my blog where I
+intend to post updates on my progress.]]></summary>
+    <tags>keyboard,colemak</tags>
+    <file>/pages/Optimal Keyboard/2015-12-20-colemak-the-beginning.md</file>
+  </entry>
+  <entry>
+    <title>How To Permutate Arrays in JavaScript</title>
+    <link href="http://nikolay.rocks/2015-12-13-how-to-permutate" />
+    <published>2015-12-12T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[It is a recurring task in game dev, you have several lists of attributes and
+you need to create a list of all permutations of them. For example a classical
+example is a deck of playing cards:]]></summary>
+    <tags>javascript</tags>
+    <file>/pages/Mighty Hacks/2015-12-13-how-to-permutate.md</file>
+  </entry>
+  <entry>
+    <title>Converting Seconds To Human</title>
+    <link href="http://nikolay.rocks/2015-12-12-seconds-to-human" />
+    <published>2015-12-11T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I have this recurring task that pops up every time when I need to say present
+an ETA time frame or any other arbitrary time span. How do you convert a time
+period that is milliseconds into a human friendly text?]]></summary>
+    <tags>javascript</tags>
+    <file>/pages/Mighty Hacks/2015-12-12-seconds-to-human.md</file>
+  </entry>
+  <entry>
+    <title>How To Randomize Array in JavaScript</title>
+    <link href="http://nikolay.rocks/2015-12-11-javascript-randomize-array" />
+    <published>2015-12-10T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Although #JavaScript doesn't have a builtin method for randomizing array items,
+there are plenty of ways to do it manually. Unfortunately, people usually go
+after the brute-force solution and it looks somewhat like so:]]></summary>
+    <tags>javascript</tags>
+    <file>/pages/Mighty Hacks/2015-12-11-javascript-randomize-array.md</file>
+  </entry>
+  <entry>
+    <title>Defensive Ego Projections</title>
+    <link href="http://nikolay.rocks/2015-12-10-defensive-ego-projections" />
+    <published>2015-12-09T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I am kinda excited about learning this one. Have you ever seen a person saying
+something like "I don't care who you are, if you don't write tests you are not a
+professional!"; or say you were mangling with MongoDB and someone said "did you
+try /dev/null?"; or, my favorite, "eww, javascript!". Of course you have! Wanna
+know why people do that? Keep reading]]></summary>
+    <file>/pages/Mind Fucks/2015-12-10-defensive-ego-projections.md</file>
+  </entry>
+  <entry>
+    <title>The Dark Side of Lightchasers</title>
+    <link href="http://nikolay.rocks/2015-12-08-light-chasers" />
+    <published>2015-12-07T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I kind of have weird role models in life. I remember, when I was growing, they
+would try to hook you up with the classical list, like: "oh, you like rockets,
+you should try to be like Gagarin and brush your teeth; coz all astronauts brush
+their teeth before bed." And I'm still a huge nerd, I mean, let me touch an
+exhaust of a rocket engine and I'll be your friend forever, but Gagarin? He is
+a brave guy and totally brushes his teeth twice a day, but I'm kind of more
+interested in how rockets work rather than who gets the ride.]]></summary>
+    <file>/pages/Book Worm/2015-12-08-light-chasers.md</file>
+  </entry>
+  <entry>
+    <title>Why I RethinkDB And So Can You!</title>
+    <link href="http://nikolay.rocks/2015-11-23-why-rethinkdb" />
+    <published>2015-11-22T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[A few weeks ago I started a new project, and I had picked [RethinkDB](https://www.rethinkdb.com)
+as its primary database. I'm having some really good time with it and thought
+I should share some of my experiences.]]></summary>
+    <tags>rethinkdb,javascript</tags>
+    <file>/pages/Silly Thoughts/2015-11-23-why-rethinkdb.md</file>
+  </entry>
+  <entry>
+    <title>High Performance JavaScript (Book)</title>
+    <link href="http://nikolay.rocks/2015-11-13-high-performance-javascript" />
+    <published>2015-11-12T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I ran into this book while I was going through some javascript optimizations
+reading list. It was supposed to provide some good insight into #javascript
+performance issues. And it did. Well, if you're in 2010...]]></summary>
+    <tags>javascript</tags>
+    <file>/pages/Book Worm/2015-11-13-high-performance-javascript.md</file>
+  </entry>
+  <entry>
+    <title>Rainbows Generator In JavaScript</title>
+    <link href="http://nikolay.rocks/2015-10-29-rainbows-generator-in-javascript" />
+    <published>2015-10-28T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[A few days ago I wrote an article about
+[generating a rainbow colors sequence in ruby](/2015-10-24-waves-rainbows-and-flux).
+And, I bet you want to know how to do the same in #javascript! So,
+today we are making more rainbows. For science! Because, you know,
+rainbows are basically 100% made of science.]]></summary>
+    <tags>javascript,rainbow</tags>
+    <file>/pages/Mighty Hacks/2015-10-29-rainbows-generator-in-javascript.md</file>
+  </entry>
+  <entry>
+    <title>Making Rainbows With Ruby, Waves And A Flux Capacitor</title>
+    <link href="http://nikolay.rocks/2015-10-24-waves-rainbows-and-flux" />
+    <published>2015-10-23T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, rainbows. We need more of them! I think. But, in either case, I've been
+working on this silly little Friday fun project of mine — I called it
+[git rainbow](https://github.com/MadRabbit/git-rainbow). It's kind of like a
+regular `git commit` but it uses some ANSI escape codes magic to make the
+commit text to be colored as a rainbow!]]></summary>
+    <tags>ruby,rainbows</tags>
+    <file>/pages/Mighty Hacks/2015-10-24-waves-rainbows-and-flux.md</file>
+  </entry>
+  <entry>
+    <title>Get Out Of Your Own Way: by Mark Goulston</title>
+    <link href="http://nikolay.rocks/2015-10-22-get-out-of-your-way" />
+    <published>2015-10-21T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Life can be hard. Like you know, you find yourself badly hurt
+deep inside the woods. It's a beginning of a winter and your
+blood looks vividly red on the atlas whiteness of fresh snow.
+Your left arm goes limp.]]></summary>
+    <file>/pages/Book Worm/2015-10-22-get-out-of-your-way.md</file>
+  </entry>
+  <entry>
+    <title>Rebuilding MeowTV App With ReactNative</title>
+    <link href="http://nikolay.rocks/2015-10-14-rebuilding-meowtv" />
+    <published>2015-10-13T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, I've decided to give [react-native](https://facebook.github.io/react-native/)
+a more real shot and rebuild the [MeowTV](http://meowtvapp.com) app from 100%
+swift + xcode into 100%-ish react-native. The goal here is to evaluate react-native
+as a valid option for real live apps, and, check how the #react + #flux architecture
+scales outside of the web dev context.]]></summary>
+    <tags>react,flux,ruby,swift,react native,javascript</tags>
+    <file>/pages/Rocket Shed/2015-10-14-rebuilding-meowtv.md</file>
+  </entry>
+  <entry>
+    <title>Being Obsessive</title>
+    <link href="http://nikolay.rocks/2015-10-12-being-obsessive" />
+    <published>2015-10-11T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, here are three, easily reproducible, steps how to make your life miserable
+and how to make your friends hate you:]]></summary>
+    <file>/pages/Mind Fucks/2015-10-12-being-obsessive.md</file>
+  </entry>
+  <entry>
+    <title>GeoIP Checks On Front-End</title>
+    <link href="http://nikolay.rocks/2015-10-07-front-end-geoip" />
+    <published>2015-10-06T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[When it comes to GeoIP checks, we often tend to think of it as an explicitly
+server-side process. You take the request IP address, run it through some database
+or an external service, and then switch on/off certain pieces of UI through
+HTML rendering. It is generally fine, but rendering HTML on the server side? Eww...]]></summary>
+    <tags>javascript</tags>
+    <file>/pages/Mighty Hacks/2015-10-07-front-end-geoip.md</file>
+  </entry>
+  <entry>
+    <title>Learning The Right Lesson</title>
+    <link href="http://nikolay.rocks/2015-10-02-learning-the-right-lesson" />
+    <published>2015-10-01T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I quite like #chess. I'm not particularly good at it, but I like it for a very
+specific reason. It teaches me how to think, how to learn and how to adapt.
+You see, chess is kind of like life, or space if you will. It's practically
+infinite in its complexity. So, no matter how smart you are, it got you covered.
+There is some weird calming thing to it.]]></summary>
+    <tags>chess</tags>
+    <file>/pages/Mind Fucks/2015-10-02-learning-the-right-lesson.md</file>
+  </entry>
+  <entry>
+    <title>A Deepness In The Sky</title>
+    <link href="http://nikolay.rocks/2015-09-21-deepness-in-the-sky" />
+    <published>2015-09-20T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I'm a bit of a sci-fi fun. I don't have plastic figurines at home, but I think
+I watched all the major sci-fi movies dozens of times and went though most of the
+important TV series as well.]]></summary>
+    <file>/pages/Book Worm/2015-09-21-deepness-in-the-sky.md</file>
+  </entry>
+  <entry>
+    <title>Minimalistic Yet Fully Featured HTML Layout</title>
+    <link href="http://nikolay.rocks/2015-09-12-minimalistic-layout" />
+    <published>2015-09-11T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I'm continuing my mini series of articles about minimalistic #html markup and pure
+#css hackery. And, today we are talking about building a very simple, yet fully
+featured fixed-width page layout. So, get the homies, lets do this!]]></summary>
+    <tags>html,css,flexbox</tags>
+    <file>/pages/Mighty Hacks/2015-09-12-minimalistic-layout.md</file>
+  </entry>
+  <entry>
+    <title>Programs Are People Too My Friend</title>
+    <link href="http://nikolay.rocks/2015-09-08-programs-are-people-too" />
+    <published>2015-09-07T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Most of the last year I spent trying to bring a young developer up to speed. It
+is an interesting thing to do actually as you get to look at your everyday cases
+from a different perspective. I'm not a big fun of existing dogmatism in the
+software industry myself, but to a new to the profession person it just doesn't
+make any sense:]]></summary>
+    <tags>ruby on rails,activerecord,rails,ruby</tags>
+    <file>/pages/Silly Thoughts/2015-09-08-programs-are-people-too.md</file>
+  </entry>
+  <entry>
+    <title>A Guide to the good life by Irvine William</title>
+    <link href="http://nikolay.rocks/2015-08-28-guite-to-good-life" />
+    <published>2015-08-27T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Well, yeah. This book has such a cheesy name that for a long time
+I was considering not to write anything about it. More of that, it
+is written in just as cheesy language as well. But, it is a good
+thing to read nevertheless.]]></summary>
+    <file>/pages/Book Worm/2015-08-28-guite-to-good-life.md</file>
+  </entry>
+  <entry>
+    <title>Elixir: First Impressions</title>
+    <link href="http://nikolay.rocks/2015-08-24-elixir-first-impressions" />
+    <published>2015-08-23T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I've been staring at [elixir](http://elixir-lang.org) for a while now.
+It kind of looked good, but I just couldn't find a good enough excuse to
+give it an actual try beyond reading books and playing in REPL. But,
+recently, I started a small toy project which needs to process quite a lot
+of sequential data, and I thought it might be a good fit.]]></summary>
+    <tags>elixir,ruby,javascript,lua,swift,rust</tags>
+    <file>/pages/Silly Thoughts/2015-08-24-elixir-first-impressions.md</file>
+  </entry>
+  <entry>
+    <title>Force Long String Line Breaks In Pure CSS</title>
+    <link href="http://nikolay.rocks/2015-08-19-pure-css-line-breaks" />
+    <published>2015-08-18T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[When someone says "pure #css", somehow an image of potato puree pops up in my mind.
+
+![Mmm, yummy!](http://thumb7.shutterstock.com/display_pic_with_logo/238252/238252,1329318553,1/stock-photo-potato-puree-95242723.jpg)]]></summary>
+    <tags>css</tags>
+    <file>/pages/Mighty Hacks/2015-08-19-pure-css-line-breaks.md</file>
+  </entry>
+  <entry>
+    <title>Not Your Daddy's Links Highlighting</title>
+    <link href="http://nikolay.rocks/2015-08-12-not-your-daddys-link-highlight" />
+    <published>2015-08-11T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Back in 1999, the only thing you really needed to know to impress someone
+with #css was this:
+
+```css
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+```]]></summary>
+    <tags>css</tags>
+    <file>/pages/Mighty Hacks/2015-08-12-not-your-daddys-link-highlight.md</file>
+  </entry>
+  <entry>
+    <title>How To Make Rails Dev Server To Load Pages Faster</title>
+    <link href="http://nikolay.rocks/2015-08-06-unslow-rails-dev" />
+    <published>2015-08-05T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[There is a #rails hack that most of #ruby devs don't know. It can,
+in some circumstances, greatly improve the pages loading time in
+development environment and make your dev life somewhat more pleasant.]]></summary>
+    <tags>rails,ruby,json,api,spa,rack</tags>
+    <file>/pages/Mighty Hacks/2015-08-06-unslow-rails-dev.md</file>
+  </entry>
+  <entry>
+    <title>Why Lovely.IO Failed</title>
+    <link href="http://nikolay.rocks/2015-07-30-why-lovely-io-failed" />
+    <published>2015-07-29T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[[Lovely.IO](http://lovely.io) was a project of mine in 2010-2012. It is
+kind of a mix of a modular #javascript framework, a CDN and a package
+management system for the front-end modules. Although it was heavily
+pushing the boundaries of possible in the area at the time, the project
+didn't pick up much of momentum and was eventually scrapped.]]></summary>
+    <tags>javascript,failure,rails</tags>
+    <file>/pages/Rocket Shed/2015-07-30-why-lovely-io-failed.md</file>
+  </entry>
+  <entry>
+    <title>CSS Secrets by Lea Verou</title>
+    <link href="http://nikolay.rocks/2015-07-27-css-secrets" />
+    <published>2015-07-26T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I think in all of my 15 years career, I never read a book about
+#css before. Neither I thought I might need one some day. But,
+@leaverou was pushing it really hard on her twitter feed, so I
+eventually gave up and got a copy of the book for myself. So,
+I guess it worked! :)]]></summary>
+    <tags>css</tags>
+    <file>/pages/Book Worm/2015-07-27-css-secrets.md</file>
+  </entry>
+  <entry>
+    <title>How I Blog Now</title>
+    <link href="http://nikolay.rocks/2015-07-24-how-i-blog-now" />
+    <published>2015-07-23T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I'm open-sourcing the guts of [nikolay.rocks](https://github.com/MadRabbit/nikolay.rocks)
+today. And, as it is quite a bit unconventional way to blog, I thought
+I should write about it a bit.]]></summary>
+    <tags>javascript,nodejs,ajax,blogging</tags>
+    <file>/pages/Rocket Shed/2015-07-24-how-i-blog-now.md</file>
+  </entry>
+  <entry>
+    <title>Fancy Checkboxes Out Of Nothing</title>
+    <link href="http://nikolay.rocks/2015-07-20-fancy-checkboxes-out-of-nothing" />
+    <published>2015-07-19T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[We are continuing our series of posts about minimalistic markup
+and #css black voodoo. And today I'm showing, how to convert
+this:]]></summary>
+    <tags>css,html</tags>
+    <file>/pages/Mighty Hacks/2015-07-20-fancy-checkboxes-out-of-nothing.md</file>
+  </entry>
+  <entry>
+    <title>Easy Peasy Vector Icons</title>
+    <link href="http://nikolay.rocks/2015-07-18-easy-peasy-vector-icons" />
+    <published>2015-07-17T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[There are a few techniques we used through the history of
+web development in order to add icons to the UI. Individual GIF
+files with IMG tags, PNG icons and backgrounds in #css, font icons
+and `content` properties. But, there is one another, quite simple
+and lean technique that is not that well known. It uses #css with
+embedded #svg content. I've been using it quite extensively lately
+on my projects, so I thought I could share the idea.]]></summary>
+    <tags>css,svg,html,less</tags>
+    <file>/pages/Mighty Hacks/2015-07-18-easy-peasy-vector-icons.md</file>
+  </entry>
+  <entry>
+    <title>Startupland</title>
+    <link href="http://nikolay.rocks/2015-07-14-startupland" />
+    <published>2015-07-13T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Firstly, a bit of a word of disclaimer. I generally don't
+like auto-biographies that much. I find them rather melodramatic
+and full of half-truths. Given that, my views on this sort
+of books tend to be skewed by this perceptional filter. So,
+please take whatever I write in here with an extra grain of salt.]]></summary>
+    <file>/pages/Book Worm/2015-07-14-startupland.md</file>
+  </entry>
+  <entry>
+    <title>Meet The MeowTV App</title>
+    <link href="http://nikolay.rocks/2015-07-13-meet-the-meowtv-app" />
+    <published>2015-07-12T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[A few months ago, my wife and I, we adopted a cat. Say "hi" to Muffin!
+
+![](/images/2015/07/muffin-11.jpg)]]></summary>
+    <file>/pages/Rocket Shed/2015-07-13-meet-the-meowtv-app.md</file>
+  </entry>
+  <entry>
+    <title>Welcome To The Shed</title>
+    <link href="http://nikolay.rocks/2015-07-11-welcome-to-the-shed" />
+    <published>2015-07-10T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I'm starting a new section here called "the rocket shed". This
+will be a section for posts related to my work on some of my
+personal projects and probably some business related blabing.]]></summary>
+    <file>/pages/Rocket Shed/2015-07-11-welcome-to-the-shed.md</file>
+  </entry>
+  <entry>
+    <title>IELTS vs. TOEFL, Things You Need To Know</title>
+    <link href="http://nikolay.rocks/2015-07-10-ielts-vs-toefl" />
+    <published>2015-07-09T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[As I [mentioned before](/2015-06-28-ielts-accepting-the-defeat), in
+the last few months I took the [IELTS](https://en.wikipedia.org/wiki/International_English_Language_Testing_System)
+test several times in order to score 8 (out of 9) in every section
+of the test. Then, for a comparison, I took the American
+[TOEFL](https://en.wikipedia.org/wiki/Test_of_English_as_a_Foreign_Language)
+exam, where I scored 109 (out of 120). And now I just want to write a
+bit to compare those two and maybe give some suggestions which one you might want to take.]]></summary>
+    <file>/pages/Silly Thoughts/2015-07-10-ielts-vs-toefl.md</file>
+  </entry>
+  <entry>
+    <title>How To Load Private Images Via Ajax</title>
+    <link href="http://nikolay.rocks/2015-07-07-load-private-images-via-ajax" />
+    <published>2015-07-06T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, here is a fun problem. Lets say you have a website where
+users can upload some images and then access them privately
+when signed in. For example you might be using a simple #rails
+controller kind of like this one:]]></summary>
+    <tags>rails,authentication,angularjs,javascript,css</tags>
+    <file>/pages/Mighty Hacks/2015-07-07-load-private-images-via-ajax.md</file>
+  </entry>
+  <entry>
+    <title>Prototype Matching</title>
+    <link href="http://nikolay.rocks/2015-07-05-prototype-matching" />
+    <published>2015-07-04T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Prototype matching (don't mistake with prototype modeling) is one of
+the techniques in the decision making theory. Basically, it is a bit of a
+mind hack that helps to make a decision in a situation when differences
+between options are not so clear or incomparable directly to each other.]]></summary>
+    <file>/pages/Mind Fucks/2015-07-05-prototype-matching.md</file>
+  </entry>
+  <entry>
+    <title>How To Patch Response Body in Connect Server</title>
+    <link href="http://nikolay.rocks/2015-07-03-connect-body-patch" />
+    <published>2015-07-02T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[This thing took quite a bit of tinkering to figure out. And apparently
+some other folks also struggle with the ins and outs of the problem as well.
+So, today's topic is _"how do you patch response body in #nodejs connect
+server middleware?"_]]></summary>
+    <tags>nodejs</tags>
+    <file>/pages/Mighty Hacks/2015-07-03-connect-body-patch.md</file>
+  </entry>
+  <entry>
+    <title>Assertiveness Workbook</title>
+    <link href="http://nikolay.rocks/2015-07-02-assertiveness-workbook" />
+    <published>2015-07-01T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Do you often have a feeling that everyone around you is an idiot
+and it is really hard to get anything done because of that? Or
+maybe you have a feeling that you work too much and people around
+you are just a-holes who abuse your kindness? Well, guess what?
+It's your own fault.]]></summary>
+    <file>/pages/Book Worm/2015-07-02-assertiveness-workbook.md</file>
+  </entry>
+  <entry>
+    <title>IELTS: Accepting The Defeat</title>
+    <link href="http://nikolay.rocks/2015-06-28-ielts-accepting-the-defeat" />
+    <published>2015-06-27T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[In the past 5 months I did a strange thing, I attempted to pass
+the [IELTS](https://en.wikipedia.org/wiki/International_English_Language_Testing_System)
+exam with a minimal score of `8` (out of `9`) in every sub-task. I had
+_7_ attempts and the best results look like that:]]></summary>
+    <file>/pages/Silly Thoughts/2015-06-28-ielts-accepting-the-defeat.md</file>
+  </entry>
+  <entry>
+    <title>Responsive Elements With a Fixed Aspect Ratio</title>
+    <link href="http://nikolay.rocks/2015-06-24-responsive-fixed-ratio" />
+    <published>2015-06-23T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[This problem have a tendency to hit me from the blind side now and then.
+How do you make a #responsive element with a flexible size, which keeps its
+aspect ratio when stretched with the design?]]></summary>
+    <tags>responsive,css</tags>
+    <file>/pages/Mighty Hacks/2015-06-24-responsive-fixed-ratio.md</file>
+  </entry>
+  <entry>
+    <title>Responsive Sidebar Out Of Nothing</title>
+    <link href="http://nikolay.rocks/2015-06-19-responsive-sidebar" />
+    <published>2015-06-18T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[If you're looking at this page in a desktop browser, try to shrink the
+browser's window to a narrow, mobile like width. You should see that
+the sidebar folds and becomes this sandwich icon in the header. So,
+today I'm explaining how to do that with a minimal markup and some
+basic #css voodoo.]]></summary>
+    <tags>css,responsive,flexbox</tags>
+    <file>/pages/Mighty Hacks/2015-06-19-responsive-sidebar.md</file>
+  </entry>
+  <entry>
+    <title>Building Street Fighter II in Ruby</title>
+    <link href="http://nikolay.rocks/2015-06-16-building-streetfighter" />
+    <published>2015-06-15T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[A few weeks ago, I decided to stretch my #gamedev chops a bit and
+built some basics of the Street Fighter II game in #Ruby. That turned
+to be more fun than I expected, so, I also recorded a short video
+that goes through the main steps of the process.]]></summary>
+    <tags>gamedev,ruby</tags>
+    <file>/pages/Mighty Hacks/2015-06-16-building-streetfighter.md</file>
+  </entry>
+  <entry>
+    <title>How To Marshalize ActiveJob Arguments</title>
+    <link href="http://nikolay.rocks/2015-06-15-marshalized-jobs" />
+    <published>2015-06-14T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[As we all know #rails 4.2 have finally given birth to the `ActiveJob` component, which,
+allegedly, will congregate all the other background job queues under one unified API.
+While that is a totally awesome and long awaited feature, there is one gray area
+issue that you might run into. The arguments that an active job instance might take.]]></summary>
+    <tags>rails,ruby,activejob</tags>
+    <file>/pages/Mighty Hacks/2015-06-15-marshalized-jobs.md</file>
+  </entry>
+  <entry>
+    <title>Do Not Work With Insecure People</title>
+    <link href="http://nikolay.rocks/2015-05-28-do-not-work-with-insecure-people" />
+    <published>2015-05-27T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Most of us, at some point, read an article named something like "don't work with a-holes" or "don't hire jerks". And although, intuitively, most of the subjects those article cover make total sense, I personally find them quite unsciency.]]></summary>
+    <file>/pages/Silly Thoughts/2015-05-28-do-not-work-with-insecure-people.md</file>
+  </entry>
+  <entry>
+    <title>Error Avoidance</title>
+    <link href="http://nikolay.rocks/2015-05-21-error-avoidance" />
+    <published>2015-05-20T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[The fun thing about humans is that, in pretty much any situation, you can characterize their behavior based on two simple instincts: they will avoid pain and they will seek intense pleasure. Well, the lengths at which a person will follow those instincts may vary, which brings us to the today's topic.]]></summary>
+    <file>/pages/Mind Fucks/2015-05-21-error-avoidance.md</file>
+  </entry>
+  <entry>
+    <title>How To Convert Cron Schedules Between Time Zones</title>
+    <link href="http://nikolay.rocks/2015-03-26-how-to-convert-cron-schedules-between-time-zones" />
+    <published>2015-03-25T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, here is a bit tricky one. Say you have a service that performs some tasks for users on a schedule, and lets say you allow your users to add those tasks by using the [cron schedule format](http://en.wikipedia.org/wiki/Cron).]]></summary>
+    <tags>ruby,rails</tags>
+    <file>/pages/Mighty Hacks/2015-03-26-how-to-convert-cron-schedules-between-time-zones.md</file>
+  </entry>
+  <entry>
+    <title>Slaughterhouse Five</title>
+    <link href="http://nikolay.rocks/2015-03-20-slaughterhouse-five" />
+    <published>2015-03-19T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I had a friend once who used to say that _"reading fiction does things to your soul"_.
+I like people who didn't loose the sense of their souls. That makes them human.]]></summary>
+    <file>/pages/Book Worm/2015-03-20-slaughterhouse-five.md</file>
+  </entry>
+  <entry>
+    <title>More Rainbows! Or Why You Should Switch To Atom</title>
+    <link href="http://nikolay.rocks/2015-03-19-more-rainbows-or-why-you-should-switch-to-atom" />
+    <published>2015-03-18T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I've been in love with the [atom editor](https://atom.io) for a while now. So, I kinda feel like I have to write something about it, but instead thought I'll "show" something  :)]]></summary>
+    <tags>css,javascript</tags>
+    <file>/pages/Mighty Hacks/2015-03-19-more-rainbows-or-why-you-should-switch-to-atom.md</file>
+  </entry>
+  <entry>
+    <title>The Year Of The Horse</title>
+    <link href="http://nikolay.rocks/2015-02-19-the-year-of-the-horse" />
+    <published>2015-02-18T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[It's probably a bit strange to write a year retrospective on a lunar new year, but I kinda missed the opportunity on the ISO new year, so I'll just pretend being fancy and do it now.]]></summary>
+    <file>/pages/Silly Thoughts/2015-02-19-the-year-of-the-horse.md</file>
+  </entry>
+  <entry>
+    <title>AngularJS HTML5 Routes In Mixed Web-Site</title>
+    <link href="http://nikolay.rocks/2014-08-31-angularjs-html5-routes-in-mixed-web-site" />
+    <published>2014-08-30T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I've got a simple, but interesting case today, which seems to give quite a bit of headache to some front-end developers who happened to work with #angularjs.]]></summary>
+    <tags>angularjs,html5</tags>
+    <file>/pages/Mighty Hacks/2014-08-31-angularjs-html5-routes-in-mixed-web-site.md</file>
+  </entry>
+  <entry>
+    <title>Mental Capacity</title>
+    <link href="http://nikolay.rocks/2014-04-29-mental-capacity" />
+    <published>2014-04-28T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[We programmers are the smart people, right? It is fundamental to our believes that in the virtual world, with enough hardware and coffee, everything is possible. And while i wholeheartedly believe in it, i also believe that it is crucial for a developer to take the idea of mental capacity seriously.]]></summary>
+    <file>/pages/Mind Fucks/2014-04-29-mental-capacity.md</file>
+  </entry>
+  <entry>
+    <title>Programmer Happiness, Take Two</title>
+    <link href="http://nikolay.rocks/2014-04-18-programmer-happiness-take-two" />
+    <published>2014-04-17T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[But seriously, despite my recent rant about programmer's happiness, i really believe that happiness is not a pill, but a life choice. And programmer's happiness is not different. I'm convinced that you can be happy and productive with any, most horrendous language, or a framework, or an environment. The other way around is also true.]]></summary>
+    <file>/pages/Silly Thoughts/2014-04-18-programmer-happiness-take-two.md</file>
+  </entry>
+  <entry>
+    <title>Faster Tests Under MySQL</title>
+    <link href="http://nikolay.rocks/2014-04-07-faster-tests-under-mysql" />
+    <published>2014-04-06T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, here's a quick and rebellious one. If you have a large project in #ruby-on-rails that is still under #mysql and your tests are painfully slow, chances are you're using the [database_cleaner](https://github.com/bmabey/database_cleaner) gem, and I can help you to make your life easier.]]></summary>
+    <tags>ruby on rails,mysql,postgresql,rspec,activerecord</tags>
+    <file>/pages/Mighty Hacks/2014-04-07-faster-tests-under-mysql.md</file>
+  </entry>
+  <entry>
+    <title>Programming Happiness My A55</title>
+    <link href="http://nikolay.rocks/2014-04-05-programming-happiness-my-a55" />
+    <published>2014-04-04T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[If you are a worthy programmer, then somewhere down in your soul, you probably have this nagging feeling that programming is an art, and you're this sort of a hidden artist in the rough who just happened to work in a bank and not really allowed to be artsy in your day job.]]></summary>
+    <file>/pages/Silly Thoughts/2014-04-05-programming-happiness-my-a55.md</file>
+  </entry>
+  <entry>
+    <title>Movie Style STDOUT in Ruby And Rails</title>
+    <link href="http://nikolay.rocks/2014-02-28-movie-style-stdout-in-ruby-and-rails" />
+    <published>2014-02-27T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Ever wanted your programs output to look like a cool hacker's console output in a blockbuster movie? Add the following #ruby script into any of your #rails `config/initializers` files]]></summary>
+    <tags>ruby,rails</tags>
+    <file>/pages/Mighty Hacks/2014-02-28-movie-style-stdout-in-ruby-and-rails.md</file>
+  </entry>
+  <entry>
+    <title>How To Be Awesome</title>
+    <link href="http://nikolay.rocks/2014-02-18-how-to-be-awesome" />
+    <published>2014-02-17T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Here is your simple and easy to follow instruction:
+
+1. Start with an awesome idea
+2. Work hard
+3. Remove anything that is not awesome
+4. Iterate]]></summary>
+    <file>/pages/Silly Thoughts/2014-02-18-how-to-be-awesome.md</file>
+  </entry>
+  <entry>
+    <title>Single Page Apps Access Handling With AngularJS</title>
+    <link href="http://nikolay.rocks/2014-02-14-single-page-apps-access-handling-with-angularjs" />
+    <published>2014-02-13T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[This one is a bit tricky and googling the question didn't get me to any clear answer, so I'm writing it here.]]></summary>
+    <tags>angularjs</tags>
+    <file>/pages/Mighty Hacks/2014-02-14-single-page-apps-access-handling-with-angularjs.md</file>
+  </entry>
+  <entry>
+    <title>Self Imposed Rules</title>
+    <link href="http://nikolay.rocks/2014-02-09-self-imposed-rules" />
+    <published>2014-02-08T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[There is this thing people do a lot, it's called "self imposed rules". In sports and competitive games it is a well known factor. The classical example would be when someone calls another one "cheater" and they create all those extra rules to make the game "fair".]]></summary>
+    <file>/pages/Mind Fucks/2014-02-09-self-imposed-rules.md</file>
+  </entry>
+  <entry>
+    <title>How To Make Rubygem Post Instal Hook</title>
+    <link href="http://nikolay.rocks/2014-01-30-how-to-make-rubygem-post-instal-hook" />
+    <published>2014-01-29T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So here is a little hack which not everyone knows. Sometimes you need to run some scriptery after your #rubygem was installed, like say generate some templates or so. For example in [under-os](under-os.com) i needed to put the #RubyMotion templates in place. But unfortunately in gemspecs you can only specify `post_install_message`, which doesn't let you do anything really but print a string on the screen.]]></summary>
+    <tags>rubygem,rubymotion,ruby</tags>
+    <file>/pages/Mighty Hacks/2014-01-30-how-to-make-rubygem-post-instal-hook.md</file>
+  </entry>
+  <entry>
+    <title>And Here Is Why Rails Is Gonna Loose</title>
+    <link href="http://nikolay.rocks/2013-11-27-and-here-is-why-rails-is-gonna-loose" />
+    <published>2013-11-26T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[TL;DR #Nodejs has more humans and iterates faster.
+
+It's probably a stupid thing to say, but I've been around the block for a while and I saw how #java went down and was replaced by #rails.]]></summary>
+    <tags>nodejs,java,rails</tags>
+    <file>/pages/Silly Thoughts/2013-11-27-and-here-is-why-rails-is-gonna-loose.md</file>
+  </entry>
+  <entry>
+    <title>The Story Of IfNot And Unless</title>
+    <link href="http://nikolay.rocks/2013-11-24-the-story-of-ifnot-and-unless" />
+    <published>2013-11-23T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, kids, that's the bed story time. Please, my dears, gather around and listen to the story of `if !` and `unless`]]></summary>
+    <tags>ruby</tags>
+    <file>/pages/Mighty Hacks/2013-11-24-the-story-of-ifnot-and-unless.md</file>
+  </entry>
+  <entry>
+    <title>The Body</title>
+    <link href="http://nikolay.rocks/2013-09-02-the-body" />
+    <published>2013-09-01T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[![](/images/2013/09/90ad38460eeb11e39dbc22000a1f9e59_7-J7uf.jpg)
+
+For this project I bought a nice, official fender custom shop body. As I'm building a tele for blues, I picked a medium weight swamp Ash body.]]></summary>
+    <file>/pages/Building The Tele/2013-09-02-the-body.md</file>
+  </entry>
+  <entry>
+    <title>Intro</title>
+    <link href="http://nikolay.rocks/2013-09-01-intro" />
+    <published>2013-08-31T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Long time ago, back in Siberia, I had a little workshop and used to build guitars. I came from rather technical background and always enjoyed to build stuff with my own hands, and building guitars was something rather special, something out of the reality distorting area. You start with an ugly log and end up with something that sing and roar and can rock the world.]]></summary>
+    <file>/pages/Building The Tele/2013-09-01-intro.md</file>
+  </entry>
+  <entry>
+    <title>Rails dates and magic created_on hack</title>
+    <link href="http://nikolay.rocks/2013-08-26-rails-dates-and-magic-created_on-hack" />
+    <published>2013-08-25T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[To demonstrate the problem I'd like to start with a little rant. There is a very common and very simple task of formatting dates, which people, lets not point the fingers, tend to solve in all sorts of different ways. Say like that]]></summary>
+    <tags>rails</tags>
+    <file>/pages/Mighty Hacks/2013-08-26-rails-dates-and-magic-created_on-hack.md</file>
+  </entry>
+  <entry>
+    <title>Searching Through Non ActiveRecord Data</title>
+    <link href="http://nikolay.rocks/2013-08-25-searching-through-non-activerecord-data" />
+    <published>2013-08-24T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, here is a situation many young developers are struggling with when working with #rails and #activerecord. Say you have a `User` model that has a status field. And the actual data in the status filed is mapped to a hash, like so.]]></summary>
+    <tags>rails,activerecord,ruby</tags>
+    <file>/pages/Mighty Hacks/2013-08-25-searching-through-non-activerecord-data.md</file>
+  </entry>
+  <entry>
+    <title>Programmers Happiness</title>
+    <link href="http://nikolay.rocks/2013-08-24-programmers-happiness" />
+    <published>2013-08-23T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Happiness is an elusive topic, but mechanics of it can be explained through memory. See you have two types of memory, sensorial memory, which handles things like touching, tasting, sense of spacial orientation, etc., and conscious memory which basically handles memories of events, places you've been, people you've met.]]></summary>
+    <tags>ruby,javascript</tags>
+    <file>/pages/Mind Fucks/2013-08-24-programmers-happiness.md</file>
+  </entry>
+  <entry>
+    <title>Why Stories Are Important</title>
+    <link href="http://nikolay.rocks/2013-08-19-why-stories-are-important" />
+    <published>2013-08-18T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[There is this thing called "narrative psychology", which basically postulates that everything that humans do and think and understand are stories. Even your whole personality is a story which you tell yourself every day.]]></summary>
+    <file>/pages/Mind Fucks/2013-08-19-why-stories-are-important.md</file>
+  </entry>
+  <entry>
+    <title>Opinions Origins</title>
+    <link href="http://nikolay.rocks/2013-07-24-opinions-origins" />
+    <published>2013-07-23T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Sometimes it's almost seems that our entire industry is driven solely by opinions. So, here is a little theory about opinions.]]></summary>
+    <file>/pages/Mind Fucks/2013-07-24-opinions-origins.md</file>
+  </entry>
+  <entry>
+    <title>The Bystander Complex</title>
+    <link href="http://nikolay.rocks/2013-07-03-the-bystander-complex" />
+    <published>2013-07-02T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[There is a really good reason why otherwise intelligent people do really stupid things when you bring them together. There is this little thing called conformity.]]></summary>
+    <tags>rails</tags>
+    <file>/pages/Mind Fucks/2013-07-03-the-bystander-complex.md</file>
+  </entry>
+  <entry>
+    <title>The 90 Seconds Thing</title>
+    <link href="http://nikolay.rocks/2013-06-24-the-90-seconds-thing" />
+    <published>2013-06-23T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[In some ways, writing code is much like driving a sport car. It might look relatively simple, but if you don't know what you do you'll just make a lot of noise and will drive from border to border. Writing good software is hard, it takes lots of practice, and sometimes you need to drive into a corner sideways to make it right.]]></summary>
+    <file>/pages/Mind Fucks/2013-06-24-the-90-seconds-thing.md</file>
+  </entry>
+  <entry>
+    <title>The Mind Fucks</title>
+    <link href="http://nikolay.rocks/2013-06-22-the-mind-fucks" />
+    <published>2013-06-21T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[It's might be a bit strange hobby for a programmer, but i dig psychology, cognitive science and meta-thinking in particular. It's just professional interest, programmers are basically mental heavy lifters and understanding how my own brain works is kinda fascinating.]]></summary>
+    <file>/pages/Mind Fucks/2013-06-22-the-mind-fucks.md</file>
+  </entry>
+  <entry>
+    <title>The Trick To Good Software</title>
+    <link href="http://nikolay.rocks/2013-04-11-the-trick-to-good-software" />
+    <published>2013-04-10T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[The funny thing about programmers is that we spend years of our professional lives believing that our job is to tell computers what to do.]]></summary>
+    <tags>computers,humans,programming</tags>
+    <file>/pages/Silly Thoughts/2013-04-11-the-trick-to-good-software.md</file>
+  </entry>
+  <entry>
+    <title>Hacking Google I/0</title>
+    <link href="http://nikolay.rocks/2013-03-12-hacking-google-i0" />
+    <published>2013-03-11T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I love google. Seriously, you might argue that there is a whole bunch of things that wrong with Google, but i really, really, really dig their culture.]]></summary>
+    <tags>javascript</tags>
+    <file>/pages/Mighty Hacks/2013-03-12-hacking-google-i0.md</file>
+  </entry>
+  <entry>
+    <title>Cloud Atlas</title>
+    <link href="http://nikolay.rocks/2013-03-03-cloud-atlas" />
+    <published>2013-03-02T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, here's a dirty secret. I love books. You know that moment when you listen to really good piece of music and it vibrates with you so well that you get goose skin? Well, I get goose skin of good literature.]]></summary>
+    <file>/pages/Book Worm/2013-03-03-cloud-atlas.md</file>
+  </entry>
+  <entry>
+    <title>LovelyIO Kicks Ass</title>
+    <link href="http://nikolay.rocks/2013-02-09-lovelyio-kicks-ass" />
+    <published>2013-02-08T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[In case you're not up to date with what's going on here. [lovely.io](http://lovely.io) is an HTML5/CSS3 centric fork of the [rightjs](http://rightjs.org) project, which is basically a #javascript library that was aiming for speed and novelty.]]></summary>
+    <tags>javascript,lovelyio,rightjs,jquery</tags>
+    <file>/pages/Mighty Hacks/2013-02-09-lovelyio-kicks-ass.md</file>
+  </entry>
+  <entry>
+    <title>Ruby Is an Establishment</title>
+    <link href="http://nikolay.rocks/2013-02-04-ruby-is-an-establishment" />
+    <published>2013-02-03T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[If you're young ambitious web-developer and you want to do it for long time, you should contribute to #nodejs, not to #ruby or #rails.]]></summary>
+    <tags>nodejs,ruby,rails,javascript</tags>
+    <file>/pages/Silly Thoughts/2013-02-04-ruby-is-an-establishment.md</file>
+  </entry>
+  <entry>
+    <title>One Of The Ways To Deal With GitHub Tolls</title>
+    <link href="http://nikolay.rocks/2013-01-30-one-of-the-ways-to-deal-with-github-tolls" />
+    <published>2013-01-29T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Today was a successful day, I pissed off some guy on the internet well enough for him to go to #github and make a pull request with some TL;DR comment that supposed to be offensive or something.]]></summary>
+    <tags>github,git</tags>
+    <file>/pages/Mighty Hacks/2013-01-30-one-of-the-ways-to-deal-with-github-tolls.md</file>
+  </entry>
+  <entry>
+    <title>TDD For Complete Idiots</title>
+    <link href="http://nikolay.rocks/2013-01-26-tdd-for-complete-idiots" />
+    <published>2013-01-25T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[As there are people who still don't know how to do it properly, here is your full, comprehensive and easy to grasp guide to #TDD]]></summary>
+    <tags>tdd</tags>
+    <file>/pages/Mighty Hacks/2013-01-26-tdd-for-complete-idiots.md</file>
+  </entry>
+  <entry>
+    <title>Get your dick out of your code</title>
+    <link href="http://nikolay.rocks/2013-01-21-get-your-dick-out-of-your-code" />
+    <published>2013-01-20T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[One smart man once told me a simple trick to being awesome
+
+> Get your ego out of the things you do]]></summary>
+    <file>/pages/Silly Thoughts/2013-01-21-get-your-dick-out-of-your-code.md</file>
+  </entry>
+  <entry>
+    <title>Fix Ruby require</title>
+    <link href="http://nikolay.rocks/2013-01-20-fix-ruby-require" />
+    <published>2013-01-19T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Requiring things in ruby always were kind of ugly business and you would see things like that all the time]]></summary>
+    <file>/pages/Mighty Hacks/2013-01-20-fix-ruby-require.md</file>
+  </entry>
+  <entry>
+    <title>How To Test Routes With MiniTest</title>
+    <link href="http://nikolay.rocks/2013-01-14-how-to-test-routes-with-minitest" />
+    <published>2013-01-13T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Here we go again. Yet another testing framework for #rails and nothing works :) Well, I hope #minitest will eventually get there, meanwhile, if you're a test junkie and wanna test routes properly in your rails application, here's how you can do that.]]></summary>
+    <tags>rails,minitest</tags>
+    <file>/pages/Mighty Hacks/2013-01-14-how-to-test-routes-with-minitest.md</file>
+  </entry>
+  <entry>
+    <title>A Simple Bounce Effect In CSS3</title>
+    <link href="http://nikolay.rocks/2013-01-06-a-simple-bounce-effect-in-css3" />
+    <published>2013-01-05T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Just so I didn't loose it later. A simple bouncing effect in pure #CSS3
+
+```css
+.bounce {
+  -webkit-animation: bounce 2.5s infinite;
+}
+
+@-webkit-keyframes bounce {
+  0%  { -webkit-transform: translate(0px, 0px)  }
+  10% { -webkit-transform: translate(0px, -50%) }
+  20% { -webkit-transform: translate(0px, 0px)  }
+}
+```]]></summary>
+    <tags>css3</tags>
+    <file>/pages/Mighty Hacks/2013-01-06-a-simple-bounce-effect-in-css3.md</file>
+  </entry>
+  <entry>
+    <title>Modular Framework Is A Reality!</title>
+    <link href="http://nikolay.rocks/2012-11-22-modular-framework-is-a-reality" />
+    <published>2012-11-21T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[So, here is the thing. I'm happy with this little thing called [lovely.io](http://lovely.io) it's a fully modular #javascript framework that uses a #cloudfront based CDN as a centralised packages repository. In an essence it looks kinda like that]]></summary>
+    <tags>javascript,cloudfront,jquery,rightjs,lovelyio</tags>
+    <file>/pages/Mighty Hacks/2012-11-22-modular-framework-is-a-reality.md</file>
+  </entry>
+  <entry>
+    <title>Caching Friendly Authentication</title>
+    <link href="http://nikolay.rocks/2012-10-08-caching-friendly-authentication" />
+    <published>2012-10-07T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Today's post is about authentication, giving a user access to control elements and doing so in caching efficient way. I'll use #rails and #lovelyio as examples, but the principle should be applicable to any platform/framework.]]></summary>
+    <tags>rails,lovelyio,html,css,nodejs,ajax,javascript</tags>
+    <file>/pages/Mighty Hacks/2012-10-08-caching-friendly-authentication.md</file>
+  </entry>
+  <entry>
+    <title>Open Source is a Game</title>
+    <link href="http://nikolay.rocks/2012-10-04-open-source-is-a-game" />
+    <published>2012-10-03T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Long time ago, when young Linus started hacking his first version of linux kernel, open source was like this little nerdy rebellion against corporate UNIX. And for a quite a long time it was the dominant idea, FSF meant OS, proprietary software companies fighted it then tried to lead it and everything looked exactly how it supposed to be.]]></summary>
+    <file>/pages/Silly Thoughts/2012-10-04-open-source-is-a-game.md</file>
+  </entry>
+  <entry>
+    <title>Unhappiness</title>
+    <link href="http://nikolay.rocks/2012-09-29-unhappiness" />
+    <published>2012-09-28T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Okay, before we start a quick disclaimer, if you're getting through a rough patch or having some genuine bad stuff going on in your life, i might say some things that might sound offensive, don't take it personally. Those are just some silly thoughts that were nagging me for a while. Also, my condolences.]]></summary>
+    <file>/pages/Silly Thoughts/2012-09-29-unhappiness.md</file>
+  </entry>
+  <entry>
+    <title>Fixing NPM</title>
+    <link href="http://nikolay.rocks/2012-09-28-fixing-npm" />
+    <published>2012-09-27T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[[NPM](http://npmjs.org) and [Node.js](http://nodejs.com) is a mess. Everyone who was around for couple of years knows how those bastards screw everyone over every time they make a new release.]]></summary>
+    <tags>npm,nodejs</tags>
+    <file>/pages/Mighty Hacks/2012-09-28-fixing-npm.md</file>
+  </entry>
+  <entry>
+    <title>You aint no artist</title>
+    <link href="http://nikolay.rocks/2012-09-17-you-aint-no-artist" />
+    <published>2012-09-16T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I think programmers are often mislead into believing in their own artistic nature and then suffer from lack of ideal things in the world.]]></summary>
+    <file>/pages/Silly Thoughts/2012-09-17-you-aint-no-artist.md</file>
+  </entry>
+  <entry>
+    <title>Lovely 1.6.0, What Up?</title>
+    <link href="http://nikolay.rocks/2012-09-13-lovely-160-what-up" />
+    <published>2012-09-12T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Hey folks, I've just updated the [lovely.io](http://lovely.io) NPM package to the version `1.6.0`, now some words about what's going on in there.]]></summary>
+    <tags>lovelyio,nodejs,rightjs,npm,express</tags>
+    <file>/pages/Mighty Hacks/2012-09-13-lovely-160-what-up.md</file>
+  </entry>
+  <entry>
+    <title>Neuromancer</title>
+    <link href="http://nikolay.rocks/2012-09-04-neuromancer" />
+    <published>2012-09-03T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Just finished the [neuromancer](http://en.wikipedia.org/wiki/Neuromancer) and have to say, I didn't like it that much. Yeah, i know it's dickish of me to say thing like that about an iconic work, but let me finish.]]></summary>
+    <file>/pages/Book Worm/2012-09-04-neuromancer.md</file>
+  </entry>
+  <entry>
+    <title>Как получить тайские права</title>
+    <link href="http://nikolay.rocks/2012-08-30-kak-poluchit-tajskie-prava" />
+    <published>2012-08-29T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[[ ![права на машину из страны #Таиланд](/images/2012/08/1-opCB-small.jpg) ](/images/2012/08/1-opCB-large.jpg)]]></summary>
+    <tags>таиланд,бангкок</tags>
+    <file>/pages/В поисках дома/2012-08-30-kak-poluchit-tajskie-prava.md</file>
+  </entry>
+  <entry>
+    <title>Be The Batman</title>
+    <link href="http://nikolay.rocks/2012-08-02-be-the-batman" />
+    <published>2012-08-01T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I think most of sane people realised by now that invention of the Internet is the most important and profound thing that happened to humans. (yeah i'm going this way).]]></summary>
+    <file>/pages/Silly Thoughts/2012-08-02-be-the-batman.md</file>
+  </entry>
+  <entry>
+    <title>Procrastination</title>
+    <link href="http://nikolay.rocks/2012-07-16-procrastination" />
+    <published>2012-07-15T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[![](/images/2012/07/1-zxP4.png)
+
+Have you ever though why people procrastinate so much those days? I mean, sometimes it goes beyond ridiculous, you might spent 4 hours procrastinating over 20 minutes of work. And it's not like you're lazy or burnt out, you just can't focus.]]></summary>
+    <file>/pages/Silly Thoughts/2012-07-16-procrastination.md</file>
+  </entry>
+  <entry>
+    <title>The Magic clear:both Trick</title>
+    <link href="http://nikolay.rocks/2012-06-21-the-magic-clearboth-trick" />
+    <published>2012-06-20T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Okay, now raise your hands who of you in your web-developer's career had to do that?
+
+```html
+<div class="container">
+  <img src="tall-image.jpg" style="float: left">
+  Smaller than the image text
+
+  <div style="clear: both"></div>
+</div>
+```]]></summary>
+    <tags>css</tags>
+    <file>/pages/Mighty Hacks/2012-06-21-the-magic-clearboth-trick.md</file>
+  </entry>
+  <entry>
+    <title>Vertical Align In Pure CSS</title>
+    <link href="http://nikolay.rocks/2012-06-20-vertical-align-in-pure-css" />
+    <published>2012-06-19T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Okay, one more take on the old as the world problem. How to align one block inside of another one with pure #CSS?]]></summary>
+    <tags>css</tags>
+    <file>/pages/Mighty Hacks/2012-06-20-vertical-align-in-pure-css.md</file>
+  </entry>
+  <entry>
+    <title>Lovely.IO UI 2.0 Whats New?</title>
+    <link href="http://nikolay.rocks/2012-06-14-lovelyio-ui-20-whats-new" />
+    <published>2012-06-13T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I finally published the [lovely.io ui-core 2.0](http://lovely.io/packages/ui/changelog) today, time to reflect a bit on what's going on in there.]]></summary>
+    <tags>lovelyio,html5,rightjs,javascript</tags>
+    <file>/pages/Mighty Hacks/2012-06-14-lovelyio-ui-20-whats-new.md</file>
+  </entry>
+  <entry>
+    <title>Test Faster With BCrypt Hacks</title>
+    <link href="http://nikolay.rocks/2012-06-07-test-faster-with-bcrypt-hacks" />
+    <published>2012-06-06T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[If you're using `BCrypt` in your #ruby-on-rails application and then feel like your #rspec tests run forever, here is a quick tip on how to make your life a bit easier.]]></summary>
+    <tags>ruby on rails,rspec</tags>
+    <file>/pages/Mighty Hacks/2012-06-07-test-faster-with-bcrypt-hacks.md</file>
+  </entry>
+  <entry>
+    <title>Awesomize Your App With Font Awesome</title>
+    <link href="http://nikolay.rocks/2012-05-29-awesomize-your-app-with-font-awesome" />
+    <published>2012-05-28T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[In case you haven't heard, raster-graphic sucks, png sucks, png icons suck in particular. Yeah, I know, deep down we all have a soft sport for [glyph icons](http://glyphicons.com) because of their uberglorious black and white colors. But things have changed.]]></summary>
+    <tags>css</tags>
+    <file>/pages/Mighty Hacks/2012-05-29-awesomize-your-app-with-font-awesome.md</file>
+  </entry>
+  <entry>
+    <title>Can You Draw A Triangle In Pure CSS?</title>
+    <link href="http://nikolay.rocks/2012-05-28-can-you-draw-a-triangle-in-pure-css" />
+    <published>2012-05-27T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[That's a fun trick, you can draw a triangle figure with pure #css without using CSS3 magic with `transform: rotate`. More of that it will work everywhere, even in IE6. Well, sort of :)]]></summary>
+    <tags>css</tags>
+    <file>/pages/Mighty Hacks/2012-05-28-can-you-draw-a-triangle-in-pure-css.md</file>
+  </entry>
+  <entry>
+    <title>Тайланд, день n+1</title>
+    <link href="http://nikolay.rocks/2012-05-16-tajland-den-n1" />
+    <published>2012-05-15T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[![](/images/2012/05/1-72Fb.jpg)
+
+Мерное тупилово на острове #Пхукет вылилось уже в целый месяц. Правда 95% моего времени проходит за работой, но раз в иногда все же удается куда-то выбраться и попялиться на местный колорит.]]></summary>
+    <tags>пхукет</tags>
+    <file>/pages/В поисках дома/2012-05-16-tajland-den-n1.md</file>
+  </entry>
+  <entry>
+    <title>Постимпериалистический мудизм</title>
+    <link href="http://nikolay.rocks/2012-05-10-postimperialisticheskij-mudizm" />
+    <published>2012-05-09T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Да, мои дорогие, меня тоже с детства мучает вопрос: "отчего ж так в родном отечестве эцсамое?". В последние годы у меня сформировалась более менее внятная теория по этому поводу. Но для начала небольшой экскурс в историю Европы.]]></summary>
+    <file>/pages/В поисках дома/2012-05-10-postimperialisticheskij-mudizm.md</file>
+  </entry>
+  <entry>
+    <title>Getting Help With Lovely.IO</title>
+    <link href="http://nikolay.rocks/2012-05-07-getting-help-with-lovelyio" />
+    <published>2012-05-06T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I'd like to share a bit of the [lovely.io](http://lovely.io) practical awesomeness. #LovelyIO is my pet project, on which I've been working for the last year. In simple words, it's a modern, async and #html5 centric version of the [RightJS](http://rightjs.org) library.]]></summary>
+    <tags>lovelyio,html5,javascript,html,rightjs</tags>
+    <file>/pages/Mighty Hacks/2012-05-07-getting-help-with-lovelyio.md</file>
+  </entry>
+  <entry>
+    <title>-webkit-transform is useful!</title>
+    <link href="http://nikolay.rocks/2012-05-03-webkit-transform-is-useful" />
+    <published>2012-05-02T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[The `-webkit-transform` option is hardly a news for people who deal with #css on daily basis. But developers tend to think about it more like a toy "yeah, I can rotate and skew stuff, so what?". Meanwhile, there is one awesome thing in `-webkit-transorm` that can be really useful in everyday life of a front-side developer.]]></summary>
+    <tags>css,thailand,keyframe</tags>
+    <file>/pages/Mighty Hacks/2012-05-03--webkit-transform-is-useful.md</file>
+  </entry>
+  <entry>
+    <title>Super Simple Fixed-Width Layout</title>
+    <link href="http://nikolay.rocks/2012-04-30-super-simple-fixed-width-layout" />
+    <published>2012-04-29T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[And just for the kicks, the super-simple fixed-width layout. No extra tags required :)
+
+```html
+<html>
+  <body>
+    <h1>Muahahaha!</h1>
+
+    <p>
+      Fixed-width layout with no extra tags!
+    </p>
+
+    <style>
+      html {
+        text-align: center;
+      }
+      body {
+        display:    inline-block;
+        width:      1024px;
+        text-align: left;
+      }
+    </style>
+  </body>
+</html>
+```]]></summary>
+    <tags>html,css,how to</tags>
+    <file>/pages/Mighty Hacks/2012-04-30-super-simple-fixed-width-layout.md</file>
+  </entry>
+  <entry>
+    <title>How To Force Re-rendering In A Browser</title>
+    <link href="http://nikolay.rocks/2012-04-29-how-to-force-re-rendering-in-a-browser" />
+    <published>2012-04-28T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Normally you don't need this sort of things, browsers are pretty smart those days, but once in a blue moon, when you have a complex #html layout and go too fancy with #css, especially if you deal with a slow mobile browser, you might see some artifacts, things might get stuck here and there and so on.]]></summary>
+    <tags>html,css,javascript</tags>
+    <file>/pages/Mighty Hacks/2012-04-29-how-to-force-re-rendering-in-a-browser.md</file>
+  </entry>
+  <entry>
+    <title>Pointer Events Is Awesome</title>
+    <link href="http://nikolay.rocks/2012-04-27-pointer-events-is-awesome" />
+    <published>2012-04-26T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[While I have the urge to share this little #css trick. Lets say you have a list of stuff, and by `stuff` I mean a list of mixed content entries. Sorta like this one]]></summary>
+    <tags>css</tags>
+    <file>/pages/Mighty Hacks/2012-04-27-pointer-events-is-awesome.md</file>
+  </entry>
+  <entry>
+    <title>Николя и слоники</title>
+    <link href="http://nikolay.rocks/2012-04-25-nikolya-i-sloniki" />
+    <published>2012-04-24T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[С чего начать рассказ о Таиланде? Канешна же со слоников. Ибо это как рассказ про Рашу, который должен всенепременно начинаться с гуляющих по улицам медведиков.]]></summary>
+    <tags>таиланд</tags>
+    <file>/pages/В поисках дома/2012-04-25-nikolya-i-sloniki.md</file>
+  </entry>
+  <entry>
+    <title>Таиланд, Пхукет и ебаный стыд</title>
+    <link href="http://nikolay.rocks/2012-04-23-tailand-phuket-i-ebanyj-styd" />
+    <published>2012-04-22T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Эта тема меня немного бесит, поэтому чтобы не возвращаться к ней снова и снова, я напишу один раз и с матерками.]]></summary>
+    <tags>таиланд,пхукет,patong,karon,kata</tags>
+    <file>/pages/В поисках дома/2012-04-23-tailand-phuket-i-ebanyj-styd.md</file>
+  </entry>
+  <entry>
+    <title>Squeeze Those Baby Unicorns!</title>
+    <link href="http://nikolay.rocks/2012-04-19-squeeze-those-baby-unicorns" />
+    <published>2012-04-18T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[One of my #ruby-on-rails apps that runs on #heroku had problems with performance. Yeah, we did all the usual mumbo-jumbo with caching and optimizations, but still had some bad days.]]></summary>
+    <tags>ruby on rails,heroku,unicorn,new relic rpm</tags>
+    <file>/pages/Mighty Hacks/2012-04-19-squeeze-those-baby-unicorns.md</file>
+  </entry>
+  <entry>
+    <title>Питер, куда податься</title>
+    <link href="http://nikolay.rocks/2012-04-17-piter-kuda-podatsya" />
+    <published>2012-04-16T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[И по просьбам трудящихся, небольшой гайд по Питеру, для приехавших в первый раз на день, два, три. Для тех кто не в курсе, сразу оговорюсь: что сам не местный и ничего кроме центра не знаю.]]></summary>
+    <tags>питер</tags>
+    <file>/pages/В поисках дома/2012-04-17-piter-kuda-podatsya.md</file>
+  </entry>
+  <entry>
+    <title>Гудбай Питер</title>
+    <link href="http://nikolay.rocks/2012-04-16-gudbaj-piter" />
+    <published>2012-04-15T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Мои дорогие, я покидаю #Питер, и очень возможно что это надолго.
+
+В течении пяти лет я звал этот город своим домом. Было разное, что-то город дал, что-то взял, но в целом я очень рад тому что провел эти годы в Питере. Я совершенно убежден в том, что Питер - самый лучший город в этой стране и мне очень жаль уезжать.]]></summary>
+    <tags>питер</tags>
+    <file>/pages/В поисках дома/2012-04-16-gudbaj-piter.md</file>
+  </entry>
+  <entry>
+    <title>Барселона</title>
+    <link href="http://nikolay.rocks/2012-04-10-barselona" />
+    <published>2012-04-09T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Наверное пора уже немного написать про поездку в Барселону. Ибо как бы несколько месяцев уже прошло и память моя понемногу тает.]]></summary>
+    <tags>испания,барселона</tags>
+    <file>/pages/В поисках дома/2012-04-10-barselona.md</file>
+  </entry>
+  <entry>
+    <title>What Are OO DOM-Wrappers And Why Are They So Awesome</title>
+    <link href="http://nikolay.rocks/2012-04-06-what-are-oo-dom-wrappers-and-why-are-they-so-awesome" />
+    <published>2012-04-05T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[This post is more for youngsters and intermediate #JavaScript developers. To get it you'll need to know how #OOP in #JavaScript works and what [prototype-based programming](http://en.wikipedia.org/wiki/Prototype-based_programming) is.]]></summary>
+    <tags>javascript,oop,jquery,rightjs</tags>
+    <file>/pages/Mighty Hacks/2012-04-06-what-are-oo-dom-wrappers-and-why-are-they-so-awesome.md</file>
+  </entry>
+  <entry>
+    <title>Converting Numbers To Currency In JavaScript</title>
+    <link href="http://nikolay.rocks/2012-04-05-converting-numbers-to-currency-in-javascript" />
+    <published>2012-04-04T14:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Just so I didn't forget it later on, here is a quick tip #how-to convert numbers into currencies in #JavaScript]]></summary>
+    <tags>how to,javascript</tags>
+    <file>/pages/Mighty Hacks/2012-04-05-converting-numbers-to-currency-in-javascript.md</file>
+  </entry>
+  <entry>
+    <title>CSS3 Gradient Buttons The Right Way</title>
+    <link href="http://nikolay.rocks/2012-03-29-css3-gradient-buttons-the-right-way" />
+    <published>2012-03-28T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Do you like the picture below? Do you want to know how to make those things in pure #CSS the right and reusable way?]]></summary>
+    <tags>css</tags>
+    <file>/pages/Mighty Hacks/2012-03-29-css3-gradient-buttons-the-right-way.md</file>
+  </entry>
+  <entry>
+    <title>Imageless Icons In CSS</title>
+    <link href="http://nikolay.rocks/2012-03-23-imageless-icons-in-css" />
+    <published>2012-03-22T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[This is not the kinda stuff you should do in production, but there is a little #CSS trick that might help you.]]></summary>
+    <tags>css,html</tags>
+    <file>/pages/Mighty Hacks/2012-03-23-imageless-icons-in-css.md</file>
+  </entry>
+  <entry>
+    <title>Тест тест тест</title>
+    <link href="http://nikolay.rocks/2012-03-17-test-test-test" />
+    <published>2012-03-16T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[[ ![закат в #Порту](/images/2012/03/DSC_0711-0-small.jpg) ](/images/2012/03/DSC_0711-0-large.jpg)]]></summary>
+    <tags>порту</tags>
+    <file>/pages/В поисках дома/2012-03-17-test-test-test.md</file>
+  </entry>
+  <entry>
+    <title>Lightweight Redirects With Rack In Rails</title>
+    <link href="http://nikolay.rocks/2012-03-15-lightweight-redirects-with-rack-in-rails" />
+    <published>2012-03-14T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Sometimes, when working with #ruby-on-rails, you need to do some permanent redirecting, say you might support some legacy routes, like]]></summary>
+    <tags>ruby on rails,rack</tags>
+    <file>/pages/Mighty Hacks/2012-03-15-lightweight-redirects-with-rack-in-rails.md</file>
+  </entry>
+  <entry>
+    <title>How To Center A Block Vertically With CSS</title>
+    <link href="http://nikolay.rocks/2012-03-01-how-to-center-a-block-vertically-with-css" />
+    <published>2012-02-29T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[Sometimes you need to position one #HTML block in the center of another one, and you need to do that both horizontally _and_ vertically. The closest example would be a modal dialog]]></summary>
+    <tags>html,css</tags>
+    <file>/pages/Mighty Hacks/2012-03-01-how-to-center-a-block-vertically-with-css.md</file>
+  </entry>
+  <entry>
+    <title>How To Customize File Upload Field With CSS</title>
+    <link href="http://nikolay.rocks/2012-02-16-how-to-customize-file-upload-field-with-css" />
+    <published>2012-02-15T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[You know what is the problem with the `input type="file"` fields. They are ugly. More of that, they are ugly differently in different browsers (yes, mozilla, I'm talking about you). But the worst part is that you can't really do much with them by using #CSS.]]></summary>
+    <tags>css</tags>
+    <file>/pages/Mighty Hacks/2012-02-16-how-to-customize-file-upload-field-with-css.md</file>
+  </entry>
+  <entry>
+    <title>Heroku Cedar Lazy Assets Compilation Fix</title>
+    <link href="http://nikolay.rocks/2012-02-12-heroku-cedar-lazy-assets-compilation-fix" />
+    <published>2012-02-11T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[In case you're running a #Ruby-on-Rails app with #MongoID on #Heroku and all your attempts to make the lazy assets compilation work are futile, cheer up my friend, coz we've got a proper hack for you!]]></summary>
+    <tags>ruby on rails,mongoid,heroku</tags>
+    <file>/pages/Mighty Hacks/2012-02-12-heroku-cedar-lazy-assets-compilation-fix.md</file>
+  </entry>
+  <entry>
+    <title>How To Make Auto-Resizable Textarea</title>
+    <link href="http://nikolay.rocks/2012-02-08-how-to-make-auto-resizable-textarea" />
+    <published>2012-02-07T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[It seems that not everyone knows how to make a textarea element which will automatically resize itself so that the text fit into it without scrolling. The usual CSS hacks don't work in case of textareas and to make this feature work, you need to do some hackery around.]]></summary>
+    <file>/pages/Mighty Hacks/2012-02-08-how-to-make-auto-resizable-textarea.md</file>
+  </entry>
+  <entry>
+    <title>Muahahahaha!</title>
+    <link href="http://nikolay.rocks/2012-02-04-muahahahaha" />
+    <published>2012-02-03T13:00:00.000Z</published>
+    <summary type="markdown"><![CDATA[I'm raising my hand into the night sky, and my sardonic laughter is rolling and bouncing among those dark, gloomy buildings. You almost can see how lighting is going to strike down into the glass ceiling above.]]></summary>
+    <file>/pages/Mighty Hacks/2012-02-04-muahahahaha.md</file>
+  </entry>
+  <entry>
+    <title>Nikolay Nemshilov</title>
+    <link href="http://nikolay.rocks/resume" />
+    <published>null</published>
+    <summary type="markdown"><![CDATA[Hi, I'm Nikolay, I'm what you might call a technical technical lead.
+I help companies that are passionate about technology to build
+outstanding products and stay nimble when it comes to shipping.]]></summary>
+    <file>/pages/resume.md</file>
+  </entry>
+</feed>
