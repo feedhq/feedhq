@@ -5,7 +5,7 @@ import requests
 import structlog
 from django.conf import settings
 from django.utils import timezone
-from django_push.subscriber.models import Subscription
+from django_push.subscriber.models import Subscription, SubscriptionError
 from rache import schedule_job
 from rq.timeouts import JobTimeoutException
 
@@ -60,11 +60,13 @@ def ensure_subscribed(topic_url, hub_url):
     if hub_url is None:
         return
 
+    log = logger.bind(topic_url=topic_url, hub_url=hub_url)
+
     call, args = None, ()
     try:
         s = Subscription.objects.get(topic=topic_url, hub=hub_url)
     except Subscription.DoesNotExist:
-        logger.info("subscribing", topic_url=topic_url, hub_url=hub_url)
+        log.info("subscribing")
         call = Subscription.objects.subscribe
         args = topic_url, hub_url
     else:
@@ -72,10 +74,13 @@ def ensure_subscribed(topic_url, hub_url):
             not s.verified or
             s.lease_expiration < timezone.now() + timedelta(days=1)
         ):
-            logger.info("renewing subscription", subscription=s.pk)
+            log.info("renewing subscription", subscription=s.pk)
             call = s.subscribe
     if call is not None:
-        call(*args)
+        try:
+            call(*args)
+        except SubscriptionError as e:
+            log.info("subscription error", exc_info=e, subscription=s.pk)
 
 
 def should_skip(date, ttl):
