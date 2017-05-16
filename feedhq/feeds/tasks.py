@@ -7,6 +7,7 @@ from django.conf import settings
 from django.utils import timezone
 from django_push.subscriber.models import Subscription, SubscriptionError
 from rache import schedule_job
+from requests.exceptions import MissingSchema
 from rq.timeouts import JobTimeoutException
 
 from .. import es
@@ -81,6 +82,8 @@ def ensure_subscribed(topic_url, hub_url):
             call(*args)
         except SubscriptionError as e:
             log.info("subscription error", exc_info=e)
+        except MissingSchema:
+            pass
 
 
 def should_skip(date, ttl):

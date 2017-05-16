@@ -359,11 +359,14 @@ class UniqueFeedManager(models.Manager):
             # If there are several types, promote html. text items
             # can be duplicates.
             selected_type = None
-            types = set([c['type'] for c in entry.content])
+            types = set(filter(None, [c.get('type') for c in entry.content]))
             if len(types) > 1 and 'text/html' in types:
                 selected_type = 'text/html'
             for content in entry.content:
-                if selected_type is None or content['type'] == selected_type:
+                if (
+                    selected_type is None or
+                    content.get('type') == selected_type
+                ):
                     data['subtitle'] += content.value
         if 'subtitle' in data:
             data['subtitle'] = u'<div>{0}</div>'.format(data['subtitle'])
