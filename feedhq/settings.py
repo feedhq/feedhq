@@ -279,9 +279,11 @@ SILENCED_LOGGERS = [
     'django.db.backends',  # SQL requests
     'elasticsearch',  # too verbose
     'requests.packages.urllib3.connectionpool',  # too verbose
-    'rq.worker',  # too verbose
     'bleach',
 ]
+LOG_LEVEL_OVERRIDES = {
+    'rq': 'WARNING',
+}
 
 REST_FRAMEWORK = {
     "URL_FORMAT_OVERRIDE": "output",

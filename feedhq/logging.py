@@ -121,9 +121,18 @@ def add_syslog_program(syslog):
     return renderer
 
 
-def configure_logging(debug=False, syslog=False, silenced_loggers=None):
+def root(lvl):
+    return {'handlers': ['root'],
+            'level': lvl,
+            'propagate': False}
+
+
+def configure_logging(debug=False, syslog=False, silenced_loggers=None,
+                      level_overrides=None):
     if silenced_loggers is None:
         silenced_loggers = []
+    if level_overrides is None:
+        level_overrides = {}
     level = 'DEBUG' if debug else 'INFO'
     renderers = [
         dev.ConsoleRenderer(),
@@ -153,15 +162,13 @@ def configure_logging(debug=False, syslog=False, silenced_loggers=None):
         cache_logger_on_first_use=True,
     )
 
-    root = {'handlers': ['root'],
-            'level': level,
-            'propagate': False}
     structlog = {'handlers': ['raw'],
                  'level': level,
                  'propagate': False}
     null = {'handlers': ['null'],
             'propagate': False}
-    loggers = {l: root for l, _, _ in logging_tree.tree()[2]}
+    loggers = {l: root(level_overrides.get(l, level))
+               for l, _, _ in logging_tree.tree()[2]}
     loggers['feedhq'] = structlog
 
     for nulled_logger in silenced_loggers:
@@ -179,7 +186,6 @@ def configure_logging(debug=False, syslog=False, silenced_loggers=None):
 
     return {
         'version': 1,
-        'disable_existing_loggers': True,
         'level': level,
         'handlers': {
             'root': {
@@ -192,5 +198,5 @@ def configure_logging(debug=False, syslog=False, silenced_loggers=None):
             },
         },
         'loggers': loggers,
-        'root': root,
+        'root': root(level),
     }
