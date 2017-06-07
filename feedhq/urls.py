@@ -43,4 +43,6 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 logging.config.dictConfig(configure_logging(
     debug=settings.DEBUG,
     syslog=settings.LOG_SYSLOG,
-    silenced_loggers=settings.SILENCED_LOGGERS))
+    silenced_loggers=settings.SILENCED_LOGGERS,
+    level_overrides=settings.LOG_LEVEL_OVERRIDES,
+))
