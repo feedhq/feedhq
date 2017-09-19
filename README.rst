@@ -72,10 +72,9 @@ Getting the code::
 
     git clone https://github.com/feedhq/feedhq.git
     cd feedhq
-    virtualenv -p python2 env
-    source env/bin/activate
-    add2virtualenv .
-    pip install -r requirements.txt
+    python3 -m venv --prompt feedhq venv
+    source venv/bin/activate
+    pip install .
 
 Elasticsearch version requirements:
 
