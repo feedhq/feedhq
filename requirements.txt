@@ -4,11 +4,12 @@
 #
 #    pip-compile --output-file requirements.txt requirements.in
 #
-appdirs==1.4.3            # via setuptools
 bleach==1.5.0
+certifi==2018.1.18        # via requests
+chardet==3.0.4            # via requests
 click==6.7                # via rq
-colorama==0.3.7           # via structlog
-contextlib2==0.5.4        # via raven
+colorama==0.3.9           # via structlog
+contextlib2==0.5.5        # via raven
 defusedxml==0.5.0
 dj-database-url==0.4.2
 django-classy-tags==0.8.0  # via django-sekizai
@@ -20,7 +21,7 @@ django-ratelimit-backend==1.1
 django-redis-cache==1.7.1
 django-rq-dashboard==0.3.1
 django-sekizai==0.10.0
-Django==1.10.5            # via django-classy-tags, django-model-utils, django-password-reset, django-push, django-ratelimit-backend, django-rq-dashboard
+django==1.10.5
 djangorestframework-xml==1.3.0
 djangorestframework==3.5.3
 elasticsearch==1.6.0
@@ -28,16 +29,15 @@ envdir==0.7
 feedparser==5.2.1
 hiredis==0.2.0
 html5lib==0.9999999       # via bleach
+idna==2.6                 # via requests
 logging_tree==1.7
 lxml==3.7.2
 more-itertools==2.5.0
-oauthlib==2.0.2           # via requests-oauthlib
-olefile==0.44             # via pillow
+oauthlib==2.0.7           # via requests-oauthlib
+olefile==0.45.1           # via pillow
 opml==0.5
-packaging==16.8           # via setuptools
-Pillow==4.0.0
-psycopg2==2.6.2
-pyparsing==2.2.0          # via packaging
+pillow==4.0.0
+psycopg2==2.7.4
 python-dateutil==2.6.0
 python-magic==0.4.12
 pytz==2016.10
@@ -45,12 +45,9 @@ rache==0.3.1
 raven==5.32.0
 redis==2.10.5
 requests-oauthlib==0.5.0
-requests==2.7.0
+requests==2.18.4
 rq==0.7.1
 six==1.10.0
 structlog[dev]==16.1.0
-urllib3==1.20             # via elasticsearch
-URLObject==2.4.2
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools                # via opml
+urllib3==1.22             # via elasticsearch, requests
+urlobject==2.4.2

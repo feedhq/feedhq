@@ -21,14 +21,14 @@ logging_tree==1.7
 more-itertools==2.5.0
 opml==0.5
 Pillow==4.0.0
-psycopg2==2.6.2
+psycopg2==2.7.4
 python-dateutil==2.6.0
 python-magic==0.4.12
 pytz==2016.10
 rache==0.3.1
 raven==5.32.0
 redis==2.10.5
-requests==2.7.0
+requests==2.18.4
 requests-oauthlib==0.5.0
 rq==0.7.1
 six==1.10.0
