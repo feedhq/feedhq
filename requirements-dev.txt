@@ -1,13 +1,13 @@
 -r requirements.txt
-beautifulsoup4==4.5.3
-django-debug-toolbar==1.6
-django-elasticsearch-debug-toolbar==1.0.4
-django-webtest==1.8.0
-factory-boy==2.8.1
-py==1.4.32
-pytest==3.0.5
-pytest-django==3.1.2
-sqlparse==0.2.2
-waitress==1.0.2
-WebOb==1.7.1
-WebTest==2.0.24
+beautifulsoup4==4.6.0
+django-debug-toolbar==1.9.1
+django-elasticsearch-debug-toolbar==1.2.0
+django-webtest==1.9.3
+factory-boy==2.11.1
+py==1.5.3
+pytest==3.6.1
+pytest-django==3.2.1
+sqlparse==0.2.4
+waitress==1.1.0
+WebOb==1.8.2
+WebTest==2.0.29
