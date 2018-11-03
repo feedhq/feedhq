@@ -249,9 +249,9 @@ parameters are supported:
 * ``c``: the *continuation* string (see below).
 * ``xt``: a stream ID to exclude from the list.
 * ``it``: a steam ID to include in the list.
-* ``ot``: an epoch timestamp. Items newer than this timestamp are filtered
+* ``ot``: an epoch timestamp. Items older than this timestamp are filtered
   out.
-* ``nt``: an epoch timestamp. Items older than this timestamp are filtered
+* ``nt``: an epoch timestamp. Items newer than this timestamp are filtered
   out.
 
 *Continuation* is used for pagination. When FeedHQ returns a page, it contains
