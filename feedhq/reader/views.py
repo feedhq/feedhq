@@ -653,9 +653,11 @@ def get_es_term(stream, user, exception=False):
     if stream.startswith("feed/"):
         url = feed_url(stream)
         # TODO enforce unique URL per user in the schema
-        term['feed__in'] = [
-            pk for pk in user.feeds.filter(url=url).values_list('pk',
-                                                                flat=True)]
+        pks = list(user.feeds.filter(url=url).values_list('pk', flat=True))
+        if not pks and exception:
+            raise exceptions.ParseError("Unrecognized stream: %s" % stream)
+        if pks:
+            term['feed__in'] = pks
     elif is_stream(stream, user.pk):
         state = is_stream(stream, user.pk)
         if state == 'read':
@@ -727,16 +729,21 @@ def get_es_entries(streams, user, exclude=None, include=None, limit=None,
     streams = _streams(streams)
     entries = es.manager.user(user)
     for stream in streams:
-        entries = entries.filter(or_=True,
-                                 **get_es_term(stream, user, exception=True))
+        term = get_es_term(stream, user, exception=True)
+        if term:
+            entries = entries.filter(or_=True, **term)
 
     if include is not None:
         for inc in include:
-            entries = entries.filter(**get_es_term(inc, user))
+            term = get_es_term(inc, user)
+            if term:
+                entries = entries.filter(**term)
 
     if exclude is not None:
         for exc in exclude:
-            entries = entries.exclude(**get_es_term(exc, user))
+            term = get_es_term(exc, user)
+            if term:
+                entries = entries.exclude(**term)
 
     if limit is not None:
         try:
