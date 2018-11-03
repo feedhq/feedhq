@@ -1288,7 +1288,8 @@ class MarkAllAsRead(ReaderView):
             feed_pks = request.user.feeds.filter(url=url).values_list(
                 'pk', flat=True)
             # FIXME warn for duplicates
-            es_entries = es_entries.filter(feed__in=feed_pks)
+            if feed_pks:
+                es_entries = es_entries.filter(feed__in=feed_pks)
         elif is_label(stream, request.user.pk):
             name = is_label(stream, request.user.pk)
             cat = request.user.categories.get(name=name)
