@@ -20,7 +20,7 @@ lxml==3.7.2
 logging_tree==1.7
 more-itertools==2.5.0
 opml==0.5
-Pillow==4.0.0
+Pillow==6.2.0
 psycopg2==2.7.4
 python-dateutil==2.6.0
 python-magic==0.4.12
